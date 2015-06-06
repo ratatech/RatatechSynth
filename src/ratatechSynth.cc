@@ -31,6 +31,20 @@
 
 TIM_HandleTypeDef   TimHandle;
 
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	trace_printf("InUtero\n");
+	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
+
+}
+
+
 int
 main(int argc, char* argv[])
 {
@@ -55,8 +69,8 @@ main(int argc, char* argv[])
 	  trace_printf("a %i\n", a);
        // ADD YOUR CODE HERE.
 	  /* Insert delay 100 ms */
-	  HAL_Delay(100);
-	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
+	  //HAL_Delay(100);
+	  //HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
     }
 }
 

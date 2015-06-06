@@ -21,6 +21,7 @@ This file is part of XXXXXXX
 */
 
 #include "timer.h"
+#include "diag/Trace.h"
 
 
 void timer_Config(void)
@@ -75,13 +76,3 @@ void timer_Config(void)
 
 }
 
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	  //HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
-
-}
