@@ -5,10 +5,9 @@
 
 // ----------------------------------------------------------------------------
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include "diag/Trace.h"
+#include <ratatechSynth.h>
+
+
 
 // ----------------------------------------------------------------------------
 //
@@ -30,11 +29,22 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wreturn-type"
 
+TIM_HandleTypeDef   TimHandle;
+
 int
 main(int argc, char* argv[])
 {
-  // At this stage the system clock should have already been configured
-  // at high speed.
+	  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	  HAL_Init();
+
+	  /* Configure the system clock */
+	  SystemClock_Config();
+
+	  /* Initialize all configured peripherals */
+	  MX_GPIO_Init();
+
+	  /* Configure the timer*/
+	  timer_Config();
 
   uint32_t a=0;
   // Infinite loop
@@ -44,6 +54,9 @@ main(int argc, char* argv[])
 	  a %=10;
 	  trace_printf("a %i\n", a);
        // ADD YOUR CODE HERE.
+	  /* Insert delay 100 ms */
+	  HAL_Delay(100);
+	  HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
     }
 }
 
