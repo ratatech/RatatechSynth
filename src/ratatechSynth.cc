@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "diag/Trace.h"
 
 // ----------------------------------------------------------------------------
@@ -35,9 +36,13 @@ main(int argc, char* argv[])
   // At this stage the system clock should have already been configured
   // at high speed.
 
+  uint32_t a=0;
   // Infinite loop
   while (1)
     {
+	  a++;
+	  a %=10;
+	  trace_printf("a %i\n", a);
        // ADD YOUR CODE HERE.
     }
 }
