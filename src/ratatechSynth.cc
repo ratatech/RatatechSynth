@@ -38,8 +38,7 @@ main(int argc, char* argv[])
   // Infinite loop
   while (1)
     {
-
-       // Add your code here.
+       // ADD YOUR CODE HERE.
     }
 }
 
