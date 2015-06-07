@@ -110,6 +110,7 @@
 #define MCO1_GPIO_PORT        GPIOA
 #define MCO1_PIN              GPIO_PIN_8
 
+
 /**
   * @}
   */
