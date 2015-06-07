@@ -57,6 +57,7 @@
  void SysTick_Handler(void);
 
  void TIMx_IRQHandler(void);
+ void SPIx_IRQHandler(void);
 
 #ifdef __cplusplus
 }

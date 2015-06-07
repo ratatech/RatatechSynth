@@ -1,0 +1,152 @@
+/*
+@file fileName.cc
+
+@brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+@ Created by Jordi Hidalgo, Ratatech, Jun 7, 2015
+This file is part of XXXXXXX
+
+    XXXXXXX is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    XXXXXXX is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
+*/
+
+#include "spi.h"
+
+void spi_Config(void){
+
+	extern SPI_HandleTypeDef SpiHandle;
+
+	/* Private typedef -----------------------------------------------------------*/
+	/* Private define ------------------------------------------------------------*/
+	enum {
+		TRANSFER_WAIT,
+		TRANSFER_COMPLETE,
+		TRANSFER_ERROR
+	};
+
+	/* Private macro -------------------------------------------------------------*/
+	/* Uncomment this line to use the board as master, if not it is used as slave */
+	#define MASTER_BOARD
+
+	/* Private variables ---------------------------------------------------------*/
+	/* SPI handler declaration */
+	extern SPI_HandleTypeDef SpiHandle;
+
+	/* Buffer used for transmission */
+	uint8_t aTxBuffer[] = "****SPI - Two Boards communication based on Interrupt **** SPI Message ******** SPI Message ******** SPI Message ****";
+
+	/* Buffer used for reception */
+	uint8_t aRxBuffer[BUFFERSIZE];
+
+	/* transfer state */
+	__IO uint32_t wTransferState = TRANSFER_WAIT;
+
+	  /*##-1- Configure the SPI peripheral #######################################*/
+	  /* Set the SPI parameters */
+	  SpiHandle.Instance               = SPIx;
+	  SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+	  SpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
+	  SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
+	  SpiHandle.Init.CLKPolarity       = SPI_POLARITY_LOW;
+	  SpiHandle.Init.DataSize          = SPI_DATASIZE_8BIT;
+	  SpiHandle.Init.FirstBit          = SPI_FIRSTBIT_MSB;
+	  SpiHandle.Init.TIMode            = SPI_TIMODE_DISABLE;
+	  SpiHandle.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
+	  SpiHandle.Init.CRCPolynomial     = 7;
+	  SpiHandle.Init.NSS               = SPI_NSS_SOFT;
+
+	#ifdef MASTER_BOARD
+	  SpiHandle.Init.Mode = SPI_MODE_MASTER;
+	#else
+	  SpiHandle.Init.Mode = SPI_MODE_SLAVE;
+	#endif /* MASTER_BOARD */
+
+	  if(HAL_SPI_Init(&SpiHandle) != HAL_OK)
+	  {
+	    /* Initialization Error */
+		  trace_printf("SPI Init error!\n");
+	  }
+
+	#ifdef MASTER_BOARD
+	  /* SPI block is enabled prior calling SPI transmit/receive functions, in order to get CLK signal properly pulled down.
+	     Otherwise, SPI CLK signal is not clean on this board and leads to errors during transfer */
+	  __HAL_SPI_ENABLE(&SpiHandle);
+
+//	  /* Configure User push-button */
+//	  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
+//	  /* Wait for User push-button press before starting the Communication */
+//	  while (BSP_PB_GetState(BUTTON_USER) != GPIO_PIN_RESET)
+//	  {
+//	    BSP_LED_Toggle(LED2);
+//	    HAL_Delay(100);
+//	  }
+//	  BSP_LED_Off(LED2);
+	#endif /* MASTER_BOARD */
+
+	  /*##-2- Start the Full Duplex Communication process ########################*/
+	  /* While the SPI in TransmitReceive process, user can transmit data through
+	     "aTxBuffer" buffer & receive data through "aRxBuffer" */
+	  if(HAL_SPI_TransmitReceive_IT(&SpiHandle, (uint8_t*)aTxBuffer, (uint8_t *)aRxBuffer, BUFFERSIZE) != HAL_OK)
+	  {
+	    /* Transfer error in transmission process */
+		  trace_printf("SPI transfer error!\n");
+	  }
+
+	  /*##-3- Wait for the end of the transfer ###################################*/
+	  /*  Before starting a new communication transfer, you must wait the callback call
+	      to get the transfer complete confirmation or an error detection.
+	      For simplicity reasons, this example is just waiting till the end of the
+	      transfer, but application may perform other tasks while transfer operation
+	      is ongoing. */
+	  while (wTransferState == TRANSFER_WAIT)
+	  {
+	  }
+
+	  switch(wTransferState)
+	  {
+	    case TRANSFER_COMPLETE :
+	      /*##-4- Compare the sent and received buffers ##############################*/
+	      if(Buffercmp((uint8_t*)aTxBuffer, (uint8_t*)aRxBuffer, BUFFERSIZE))
+	      {
+	        /* Processing Error */
+	    	trace_printf("SPI Processing error!\n");
+	      }
+	    break;
+	    default :
+	    	trace_printf("SPI error!\n");
+	    break;
+	  }
+
+}
+
+/**
+  * @brief  Compares two buffers.
+  * @param  pBuffer1, pBuffer2: buffers to be compared.
+  * @param  BufferLength: buffer's length
+  * @retval 0  : pBuffer1 identical to pBuffer2
+  *         >0 : pBuffer1 differs from pBuffer2
+  */
+static uint16_t Buffercmp(uint8_t *pBuffer1, uint8_t *pBuffer2, uint16_t BufferLength)
+{
+  while (BufferLength--)
+  {
+    if ((*pBuffer1) != *pBuffer2)
+    {
+      return BufferLength;
+    }
+    pBuffer1++;
+    pBuffer2++;
+  }
+
+  return 0;
+}

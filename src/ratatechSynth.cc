@@ -24,7 +24,7 @@
 
 
 TIM_HandleTypeDef   TimHandle;
-
+SPI_HandleTypeDef   SpiHandle;
 
 /**
   * @brief  Period elapsed callback in non blocking mode

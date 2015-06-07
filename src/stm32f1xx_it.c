@@ -54,6 +54,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef    TimHandle;
+extern SPI_HandleTypeDef SpiHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -166,6 +167,15 @@ void SysTick_Handler(void)
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f1xx.s).                                               */
 /******************************************************************************/
+/**
+  * @brief  This function handles SPI interrupt request.
+  * @param  None
+  * @retval None
+  */
+void SPIx_IRQHandler(void)
+{
+  HAL_SPI_IRQHandler(&SpiHandle);
+}
 
 /**
   * @brief  This function handles TIM interrupt request.

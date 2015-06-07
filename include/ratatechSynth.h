@@ -44,6 +44,7 @@
 #include "system_init.h"
 //#include "stm32f1xx_nucleo.h"
 #include "timer.h"
+#include "spi.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
