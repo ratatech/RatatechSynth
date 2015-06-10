@@ -22,7 +22,7 @@ This file is part of XXXXXXX
 
 #include "spi.h"
 
-void spi_Config(void){
+void Spi_Config(void){
 
 	extern SPI_HandleTypeDef SpiHandle;
 
@@ -41,12 +41,6 @@ void spi_Config(void){
 	/* Private variables ---------------------------------------------------------*/
 	/* SPI handler declaration */
 	extern SPI_HandleTypeDef SpiHandle;
-
-	/* Buffer used for transmission */
-	uint8_t aTxBuffer[] = "****SPI - Two Boards communication based on Interrupt **** SPI Message ******** SPI Message ******** SPI Message ****";
-
-	/* Buffer used for reception */
-	uint8_t aRxBuffer[BUFFERSIZE];
 
 	/* transfer state */
 	__IO uint32_t wTransferState = TRANSFER_WAIT;
@@ -82,25 +76,16 @@ void spi_Config(void){
 	     Otherwise, SPI CLK signal is not clean on this board and leads to errors during transfer */
 	  __HAL_SPI_ENABLE(&SpiHandle);
 
-//	  /* Configure User push-button */
-//	  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
-//	  /* Wait for User push-button press before starting the Communication */
-//	  while (BSP_PB_GetState(BUTTON_USER) != GPIO_PIN_RESET)
-//	  {
-//	    BSP_LED_Toggle(LED2);
-//	    HAL_Delay(100);
-//	  }
-//	  BSP_LED_Off(LED2);
 	#endif /* MASTER_BOARD */
 
 	  /*##-2- Start the Full Duplex Communication process ########################*/
 	  /* While the SPI in TransmitReceive process, user can transmit data through
 	     "aTxBuffer" buffer & receive data through "aRxBuffer" */
-	  if(HAL_SPI_TransmitReceive_IT(&SpiHandle, (uint8_t*)aTxBuffer, (uint8_t *)aRxBuffer, BUFFERSIZE) != HAL_OK)
-	  {
-	    /* Transfer error in transmission process */
-		  trace_printf("SPI transfer error!\n");
-	  }
+//	  if(HAL_SPI_TransmitReceive_IT(&SpiHandle, (uint8_t*)aTxBuffer, (uint8_t *)aRxBuffer, BUFFERSIZE) != HAL_OK)
+//	  {
+//	    /* Transfer error in transmission process */
+//		  trace_printf("SPI transfer error!\n");
+//	  }
 
 	  /*##-3- Wait for the end of the transfer ###################################*/
 	  /*  Before starting a new communication transfer, you must wait the callback call
@@ -115,38 +100,12 @@ void spi_Config(void){
 	  switch(wTransferState)
 	  {
 	    case TRANSFER_COMPLETE :
-	      /*##-4- Compare the sent and received buffers ##############################*/
-	      if(Buffercmp((uint8_t*)aTxBuffer, (uint8_t*)aRxBuffer, BUFFERSIZE))
-	      {
-	        /* Processing Error */
-	    	trace_printf("SPI Processing error!\n");
-	      }
+	    	trace_printf("Transfer Complete!\n");
+
 	    break;
 	    default :
 	    	trace_printf("SPI error!\n");
 	    break;
 	  }
 
-}
-
-/**
-  * @brief  Compares two buffers.
-  * @param  pBuffer1, pBuffer2: buffers to be compared.
-  * @param  BufferLength: buffer's length
-  * @retval 0  : pBuffer1 identical to pBuffer2
-  *         >0 : pBuffer1 differs from pBuffer2
-  */
-static uint16_t Buffercmp(uint8_t *pBuffer1, uint8_t *pBuffer2, uint16_t BufferLength)
-{
-  while (BufferLength--)
-  {
-    if ((*pBuffer1) != *pBuffer2)
-    {
-      return BufferLength;
-    }
-    pBuffer1++;
-    pBuffer2++;
-  }
-
-  return 0;
 }
