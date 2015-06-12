@@ -22,12 +22,16 @@
 
 // ----- main() ---------------------------------------------------------------
 
-#define SPI_TX_SIZE                       (COUNTOF(audioOutPt) - 1)
+
 TIM_HandleTypeDef   TimHandle;
 SPI_HandleTypeDef   SpiHandle;
-uint8_t audioData;
+uint8_t aTxBuffer[] = "****SPI - Two Boards communication based on Polling **** SPI Message ******** SPI Message ******** SPI Message ****";
+uint8_t testData;
 uint8_t *audioOutPt;
 uint32_t Timeout;
+
+#define SPI_TX_SIZE                       (COUNTOF(aTxBuffer) - 1)
+
 // sine lookup table pre-calculated
 uint8_t sinetable[256] = {
   128,131,134,137,140,143,146,149,152,156,159,162,165,168,171,174,
@@ -59,10 +63,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	trace_printf("InUtero\n");
 	HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
-	audioOutPt = &sinetable[i];
+	//testData = sinetable[i];
 	i++;
 	i%=256;
-	HAL_SPI_Transmit_IT(&SpiHandle, audioOutPt, SPI_TX_SIZE);
+//	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*)testData, 1,100)==HAL_OK)
+//	{
+//		trace_printf("Successfully transmitted over SPI");
+//	}
+//	uint32_t testTick = HAL_GetTick();
+//	trace_printf("Tick = %i\n",testTick);
 
 }
 
@@ -71,9 +80,8 @@ int
 main(int argc, char* argv[])
 {
 	uint32_t a=0;
-	audioData = 123;
-	audioOutPt = &audioData;
-
+	testData = 23;
+	audioOutPt = &testData;
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
 
@@ -94,9 +102,13 @@ main(int argc, char* argv[])
 	// Infinite loop
 	while (1)
 	{
-	  a++;
-	  a %=10;
-	  trace_printf("a %i\n", a);
+//	  a++;
+//	  a %=10;
+//	  trace_printf("a %i\n", a);
+			if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*)aTxBuffer, SPI_TX_SIZE,5000)==HAL_OK)
+			{
+				trace_printf("Successfully transmitted over SPI");
+			}
 	   // ADD YOUR CODE HERE.
 	  /* Insert delay 100 ms */
 	  //HAL_Delay(100);

@@ -74,38 +74,8 @@ void Spi_Config(void){
 	#ifdef MASTER_BOARD
 	  /* SPI block is enabled prior calling SPI transmit/receive functions, in order to get CLK signal properly pulled down.
 	     Otherwise, SPI CLK signal is not clean on this board and leads to errors during transfer */
-	  __HAL_SPI_ENABLE(&SpiHandle);
+	  //__HAL_SPI_ENABLE(&SpiHandle);
 
 	#endif /* MASTER_BOARD */
-
-	  /*##-2- Start the Full Duplex Communication process ########################*/
-	  /* While the SPI in TransmitReceive process, user can transmit data through
-	     "aTxBuffer" buffer & receive data through "aRxBuffer" */
-//	  if(HAL_SPI_TransmitReceive_IT(&SpiHandle, (uint8_t*)aTxBuffer, (uint8_t *)aRxBuffer, BUFFERSIZE) != HAL_OK)
-//	  {
-//	    /* Transfer error in transmission process */
-//		  trace_printf("SPI transfer error!\n");
-//	  }
-
-	  /*##-3- Wait for the end of the transfer ###################################*/
-	  /*  Before starting a new communication transfer, you must wait the callback call
-	      to get the transfer complete confirmation or an error detection.
-	      For simplicity reasons, this example is just waiting till the end of the
-	      transfer, but application may perform other tasks while transfer operation
-	      is ongoing. */
-	  while (wTransferState == TRANSFER_WAIT)
-	  {
-	  }
-
-	  switch(wTransferState)
-	  {
-	    case TRANSFER_COMPLETE :
-	    	trace_printf("Transfer Complete!\n");
-
-	    break;
-	    default :
-	    	trace_printf("SPI error!\n");
-	    break;
-	  }
 
 }

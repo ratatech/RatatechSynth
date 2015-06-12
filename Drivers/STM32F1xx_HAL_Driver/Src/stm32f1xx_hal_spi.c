@@ -1031,7 +1031,6 @@ HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef *hspi, uint8_t *pData, u
       /* Enable SPI peripheral */
       __HAL_SPI_ENABLE(hspi);
     }
-
     return HAL_OK;
   }
   else
