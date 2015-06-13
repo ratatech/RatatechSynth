@@ -67,35 +67,35 @@ uint16_t i=4095;
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	trace_printf("InUtero\n");
-	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_7);
-	//testData = sinetable[i];
-	testData = 0xFF;
-	testData |= 0x3000;
-
-//	i++;
-//	i%=4095;
-	i--;
-	if(i<1)i=4095;
-
-
-
-
-	GPIOA->BRR = GPIO_PIN_9;
-	testData = (i >> 8)|0x30;
-//	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000)==HAL_OK)
-//	{
-//		trace_printf("Successfully transmitted over SPI\n");
-//	}
-	HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000);
-
-	testData = (i & 0xFF )|0x1;
-//	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000)==HAL_OK)
-//	{
-//		trace_printf("Successfully transmitted over SPI\n");
-//	}
-	HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000);
-	GPIOA->BSRR = GPIO_PIN_9;
+//	trace_printf("InUtero\n");
+//	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_7);
+//	//testData = sinetable[i];
+//	testData = 0xFF;
+//	testData |= 0x3000;
+//
+////	i++;
+////	i%=4095;
+//	i--;
+//	if(i<1)i=4095;
+//
+//
+//
+//
+//	GPIOA->BRR = GPIO_PIN_9;
+//	testData = (i >> 8)|0x30;
+////	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000)==HAL_OK)
+////	{
+////		trace_printf("Successfully transmitted over SPI\n");
+////	}
+//	HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000);
+//
+//	testData = (i & 0xFF )|0x1;
+////	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000)==HAL_OK)
+////	{
+////		trace_printf("Successfully transmitted over SPI\n");
+////	}
+//	HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000);
+//	GPIOA->BSRR = GPIO_PIN_9;
 
 
 
@@ -104,6 +104,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 }
 
+uint8_t SPIx_send(uint8_t data){
+
+	SPIx->DR = data;
+	//SPIx->DR = data; // write data to be transmitted to the SPI data register
+	while (!(SPI1->SR & SPI_SR_TXE));
+	//while( !(SPIx->SR & SPI_FLAG_TXE) ); // wait until transmit complete
+	while( !(SPIx->SR & SPI_FLAG_RXNE) ); // wait until receive complete
+	while( SPIx->SR & SPI_FLAG_BSY ); // wait until SPI is not busy anymore
+	return SPIx->DR; // return received data from SPI data register
+}
 
 int
 main(int argc, char* argv[])
@@ -125,7 +135,12 @@ main(int argc, char* argv[])
 	/* Configure the SPI*/
 	Spi_Config();
 
+	int del=0;
+	uint16_t outputValue = 0; // a word is a 16-bit number
+	uint8_t data = 0; // and a byte is an 8-bit number
 
+	#define lowByte(w) ((w) & 0xff)
+	#define highByte(w) ((w) >> 8)
 
 	// Infinite loop
 	while (1)
@@ -141,6 +156,38 @@ main(int argc, char* argv[])
 	  /* Insert delay 100 ms */
 	  //HAL_Delay(100);
 	  //HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
+
+
+		for (int a=0; a<=4095; a++)
+		{
+			outputValue = a;
+			GPIOA->BRR = GPIO_PIN_9;
+			data = highByte(outputValue);
+			data = 0b00001111 & data;
+			data = 0b00110000 | data;
+			SPIx_send(data);
+			//HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
+			data = lowByte(outputValue);
+			//HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
+			SPIx_send(data);
+			GPIOA->BSRR = GPIO_PIN_9;
+			HAL_Delay(del);
+		}
+		HAL_Delay(del+25);
+		for (int a=4095; a>=0; --a)
+		{
+			outputValue = a;
+			GPIOA->BRR = GPIO_PIN_9;
+			data = highByte(outputValue);
+			data = 0b00001111 & data;
+			data = 0b00110000 | data;
+			HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
+			data = lowByte(outputValue);
+			HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
+			GPIOA->BSRR = GPIO_PIN_9;
+			HAL_Delay(del);
+		}
+		HAL_Delay(del+25);
 	}
 }
 

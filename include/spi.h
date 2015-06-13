@@ -33,8 +33,8 @@
 #define SPIx_SS_GPIO_PORT                GPIOA
 
 /* Definition for SPIx's NVIC */
-#define SPIx_IRQn                        SPI1_IRQn
-#define SPIx_IRQHandler                  SPI1_IRQHandler
+//#define SPIx_IRQn                        SPI1_IRQn
+//#define SPIx_IRQHandler                  SPI1_IRQHandler
 
 /* Size of buffer */
 #define BUFFERSIZE                       (COUNTOF(aTxBuffer) - 1)

@@ -48,11 +48,11 @@ void Spi_Config(void){
 	  /*##-1- Configure the SPI peripheral #######################################*/
 	  /* Set the SPI parameters */
 	  SpiHandle.Instance               = SPIx;
-	  SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+	  SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
 	  SpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
 	  SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
 	  SpiHandle.Init.CLKPolarity       = SPI_POLARITY_LOW;
-	  SpiHandle.Init.DataSize          = SPI_DATASIZE_16BIT;
+	  SpiHandle.Init.DataSize          = SPI_DATASIZE_8BIT;
 	  SpiHandle.Init.FirstBit          = SPI_FIRSTBIT_MSB;
 	  SpiHandle.Init.TIMode            = SPI_TIMODE_DISABLE;
 	  SpiHandle.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
