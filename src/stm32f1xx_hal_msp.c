@@ -118,16 +118,21 @@ GPIO_InitTypeDef  GPIO_InitStruct;
     GPIO_InitStruct.Pin = SPIx_MOSI_PIN;
     HAL_GPIO_Init(SPIx_MOSI_GPIO_PORT, &GPIO_InitStruct);
 
-//    /* SPI SCK GPIO pin configuration  */
-//    GPIO_InitStruct.Pin       = SPIx_SS_PIN;
-//    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
-//    GPIO_InitStruct.Pull       = GPIO_PULLUP;
-//    GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
-//    HAL_GPIO_Init(SPIx_SCK_GPIO_PORT, &GPIO_InitStruct);
-//
-//    /* SPI SS GPIO pin configuration  */
-//    GPIO_InitStruct.Pin = SPIx_SS_PIN;
-//    HAL_GPIO_Init(SPIx_SS_GPIO_PORT, &GPIO_InitStruct);
+
+    /* SPI SS GPIO pin configuration  */
+    GPIO_InitStruct.Pin       = SPIx_SS_PIN;
+    GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Speed     = GPIO_SPEED_HIGH;
+    HAL_GPIO_Init(SPIx_SCK_GPIO_PORT, &GPIO_InitStruct);
+
+    /* SPI SS GPIO pin configuration  */
+    GPIO_InitStruct.Pin = SPIx_SS_PIN;
+    HAL_GPIO_Init(SPIx_SS_GPIO_PORT, &GPIO_InitStruct);
+
+	/* Put DAC CS high */
+	GPIOA->BSRR = SPIx_SS_PIN;
+
+
 
 
   }

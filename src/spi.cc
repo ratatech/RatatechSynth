@@ -52,12 +52,13 @@ void Spi_Config(void){
 	  SpiHandle.Init.Direction         = SPI_DIRECTION_2LINES;
 	  SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
 	  SpiHandle.Init.CLKPolarity       = SPI_POLARITY_LOW;
-	  SpiHandle.Init.DataSize          = SPI_DATASIZE_8BIT;
+	  SpiHandle.Init.DataSize          = SPI_DATASIZE_16BIT;
 	  SpiHandle.Init.FirstBit          = SPI_FIRSTBIT_MSB;
 	  SpiHandle.Init.TIMode            = SPI_TIMODE_DISABLE;
 	  SpiHandle.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
 	  SpiHandle.Init.CRCPolynomial     = 7;
 	  SpiHandle.Init.NSS               = SPI_NSS_SOFT;
+
 
 	#ifdef MASTER_BOARD
 	  SpiHandle.Init.Mode = SPI_MODE_MASTER;
@@ -70,6 +71,8 @@ void Spi_Config(void){
 	    /* Initialization Error */
 		  trace_printf("SPI Init error!\n");
 	  }
+
+
 
 	#ifdef MASTER_BOARD
 	  /* SPI block is enabled prior calling SPI transmit/receive functions, in order to get CLK signal properly pulled down.

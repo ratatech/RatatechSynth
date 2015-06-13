@@ -66,7 +66,7 @@ void timer_Config(void)
 	   + ClockDivision = 0
 	   + Counter direction = Up
 	*/
-	TimHandle.Init.Period            = 10000 - 1;
+	TimHandle.Init.Period            = 1000 - 1;
 	TimHandle.Init.Prescaler         = uwPrescalerValue;
 	TimHandle.Init.ClockDivision     = 0;
 	TimHandle.Init.CounterMode       = TIM_COUNTERMODE_UP;
