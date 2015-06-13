@@ -51,6 +51,7 @@ uint8_t sinetable[256] = {
   37, 39, 42, 44, 46, 49, 51, 54, 56, 59, 62, 64, 67, 70, 73, 76,
   79, 81, 84, 87, 90, 93, 96, 99, 103,106,109,112,115,118,121,124
 };
+
 int i=0;
 
 
@@ -64,12 +65,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	trace_printf("InUtero\n");
 	HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
 	//testData = sinetable[i];
+	testData = 32;
 	i++;
 	i%=256;
-//	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*)testData, 1,100)==HAL_OK)
-//	{
-//		trace_printf("Successfully transmitted over SPI");
-//	}
+	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) sinetable,256,5000)==HAL_OK)
+	{
+		trace_printf("Successfully transmitted over SPI\n");
+	}
 //	uint32_t testTick = HAL_GetTick();
 //	trace_printf("Tick = %i\n",testTick);
 
@@ -105,10 +107,10 @@ main(int argc, char* argv[])
 //	  a++;
 //	  a %=10;
 //	  trace_printf("a %i\n", a);
-			if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*)aTxBuffer, SPI_TX_SIZE,5000)==HAL_OK)
-			{
-				trace_printf("Successfully transmitted over SPI");
-			}
+//			if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*)aTxBuffer, SPI_TX_SIZE,5000)==HAL_OK)
+//			{
+//				trace_printf("Successfully transmitted over SPI");
+//			}
 	   // ADD YOUR CODE HERE.
 	  /* Insert delay 100 ms */
 	  //HAL_Delay(100);
