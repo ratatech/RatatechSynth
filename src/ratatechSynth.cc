@@ -52,6 +52,11 @@ uint8_t sinetable[256] = {
   79, 81, 84, 87, 90, 93, 96, 99, 103,106,109,112,115,118,121,124
 };
 
+uint8_t testTable[2] = {
+  255,0
+};
+
+
 int i=0;
 
 
@@ -65,7 +70,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	trace_printf("InUtero\n");
 	HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
 	//testData = sinetable[i];
-	testData = 32;
+	testData = sinetable[i];
 	i++;
 	i%=256;
 	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) sinetable,256,5000)==HAL_OK)
