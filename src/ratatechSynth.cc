@@ -23,8 +23,8 @@
 // ----- main() ---------------------------------------------------------------
 
 
-TIM_HandleTypeDef   TimHandle;
-SPI_HandleTypeDef   SpiHandle;
+TIM_TimeBaseInitTypeDef  TimHandle;
+SPI_InitTypeDef   SpiHandle;
 uint8_t aTxBuffer[] = "****SPI - Two Boards communication based on Polling **** SPI Message ******** SPI Message ******** SPI Message ****";
 uint16_t testData;
 uint8_t *audioOutPt;
@@ -60,80 +60,13 @@ uint8_t testTable[2] = {
 uint16_t i=4095;
 
 
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-//	trace_printf("InUtero\n");
-//	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_7);
-//	//testData = sinetable[i];
-//	testData = 0xFF;
-//	testData |= 0x3000;
-//
-////	i++;
-////	i%=4095;
-//	i--;
-//	if(i<1)i=4095;
-//
-//
-//
-//
-//	GPIOA->BRR = GPIO_PIN_9;
-//	testData = (i >> 8)|0x30;
-////	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000)==HAL_OK)
-////	{
-////		trace_printf("Successfully transmitted over SPI\n");
-////	}
-//	HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000);
-//
-//	testData = (i & 0xFF )|0x1;
-////	if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000)==HAL_OK)
-////	{
-////		trace_printf("Successfully transmitted over SPI\n");
-////	}
-//	HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &testData,1,5000);
-//	GPIOA->BSRR = GPIO_PIN_9;
-
-
-
-
-
-
-}
-
-uint8_t SPIx_send(uint8_t data){
-
-	SPIx->DR = data;
-	//SPIx->DR = data; // write data to be transmitted to the SPI data register
-	while (!(SPI1->SR & SPI_SR_TXE));
-	//while( !(SPIx->SR & SPI_FLAG_TXE) ); // wait until transmit complete
-	while( !(SPIx->SR & SPI_FLAG_RXNE) ); // wait until receive complete
-	while( SPIx->SR & SPI_FLAG_BSY ); // wait until SPI is not busy anymore
-	return SPIx->DR; // return received data from SPI data register
-}
 
 int
 main(int argc, char* argv[])
 {
 	uint32_t a=0;
 	testData = 23;
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
 
-	/* Configure the system clock */
-	SystemClock_Config();
-
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-
-	/* Configure the timer*/
-	timer_Config();
-
-	/* Configure the SPI*/
-	Spi_Config();
 
 	int del=0;
 	uint16_t outputValue = 0; // a word is a 16-bit number
@@ -145,50 +78,9 @@ main(int argc, char* argv[])
 	// Infinite loop
 	while (1)
 	{
-//	  a++;
-//	  a %=10;
-//	  trace_printf("a %i\n", a);
-//			if (HAL_SPI_Transmit(&SpiHandle,(uint8_t*)aTxBuffer, SPI_TX_SIZE,5000)==HAL_OK)
-//			{
-//				trace_printf("Successfully transmitted over SPI");
-//			}
-	   // ADD YOUR CODE HERE.
-	  /* Insert delay 100 ms */
-	  //HAL_Delay(100);
-	  //HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_5);
 
-
-		for (int a=0; a<=4095; a++)
-		{
-			outputValue = a;
-			GPIOA->BRR = GPIO_PIN_9;
-			data = highByte(outputValue);
-			data = 0b00001111 & data;
-			data = 0b00110000 | data;
-			SPIx_send(data);
-			//HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
-			data = lowByte(outputValue);
-			//HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
-			SPIx_send(data);
-			GPIOA->BSRR = GPIO_PIN_9;
-			HAL_Delay(del);
-		}
-		HAL_Delay(del+25);
-		for (int a=4095; a>=0; --a)
-		{
-			outputValue = a;
-			GPIOA->BRR = GPIO_PIN_9;
-			data = highByte(outputValue);
-			data = 0b00001111 & data;
-			data = 0b00110000 | data;
-			HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
-			data = lowByte(outputValue);
-			HAL_SPI_Transmit(&SpiHandle,(uint8_t*) &data,1,5000);
-			GPIOA->BSRR = GPIO_PIN_9;
-			HAL_Delay(del);
-		}
-		HAL_Delay(del+25);
 	}
+
 }
 
 

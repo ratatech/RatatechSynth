@@ -53,8 +53,8 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern TIM_HandleTypeDef    TimHandle;
-extern SPI_HandleTypeDef SpiHandle;
+extern TIM_TimeBaseInitTypeDef  TimHandle;
+extern SPI_InitTypeDef   SpiHandle;;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -158,7 +158,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-  HAL_IncTick();
+
 }
 
 /******************************************************************************/
@@ -174,7 +174,7 @@ void SysTick_Handler(void)
   */
 void SPIx_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&SpiHandle);
+
 }
 
 /**
@@ -184,7 +184,7 @@ void SPIx_IRQHandler(void)
   */
 void TIMx_IRQHandler(void)
 {
-  HAL_TIM_IRQHandler(&TimHandle);
+
 }
 
 

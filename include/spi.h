@@ -5,7 +5,7 @@
  *      Author: rata
  */
 
-#include "stm32f1xx_hal.h"
+#include "stm32f10x_spi.h"
 #include "diag/Trace.h"
 
 #ifndef SPI_H_

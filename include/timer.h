@@ -8,7 +8,7 @@
 #ifndef INCLUDE_TIMER_H_
 #define INCLUDE_TIMER_H_
 
-#include "stm32f1xx_hal.h"
+#include "stm32f10x_tim.h"
 
 void timer_Config(void);
 

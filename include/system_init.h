@@ -8,7 +8,8 @@
 #ifndef INCLUDE_SYSTEM_INIT_H_
 #define INCLUDE_SYSTEM_INIT_H_
 
-#include "stm32f1xx_hal.h"
+#include "stm32f10x_rcc.h"
+#include "stm32f10x_gpio.h"
 
 void SystemClock_Config(void);
 void MX_GPIO_Init(void);

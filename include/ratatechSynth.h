@@ -40,7 +40,6 @@
 #define __MAIN_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f1xx_hal.h"
 #include "system_init.h"
 //#include "stm32f1xx_nucleo.h"
 #include "timer.h"
