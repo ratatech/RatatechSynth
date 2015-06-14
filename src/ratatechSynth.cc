@@ -16,80 +16,49 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static __IO uint32_t TimingDelay;
-uint8_t __IO BlinkSpeed = 0;
-/* Private function prototypes -----------------------------------------------*/
+//static __IO uint32_t TimingDelay;
+//uint8_t __IO BlinkSpeed = 0;
+///* Private function prototypes -----------------------------------------------*/
 RCC_ClocksTypeDef RCC_Clocks;
-/* Private functions ---------------------------------------------------------*/
+///* Private functions ---------------------------------------------------------*/
 
 /**
   * @brief   Main program
   * @param  None
   * @retval None
   */
+
+
+
+#define LEDToggleValue ((uint16_t) 3000)
+
+GPIO_InitTypeDef LEDs;
+
+
 int main(void)
 {
-
+	SystemInit();
+	SystemCoreClockUpdate();
+	GPIO_Conf_Init();
+	TIM_Config();
+	TIM_Init();
 
 	/* SysTick end of count event each 1ms */
 	RCC_GetClocksFreq(&RCC_Clocks);
 	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
 
-	//SystemClock_Config();
-
-	/* Initialize GPIO */
-    GPIO_Conf_Init();
 
 
 
+	uint16_t CurrentTimerVal = 0;
 
-  /* Initiate Blink Speed variable */
-  BlinkSpeed = 0;
+	/* Infinite loop */
+	while(1)
+	{
+	}
 
-  /* Infinite loop */
-  while (1)
-  {
-    /* Test on blink speed */
-    if(BlinkSpeed == 0)
-    {
-      /*LED2 Toggle each 50ms*/
-    	GPIOA->ODR ^= GPIO_Pin_5;
-      Delay(50);
-    }
-    else if(BlinkSpeed == 1)
-    {
-		GPIOA->ODR ^= GPIO_Pin_5;
-      /*LED2 Toggle each 200ms */
-      Delay(200);
-    }
-  }
+
 }
-
-/**
-* @brief  Inserts a delay time.
-* @param  nTime: specifies the delay time length, in 1 ms.
-* @retval None
-*/
-void Delay(__IO uint32_t nTime)
-{
-  TimingDelay = nTime;
-
-  while(TimingDelay != 0);
-}
-
-/**
-* @brief  Decrements the TimingDelay variable.
-* @param  None
-* @retval None
-*/
-void TimingDelay_Decrement(void)
-{
-  if (TimingDelay != 0x00)
-  {
-    TimingDelay--;
-  }
-}
-
 
 
 /**

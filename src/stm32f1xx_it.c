@@ -155,7 +155,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-	TimingDelay_Decrement();
+	//TimingDelay_Decrement();
 
 }
 
@@ -172,21 +172,31 @@ void SysTick_Handler(void)
   */
 void EXTI15_10_IRQHandler(void)
 {
-  if (EXTI_GetITStatus(EXTI_Line13) != RESET)
-  {		
-    if(BlinkSpeed == 1)
-    {
-      BlinkSpeed = 0;
-    }
-    else
-    {
-      BlinkSpeed ++;
-    }
-    /* Clear the EXTI line pending bit */
-    EXTI_ClearITPendingBit(EXTI_Line13);
-  }	
+//  if (EXTI_GetITStatus(EXTI_Line13) != RESET)
+//  {
+//    if(BlinkSpeed == 1)
+//    {
+//      BlinkSpeed = 0;
+//    }
+//    else
+//    {
+//      BlinkSpeed ++;
+//    }
+//    /* Clear the EXTI line pending bit */
+//    EXTI_ClearITPendingBit(EXTI_Line13);
+//  }
 }
 
+void TIM2_IRQHandler(void)
+{
+//	if(TIM2->SR & TIM_SR_UIF) // if UIF flag is set
+//	{
+	  TIM2->SR &= ~TIM_SR_UIF; // clear UIF flag
+	  GPIOA->ODR ^= GPIO_Pin_5; // toggle LED state
+//	}
+	//GPIOA->ODR ^= GPIO_Pin_5;
+
+}
 
 /**
   * @brief  This function handles PPP interrupt request.

@@ -22,23 +22,45 @@ This file is part of XXXXXXX
 
 #include "system_init.h"
 
-/**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow :
-  *            System Clock source            = PLL (HSI)
-  *            SYSCLK(Hz)                     = 64000000
-  *            HCLK(Hz)                       = 64000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 2
-  *            APB2 Prescaler                 = 1
-  *            PLLMUL                         = 16
-  *            Flash Latency(WS)              = 2
-  * @param  None
-  * @retval None
-  */
+
 void SystemClock_Config(void)
 {
 
+//	RCC
+//	  RCC_ClkInitTypeDef clkinitstruct = {0};
+//	  RCC_OscInitTypeDef oscinitstruct = {0};
+//
+//	  /* Configure PLL ------------------------------------------------------*/
+//	  /* PLL configuration: PLLCLK = (HSI / 2) * PLLMUL = (8 / 2) * 16 = 64 MHz */
+//	  /* PREDIV1 configuration: PREDIV1CLK = PLLCLK / HSEPredivValue = 64 / 1 = 64 MHz */
+//	  /* Enable HSI and activate PLL with HSi_DIV2 as source */
+//	  oscinitstruct.OscillatorType  = RCC_OSCILLATORTYPE_HSI;
+//	  oscinitstruct.HSEState        = RCC_HSE_OFF;
+//	  oscinitstruct.LSEState        = RCC_LSE_OFF;
+//	  oscinitstruct.HSIState        = RCC_HSI_ON;
+//	  oscinitstruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+//	  oscinitstruct.HSEPredivValue    = RCC_HSE_PREDIV_DIV1;
+//	  oscinitstruct.PLL.PLLState    = RCC_PLL_ON;
+//	  oscinitstruct.PLL.PLLSource   = RCC_PLLSOURCE_HSI_DIV2;
+//	  oscinitstruct.PLL.PLLMUL      = RCC_PLL_MUL16;
+//	  if (HAL_RCC_OscConfig(&oscinitstruct)!= HAL_OK)
+//	  {
+//	    /* Initialization Error */
+//	    while(1);
+//	  }
+//
+//	  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
+//	     clocks dividers */
+//	  clkinitstruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+//	  clkinitstruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+//	  clkinitstruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+//	  clkinitstruct.APB2CLKDivider = RCC_HCLK_DIV1;
+//	  clkinitstruct.APB1CLKDivider = RCC_HCLK_DIV2;
+//	  if (HAL_RCC_ClockConfig(&clkinitstruct, FLASH_LATENCY_2)!= HAL_OK)
+//	  {
+//	    /* Initialization Error */
+//	    while(1);
+//	  }
 
 }
 /**
@@ -60,36 +82,6 @@ void GPIO_Conf_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	EXTI_InitTypeDef EXTI_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-
-	/* Enable the GPIO Clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);
-
-	/* Configure Button pin as input floating */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	/* Connect Button EXTI Line to Button GPIO Pin */
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource13);
-
-	/* Configure Button EXTI line */
-	EXTI_InitStructure.EXTI_Line = EXTI_Line13;
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
-
-	/* Enable and set Button EXTI Interrupt to the lowest priority */
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
-	NVIC_Init(&NVIC_InitStructure);
-
 
 
 }

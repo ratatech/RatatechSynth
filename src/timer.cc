@@ -24,8 +24,37 @@ This file is part of XXXXXXX
 #include "diag/Trace.h"
 
 
-void timer_Config(void)
+void TIM_Config(void)
 {
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* TIM2 clock enable */
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+
+	/* Enable the TIM2 global Interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+}
+
+void TIM_Init(void)
+{
+	RCC_APB2PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+
+	TIM_TimeBaseInitTypeDef timerInitStructure;
+	timerInitStructure.TIM_ClockDivision = 0;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = 0xFFFF;
+	timerInitStructure.TIM_Prescaler = 50;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_ITConfig(TIM2, TIM_DIER_UIE, ENABLE);
+	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+
+	TIM_Cmd(TIM2, ENABLE);
+
 
 }
 

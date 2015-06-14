@@ -8,16 +8,9 @@
 #ifndef INCLUDE_TIMER_H_
 #define INCLUDE_TIMER_H_
 
-#include "stm32f10x_tim.h"
+#include "ratatechSynth.h"
 
-void timer_Config(void);
-
-#define TIMx                           TIM3
-#define TIMx_CLK_ENABLE()              __HAL_RCC_TIM3_CLK_ENABLE()
-
-
-/* Definition for TIMx's NVIC */
-#define TIMx_IRQn                      TIM3_IRQn
-#define TIMx_IRQHandler                TIM3_IRQHandler
+void TIM_Config(void);
+void TIM_Init(void);
 
 #endif /* INCLUDE_TIMER_H_ */
