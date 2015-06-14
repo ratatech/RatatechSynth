@@ -36,12 +36,15 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MAIN_H
-#define __MAIN_H
+#ifndef __RATATECHSYNTH_H
+#define __RATATECHSYNTH_H
+
+
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f10x_conf.h"
 #include "system_init.h"
-//#include "stm32f1xx_nucleo.h"
+#include "stm32f10x.h"
 #include "timer.h"
 #include "spi.h"
 #include <stdint.h>
@@ -54,6 +57,17 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
-#endif /* __MAIN_H */
+#ifdef __cplusplus
+ extern "C" {
+#endif
+void TimingDelay_Decrement(void);
+#ifdef __cplusplus
+}
+#endif
+void Delay(__IO uint32_t nTime);
+
+
+
+#endif /* __RATATECHSYNTH_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

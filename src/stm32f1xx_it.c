@@ -38,7 +38,6 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "ratatechSynth.h"
 #include "stm32f1xx_it.h"
 
 /** @addtogroup STM32F1xx_HAL_Examples
@@ -53,9 +52,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern TIM_TimeBaseInitTypeDef  TimHandle;
-extern SPI_InitTypeDef   SpiHandle;;
-
+extern __IO uint8_t BlinkSpeed;    
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -158,6 +155,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
+	TimingDelay_Decrement();
 
 }
 
@@ -168,32 +166,40 @@ void SysTick_Handler(void)
 /*  file (startup_stm32f1xx.s).                                               */
 /******************************************************************************/
 /**
-  * @brief  This function handles SPI interrupt request.
+  * @brief  This function handles EXTI15_10_IRQHandler Handler.
   * @param  None
   * @retval None
   */
-void SPIx_IRQHandler(void)
+void EXTI15_10_IRQHandler(void)
 {
-
+  if (EXTI_GetITStatus(EXTI_Line13) != RESET)
+  {		
+    if(BlinkSpeed == 1)
+    {
+      BlinkSpeed = 0;
+    }
+    else
+    {
+      BlinkSpeed ++;
+    }
+    /* Clear the EXTI line pending bit */
+    EXTI_ClearITPendingBit(EXTI_Line13);
+  }	
 }
 
+
 /**
-  * @brief  This function handles TIM interrupt request.
+  * @brief  This function handles PPP interrupt request.
   * @param  None
   * @retval None
   */
-void TIMx_IRQHandler(void)
+/*void PPP_IRQHandler(void)
 {
-
-}
-
+}*/
 
 /**
   * @}
-  */
+  */ 
 
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
