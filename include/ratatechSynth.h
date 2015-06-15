@@ -61,7 +61,7 @@
  extern "C" {
 #endif
 void TimingDelay_Decrement(void);
-void ledITCallback(void);
+void SPI_Callback(void);
 #ifdef __cplusplus
 }
 #endif

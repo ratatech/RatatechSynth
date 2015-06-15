@@ -43,6 +43,7 @@
 #define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
 /* Exported functions ------------------------------------------------------- */
 
-void Spi_Config(void);
+void SPI_Config(void);
+uint8_t SPI_send(uint8_t);
 
 #endif /* SPI_H_ */

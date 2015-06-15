@@ -189,12 +189,15 @@ void EXTI15_10_IRQHandler(void)
 
 void TIM2_IRQHandler(void)
 {
-//	if(TIM2->SR & TIM_SR_UIF) // if UIF flag is set
-//	{
-	  TIM2->SR &= ~TIM_SR_UIF; // clear UIF flag
-	  GPIOA->ODR ^= GPIO_Pin_5; // toggle LED state
-//	}
-	//GPIOA->ODR ^= GPIO_Pin_5;
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+	{
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+		/* Whatever */
+
+		SPI_Callback();
+	}
+
 
 }
 
