@@ -27,32 +27,48 @@ This file is part of XXXXXXX
 void TIM_Config(void)
 {
 
-	NVIC_InitTypeDef NVIC_InitStructure;
 	TIM_TimeBaseInitTypeDef timerInitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
-	/* Enable the TIM2 global Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+//	/* TIM2 Interrupt configuration */
+//	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//
+//	NVIC_Init(&NVIC_InitStructure);
+//
+//	/* TIM2 configuration */
+//	timerInitStructure.TIM_ClockDivision = 0;
+//	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+//	timerInitStructure.TIM_Period = 100;
+//	timerInitStructure.TIM_Prescaler = 0;
+//	timerInitStructure.TIM_RepetitionCounter = 0;
+//	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+//
+//	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+//	TIM_Cmd(TIM2, ENABLE);
+
+
+	/* TIM1 Interrupt configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
 	NVIC_Init(&NVIC_InitStructure);
 
-	/* TIM2 clock enable */
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-
-
+	/* TIM1 configuration */
 	timerInitStructure.TIM_ClockDivision = 0;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 100-1;
-	timerInitStructure.TIM_Prescaler = SystemCoreClock/100000-1;
+	timerInitStructure.TIM_Period = SystemCoreClock/96000;
+	timerInitStructure.TIM_Prescaler = 0;
 	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM1, &timerInitStructure);
 
-	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM1, ENABLE);
 
-	/* TIM IT enable */
-	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-
-	/* TIM2 enable counter */
-	TIM_Cmd(TIM2, ENABLE);
 
 
 }

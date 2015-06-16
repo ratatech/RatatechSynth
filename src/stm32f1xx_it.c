@@ -186,12 +186,24 @@ void EXTI15_10_IRQHandler(void)
 //    EXTI_ClearITPendingBit(EXTI_Line13);
 //  }
 }
-
 void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
 	{
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+		/* Whatever */
+
+		//SPI_Callback();
+	}
+
+
+}
+void TIM1_UP_IRQHandler(void)
+{
+	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
+	{
+		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 
 		/* Whatever */
 

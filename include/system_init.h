@@ -11,7 +11,7 @@
 #include "ratatechSynth.h"
 
 
-void SystemClock_Config(void);
+void RCC_Clocks_Init(void);
 void GPIO_Conf_Init(void);
 
 #endif /* INCLUDE_SYSTEM_INIT_H_ */

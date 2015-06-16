@@ -23,8 +23,13 @@ This file is part of XXXXXXX
 #include "system_init.h"
 
 
-void SystemClock_Config(void)
+void RCC_Clocks_Init(void)
 {
+	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_SPI1 |
+							  RCC_APB2Periph_TIM1, ENABLE);
+
+	RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM2, ENABLE);
+
 
 
 }
@@ -39,8 +44,6 @@ void GPIO_Conf_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-	/* Enable the GPIO Clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 
 	/* Configure the GPIO pin */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
