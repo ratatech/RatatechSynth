@@ -47,26 +47,22 @@
 #include "stm32f10x.h"
 #include "timer.h"
 #include "spi.h"
+#include "settings.h"
+#include "oscillator.h"
+#include "audio_out.h"
+#include "diag/Trace.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "diag/Trace.h"
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
 
-#ifdef __cplusplus
- extern "C" {
-#endif
 void TimingDelay_Decrement(void);
-void SPI_Callback(void);
-#ifdef __cplusplus
-}
-#endif
 void Delay(__IO uint32_t nTime);
 
+extern "C" {
+
+void TIM2_IRQHandler(void);
+}
 
 
 #endif /* __RATATECHSYNTH_H */
