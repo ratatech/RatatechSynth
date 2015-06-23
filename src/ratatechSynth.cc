@@ -41,20 +41,27 @@ Oscillator osc;
 int main(void)
 {
 
-	osc.setFreqFrac(4400);
+	osc.setFreqFrac(440);
 	osc.setOscShape(0);
 
 	SystemInit();
-	SystemCoreClockUpdate();
+
+
+
+
 	RCC_Clocks_Init();
+	SystemCoreClockUpdate();
+
+	/* SysTick end of count event each 1ms */
+	RCC_GetClocksFreq(&RCC_Clocks);
+	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
+
 	GPIO_Conf_Init();
 	SPI_Config();
 	TIM_Config();
 
 
-	/* SysTick end of count event each 1ms */
-	RCC_GetClocksFreq(&RCC_Clocks);
-	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
+
 
 
 
@@ -70,11 +77,27 @@ extern "C" {
 
 void TIM2_IRQHandler(void)
 {
-//	uint8_t timerValue = TIM_GetCounter(TIM2);
-//	trace_printf("timerCounter val = %i\n",timerValue);
+	uint8_t timerValue = TIM_GetCounter(TIM2);
+	trace_printf("timerCounter val = %i\n",timerValue);
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+		/* Whatever */
+
+		//audio_out_Callback(&osc);
+	}
+
+
+}
+
+void TIM1_UP_IRQHandler(void)
+{
+//	uint8_t timerValue = TIM_GetCounter(TIM2);
+//	trace_printf("timerCounter val = %i\n",timerValue);
+	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
+	{
+		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 
 		/* Whatever */
 

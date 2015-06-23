@@ -51,8 +51,6 @@ void audio_out_Callback(Oscillator * osc)
 	SPI_send(dataHigh);
 	SPI_send(dataLow);
 
-//	trace_printf("SPI1-DR = %i\n",SPI_send(63));
-//	trace_printf("SPI1-DR = %i\n\n",SPI_send(205));
 
 	// CS Low
 	GPIOA->BSRR = GPIO_Pin_9;

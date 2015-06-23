@@ -62,6 +62,7 @@ void Delay(__IO uint32_t nTime);
 extern "C" {
 
 void TIM2_IRQHandler(void);
+//void TIM1_UP_IRQHandler(void);
 }
 
 

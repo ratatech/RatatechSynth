@@ -9,7 +9,7 @@
 #define INCLUDE_SETTINGS_H_
 
 
-#define FS 44100
+#define FS 96000
 
 
 #endif /* INCLUDE_SETTINGS_H_ */
