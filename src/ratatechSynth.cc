@@ -1,26 +1,30 @@
-//
-// This file is part of the GNU ARM Eclipse distribution.
-// Copyright (c) 2014 Liviu Ionescu.
-//
+/*
+ @file ratatechSynth.cc
 
-// ----------------------------------------------------------------------------
+ @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-/* Includes ------------------------------------------------------------------*/
+ @ Created by Jordi Hidalgo, Ratatech, Jun 21, 2015
+ This file is part of XXXXXXX
+
+ XXXXXXX is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ XXXXXXX is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
+ */
 #include "ratatechSynth.h"
 
-/** @addtogroup IO_Toggle
-  * @{
-  */
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-//static __IO uint32_t TimingDelay;
-//uint8_t __IO BlinkSpeed = 0;
-///* Private function prototypes -----------------------------------------------*/
+
 RCC_ClocksTypeDef RCC_Clocks;
-///* Private functions ---------------------------------------------------------*/
+
 
 /**
   * @brief   Main program
@@ -41,14 +45,8 @@ Oscillator osc;
 int main(void)
 {
 
-	osc.setFreqFrac(440);
-	osc.setOscShape(0);
 
 	SystemInit();
-
-
-
-
 	RCC_Clocks_Init();
 	SystemCoreClockUpdate();
 
@@ -56,11 +54,14 @@ int main(void)
 	RCC_GetClocksFreq(&RCC_Clocks);
 	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
 
+    // COnfigure and init peripherals
 	GPIO_Conf_Init();
 	SPI_Config();
 	TIM_Config();
 
-
+	// Configure oscillator
+	osc.setFreqFrac(2356);
+	osc.setOscShape(1);
 
 
 
