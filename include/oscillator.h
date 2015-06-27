@@ -33,18 +33,9 @@ class Oscillator {
 		unsigned char debugChar;
 		uint16_t sampleRef;
 
-		// Set oscillator frequency in Hz for an integer phase increment
-		void setFreq(uint16_t freqHz){
-			phaseIncFrac = floor(((double)NR_OF_SAMPLES/(double)FS)*freqHz);
-			phaseInc = floor(phaseIncFrac);
-			if (phaseInc == 0)
-			{
-				phaseInc = 1;
-			}
-		}
-
-		// Set oscillator frequency in Hz for a fractional phase increment
-		void setFreqFrac(uint16_t freqHz){
+		// Set oscillator frequency in Hz for a fractional and integer phase increment
+		void setFreqFrac(uint16_t freqHz)
+		{
 			phaseIncFrac = (((double)NR_OF_SAMPLES/(double)FS)*freqHz);
 			phaseInc = floor(phaseIncFrac);
 			KFrac = phaseIncFrac - phaseInc;
@@ -52,13 +43,15 @@ class Oscillator {
 		}
 
 		// Read next sample in a wavetable from a given phase index without interpolation
-		uint16_t incPhase(double phaseInd){
+		uint16_t incPhase(double phaseInd)
+		{
 			uint16_t indInt = floor(phaseInd);
 			return (uint16_t)wavetable[indInt];
 		}
 
 		// Read next sample in a wavetable from a given phase index with linear interpolation
-		uint16_t incPhaseFrac(int phaseInd){
+		uint16_t incPhaseFrac(int phaseInd)
+		{
 
 			uint16_t nextSample = wavetable[phaseInd+tableShift]<<8;
 			//uint16_t nextSample = pgm_read_byte(wavetable+phaseInd)<<8;
@@ -71,7 +64,8 @@ class Oscillator {
 		}
 
 		// Set oscillator shape
-		void setOscShape(uint16_t shape){
+		void setOscShape(uint16_t shape)
+		{
 
 			switch (shape)
 			{
@@ -110,6 +104,7 @@ class Oscillator {
 
 		// updateOsc function prototype
 		uint16_t updateOsc(void);
+		uint16_t computeSine(void);
 
 };
 

@@ -61,7 +61,7 @@ int main(void)
 
 	// Configure oscillator
 	osc.setFreqFrac(2356);
-	osc.setOscShape(1);
+	osc.setOscShape(0);
 
 
 

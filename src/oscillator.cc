@@ -54,4 +54,27 @@ uint16_t Oscillator::updateOsc(void)
 		return buffSample;
 }
 
+uint16_t Oscillator::computeSine(void)
+{
+
+		static uint16_t buffSample = 0;
+
+		uint16_t nextSample = wavetable[(int)phaseInd+tableShift]<<8;
+		uint16_t interpSample = (nextSample-sampleRef);
+		interpSample *= K;
+		interpSample >>= 8;
+		interpSample += (sampleRef);
+		sampleRef = nextSample;
+
+		buffSample = interpSample;
+		phaseInd += phaseIncFrac;
+
+		if (phaseInd>=NR_OF_SAMPLES-1)
+		{
+			phaseInd = 0;
+		}
+
+		return buffSample;
+}
+
 

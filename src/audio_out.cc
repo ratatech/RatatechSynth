@@ -33,7 +33,7 @@ void audio_out_Callback(Oscillator * osc)
 {
 
 	// Get a new oscillator sample
-	data = osc->updateOsc();
+	data = osc->computeSine();
 	data >>=4;
 
 	// Split 12bit data and store it into 2 8bit
