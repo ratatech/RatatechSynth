@@ -45,6 +45,12 @@ Oscillator osc;
 int main(void)
 {
 
+	// Configure oscillator
+
+	osc_shape shape = TRI;
+	osc.setOscShape(shape);
+	osc.setFreqFrac(16034);
+
 
 	SystemInit();
 	RCC_Clocks_Init();
@@ -59,9 +65,6 @@ int main(void)
 	SPI_Config();
 	TIM_Config();
 
-	// Configure oscillator
-	osc.setFreqFrac(2356);
-	osc.setOscShape(0);
 
 
 
@@ -79,7 +82,7 @@ extern "C" {
 void TIM2_IRQHandler(void)
 {
 	uint8_t timerValue = TIM_GetCounter(TIM2);
-	trace_printf("timerCounter val = %i\n",timerValue);
+	//trace_printf("timerCounter val = %i\n",timerValue);
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);

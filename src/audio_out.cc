@@ -33,16 +33,31 @@ void audio_out_Callback(Oscillator * osc)
 {
 
 	// Get a new oscillator sample
-	data = osc->computeSine();
-	data >>=4;
+
+	switch (osc->shape)
+	{
+		case SIN:
+			data = osc->computeSine();
+			data>>=4;
+			break;
+		case SQU:
+			data = osc->computeSquare();
+			data<<=4;
+			break;
+		case SAW:
+			data = osc->computeSaw();
+			data<<=4;
+			break;
+		case TRI:
+			data = osc->computeTriangle();
+			data<<=4;
+			break;
+	}
+
 
 	// Split 12bit data and store it into 2 8bit
 	dataHigh = 0b00110000 | data>>8;
 	dataLow  = (0x00FF & data);
-//	trace_printf("data = %i\n",data);
-//	trace_printf("dataHigh = %i\n",dataHigh);
-//	trace_printf("dataLow  = %i\n",dataLow);
-//	trace_printf("\n");
 
 	// CS High
 	GPIOA->BRR = GPIO_Pin_9;

@@ -10,6 +10,6 @@
 
 
 #define FS 96000
-
+typedef enum {SIN,SQU,SAW,TRI} osc_shape;
 
 #endif /* INCLUDE_SETTINGS_H_ */

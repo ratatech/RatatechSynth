@@ -23,37 +23,6 @@
 #include "oscillator.h"
 using namespace std;
 
-uint16_t Oscillator::updateOsc(void)
-{
-
-		static uint16_t buffSample = 0;
-
-		// When interpolation enabled
-		if (DO_INTERPOLATION)
-		{
-
-			buffSample = incPhaseFrac(phaseInd);
-			phaseInd += phaseIncFrac;
-
-			if (phaseInd>=NR_OF_SAMPLES-1)
-			{
-				phaseInd = 0;
-			}
-
-		}// If interpolation not enabled simply output samples in the wavetable
-		else
-		{
-			buffSample = incPhase(phaseInd);
-			phaseInd += phaseInc;
-			if (phaseInd>=NR_OF_SAMPLES-1)
-			{
-				phaseInd = 0;
-			}
-		}
-
-		return buffSample;
-}
-
 uint16_t Oscillator::computeSine(void)
 {
 
@@ -77,4 +46,107 @@ uint16_t Oscillator::computeSine(void)
 		return buffSample;
 }
 
+uint16_t Oscillator::computeTriangle(void)
+{
 
+		static uint16_t buffSample = 0;
+		static bool ascending = true;
+		double nextSample;
+		double interpSample;
+
+		if(ascending)
+		{
+			phaseInd += phaseIncFrac;
+	        interpSample = (phaseInd-sampleRef)*KFrac;
+	        interpSample = sampleRef+interpSample;
+	        //sampleRef = phaseInd;
+	        sampleRef = floor(phaseInd);
+
+		}
+		else
+		{
+			phaseInd -= phaseIncFrac;
+	        interpSample = (sampleRef-phaseInd)*KFrac;
+	        interpSample = sampleRef-interpSample;
+	        //sampleRef = phaseInd;
+	        sampleRef = floor(phaseInd);
+		}
+
+
+		if (phaseInd>=triangleTop-1)
+		{
+			ascending = false;
+			phaseInd=triangleTop;
+			sampleRef = floor(phaseInd);
+		}
+		if (phaseInd<=0)
+		{
+			ascending = true;
+			phaseInd=0;
+			sampleRef = floor(phaseInd);
+		}
+
+
+
+
+		buffSample = (uint16_t)interpSample;
+		//trace_printf("phaseIndInt = %i\n",(uint16_t)phaseInd);
+		trace_printf("buffSample = %i\n",buffSample);
+		return buffSample;
+}
+
+
+uint16_t Oscillator::computeSaw(void)
+{
+
+		static uint16_t buffSample = 0;
+		static bool ascending = true;
+		double nextSample;
+		double interpSample;
+
+
+		phaseInd += phaseIncFrac;
+		interpSample = (phaseInd-sampleRef)*KFrac;
+		interpSample = sampleRef+interpSample;
+		sampleRef = phaseInd;
+
+		if (phaseInd>=sawTop)
+		{
+			ascending = false;
+			phaseInd=1;
+			sampleRef = phaseInd;
+		}
+
+
+		buffSample = (uint16_t)interpSample;
+		return buffSample;
+}
+uint16_t Oscillator::computeSquare(void)
+{
+
+		static uint16_t buffSample = 0;
+		static bool top = true;
+		double nextSample;
+		double squareVal;
+
+
+		phaseInd += phaseIncFrac;
+
+		if (phaseInd>=squareTop-1)
+		{
+			phaseInd = 0;
+			top = !top;
+
+		}
+
+		if(top)
+		{
+			squareVal = squareTop;
+		}else
+		{
+			squareVal = 0;
+		}
+
+		buffSample = (uint16_t)squareVal;
+		return buffSample;
+}

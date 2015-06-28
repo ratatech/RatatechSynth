@@ -12,9 +12,6 @@
 #include "waveTables.h"
 #include <math.h>
 
-#define DO_INTERPOLATION true
-
-
 
 class Oscillator {
 
@@ -32,46 +29,57 @@ class Oscillator {
 		uint16_t sampleDebugInt;
 		unsigned char debugChar;
 		uint16_t sampleRef;
+		uint16_t triangleTop;
+		uint16_t sawTop;
+		uint16_t squareTop;
+		osc_shape shape;
+
 
 		// Set oscillator frequency in Hz for a fractional and integer phase increment
-		void setFreqFrac(uint16_t freqHz)
+		void setFreqFrac(double freqHz)
 		{
 			phaseIncFrac = (((double)NR_OF_SAMPLES/(double)FS)*freqHz);
 			phaseInc = floor(phaseIncFrac);
 			KFrac = phaseIncFrac - phaseInc;
 			K = round(KFrac*256); // round or floor? needs to be tested
+
+			if(shape == TRI)
+			{
+				phaseIncFrac = (((double)(triangleTop)/(double)FS)*freqHz*4);
+				phaseInc = floor(phaseIncFrac);
+				KFrac = phaseIncFrac - phaseInc;
+				K = round(KFrac*(triangleTop<<1)); // round or floor? needs to be tested
+
+			}
+
+			if(shape == SAW)
+			{
+				phaseIncFrac = (((double)(sawTop)/(double)FS)*freqHz*2);
+				phaseInc = floor(phaseIncFrac);
+				KFrac = phaseIncFrac - phaseInc;
+				K = round(KFrac*(sawTop<<1)); // round or floor? needs to be tested
+
+			}
+			if(shape == SQU)
+			{
+				phaseIncFrac = (((double)(squareTop)/(double)FS)*freqHz*2);
+				phaseInc = floor(phaseIncFrac);
+				phaseInd = squareTop;
+
+			}
 		}
 
-		// Read next sample in a wavetable from a given phase index without interpolation
-		uint16_t incPhase(double phaseInd)
-		{
-			uint16_t indInt = floor(phaseInd);
-			return (uint16_t)wavetable[indInt];
-		}
-
-		// Read next sample in a wavetable from a given phase index with linear interpolation
-		uint16_t incPhaseFrac(int phaseInd)
-		{
-
-			uint16_t nextSample = wavetable[phaseInd+tableShift]<<8;
-			//uint16_t nextSample = pgm_read_byte(wavetable+phaseInd)<<8;
-			uint16_t interpSample = (nextSample-sampleRef);
-			interpSample *= K;
-			interpSample >>= 8;
-			interpSample += (sampleRef);
-			sampleRef = nextSample;
-			return interpSample;
-		}
 
 		// Set oscillator shape
-		void setOscShape(uint16_t shape)
+		void setOscShape(osc_shape shape_type)
 		{
+			shape = shape_type;
 
-			switch (shape)
+			switch (shape_type)
 			{
 
 			// Sinusoidal shape
-			case 0:
+			case SIN:
 
 				// Store address of the sinus wavetable
 				wavetable = sinWt;
@@ -79,24 +87,25 @@ class Oscillator {
 			break;
 
 			// Square shape
-			case 1:
+			case SQU:
 
 				// Store address of the square wavetable
 				wavetable = sawWt[0];
+				squareTop = 0xFF;
 			break;
 
 			// Sawtooth shape
-			case 2:
+			case SAW:
 
 				// Store address of the sawtooth wavetable
 				wavetable = sawWt[0];
+				sawTop = 0xFF;
 			break;
 
 			// Triangle shape
-			case 3:
+			case TRI:
+				triangleTop = 0xFF;
 
-				// Store address of the triangle wavetable
-				wavetable = sawWt[0];
 			break;
 			}
 
@@ -105,6 +114,9 @@ class Oscillator {
 		// updateOsc function prototype
 		uint16_t updateOsc(void);
 		uint16_t computeSine(void);
+		uint16_t computeSquare(void);
+		uint16_t computeTriangle(void);
+		uint16_t computeSaw(void);
 
 };
 
