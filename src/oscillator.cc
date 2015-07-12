@@ -141,10 +141,10 @@ uint16_t Oscillator::computeSquare(void)
 
 		if(top)
 		{
-			squareVal = squareTop;
+			squareVal = squareTop>>1;
 		}else
 		{
-			squareVal = 0;
+			squareVal =  0;
 		}
 
 		buffSample = (uint16_t)squareVal;
