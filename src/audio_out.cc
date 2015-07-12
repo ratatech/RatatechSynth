@@ -22,38 +22,15 @@ This file is part of XXXXXXX
 
 #include "audio_out.h"
 
-uint16_t data;
+
 uint8_t dataLow,dataHigh;
-
-
 
 using namespace std;
 
-void audio_out_Callback(Oscillator * osc)
+void audio_out_Callback(uint16_t data)
 {
 
-	// Get a new oscillator sample
-
-	switch (osc->shape)
-	{
-		case SIN:
-			data = osc->computeSine();
-			data>>=4;
-			break;
-		case SQU:
-			data = osc->computeSquare();
-			data<<=4;
-			break;
-		case SAW:
-			data = osc->computeSaw();
-			data<<=4;
-			break;
-		case TRI:
-			data = osc->computeTriangle();
-			data<<=4;
-			break;
-	}
-
+	//trace_printf("buffSample = %i\n",data);
 
 	// Split 12bit data and store it into 2 8bit
 	dataHigh = 0b00110000 | data>>8;

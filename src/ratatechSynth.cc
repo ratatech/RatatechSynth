@@ -38,18 +38,19 @@ using namespace std;
 
 
 Oscillator osc;
-
-
-
+CircularBuffer out_buffer;
+uint16_t data;
+uint16_t out_sample;
+bool status = true;
 
 int main(void)
 {
 
 	// Configure oscillator
 
-	osc_shape shape = SQU;
+	osc_shape shape = TRI;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(5000);
+	osc.setFreqFrac(500);
 
 
 	SystemInit();
@@ -67,46 +68,86 @@ int main(void)
 
 
 
-
+	int a = 0;
 
 	/* Infinite loop */
 	while(1)
 	{
+		a++;
+		//trace_printf("MAIN\n");
+		fill_buffer();
 	}
 
 
+}
+
+inline void fill_buffer(void)
+{
+
+	while(status){
+		//trace_printf("WRITE\n");
+
+		// Get a new oscillator sample
+		switch (osc.shape)
+		{
+			case SIN:
+				data = osc.computeSine();
+				data>>=4;
+				break;
+			case SQU:
+				data = osc.computeSquare();
+				data<<=4;
+				status = out_buffer.write(data);
+				break;
+			case SAW:
+				data = osc.computeSaw();
+				data<<=4;
+				break;
+			case TRI:
+				data = osc.computeTriangle();
+				data<<=4;
+				status = out_buffer.write(data);
+				break;
+		}
+	}
 }
 
 extern "C" {
 
-void TIM2_IRQHandler(void)
-{
-	uint8_t timerValue = TIM_GetCounter(TIM2);
-	//trace_printf("timerCounter val = %i\n",timerValue);
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
-	{
-		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-
-		/* Whatever */
-
-		//audio_out_Callback(&osc);
-	}
-
-
-}
+//void TIM2_IRQHandler(void)
+//{
+//	uint8_t timerValue = TIM_GetCounter(TIM2);
+//	//trace_printf("timerCounter val = %i\n",timerValue);
+//	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
+//	{
+//		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+//
+//		/* Whatever */
+//
+//		//audio_out_Callback(&osc);
+//	}
+//
+//
+//}
 
 void TIM1_UP_IRQHandler(void)
 {
-//	uint8_t timerValue = TIM_GetCounter(TIM2);
-//	trace_printf("timerCounter val = %i\n",timerValue);
-	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
-	{
-		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-
-		/* Whatever */
-
-		audio_out_Callback(&osc);
+	if (!(TIM1->SR & TIM_IT_Update)) {
+	return;
 	}
+	TIM1->SR = (uint16_t)~TIM_IT_Update;
+//	trace_printf("READ\n");
+//	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
+//	{
+//		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+//
+//
+//
+//
+//		out_buffer.read(&out_sample);
+//		data = out_sample;
+//		audio_out_Callback(data);
+//	}
 
 
 }

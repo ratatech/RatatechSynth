@@ -91,7 +91,7 @@ uint16_t Oscillator::computeTriangle(void)
 
 		buffSample = (uint16_t)interpSample;
 		//trace_printf("phaseIndInt = %i\n",(uint16_t)phaseInd);
-		trace_printf("buffSample = %i\n",buffSample);
+		//trace_printf("buffSample = %i\n",buffSample);
 		return buffSample;
 }
 

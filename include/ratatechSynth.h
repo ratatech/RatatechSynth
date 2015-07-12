@@ -50,20 +50,22 @@
 #include "settings.h"
 #include "oscillator.h"
 #include "audio_out.h"
+#include "circular_buffer.h"
 #include "diag/Trace.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 void TimingDelay_Decrement(void);
 void Delay(__IO uint32_t nTime);
+void fill_buffer(void);
 
 extern "C" {
 
 void TIM2_IRQHandler(void);
-//void TIM1_UP_IRQHandler(void);
+void TIM1_UP_IRQHandler(void);
 }
+
 
 
 #endif /* __RATATECHSYNTH_H */

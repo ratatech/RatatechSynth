@@ -15,9 +15,11 @@
 
 using namespace std;
 
-class Oscillator;
-void audio_out_Callback(Oscillator*);
 
+#define BUFFER_FAIL     0
+#define BUFFER_SUCCESS  1
+
+void audio_out_Callback(uint16_t data);
 
 
 
