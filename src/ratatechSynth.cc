@@ -42,15 +42,16 @@ CircularBuffer out_buffer;
 uint16_t data;
 uint16_t out_sample;
 bool status = true;
+int a = 0;
 
 int main(void)
 {
 
 	// Configure oscillator
 
-	osc_shape shape = TRI;
+	osc_shape shape = SIN;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(500);
+	osc.setFreqFrac(3000);
 
 
 	SystemInit();
@@ -64,28 +65,27 @@ int main(void)
     // COnfigure and init peripherals
 	GPIO_Conf_Init();
 	SPI_Config();
+	fill_buffer();
 	TIM_Config();
 
-
-
-	int a = 0;
 
 	/* Infinite loop */
 	while(1)
 	{
-		a++;
-		//trace_printf("MAIN\n");
+		//trace_printf("MAIN a = %i\n",a);
 		fill_buffer();
+//		GPIOC->ODR ^= GPIO_Pin_7;
 	}
 
 
 }
 
+
 inline void fill_buffer(void)
 {
 
-	while(status){
-		//trace_printf("WRITE\n");
+	while(out_buffer.check_status()){
+
 
 		// Get a new oscillator sample
 		switch (osc.shape)
@@ -93,6 +93,7 @@ inline void fill_buffer(void)
 			case SIN:
 				data = osc.computeSine();
 				data>>=4;
+				status = out_buffer.write(data);
 				break;
 			case SQU:
 				data = osc.computeSquare();
@@ -102,6 +103,7 @@ inline void fill_buffer(void)
 			case SAW:
 				data = osc.computeSaw();
 				data<<=4;
+				status = out_buffer.write(data);
 				break;
 			case TRI:
 				data = osc.computeTriangle();
@@ -110,6 +112,9 @@ inline void fill_buffer(void)
 				break;
 		}
 	}
+	a = 0;
+	//trace_printf("WRITED\n");
+	//GPIOC->ODR ^= GPIO_Pin_7;
 }
 
 extern "C" {
@@ -132,22 +137,18 @@ extern "C" {
 
 void TIM1_UP_IRQHandler(void)
 {
-	if (!(TIM1->SR & TIM_IT_Update)) {
-	return;
+
+	//trace_printf("READ\n");
+	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
+	{
+
+		status = out_buffer.read(&out_sample);
+		data = out_sample;
+		audio_out_Callback(data);
+
+		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+
 	}
-	TIM1->SR = (uint16_t)~TIM_IT_Update;
-//	trace_printf("READ\n");
-//	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
-//	{
-//		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-//
-//
-//
-//
-//		out_buffer.read(&out_sample);
-//		data = out_sample;
-//		audio_out_Callback(data);
-//	}
 
 
 }

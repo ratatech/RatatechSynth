@@ -55,6 +55,11 @@ void TIM_Config(void)
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	timerInitStructure.TIM_Period = SystemCoreClock/FS;
 	timerInitStructure.TIM_Prescaler = 0;
+//	timerInitStructure.TIM_Period = 32768;
+//	timerInitStructure.TIM_Prescaler = 2197;
+
+//	timerInitStructure.TIM_Period = 32768;
+//	timerInitStructure.TIM_Prescaler = 21;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_InternalClockConfig(TIM1);
 	TIM_TimeBaseInit(TIM1, &timerInitStructure);

@@ -9,7 +9,8 @@
 #define INCLUDE_SETTINGS_H_
 
 
-#define FS 100
+//#define FS 96000
+#define FS 44100
 typedef enum {SIN,SQU,SAW,TRI} osc_shape;
 
 #endif /* INCLUDE_SETTINGS_H_ */

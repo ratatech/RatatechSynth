@@ -8,7 +8,7 @@
 #ifndef INCLUDE_CIRCULAR_BUFFER_H_
 #define INCLUDE_CIRCULAR_BUFFER_H_
 
-#define BUFFER_SIZE 32
+#define BUFFER_SIZE 128
 
 class CircularBuffer
 {
@@ -27,12 +27,18 @@ public:
 	uint8_t end;
 	uint16_t buffer[BUFFER_SIZE];
 
+	bool check_status(void)
+	{
+		if ( ( end + 1 == start ) || ( start == 0 && end + 1 == BUFFER_SIZE ) )
+					 return false;
+		return true;
 
+	}
 	bool write(uint16_t sample)
 	{
-		if ( ( end + 1 == start ) ||
-		( start == 0 && end + 1 == BUFFER_SIZE ) )
-		    return false;
+		if ( ( end + 1 == start ) || ( start == 0 && end + 1 == BUFFER_SIZE ) )
+			 return false;
+
 
 		buffer[end] = sample;
 		end++;
@@ -43,7 +49,7 @@ public:
 	}
 	bool read(uint16_t *sample)
 	{
-		if (start == end)
+		if ((start == end) || (start + 1 == end))
 			return false;
 
 		*sample = buffer[start];

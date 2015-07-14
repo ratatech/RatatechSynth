@@ -56,8 +56,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void TimingDelay_Decrement(void);
-void Delay(__IO uint32_t nTime);
 void fill_buffer(void);
 
 extern "C" {
