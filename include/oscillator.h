@@ -30,10 +30,11 @@ class Oscillator {
 		unsigned char debugChar;
 		uint16_t sampleRef;
 		uint16_t triangleTop;
+		uint16_t triangleMax;
 		uint16_t sawTop;
 		uint16_t squareTop;
 		osc_shape shape;
-		int tri_dir;
+		double buffSample_ref;
 
 
 		// Set oscillator frequency in Hz for a fractional and integer phase increment
@@ -46,11 +47,12 @@ class Oscillator {
 
 			if(shape == TRI)
 			{
-				phaseIncFrac = (((double)(triangleTop)/(double)FS)*freqHz*2);
+				phaseIncFrac = (((double)(triangleTop)/(double)FS)*freqHz);
 				phaseInc = floor(phaseIncFrac);
 				KFrac = phaseIncFrac - phaseInc;
 				K = round(KFrac*(triangleTop<<1)); // round or floor? needs to be tested
-				tri_dir = 1;
+				triangleMax = triangleTop*2;
+
 
 			}
 

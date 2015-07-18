@@ -51,7 +51,7 @@ int main(void)
 
 	osc_shape shape = TRI;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(10000);
+	osc.setFreqFrac(12000);
 
 
 	SystemInit();

@@ -50,30 +50,35 @@ uint16_t Oscillator::computeTriangle(void)
 {
 	static uint16_t buffSample = 0;
 
-	if(tri_dir<0){
-		phaseInd -= phaseIncFrac;
+	phaseInd += phaseIncFrac;
+	if (phaseInd>=512)
+	{
+		phaseInd = 0;
+	}
+
+	if(phaseInd<255){
+		buffSample = (uint16_t)phaseInd;
+		buffSample_ref = phaseInd;
+		if(phaseInd + phaseIncFrac >= 255)
+			buffSample_ref = phaseInd + phaseIncFrac;
 	}
 	else{
-		phaseInd += phaseIncFrac;
+		buffSample = (uint16_t)(buffSample_ref - phaseIncFrac);
+		buffSample_ref = buffSample;
+//		if(phaseInd + phaseIncFrac >= 512)
+//			buffSample_ref = phaseInd + phaseIncFrac;
 	}
 
 
-	if (phaseInd>=triangleTop)
-	{
-		tri_dir=-1;
-	}
-	if (phaseInd<=0)
-	{
-		tri_dir=1;
-	}
+//	if(phaseInd > triangleTop)
+//		phaseInd = triangleTop;
+//	if(phaseInd < 0)
+//		phaseInd = 1;
 
-	if(phaseInd > triangleTop)
-		phaseInd = triangleTop;
-	if(phaseInd < 0)
-		phaseInd = 1;
 
-	buffSample = (uint16_t)phaseInd;
-	return buffSample;
+
+
+	return (uint16_t)buffSample;
 }
 
 
