@@ -51,12 +51,14 @@
 #include "oscillator.h"
 #include "audio_out.h"
 #include "circular_buffer.h"
+#include "adsr.h"
 #include "diag/Trace.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-void fill_buffer(void);
+void fill_buffer(double env);
 
 extern "C" {
 

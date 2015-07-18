@@ -103,7 +103,6 @@ uint16_t Oscillator::computeSquare(void)
 
 		static uint16_t buffSample = 0;
 		static bool top = true;
-		double nextSample;
 		double squareVal;
 
 

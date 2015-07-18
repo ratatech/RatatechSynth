@@ -39,8 +39,11 @@ using namespace std;
 
 Oscillator osc;
 CircularBuffer out_buffer;
+ADSREnv envObj;
+
 uint16_t data;
 uint16_t out_sample;
+double env=0;
 bool status = true;
 int a = 0;
 
@@ -65,7 +68,7 @@ int main(void)
     // COnfigure and init peripherals
 	GPIO_Conf_Init();
 	SPI_Config();
-	fill_buffer();
+	fill_buffer(env);
 	TIM_Config();
 
 
@@ -73,15 +76,18 @@ int main(void)
 	while(1)
 	{
 		//trace_printf("MAIN a = %i\n",a);
-		fill_buffer();
-//		GPIOC->ODR ^= GPIO_Pin_7;
+		envObj.updateEnv();
+		env = (double)envObj.adsrAmp/ADSR_TOP;
+		fill_buffer(env);
+
+
 	}
 
 
 }
 
 
-inline void fill_buffer(void)
+inline void fill_buffer(double env)
 {
 
 	while(out_buffer.check_status()){
@@ -93,21 +99,25 @@ inline void fill_buffer(void)
 			case SIN:
 				data = osc.computeSine();
 				data>>=4;
+				data = (uint16_t)(data*env);
 				status = out_buffer.write(data);
 				break;
 			case SQU:
 				data = osc.computeSquare();
 				data<<=4;
+				data = (uint16_t)(data*env);
 				status = out_buffer.write(data);
 				break;
 			case SAW:
 				data = osc.computeSaw();
 				data<<=4;
+				data = (uint16_t)(data*env);
 				status = out_buffer.write(data);
 				break;
 			case TRI:
 				data = osc.computeTriangle();
 				data<<=4;
+				data = (uint16_t)(data*env);
 				status = out_buffer.write(data);
 				break;
 		}
