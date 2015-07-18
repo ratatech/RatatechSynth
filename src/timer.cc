@@ -61,7 +61,7 @@ void TIM_Config(void)
 //	timerInitStructure.TIM_Period = 32768;
 //	timerInitStructure.TIM_Prescaler = 21;
 	timerInitStructure.TIM_RepetitionCounter = 0;
-	TIM_InternalClockConfig(TIM1);
+	//TIM_InternalClockConfig(TIM1);
 	TIM_TimeBaseInit(TIM1, &timerInitStructure);
 	TIM_Cmd(TIM1, ENABLE);
 

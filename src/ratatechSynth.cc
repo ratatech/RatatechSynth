@@ -49,9 +49,9 @@ int main(void)
 
 	// Configure oscillator
 
-	osc_shape shape = SIN;
+	osc_shape shape = TRI;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(3000);
+	osc.setFreqFrac(10000);
 
 
 	SystemInit();
