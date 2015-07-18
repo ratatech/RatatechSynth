@@ -62,6 +62,7 @@ void fill_buffer(double env);
 
 extern "C" {
 
+void SysTick_Handler(void);
 void TIM2_IRQHandler(void);
 void TIM1_UP_IRQHandler(void);
 }

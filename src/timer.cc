@@ -30,24 +30,24 @@ void TIM_Config(void)
 	TIM_TimeBaseInitTypeDef timerInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-//	/* TIM2 Interrupt configuration */
-//	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//
-//	NVIC_Init(&NVIC_InitStructure);
+	/* TIM2 Interrupt configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 
-//	/* TIM2 configuration */
-//	timerInitStructure.TIM_ClockDivision = 0;
-//	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-//	timerInitStructure.TIM_Period = SystemCoreClock/FS;
-//	timerInitStructure.TIM_Prescaler = 0;
-//	timerInitStructure.TIM_RepetitionCounter = 0;
-//	TIM_TimeBaseInit(TIM2, &timerInitStructure);
-//
-//	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-//	TIM_Cmd(TIM2, ENABLE);
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* TIM2 configuration */
+	timerInitStructure.TIM_ClockDivision = 0;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = 32768;
+	timerInitStructure.TIM_Prescaler = 2197;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM2, ENABLE);
 
 
 	/* TIM1 configuration */

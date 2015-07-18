@@ -46,6 +46,8 @@ uint16_t out_sample;
 double env=0;
 bool status = true;
 int a = 0;
+double randNumA = 0;
+double randNumB = 0;
 
 int main(void)
 {
@@ -129,21 +131,43 @@ inline void fill_buffer(double env)
 
 extern "C" {
 
-//void TIM2_IRQHandler(void)
-//{
-//	uint8_t timerValue = TIM_GetCounter(TIM2);
-//	//trace_printf("timerCounter val = %i\n",timerValue);
-//	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
-//	{
-//		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+/**
+  * @brief  This function handles SysTick Handler.
+  * @param  None
+  * @retval None
+  */
+void SysTick_Handler(void)
+{
+	//TimingDelay_Decrement();
+
+}
+
+
+void TIM2_IRQHandler(void)
+{
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
+	{
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+
+		//Trigger ADSR
+//		randNumA = (double)(random()/(RANDOM_MAX/1024))+5;
+//		randNumB = (double)(random()/(RANDOM_MAX/1024))+5;
+		//
+		//
+		//envObj.attack = randNumA;
+		//envObj.decay = randNumD;
+		//envObj.calcAdsrSteps();
+		//GPIOC->ODR ^= GPIO_Pin_7;
 //
-//		/* Whatever */
-//
-//		//audio_out_Callback(&osc);
-//	}
-//
-//
-//}
+		//_delay_us(100);
+		//envObj.adsr_st = ATTACK_STATE;
+
+
+	}
+
+
+}
 
 void TIM1_UP_IRQHandler(void)
 {
