@@ -37,6 +37,7 @@ class Oscillator {
 		double buffSample_ref;
 
 
+
 		// Set oscillator frequency in Hz for a fractional and integer phase increment
 		void setFreqFrac(double freqHz)
 		{
@@ -47,7 +48,7 @@ class Oscillator {
 
 			if(shape == TRI)
 			{
-				phaseIncFrac = (((double)(triangleTop)/(double)FS)*freqHz);
+				phaseIncFrac = (((double)(triangleTop)/(double)FS)*freqHz*2);
 				phaseInc = floor(phaseIncFrac);
 				KFrac = phaseIncFrac - phaseInc;
 				K = round(KFrac*(triangleTop<<1)); // round or floor? needs to be tested

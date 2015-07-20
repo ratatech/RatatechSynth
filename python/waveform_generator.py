@@ -12,8 +12,14 @@ FS = 96000
 N = 2**8
 f = 17000
 
+env_lut = range(1,256);
+print env_lut
+#for items in env_lut:
+#    print items','
+
 phInc = np.floor((np.float(N*2)/FS)*f)
 K = phInc-np.floor(phInc)
+
 
 print phInc 
 print K

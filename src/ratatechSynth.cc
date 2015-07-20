@@ -56,7 +56,7 @@ int main(void)
 
 	osc_shape shape = TRI;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(12000);
+	osc.setFreqFrac(1000);
 
 
 	SystemInit();
@@ -155,13 +155,12 @@ void TIM2_IRQHandler(void)
 //		randNumB = (double)(random()/(RANDOM_MAX/1024))+5;
 		//
 		//
-		//envObj.attack = randNumA;
-		//envObj.decay = randNumD;
-		//envObj.calcAdsrSteps();
-		//GPIOC->ODR ^= GPIO_Pin_7;
-//
-		//_delay_us(100);
-		//envObj.adsr_st = ATTACK_STATE;
+		envObj.attack =10;
+		envObj.decay = 10;
+		envObj.calcAdsrSteps();
+		GPIOC->ODR ^= GPIO_Pin_7;
+
+		envObj.adsr_st = ATTACK_STATE;
 
 
 	}
