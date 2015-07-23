@@ -23,27 +23,49 @@
 #include "oscillator.h"
 using namespace std;
 
-uint16_t Oscillator::computeSine(void)
+int16_t Oscillator::computeSine(void)
 {
 
-		static uint16_t buffSample = 0;
-
-		uint16_t nextSample = wavetable[(int)phaseInd+tableShift]<<8;
-		uint16_t interpSample = (nextSample-sampleRef);
-		interpSample *= K;
-		interpSample >>= 8;
+		int32_t nextSample = wavetable[(ph_ind_frac)>>20]<<8;
+		int64_t interpSample = (nextSample-sampleRef);
+		interpSample *= k_frac;
+		interpSample >>= 20;
 		interpSample += (sampleRef);
 		sampleRef = nextSample;
 
-		buffSample = interpSample;
-		phaseInd += phaseIncFrac;
+		ph_ind_frac += ph_inc_frac;
 
-		if (phaseInd>=NR_OF_SAMPLES-1)
+		if (ph_ind_frac>=(NR_OF_SAMPLES<<20))
 		{
-			phaseInd = 0;
+			ph_ind_frac -= (NR_OF_SAMPLES<<20);
 		}
 
-		return buffSample;
+//		return (int16_t)interpSample;
+		return (int16_t)nextSample;
+
+}
+
+uint16_t Oscillator::computeSine_8bit(void)
+{
+	static uint16_t buffSample = 0;
+
+	uint16_t nextSample = wavetable[(int)phaseInd+tableShift]<<8;
+	uint16_t interpSample = (nextSample-sampleRef);
+	interpSample *= K;
+	interpSample >>= 8;
+	interpSample += (sampleRef);
+	sampleRef = nextSample;
+
+	buffSample = interpSample;
+	phaseInd += phaseIncFrac;
+
+	if (phaseInd>=NR_OF_SAMPLES-1)
+		{
+		phaseInd = 0;
+
+		}
+
+	return buffSample;
 }
 
 uint16_t Oscillator::computeTriangle(void)

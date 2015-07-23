@@ -19,7 +19,7 @@ using namespace std;
 #define BUFFER_FAIL     0
 #define BUFFER_SUCCESS  1
 
-void audio_out_Callback(uint16_t data);
+void audio_out_write(uint16_t data);
 
 
 

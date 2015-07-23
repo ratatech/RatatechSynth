@@ -41,7 +41,8 @@ Oscillator osc;
 CircularBuffer out_buffer;
 ADSREnv envObj;
 
-uint16_t data;
+int16_t data;
+uint16_t u_data;
 uint16_t out_sample;
 double env=0;
 bool status = true;
@@ -50,11 +51,11 @@ double randNumA = 0;
 double randNumB = 0;
 
 int main(void)
-{
+	{
 
 	// Configure oscillator
 
-	osc_shape shape = TRI;
+	osc_shape shape = SIN;
 	osc.setOscShape(shape);
 	osc.setFreqFrac(1000);
 
@@ -89,6 +90,7 @@ int main(void)
 }
 
 
+
 inline void fill_buffer(double env)
 {
 
@@ -100,28 +102,32 @@ inline void fill_buffer(double env)
 		{
 			case SIN:
 				data = osc.computeSine();
-				data>>=4;
-				data = (uint16_t)(data*env);
-				status = out_buffer.write(data);
+				//trace_printf("data val = %i\n",data>>8);
+				u_data = int16_2_uint16(data);
+				//trace_printf("u_data val = %i\n",u_data>>8);
+				u_data>>=4;
+				//data = (uint16_t)(data*env);
+				status = out_buffer.write(u_data);
 				break;
-			case SQU:
-				data = osc.computeSquare();
-				data<<=4;
-				data = (uint16_t)(data*env);
-				status = out_buffer.write(data);
-				break;
-			case SAW:
-				data = osc.computeSaw();
-				data<<=4;
-				data = (uint16_t)(data*env);
-				status = out_buffer.write(data);
-				break;
-			case TRI:
-				data = osc.computeTriangle();
-				data<<=4;
-				data = (uint16_t)(data*env);
-				status = out_buffer.write(data);
-				break;
+
+//			case SQU:
+//				data = osc.computeSquare();
+//				data<<=4;
+//				data = (uint16_t)(data*env);
+//				status = out_buffer.write(data);
+//				break;
+//			case SAW:
+//				data = osc.computeSaw();
+//				data<<=4;
+//				data = (uint16_t)(data*env);
+//				status = out_buffer.write(data);
+//				break;
+//			case TRI:
+//				data = osc.computeTriangle();
+//				data<<=4;
+//				//data = (uint16_t)(data*env);
+//				status = out_buffer.write(data);
+//				break;
 		}
 	}
 	a = 0;
@@ -176,8 +182,7 @@ void TIM1_UP_IRQHandler(void)
 	{
 
 		status = out_buffer.read(&out_sample);
-		data = out_sample;
-		audio_out_Callback(data);
+		audio_out_write(out_sample);
 
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 

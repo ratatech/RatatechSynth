@@ -52,6 +52,7 @@
 #include "audio_out.h"
 #include "circular_buffer.h"
 #include "adsr.h"
+#include "utils.h"
 #include "diag/Trace.h"
 #include <stdint.h>
 #include <stdio.h>

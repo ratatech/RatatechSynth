@@ -21,14 +21,14 @@ class Oscillator {
 		uint16_t phaseInc;
 		uint16_t K;
 		double KFrac;
-		const unsigned char *wavetable;
+		const char *wavetable;
 		uint16_t tableShift;
 		double sampleDebug;
 		double sampleDebug2;
 		double sampleDebug3;
 		uint16_t sampleDebugInt;
 		unsigned char debugChar;
-		uint16_t sampleRef;
+		int32_t sampleRef;
 		uint16_t triangleTop;
 		uint16_t triangleMax;
 		uint16_t sawTop;
@@ -36,11 +36,17 @@ class Oscillator {
 		osc_shape shape;
 		double buffSample_ref;
 
+		int32_t ph_inc_frac;
+		int32_t ph_ind_frac;
+		int32_t k_frac;
 
 
 		// Set oscillator frequency in Hz for a fractional and integer phase increment
 		void setFreqFrac(double freqHz)
 		{
+			ph_inc_frac = (int32_t)((((double)NR_OF_SAMPLES/(double)FS)*freqHz)*1048576);
+			k_frac = ph_inc_frac & 0xFFFFF;
+
 			phaseIncFrac = (((double)NR_OF_SAMPLES/(double)FS)*freqHz);
 			phaseInc = floor(phaseIncFrac);
 			KFrac = phaseIncFrac - phaseInc;
@@ -95,7 +101,6 @@ class Oscillator {
 			case SQU:
 
 				// Store address of the square wavetable
-				wavetable = sawWt[0];
 				squareTop = 0xFF;
 			break;
 
@@ -103,7 +108,6 @@ class Oscillator {
 			case SAW:
 
 				// Store address of the sawtooth wavetable
-				wavetable = sawWt[0];
 				sawTop = 0xFF;
 			break;
 
@@ -118,7 +122,8 @@ class Oscillator {
 
 		// updateOsc function prototype
 		uint16_t updateOsc(void);
-		uint16_t computeSine(void);
+		int16_t computeSine(void);
+		uint16_t computeSine_8bit(void);
 		uint16_t computeSquare(void);
 		uint16_t computeTriangle(void);
 		uint16_t computeSaw(void);
