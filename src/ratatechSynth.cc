@@ -161,12 +161,12 @@ void TIM2_IRQHandler(void)
 //		randNumB = (double)(random()/(RANDOM_MAX/1024))+5;
 		//
 		//
-		envObj.attack =10;
-		envObj.decay = 10;
-		envObj.calcAdsrSteps();
-		GPIOC->ODR ^= GPIO_Pin_7;
-
-		envObj.adsr_st = ATTACK_STATE;
+//		envObj.attack =10;
+//		envObj.decay = 10;
+//		envObj.calcAdsrSteps();
+//		GPIOC->ODR ^= GPIO_Pin_7;
+//
+//		envObj.adsr_st = ATTACK_STATE;
 
 
 	}

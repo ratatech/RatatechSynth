@@ -34,14 +34,14 @@ int16_t Oscillator::computeSine(void)
 		sampleRef = nextSample;
 
 		ph_ind_frac += ph_inc_frac;
-
+		//trace_printf("ph_ind_frac val = %i\n",ph_ind_frac>>20);
 		if (ph_ind_frac>=(NR_OF_SAMPLES<<20))
 		{
 			ph_ind_frac -= (NR_OF_SAMPLES<<20);
 		}
 
-//		return (int16_t)interpSample;
-		return (int16_t)nextSample;
+		return (int16_t)interpSample;
+		//return (int16_t)nextSample;
 
 }
 
