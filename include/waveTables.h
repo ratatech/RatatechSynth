@@ -10,6 +10,7 @@
 #define WAVETABLES_H_
 
 #define NR_OF_SAMPLES 256
+#define NR_OF_SAMPLES_20_BIT NR_OF_SAMPLES<<20
 
 // 8bit Sine Wavetable
 const char sinWt[NR_OF_SAMPLES] = {

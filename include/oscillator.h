@@ -13,6 +13,7 @@
 #include <math.h>
 
 
+
 class Oscillator {
 
 	public:
@@ -123,10 +124,9 @@ class Oscillator {
 		// updateOsc function prototype
 		uint16_t updateOsc(void);
 		int16_t computeSine(void);
-		uint16_t computeSine_8bit(void);
 		uint16_t computeSquare(void);
 		uint16_t computeTriangle(void);
-		uint16_t computeSaw(void);
+		int16_t computeSaw(void);
 
 };
 

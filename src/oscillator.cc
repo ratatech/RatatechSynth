@@ -35,9 +35,9 @@ int16_t Oscillator::computeSine(void)
 
 		ph_ind_frac += ph_inc_frac;
 		//trace_printf("ph_ind_frac val = %i\n",ph_ind_frac>>20);
-		if (ph_ind_frac>=(NR_OF_SAMPLES<<20))
+		if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
 		{
-			ph_ind_frac -= (NR_OF_SAMPLES<<20);
+			ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 		}
 
 		return (int16_t)interpSample;
@@ -45,28 +45,7 @@ int16_t Oscillator::computeSine(void)
 
 }
 
-uint16_t Oscillator::computeSine_8bit(void)
-{
-	static uint16_t buffSample = 0;
 
-	uint16_t nextSample = wavetable[(int)phaseInd+tableShift]<<8;
-	uint16_t interpSample = (nextSample-sampleRef);
-	interpSample *= K;
-	interpSample >>= 8;
-	interpSample += (sampleRef);
-	sampleRef = nextSample;
-
-	buffSample = interpSample;
-	phaseInd += phaseIncFrac;
-
-	if (phaseInd>=NR_OF_SAMPLES-1)
-		{
-		phaseInd = 0;
-
-		}
-
-	return buffSample;
-}
 
 uint16_t Oscillator::computeTriangle(void)
 {
@@ -104,21 +83,16 @@ uint16_t Oscillator::computeTriangle(void)
 }
 
 
-uint16_t Oscillator::computeSaw(void)
+int16_t Oscillator::computeSaw(void)
 {
 
-	static uint16_t buffSample = 0;
+	ph_ind_frac += ph_inc_frac;
 
-	phaseInd += phaseIncFrac;
-
-	if (phaseInd>=sawTop)
+	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT>>1))
 	{
-		phaseInd=1;
+		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 	}
-
-
-	buffSample = (uint16_t)phaseInd;
-	return buffSample;
+	return (int16_t)(ph_ind_frac>>12);
 }
 uint16_t Oscillator::computeSquare(void)
 {
