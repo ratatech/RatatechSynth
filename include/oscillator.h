@@ -42,6 +42,9 @@ class Oscillator {
 		int32_t k_frac;
 		int32_t triangle_out;
 		int32_t triangle_ref;
+		int32_t square_out;
+
+		bool top;
 
 
 		// Set oscillator frequency in Hz for a fractional and integer phase increment
@@ -50,18 +53,11 @@ class Oscillator {
 			ph_inc_frac = (int32_t)((((double)NR_OF_SAMPLES/(double)FS)*freqHz)*1048576);
 			k_frac = ph_inc_frac & 0xFFFFF;
 
-			phaseIncFrac = (((double)NR_OF_SAMPLES/(double)FS)*freqHz);
-			phaseInc = floor(phaseIncFrac);
-			KFrac = phaseIncFrac - phaseInc;
-			K = round(KFrac*256); // round or floor? needs to be tested
 
 			if(shape == TRI)
 			{
-				phaseIncFrac = (((double)(triangleTop)/(double)FS)*freqHz*2);
-				phaseInc = floor(phaseIncFrac);
-				KFrac = phaseIncFrac - phaseInc;
-				K = round(KFrac*(triangleTop<<1)); // round or floor? needs to be tested
-				triangleMax = triangleTop*2;
+				ph_inc_frac = (int32_t)((((double)SAMPLES_TRIANGLE/(double)FS)*freqHz)*1048576);
+				k_frac = ph_inc_frac & 0xFFFFF;
 
 
 			}
@@ -96,7 +92,7 @@ class Oscillator {
 			case SIN:
 
 				// Store address of the sinus wavetable
-				wavetable = sinWt;
+				wavetable = sin_lut;
 
 			break;
 
@@ -116,7 +112,7 @@ class Oscillator {
 
 			// Triangle shape
 			case TRI:
-				triangleTop = 0xFF;
+				wavetable = tri_lut;
 
 			break;
 			}

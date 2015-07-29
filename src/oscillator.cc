@@ -49,30 +49,21 @@ int16_t Oscillator::computeSine(void)
 int16_t Oscillator::computeTriangle(void)
 {
 
+	int32_t nextSample = wavetable[(ph_ind_frac)>>20]<<8;
+	int64_t interpSample = (nextSample-sampleRef);
+	interpSample *= k_frac;
+	interpSample >>= 20;
+	interpSample += (sampleRef);
+	sampleRef = nextSample;
 
 	ph_ind_frac += ph_inc_frac;
-
-	if(ph_ind_frac<NR_OF_SAMPLES_20_BIT>>1){
-
-		triangle_out = ph_ind_frac;
-		triangle_ref = triangle_out;
-		if(ph_ind_frac + ph_inc_frac >= NR_OF_SAMPLES_20_BIT>>1)
-			triangle_ref = ph_ind_frac + ph_inc_frac;
-
-	}else{
-
-		triangle_out = triangle_ref - ph_inc_frac;
-		triangle_ref = triangle_out;
-		if(ph_ind_frac + ph_inc_frac >= NR_OF_SAMPLES_20_BIT)
-			triangle_ref = ph_ind_frac + ph_inc_frac;
-
-	}
-
-	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
+	//trace_printf("ph_ind_frac val = %i\n",ph_ind_frac>>20);
+	if (ph_ind_frac>=(SAMPLES_TRIANGLE_20_BIT))
 	{
-		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
+		ph_ind_frac -= (SAMPLES_TRIANGLE_20_BIT);
 	}
-	return (int16_t)(triangle_out>>12);
+
+	return (int16_t)interpSample;
 }
 
 
@@ -90,28 +81,46 @@ int16_t Oscillator::computeSaw(void)
 uint16_t Oscillator::computeSquare(void)
 {
 
-		static uint16_t buffSample = 0;
-		static bool top = true;
-		double squareVal;
+//		static uint16_t buffSample = 0;
+//		static bool top = true;
+//		double squareVal;
+//
+//
+//		phaseInd += phaseIncFrac;
+//
+//		if (phaseInd>=squareTop-1)
+//		{
+//			phaseInd = 0;
+//			top = !top;
+//
+//		}
+//
+//		if(top)
+//		{
+//			squareVal = squareTop>>1;
+//		}else
+//		{
+//			squareVal =  0;
+//		}
+//
+//		buffSample = (uint16_t)squareVal;
+//		return buffSample;
 
+	ph_ind_frac += ph_inc_frac;
 
-		phaseInd += phaseIncFrac;
+	if(top)
+	{
+		square_out = 0x7FFF;
+	}else
+	{
+		square_out =  -128<<8;
+	}
 
-		if (phaseInd>=squareTop-1)
-		{
-			phaseInd = 0;
-			top = !top;
+	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
+	{
+		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
+		top = !top;
+	}
+	return (int16_t)(square_out);
 
-		}
-
-		if(top)
-		{
-			squareVal = squareTop>>1;
-		}else
-		{
-			squareVal =  0;
-		}
-
-		buffSample = (uint16_t)squareVal;
-		return buffSample;
 }
