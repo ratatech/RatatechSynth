@@ -55,9 +55,9 @@ int main(void)
 
 	// Configure oscillator
 
-	osc_shape shape = SAW;
+	osc_shape shape = TRI;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(500);
+	osc.setFreqFrac(8000);
 
 
 	SystemInit();
@@ -125,12 +125,16 @@ inline void fill_buffer(double env)
 				//data = (uint16_t)(data*env);
 				status = out_buffer.write(u_data);
 				break;
-//			case TRI:
-//				data = osc.computeTriangle();
-//				data<<=4;
-//				//data = (uint16_t)(data*env);
-//				status = out_buffer.write(data);
-//				break;
+			case TRI:
+				data = osc.computeTriangle();
+				trace_printf("data val = %i\n",data>>8);
+				u_data = int16_2_uint16(data);
+				trace_printf("u_data val = %i\n",u_data>>8);
+				u_data>>=4;
+				trace_printf("u_data val_12 = %i\n",u_data);
+				//data = (uint16_t)(data*env);
+				status = out_buffer.write(u_data);
+				break;
 		}
 	}
 	a = 0;

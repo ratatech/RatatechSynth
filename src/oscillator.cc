@@ -41,45 +41,38 @@ int16_t Oscillator::computeSine(void)
 		}
 
 		return (int16_t)interpSample;
-		//return (int16_t)nextSample;
 
 }
 
 
 
-uint16_t Oscillator::computeTriangle(void)
+int16_t Oscillator::computeTriangle(void)
 {
-	static uint16_t buffSample = 0;
 
-	phaseInd += phaseIncFrac;
-	if (phaseInd>=512)
+
+	ph_ind_frac += ph_inc_frac;
+
+	if(ph_ind_frac<NR_OF_SAMPLES_20_BIT>>1){
+
+		triangle_out = ph_ind_frac;
+		triangle_ref = triangle_out;
+		if(ph_ind_frac + ph_inc_frac >= NR_OF_SAMPLES_20_BIT>>1)
+			triangle_ref = ph_ind_frac + ph_inc_frac;
+
+	}else{
+
+		triangle_out = triangle_ref - ph_inc_frac;
+		triangle_ref = triangle_out;
+		if(ph_ind_frac + ph_inc_frac >= NR_OF_SAMPLES_20_BIT)
+			triangle_ref = ph_ind_frac + ph_inc_frac;
+
+	}
+
+	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
 	{
-		phaseInd = 0;
+		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 	}
-
-	if(phaseInd<255){
-		buffSample = (uint16_t)phaseInd;
-		buffSample_ref = phaseInd;
-		if(phaseInd + phaseIncFrac >= 255)
-			buffSample_ref = phaseInd + phaseIncFrac;
-	}
-	else{
-		buffSample = (uint16_t)(buffSample_ref - phaseIncFrac);
-		buffSample_ref = buffSample;
-//		if(phaseInd + phaseIncFrac >= 512)
-//			buffSample_ref = phaseInd + phaseIncFrac;
-	}
-
-
-//	if(phaseInd > triangleTop)
-//		phaseInd = triangleTop;
-//	if(phaseInd < 0)
-//		phaseInd = 1;
-
-
-
-
-	return (uint16_t)buffSample;
+	return (int16_t)(triangle_out>>12);
 }
 
 

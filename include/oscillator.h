@@ -35,11 +35,13 @@ class Oscillator {
 		uint16_t sawTop;
 		uint16_t squareTop;
 		osc_shape shape;
-		double buffSample_ref;
+
 
 		int32_t ph_inc_frac;
 		int32_t ph_ind_frac;
 		int32_t k_frac;
+		int32_t triangle_out;
+		int32_t triangle_ref;
 
 
 		// Set oscillator frequency in Hz for a fractional and integer phase increment
@@ -125,7 +127,7 @@ class Oscillator {
 		uint16_t updateOsc(void);
 		int16_t computeSine(void);
 		uint16_t computeSquare(void);
-		uint16_t computeTriangle(void);
+		int16_t computeTriangle(void);
 		int16_t computeSaw(void);
 
 };
