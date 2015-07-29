@@ -21,50 +21,36 @@
  */
 
 #include "oscillator.h"
+
+
+
 using namespace std;
+
+
 
 int16_t Oscillator::computeSine(void)
 {
 
-		int32_t nextSample = wavetable[(ph_ind_frac)>>20]<<8;
-		int64_t interpSample = (nextSample-sampleRef);
-		interpSample *= k_frac;
-		interpSample >>= 20;
-		interpSample += (sampleRef);
-		sampleRef = nextSample;
+	ph_ind_frac += ph_inc_frac;
+	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
+		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 
-		ph_ind_frac += ph_inc_frac;
-		//trace_printf("ph_ind_frac val = %i\n",ph_ind_frac>>20);
-		if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
-		{
-			ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
-		}
+	return (int16_t) arm_linear_interp_q15(sin_lut_q15,ph_ind_frac,NR_OF_SAMPLES);
 
-		return (int16_t)interpSample;
 
 }
-
-
 
 int16_t Oscillator::computeTriangle(void)
 {
 
-	int32_t nextSample = wavetable[(ph_ind_frac)>>20]<<8;
-	int64_t interpSample = (nextSample-sampleRef);
-	interpSample *= k_frac;
-	interpSample >>= 20;
-	interpSample += (sampleRef);
-	sampleRef = nextSample;
-
 	ph_ind_frac += ph_inc_frac;
-	//trace_printf("ph_ind_frac val = %i\n",ph_ind_frac>>20);
-	if (ph_ind_frac>=(SAMPLES_TRIANGLE_20_BIT))
-	{
-		ph_ind_frac -= (SAMPLES_TRIANGLE_20_BIT);
-	}
+	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT<<1))
+		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT<<1);
 
-	return (int16_t)interpSample;
+	return (int16_t) arm_linear_interp_q15(tri_lut_q15,ph_ind_frac,SAMPLES_TRIANGLE);
+
 }
+
 
 
 int16_t Oscillator::computeSaw(void)
@@ -78,33 +64,8 @@ int16_t Oscillator::computeSaw(void)
 	}
 	return (int16_t)(ph_ind_frac>>12);
 }
-uint16_t Oscillator::computeSquare(void)
+int16_t Oscillator::computeSquare(void)
 {
-
-//		static uint16_t buffSample = 0;
-//		static bool top = true;
-//		double squareVal;
-//
-//
-//		phaseInd += phaseIncFrac;
-//
-//		if (phaseInd>=squareTop-1)
-//		{
-//			phaseInd = 0;
-//			top = !top;
-//
-//		}
-//
-//		if(top)
-//		{
-//			squareVal = squareTop>>1;
-//		}else
-//		{
-//			squareVal =  0;
-//		}
-//
-//		buffSample = (uint16_t)squareVal;
-//		return buffSample;
 
 	ph_ind_frac += ph_inc_frac;
 

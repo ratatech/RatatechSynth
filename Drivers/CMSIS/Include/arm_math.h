@@ -299,6 +299,9 @@
   #error "Define according the used Cortex core ARM_MATH_CM7, ARM_MATH_CM4, ARM_MATH_CM3, ARM_MATH_CM0PLUS or ARM_MATH_CM0"
 #endif
 
+//#define ARM_MATH_CM3
+//#include "core_cm3.h"
+
 #undef  __CMSIS_GENERIC         /* enable NVIC and Systick functions */
 #include "string.h"
 #include "math.h"

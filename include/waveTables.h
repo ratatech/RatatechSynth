@@ -9,10 +9,14 @@
 #ifndef WAVETABLES_H_
 #define WAVETABLES_H_
 
+#include "arm_math.h"
+
 #define NR_OF_SAMPLES 256
 #define SAMPLES_TRIANGLE 512
 #define NR_OF_SAMPLES_20_BIT NR_OF_SAMPLES<<20
 #define SAMPLES_TRIANGLE_20_BIT SAMPLES_TRIANGLE <<20
+
+const char test_table[3] = {1,2,3,};
 
 // 8bit Sine Wavetable
 const char sin_lut[NR_OF_SAMPLES] = {
