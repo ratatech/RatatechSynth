@@ -42,8 +42,10 @@ CircularBuffer out_buffer;
 ADSREnv envObj;
 
 int16_t data;
+int32_t data_acc;
 uint16_t u_data;
 uint16_t out_sample;
+int16_t envt;
 double env=0;
 bool status = true;
 int a = 0;
@@ -71,7 +73,7 @@ int main(void)
     // COnfigure and init peripherals
 	GPIO_Conf_Init();
 	SPI_Config();
-	fill_buffer(env);
+	fill_buffer();
 	TIM_Config();
 
 
@@ -79,9 +81,8 @@ int main(void)
 	while(1)
 	{
 		//trace_printf("MAIN a = %i\n",a);
-		envObj.updateEnv();
-		env = (double)envObj.adsrAmp/ADSR_TOP;
-		fill_buffer(env);
+
+		fill_buffer();
 
 
 	}
@@ -91,7 +92,7 @@ int main(void)
 
 
 
-inline void fill_buffer(double env)
+inline void fill_buffer(void)
 {
 
 	while(out_buffer.check_status()){
@@ -101,9 +102,13 @@ inline void fill_buffer(double env)
 		switch (osc.shape)
 		{
 			case SIN:
+				envObj.updateEnv();
 				data = osc.computeSine();
 				trace_printf("data val = %i\n",data);
-				u_data = int16_2_uint16(data<<8);
+				envt = envObj.adsrAmp;
+				data_acc = ((int32_t)(data)*(envt)>>15);
+				trace_printf("data val env = %i\n",data_acc);
+				u_data = int16_2_uint16(data_acc);
 				trace_printf("u_data val = %i\n",u_data>>8);
 				u_data>>=4;
 				//data = (uint16_t)(data*env);
@@ -171,12 +176,12 @@ void TIM2_IRQHandler(void)
 //		randNumB = (double)(random()/(RANDOM_MAX/1024))+5;
 		//
 		//
-//		envObj.attack =10;
-//		envObj.decay = 10;
-//		envObj.calcAdsrSteps();
-//		GPIOC->ODR ^= GPIO_Pin_7;
-//
-//		envObj.adsr_st = ATTACK_STATE;
+		envObj.attack =0.1;
+		envObj.decay = 0.1;
+		envObj.calcAdsrSteps();
+		GPIOC->ODR ^= GPIO_Pin_7;
+
+		envObj.adsr_st = ATTACK_STATE;
 
 
 	}

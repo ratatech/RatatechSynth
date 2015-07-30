@@ -35,7 +35,7 @@ int16_t Oscillator::computeSine(void)
 	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
 		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 
-	return (int16_t) arm_linear_interp_q15(sin_lut_q15,ph_ind_frac,NR_OF_SAMPLES);
+	return (int16_t) arm_linear_interp_q15(sin_lut_q15,ph_ind_frac,NR_OF_SAMPLES)<<8;
 
 
 }

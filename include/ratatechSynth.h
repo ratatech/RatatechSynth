@@ -61,7 +61,7 @@
 
 
 
-void fill_buffer(double env);
+void fill_buffer(void);
 
 extern "C" {
 

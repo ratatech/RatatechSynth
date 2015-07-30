@@ -41,7 +41,7 @@ void TIM_Config(void)
 	/* TIM2 configuration */
 	timerInitStructure.TIM_ClockDivision = 0;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 32768;
+	timerInitStructure.TIM_Period = 3276;
 	timerInitStructure.TIM_Prescaler = 2197;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
