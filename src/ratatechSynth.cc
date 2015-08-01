@@ -59,7 +59,7 @@ int main(void)
 
 	osc_shape shape = SIN;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(1000);
+	osc.setFreqFrac(500);
 
 
 	SystemInit();
@@ -107,7 +107,7 @@ inline void fill_buffer(void)
 				trace_printf("data val = %i\n",data);
 				envt = envObj.adsrAmp;
 				data_acc = ((int32_t)(data)*(envt)>>15);
-				trace_printf("data val env = %i\n",data_acc);
+				trace_printf("envt = %i\n",envt);
 				u_data = int16_2_uint16(data_acc);
 				trace_printf("u_data val = %i\n",u_data>>8);
 				u_data>>=4;
@@ -176,8 +176,10 @@ void TIM2_IRQHandler(void)
 //		randNumB = (double)(random()/(RANDOM_MAX/1024))+5;
 		//
 		//
-		envObj.attack =0.1;
-		envObj.decay = 0.1;
+//		envObj.attack =0.000033333;
+//		envObj.decay = 0.000033333;
+		envObj.attack =0.01;
+		envObj.decay = 0.7;
 		envObj.calcAdsrSteps();
 		GPIOC->ODR ^= GPIO_Pin_7;
 

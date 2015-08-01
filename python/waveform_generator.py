@@ -12,7 +12,7 @@ FS = 96000
 N = 2**8
 f = 17000
 
-env_lut = range(0,128,4);
+env_lut = range(32768,0,-1024);
 print env_lut
 #for items in env_lut:
 #    print items','
