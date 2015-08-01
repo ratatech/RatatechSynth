@@ -52,6 +52,8 @@ int a = 0;
 double randNumA = 0;
 double randNumB = 0;
 
+uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
+
 int main(void)
 	{
 
@@ -59,7 +61,7 @@ int main(void)
 
 	osc_shape shape = SIN;
 	osc.setOscShape(shape);
-	osc.setFreqFrac(500);
+	osc.setFreqFrac(100);
 
 
 	SystemInit();
@@ -75,7 +77,13 @@ int main(void)
 	SPI_Config();
 	fill_buffer();
 	TIM_Config();
+	ButtonsInitEXTI();
 
+
+	//Trigger ADSR
+	envObj.attack =0.1;
+	envObj.decay = 0.5;
+	envObj.calcAdsrSteps();
 
 	/* Infinite loop */
 	while(1)
@@ -102,48 +110,33 @@ inline void fill_buffer(void)
 		switch (osc.shape)
 		{
 			case SIN:
-				envObj.updateEnv();
 				data = osc.computeSine();
-				trace_printf("data val = %i\n",data);
-				envt = envObj.adsrAmp;
-				data_acc = ((int32_t)(data)*(envt)>>15);
-				trace_printf("envt = %i\n",envt);
-				u_data = int16_2_uint16(data_acc);
-				trace_printf("u_data val = %i\n",u_data>>8);
-				u_data>>=4;
-				//data = (uint16_t)(data*env);
-				status = out_buffer.write(u_data);
 				break;
 
 			case SQU:
 				data = osc.computeSquare();
-				trace_printf("data val = %i\n",data);
-				u_data = int16_2_uint16(data);
- 				trace_printf("u_data val = %i\n",u_data);
-				u_data>>=4;
-				//data = (uint16_t)(data*env);
-				status = out_buffer.write(u_data);
 				break;
+
 			case SAW:
 				data = osc.computeSaw();
-				//trace_printf("data val = %i\n",data);
-				u_data = int16_2_uint16(data);
-//				trace_printf("u_data val = %i\n",u_data);
-				u_data>>=4;
-				//data = (uint16_t)(data*env);
-				status = out_buffer.write(u_data);
 				break;
+
 			case TRI:
 				data = osc.computeTriangle();
-				trace_printf("data val = %i\n",data>>8);
-				u_data = int16_2_uint16(data<<8);
-				trace_printf("u_data val = %i\n",u_data>>8);
-				u_data>>=4;
-				trace_printf("u_data val_12 = %i\n",u_data);
-				//data = (uint16_t)(data*env);
-				status = out_buffer.write(u_data);
 				break;
+
 		}
+		envObj.updateEnv();
+		//trace_printf("data val = %i\n",data);
+		envt = envObj.adsrAmp;
+		data_acc = ((int32_t)(data)*(envt)>>15);
+		//trace_printf("envt = %i\n",envt);
+		u_data = int16_2_uint16(data_acc);
+		//trace_printf("u_data val = %i\n",u_data>>8);
+		u_data>>=4;
+		//data = (uint16_t)(data*env);
+		status = out_buffer.write(u_data);
+
 	}
 	a = 0;
 	//trace_printf("WRITED\n");
@@ -163,34 +156,181 @@ void SysTick_Handler(void)
 
 }
 
+/*****************************************************************************************************************************
+******************* EXTERNAL INTERRUPTS **************************************************************************************
+******************************************************************************************************************************/
 
+/**
+  * @brief  This function handles External Interrupt 0 Handler.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+
+    //Check if EXTI_Line0 is asserted
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+    {
+    	//Set freq
+    	osc.setFreqFrac(C4_Octave[0]);
+		envObj.adsr_st = ATTACK_STATE;
+    }
+    //we need to clear line pending bit manually
+    EXTI_ClearITPendingBit(EXTI_Line0);
+}
+
+/**
+  * @brief  This function handles External Interrupt 1 Handler.
+  * @param  None
+  * @retval None
+  */
+void EXTI1_IRQHandler(void)
+{
+
+
+    //Check if EXTI_Line0 is asserted
+    if(EXTI_GetITStatus(EXTI_Line1) != RESET)
+    {
+    	//Set freq
+    	osc.setFreqFrac(C4_Octave[2]);
+		envObj.adsr_st = ATTACK_STATE;
+    }
+    //we need to clear line pending bit manually
+    EXTI_ClearITPendingBit(EXTI_Line1);
+}
+
+/**
+  * @brief  This function handles External Interrupt 2 Handler.
+  * @param  None
+  * @retval None
+  */
+void EXTI2_IRQHandler(void)
+{
+
+
+    //Check if EXTI_Line0 is asserted
+    if(EXTI_GetITStatus(EXTI_Line2) != RESET)
+    {
+    	//Set freq
+    	osc.setFreqFrac(C4_Octave[4]);
+		envObj.adsr_st = ATTACK_STATE;
+    }
+    //we need to clear line pending bit manually
+    EXTI_ClearITPendingBit(EXTI_Line2);
+}
+
+/**
+  * @brief  This function handles External Interrupt 3 Handler.
+  * @param  None
+  * @retval None
+  */
+void EXTI3_IRQHandler(void)
+{
+
+
+    //Check if EXTI_Line0 is asserted
+    if(EXTI_GetITStatus(EXTI_Line3) != RESET)
+    {
+    	//Set freq
+    	osc.setFreqFrac(C4_Octave[5]);
+		envObj.adsr_st = ATTACK_STATE;
+    }
+    //we need to clear line pending bit manually
+    EXTI_ClearITPendingBit(EXTI_Line3);
+}
+
+/**
+  * @brief  This function handles External Interrupt 4 Handler.
+  * @param  None
+  * @retval None
+  */
+void EXTI4_IRQHandler(void)
+{
+
+
+    //Check if EXTI_Line0 is asserted
+    if(EXTI_GetITStatus(EXTI_Line4) != RESET)
+    {
+    	//Set freq
+    	osc.setFreqFrac(C4_Octave[7]);
+		envObj.adsr_st = ATTACK_STATE;
+    }
+    //we need to clear line pending bit manually
+    EXTI_ClearITPendingBit(EXTI_Line4);
+}
+
+
+
+///**
+//  * @brief  This function handles External Interrupt 5 Handler.
+//  * @param  None
+//  * @retval None
+//  */
+//void EXTI5_IRQHandler(void)
+//{
+//
+//
+//    //Check if EXTI_Line0 is asserted
+//    if(EXTI_GetITStatus(EXTI_Line5) != RESET)
+//    {
+//    	//Set freq
+//    	osc.setFreqFrac(C4_Octave[9]);
+//		envObj.adsr_st = ATTACK_STATE;
+//    }
+//    //we need to clear line pending bit manually
+//    EXTI_ClearITPendingBit(EXTI_Line5);
+//}
+//
+///**
+//  * @brief  This function handles External Interrupt 6 Handler.
+//  * @param  None
+//  * @retval None
+//  */
+//void EXTI6_IRQHandler(void)
+//{
+//
+//
+//    //Check if EXTI_Line0 is asserted
+//    if(EXTI_GetITStatus(EXTI_Line6) != RESET)
+//    {
+//    	//Set freq
+//    	osc.setFreqFrac(C4_Octave[10]);
+//		envObj.adsr_st = ATTACK_STATE;
+//    }
+//    //we need to clear line pending bit manually
+//    EXTI_ClearITPendingBit(EXTI_Line6);
+//}
+
+
+
+/*****************************************************************************************************************************
+******************* TIMER INTERRUPTS *****************************************************************************************
+******************************************************************************************************************************/
+
+/**
+  * @brief  This function handles Timer 2 Handler.
+  * @param  None
+  * @retval None
+  */
 void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
+
+
+		//Do something here
+
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-
-
-		//Trigger ADSR
-//		randNumA = (double)(random()/(RANDOM_MAX/1024))+5;
-//		randNumB = (double)(random()/(RANDOM_MAX/1024))+5;
-		//
-		//
-//		envObj.attack =0.000033333;
-//		envObj.decay = 0.000033333;
-		envObj.attack =0.01;
-		envObj.decay = 0.7;
-		envObj.calcAdsrSteps();
-		GPIOC->ODR ^= GPIO_Pin_7;
-
-		envObj.adsr_st = ATTACK_STATE;
-
-
 	}
 
 
 }
 
+/**
+  * @brief  This function handles Timer 1 Handler.
+  * @param  None
+  * @retval None
+  */
 void TIM1_UP_IRQHandler(void)
 {
 

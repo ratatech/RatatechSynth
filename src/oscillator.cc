@@ -47,7 +47,7 @@ int16_t Oscillator::computeTriangle(void)
 	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT<<1))
 		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT<<1);
 
-	return (int16_t) arm_linear_interp_q15(tri_lut_q15,ph_ind_frac,SAMPLES_TRIANGLE);
+	return (int16_t) arm_linear_interp_q15(tri_lut_q15,ph_ind_frac,SAMPLES_TRIANGLE)<<8;
 
 }
 
