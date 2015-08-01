@@ -108,7 +108,7 @@ void GPIO_Conf_Init(void)
 
 	/* Configure PA0 PA1 pins as input floating */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -136,12 +136,12 @@ void ButtonsInitEXTI(void)
     NVIC_InitTypeDef NVIC_InitStructure;
     //GPIO structure used to initialize Button pins
     //Connect EXTI Lines to Button Pins
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_Pin_0);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_Pin_1);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_Pin_4);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_Pin_0);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_Pin_1);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_Pin_0);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource2);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
+
 
 
     //select EXTI line0
