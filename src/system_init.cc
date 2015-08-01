@@ -136,11 +136,11 @@ void ButtonsInitEXTI(void)
     NVIC_InitTypeDef NVIC_InitStructure;
     //GPIO structure used to initialize Button pins
     //Connect EXTI Lines to Button Pins
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource2);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource2);
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
 
 
 

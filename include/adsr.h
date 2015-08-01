@@ -25,8 +25,8 @@ class ADSREnv {
 
 		double attack;
 		double decay;
-		uint16_t sustain;
-		uint16_t release;
+		double sustain;
+		double release;
 		int16_t adsrAmp;
 		adsr_state adsr_st;
 		int32_t ph_inc_A;
@@ -34,6 +34,7 @@ class ADSREnv {
 		int32_t ph_inc_S;
 		int32_t ph_inc_R;
 		int32_t ph_ind;
+		int32_t decay_len;
 
 		int16_t env_up_lut_q15[SAMPLES_ENV_LUT] = {
 				0, 1024, 2048, 3072, 4096, 5120, 6144, 7168, 8192, 9216, 10240, 11264, 12288, 13312, 14336, 15360, 16384, 17408, 18432, 19456, 20480, 21504, 22528, 23552, 24576, 25600, 26624, 27648, 28672, 29696, 30720, 31744,
@@ -71,9 +72,14 @@ class ADSREnv {
 //		};
 		void calcAdsrSteps(void){
 			ph_inc_A = (int32_t)((((double)SAMPLES_ENV_LUT/(double)(FS*attack)))*1048576);
-			ph_inc_D = (int32_t)((((double)SAMPLES_ENV_LUT/(double)(FS*decay)))*1048576);
-			ph_inc_S = (int32_t)((((double)SAMPLES_ENV_LUT/(double)(FS*sustain)))*1048576);
-			ph_inc_R = (int32_t)((((double)SAMPLES_ENV_LUT/(double)(FS*release)))*1048576);
+
+			decay_len = (int64_t)((((double)SAMPLES_ENV_LUT*sustain))*1048576);
+
+			ph_inc_D = (int32_t)((((double)decay_len/(double)(FS*decay))));
+
+			int32_t release_len = (SAMPLES_ENV_LUT<<20)-decay_len;
+
+			ph_inc_R = (int32_t)((((double)(release_len)/(double)(FS*release))));
 
 		}
 
@@ -96,10 +102,9 @@ class ADSREnv {
 
 				case DECAY_STATE:
 
-				if (ph_ind>=(SAMPLES_ENV_LUT_20_BIT))
+				if (ph_ind>=(decay_len))
 				{
-					adsr_st = IDLE_STATE;
-					ph_ind = 0;
+					//adsr_st = SUSTAIN_STATE;
 					break;
 				}
 
@@ -109,8 +114,22 @@ class ADSREnv {
 				break;
 
 				case SUSTAIN_STATE:
+					//do nothing, wait the key to be released and jump to the next state
+					//trace_printf("SUSTAINEDDD!\n");
 				break;
+
 				case RELEASE_STATE:
+
+					if (ph_ind>=(SAMPLES_ENV_LUT_20_BIT))
+					{
+						adsr_st = IDLE_STATE;
+						ph_ind = 0;
+						break;
+					}
+					adsrAmp = (int16_t) arm_linear_interp_q15(env_down_lut_q15,ph_ind,NR_OF_SAMPLES);
+					ph_ind += ph_inc_R;
+
+
 				break;
 			}
 

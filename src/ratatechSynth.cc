@@ -48,6 +48,7 @@ uint16_t out_sample;
 int16_t envt;
 double env=0;
 bool status = true;
+bool keyPressed = false;
 int a = 0;
 double randNumA = 0;
 double randNumB = 0;
@@ -80,9 +81,13 @@ int main(void)
 	ButtonsInitEXTI();
 
 
-	//Trigger ADSR
-	envObj.attack =0.1;
-	envObj.decay = 0.5;
+	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
+	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
+	// amplitude of the sustain value.
+	envObj.attack =0.2;
+	envObj.decay = 0.4;
+	envObj.sustain = 1-0.5;
+	envObj.release = 0.3;
 	envObj.calcAdsrSteps();
 
 	/* Infinite loop */
@@ -126,7 +131,21 @@ inline void fill_buffer(void)
 				break;
 
 		}
+
+		//Read note button
+		if (keyPressed)
+		{
+			if (!ButtonRead(GPIOA, GPIO_Pin_0))
+			{
+				envObj.adsr_st = RELEASE_STATE;
+				keyPressed = false;
+			}
+
+		}
+
 		envObj.updateEnv();
+
+
 		//trace_printf("data val = %i\n",data);
 		envt = envObj.adsrAmp;
 		data_acc = ((int32_t)(data)*(envt)>>15);
@@ -141,6 +160,12 @@ inline void fill_buffer(void)
 	a = 0;
 	//trace_printf("WRITED\n");
 	//GPIOC->ODR ^= GPIO_Pin_7;
+}
+
+
+uint32_t ButtonRead(GPIO_TypeDef* Button_Port, uint16_t Button)
+{
+  return !GPIO_ReadInputDataBit(Button_Port, Button);
 }
 
 extern "C" {
@@ -173,6 +198,7 @@ void EXTI0_IRQHandler(void)
     {
     	//Set freq
     	osc.setFreqFrac(C4_Octave[0]);
+    	keyPressed = true;
 		envObj.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -193,6 +219,7 @@ void EXTI1_IRQHandler(void)
     {
     	//Set freq
     	osc.setFreqFrac(C4_Octave[2]);
+    	keyPressed = true;
 		envObj.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -213,6 +240,7 @@ void EXTI2_IRQHandler(void)
     {
     	//Set freq
     	osc.setFreqFrac(C4_Octave[4]);
+    	keyPressed = true;
 		envObj.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -233,6 +261,7 @@ void EXTI3_IRQHandler(void)
     {
     	//Set freq
     	osc.setFreqFrac(C4_Octave[5]);
+    	keyPressed = true;
 		envObj.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -253,6 +282,7 @@ void EXTI4_IRQHandler(void)
     {
     	//Set freq
     	osc.setFreqFrac(C4_Octave[7]);
+    	keyPressed = true;
 		envObj.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually

@@ -62,6 +62,7 @@
 
 
 void fill_buffer(void);
+uint32_t ButtonRead(GPIO_TypeDef*, uint16_t);
 
 extern "C" {
 
