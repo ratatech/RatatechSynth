@@ -34,12 +34,12 @@ uint16_t Oscillator::computeSine(int16_t adsrEnv)
 	uint16_t u_interpLut;
 
 	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
-		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
+	if (ph_ind_frac>=(LUT_SIN_20_BIT))
+		ph_ind_frac -= (LUT_SIN_20_BIT);
 
 
 	// Interpolate LUT
-	interpLut = arm_linear_interp_q15(sin_lut_q15,ph_ind_frac,NR_OF_SAMPLES)<<8;
+	interpLut = arm_linear_interp_q15((int16_t*)sin_lut_q15,ph_ind_frac,LUT_SIN_8_BIT)<<8;
 
 	// Modulate signal with the ADSR envelope
 	interpLut = ((int32_t)(interpLut)*(adsrEnv)>>15);
@@ -61,11 +61,11 @@ uint16_t Oscillator::computeTriangle(int16_t adsrEnv)
 	uint16_t u_interpLut;
 
 	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT<<1))
-		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT<<1);
+	if (ph_ind_frac>=(LUT_SIN_20_BIT<<1))
+		ph_ind_frac -= (LUT_SIN_20_BIT<<1);
 
 	// Interpolate LUT
-	interpLut = arm_linear_interp_q15(tri_lut_q15,ph_ind_frac,NR_OF_SAMPLES<<1)<<8;
+	interpLut = arm_linear_interp_q15((int16_t*)tri_lut_q15,ph_ind_frac,LUT_SIN_8_BIT<<1)<<8;
 
 	// Modulate signal with the ADSR envelope
 	interpLut = ((int32_t)(interpLut)*(adsrEnv)>>15);
@@ -89,9 +89,9 @@ uint16_t Oscillator::computeSaw(int16_t adsrEnv)
 
 	ph_ind_frac += ph_inc_frac;
 
-	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT>>1))
+	if (ph_ind_frac>=(LUT_SIN_20_BIT>>1))
 	{
-		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
+		ph_ind_frac -= (LUT_SIN_20_BIT);
 	}
 	saw_gen = ph_ind_frac>>12;
 
@@ -121,9 +121,9 @@ uint16_t Oscillator::computeSquare(int16_t adsrEnv)
 		sq_gen =  -128<<8;
 	}
 
-	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
+	if (ph_ind_frac>=(LUT_SIN_20_BIT))
 	{
-		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
+		ph_ind_frac -= (LUT_SIN_20_BIT);
 		top = !top;
 	}
 

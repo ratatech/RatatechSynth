@@ -26,13 +26,6 @@
 RCC_ClocksTypeDef RCC_Clocks;
 
 
-/**
-  * @brief   Main program
-  * @param  None
-  * @retval None
-  */
-
-
 using namespace std;
 
 #define DEBUG_AMP 32767
@@ -50,8 +43,7 @@ double env=0;
 bool status = true;
 bool keyPressed = false;
 int a = 0;
-double randNumA = 0;
-double randNumB = 0;
+bool low_rate_ISR_flag = false;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 
@@ -60,7 +52,7 @@ int main(void)
 
 	// Configure oscillator
 
-	osc_shape shape = SQU;
+	osc_shape shape = SIN;
 	//osc.setOscShape(shape);
 	osc.shape = shape;
 	osc.setFreqFrac(5000);
@@ -96,6 +88,24 @@ int main(void)
 	{
 		//trace_printf("MAIN a = %i\n",a);
 
+		if(low_rate_ISR_flag)
+		{
+			//Read note button
+			if (keyPressed)
+			{
+				if (!ButtonRead(GPIOA, GPIO_Pin_0))
+				{
+					adsrEnv.adsr_st = RELEASE_STATE;
+					keyPressed = false;
+				}
+
+			}
+
+			adsrEnv.updateEnv();
+
+			low_rate_ISR_flag = false;
+		}
+
 		fill_buffer();
 
 
@@ -114,20 +124,6 @@ inline void fill_buffer(void)
 {
 
 	while(out_buffer.check_status()){
-
-
-		//Read note button
-		if (keyPressed)
-		{
-			if (!ButtonRead(GPIOA, GPIO_Pin_0))
-			{
-				adsrEnv.adsr_st = RELEASE_STATE;
-				keyPressed = false;
-			}
-
-		}
-
-		adsrEnv.updateEnv();
 
 		// Get a new oscillator sample
 		switch (osc.shape)
@@ -191,7 +187,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(1000);
+    	osc.setFreqFrac(5000);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -341,7 +337,7 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 
-
+		low_rate_ISR_flag = true;
 		//Do something here
 
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
