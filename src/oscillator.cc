@@ -28,33 +28,64 @@ using namespace std;
 
 
 
-int16_t Oscillator::computeSine(void)
+uint16_t Oscillator::computeSine(int16_t adsrEnv)
 {
+	int32_t interpLut;
+	uint16_t u_interpLut;
 
 	ph_ind_frac += ph_inc_frac;
 	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
 		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 
-	return (int16_t) arm_linear_interp_q15(sin_lut_q15,ph_ind_frac,NR_OF_SAMPLES)<<8;
+
+	// Interpolate LUT
+	interpLut = arm_linear_interp_q15(sin_lut_q15,ph_ind_frac,NR_OF_SAMPLES)<<8;
+
+	// Modulate signal with the ADSR envelope
+	interpLut = ((int32_t)(interpLut)*(adsrEnv)>>15);
+
+	// Convert to unsigned
+	u_interpLut = int16_2_uint16(interpLut);
+
+	// Shift back to 12 bits required by the DAC
+	u_interpLut>>=4;
+
+	return u_interpLut;
 
 
 }
 
-int16_t Oscillator::computeTriangle(void)
+uint16_t Oscillator::computeTriangle(int16_t adsrEnv)
 {
+	int32_t interpLut;
+	uint16_t u_interpLut;
 
 	ph_ind_frac += ph_inc_frac;
 	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT<<1))
 		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT<<1);
 
-	return (int16_t) arm_linear_interp_q15(tri_lut_q15,ph_ind_frac,SAMPLES_TRIANGLE)<<8;
+	// Interpolate LUT
+	interpLut = arm_linear_interp_q15(tri_lut_q15,ph_ind_frac,NR_OF_SAMPLES<<1)<<8;
+
+	// Modulate signal with the ADSR envelope
+	interpLut = ((int32_t)(interpLut)*(adsrEnv)>>15);
+
+	// Convert to unsigned
+	u_interpLut = int16_2_uint16(interpLut);
+
+	// Shift back to 12 bits required by the DAC
+	u_interpLut>>=4;
+
+	return u_interpLut;
 
 }
 
 
 
-int16_t Oscillator::computeSaw(void)
+uint16_t Oscillator::computeSaw(int16_t adsrEnv)
 {
+	int32_t saw_gen;
+	uint16_t u_saw_gen;
 
 	ph_ind_frac += ph_inc_frac;
 
@@ -62,19 +93,32 @@ int16_t Oscillator::computeSaw(void)
 	{
 		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 	}
-	return (int16_t)(ph_ind_frac>>12);
+	saw_gen = ph_ind_frac>>12;
+
+	// Modulate signal with the ADSR envelope
+	saw_gen = ((int32_t)(saw_gen)*(adsrEnv)>>15);
+
+	// Convert to unsigned
+	u_saw_gen = int16_2_uint16(saw_gen);
+
+	// Shift back to 12 bits required by the DAC
+	u_saw_gen>>=4;
+
+	return u_saw_gen;
 }
-int16_t Oscillator::computeSquare(void)
+uint16_t Oscillator::computeSquare(int16_t adsrEnv)
 {
+	int32_t sq_gen;
+	uint16_t u_sq_gen;
 
 	ph_ind_frac += ph_inc_frac;
 
 	if(top)
 	{
-		square_out = 0x7FFF;
+		sq_gen = 0x7FFF;
 	}else
 	{
-		square_out =  -128<<8;
+		sq_gen =  -128<<8;
 	}
 
 	if (ph_ind_frac>=(NR_OF_SAMPLES_20_BIT))
@@ -82,6 +126,16 @@ int16_t Oscillator::computeSquare(void)
 		ph_ind_frac -= (NR_OF_SAMPLES_20_BIT);
 		top = !top;
 	}
-	return (int16_t)(square_out);
+
+	// Modulate signal with the ADSR envelope
+	sq_gen = ((int32_t)(sq_gen)*(adsrEnv)>>15);
+
+	// Convert to unsigned
+	u_sq_gen = int16_2_uint16(sq_gen);
+
+	// Shift back to 12 bits required by the DAC
+	u_sq_gen>>=4;
+
+	return u_sq_gen;
 
 }

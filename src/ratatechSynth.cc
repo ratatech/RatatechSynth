@@ -35,11 +35,11 @@ RCC_ClocksTypeDef RCC_Clocks;
 
 using namespace std;
 
-
+#define DEBUG_AMP 32767
 
 Oscillator osc;
 CircularBuffer out_buffer;
-ADSREnv envObj;
+ADSREnv adsrEnv;
 
 int16_t data;
 int32_t data_acc;
@@ -60,9 +60,10 @@ int main(void)
 
 	// Configure oscillator
 
-	osc_shape shape = SIN;
-	osc.setOscShape(shape);
-	osc.setFreqFrac(100);
+	osc_shape shape = SQU;
+	//osc.setOscShape(shape);
+	osc.shape = shape;
+	osc.setFreqFrac(5000);
 
 
 	SystemInit();
@@ -84,11 +85,11 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	envObj.attack =0.2;
-	envObj.decay = 0.4;
-	envObj.sustain = 1-0.5;
-	envObj.release = 0.3;
-	envObj.calcAdsrSteps();
+	adsrEnv.attack =0.2;
+	adsrEnv.decay = 0.4;
+	adsrEnv.sustain = 1-0.5;
+	adsrEnv.release = 0.3;
+	adsrEnv.calcAdsrSteps();
 
 	/* Infinite loop */
 	while(1)
@@ -104,62 +105,55 @@ int main(void)
 }
 
 
-
+/** Fill the main buffer containing the output audio samples
+ *
+ * @param void
+ * @return void
+ */
 inline void fill_buffer(void)
 {
 
 	while(out_buffer.check_status()){
 
 
-		// Get a new oscillator sample
-		switch (osc.shape)
-		{
-			case SIN:
-				data = osc.computeSine();
-				break;
-
-			case SQU:
-				data = osc.computeSquare();
-				break;
-
-			case SAW:
-				data = osc.computeSaw();
-				break;
-
-			case TRI:
-				data = osc.computeTriangle();
-				break;
-
-		}
-
 		//Read note button
 		if (keyPressed)
 		{
 			if (!ButtonRead(GPIOA, GPIO_Pin_0))
 			{
-				envObj.adsr_st = RELEASE_STATE;
+				adsrEnv.adsr_st = RELEASE_STATE;
 				keyPressed = false;
 			}
 
 		}
 
-		envObj.updateEnv();
+		adsrEnv.updateEnv();
 
+		// Get a new oscillator sample
+		switch (osc.shape)
+		{
+			case SIN:
+				u_data = osc.computeSine(adsrEnv.adsrAmp);
+				break;
 
-		//trace_printf("data val = %i\n",data);
-		envt = envObj.adsrAmp;
-		data_acc = ((int32_t)(data)*(envt)>>15);
-		//trace_printf("envt = %i\n",envt);
-		u_data = int16_2_uint16(data_acc);
-		//trace_printf("u_data val = %i\n",u_data>>8);
-		u_data>>=4;
-		//data = (uint16_t)(data*env);
+			case SQU:
+				u_data = osc.computeSquare(adsrEnv.adsrAmp);
+				break;
+
+			case SAW:
+				u_data = osc.computeSaw(adsrEnv.adsrAmp);
+				break;
+
+			case TRI:
+				u_data = osc.computeTriangle(adsrEnv.adsrAmp);
+				break;
+
+		}
+
 		status = out_buffer.write(u_data);
 
 	}
-	a = 0;
-	//trace_printf("WRITED\n");
-	//GPIOC->ODR ^= GPIO_Pin_7;
+
 }
 
 
@@ -197,9 +191,9 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(C4_Octave[0]);
+    	osc.setFreqFrac(1000);
     	keyPressed = true;
-		envObj.adsr_st = ATTACK_STATE;
+		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line0);
@@ -220,7 +214,7 @@ void EXTI1_IRQHandler(void)
     	//Set freq
     	osc.setFreqFrac(C4_Octave[2]);
     	keyPressed = true;
-		envObj.adsr_st = ATTACK_STATE;
+		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line1);
@@ -241,7 +235,7 @@ void EXTI2_IRQHandler(void)
     	//Set freq
     	osc.setFreqFrac(C4_Octave[4]);
     	keyPressed = true;
-		envObj.adsr_st = ATTACK_STATE;
+		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line2);
@@ -262,7 +256,7 @@ void EXTI3_IRQHandler(void)
     	//Set freq
     	osc.setFreqFrac(C4_Octave[5]);
     	keyPressed = true;
-		envObj.adsr_st = ATTACK_STATE;
+		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line3);
@@ -283,7 +277,7 @@ void EXTI4_IRQHandler(void)
     	//Set freq
     	osc.setFreqFrac(C4_Octave[7]);
     	keyPressed = true;
-		envObj.adsr_st = ATTACK_STATE;
+		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line4);
@@ -305,7 +299,7 @@ void EXTI4_IRQHandler(void)
 //    {
 //    	//Set freq
 //    	osc.setFreqFrac(C4_Octave[9]);
-//		envObj.adsr_st = ATTACK_STATE;
+//		adsrEnv.adsr_st = ATTACK_STATE;
 //    }
 //    //we need to clear line pending bit manually
 //    EXTI_ClearITPendingBit(EXTI_Line5);
@@ -325,7 +319,7 @@ void EXTI4_IRQHandler(void)
 //    {
 //    	//Set freq
 //    	osc.setFreqFrac(C4_Octave[10]);
-//		envObj.adsr_st = ATTACK_STATE;
+//		adsrEnv.adsr_st = ATTACK_STATE;
 //    }
 //    //we need to clear line pending bit manually
 //    EXTI_ClearITPendingBit(EXTI_Line6);

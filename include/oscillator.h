@@ -15,7 +15,16 @@
 #include <math.h>
 
 
-
+/**
+BABLALBALBALBL
+ABABABA
+BABAB
+BABABA
+@todo BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+@note BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+@section BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+*/
 class Oscillator {
 
 	public:
@@ -100,7 +109,9 @@ class Oscillator {
                 -10, -9, -8, -7, -6, -5, -4, -3, -2, -1
 		};
 
-		// Set oscillator frequency in Hz for a fractional and integer phase increment
+		/** BLALALALALALAFAFDDFAF
+		@param frequency FADFADFADFDFD
+		*/
 		void setFreqFrac(double freqHz)
 		{
 			ph_inc_frac = (int32_t)((((double)NR_OF_SAMPLES/(double)FS)*freqHz)*1048576);
@@ -133,55 +144,54 @@ class Oscillator {
 		}
 
 
-		// Set oscillator shape
-		void setOscShape(osc_shape shape_type)
-		{
-			shape = shape_type;
+//		// Set oscillator shape
+//		void setOscShape(osc_shape shape_type)
+//		{
+//			shape = shape_type;
+//
+//			switch (shape_type)
+//			{
+//
+//			// Sinusoidal shape
+//			case SIN:
+//
+//				// Store address of the sinus wavetable
+//				wavetable = sin_lut;
+//
+//
+//
+//			break;
+//
+//			// Square shape
+//			case SQU:
+//
+//				// Store address of the square wavetable
+//				squareTop = 0xFF;
+//			break;
+//
+//			// Sawtooth shape
+//			case SAW:
+//
+//				// Store address of the sawtooth wavetable
+//				sawTop = 0xFF;
+//			break;
+//
+//			// Triangle shape
+//			case TRI:
+//				//wavetable = tri_lut;
+//
+//			break;
+//			}
+//
+//		}
 
-			switch (shape_type)
-			{
-
-			// Sinusoidal shape
-			case SIN:
-
-				// Store address of the sinus wavetable
-				wavetable = sin_lut;
-
-
-
-			break;
-
-			// Square shape
-			case SQU:
-
-				// Store address of the square wavetable
-				squareTop = 0xFF;
-			break;
-
-			// Sawtooth shape
-			case SAW:
-
-				// Store address of the sawtooth wavetable
-				sawTop = 0xFF;
-			break;
-
-			// Triangle shape
-			case TRI:
-				//wavetable = tri_lut;
-
-			break;
-			}
-
-		}
-
-		// updateOsc function prototype
+		// Function prototypes
 		uint16_t updateOsc(void);
-		int16_t computeSine(void);
-		int16_t computeSquare(void);
-		int16_t computeTriangle(void);
-		int16_t computeSaw(void);
-		int16_t computeSine_arm_interp(void);
-		int16_t computeTriangle_arm_interp(void);
+		uint16_t computeSine(int16_t);
+		uint16_t computeSquare(int16_t);
+		uint16_t computeTriangle(int16_t);
+		uint16_t computeSaw(int16_t);
+
 
 };
 
