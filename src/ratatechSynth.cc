@@ -30,9 +30,14 @@ using namespace std;
 
 #define DEBUG_AMP 32767
 
+// Object instances
 Oscillator osc;
 CircularBuffer out_buffer;
 ADSREnv adsrEnv;
+LFO lfo;
+
+// Structure instances
+amp_mod_t amp_mod;
 
 int16_t data;
 int32_t data_acc;
@@ -52,10 +57,13 @@ int main(void)
 
 	// Configure oscillator
 
-	osc_shape shape = SIN;
+	osc_shape shape_osc = SAW;
+	osc_shape shape_lfo = SAW;
 	//osc.setOscShape(shape);
-	osc.shape = shape;
-	osc.setFreqFrac(5000);
+	osc.shape = shape_osc;
+	lfo.shape = shape_lfo;
+	lfo.setFreqFrac(0.1);
+	osc.setFreqFrac(1800);
 
 
 	SystemInit();
@@ -101,7 +109,8 @@ int main(void)
 
 			}
 
-			adsrEnv.updateEnv();
+			adsrEnv.update(&amp_mod);
+			lfo.update(&amp_mod);
 
 			low_rate_ISR_flag = false;
 		}
@@ -125,34 +134,18 @@ inline void fill_buffer(void)
 
 	while(out_buffer.check_status()){
 
-		// Get a new oscillator sample
-		switch (osc.shape)
-		{
-			case SIN:
-				u_data = osc.computeSine(adsrEnv.adsrAmp);
-				break;
-
-			case SQU:
-				u_data = osc.computeSquare(adsrEnv.adsrAmp);
-				break;
-
-			case SAW:
-				u_data = osc.computeSaw(adsrEnv.adsrAmp);
-				break;
-
-			case TRI:
-				u_data = osc.computeTriangle(adsrEnv.adsrAmp);
-				break;
-
-		}
-
-		status = out_buffer.write(u_data);
+		status = out_buffer.write(osc.update(&amp_mod));
 
 	}
 
 }
 
-
+/** Read if a buton is active or not
+ *
+ * @param Buttton_port Selected port
+ * @param Buttton  Button number
+ * @return void
+ */
 uint32_t ButtonRead(GPIO_TypeDef* Button_Port, uint16_t Button)
 {
   return !GPIO_ReadInputDataBit(Button_Port, Button);
@@ -187,7 +180,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(5000);
+    	osc.setFreqFrac(600);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -218,8 +211,8 @@ void EXTI1_IRQHandler(void)
 
 /**
   * @brief  This function handles External Interrupt 2 Handler.
-  * @param  None
-  * @retval None
+  * @param  void
+  * @retval void
   */
 void EXTI2_IRQHandler(void)
 {

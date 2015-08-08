@@ -23,7 +23,7 @@ class ADSREnv {
 		double decay;
 		double sustain;
 		double release;
-		int16_t adsrAmp;
+		int16_t adsr_amp;
 		adsr_state adsr_st;
 		int32_t ph_inc_A;
 		int32_t ph_inc_D;
@@ -34,19 +34,19 @@ class ADSREnv {
 
 
 		void calcAdsrSteps(void){
-			ph_inc_A = (int32_t)((((double)LUT_ENV_5_BIT/(double)(ISR_LOW_RATE*attack)))*1048576);
+			ph_inc_A = (int32_t)((((double)LUT_ENV_5_BIT/(double)(CONTROL_RATE*attack)))*1048576);
 
 			decay_len = (int64_t)((((double)LUT_ENV_5_BIT*sustain))*1048576);
 
-			ph_inc_D = (int32_t)((((double)decay_len/(double)(ISR_LOW_RATE*decay))));
+			ph_inc_D = (int32_t)((((double)decay_len/(double)(CONTROL_RATE*decay))));
 
 			int32_t release_len = (LUT_ENV_5_BIT<<20)-decay_len;
 
-			ph_inc_R = (int32_t)((((double)(release_len)/(double)(ISR_LOW_RATE*release))));
+			ph_inc_R = (int32_t)((((double)(release_len)/(double)(CONTROL_RATE*release))));
 
 		}
 
-		void updateEnv(void){
+		void update(amp_mod_t *amp_mod){
 
 			switch (adsr_st)
 			{
@@ -59,7 +59,7 @@ class ADSREnv {
 
 				}
 				ph_ind += ph_inc_A;
-				adsrAmp = (int16_t) arm_linear_interp_q15((int16_t*)env_up_lut_q15,ph_ind,LUT_ENV_5_BIT);
+				adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_up_lut_q15,ph_ind,LUT_ENV_5_BIT);
 
 				break;
 
@@ -72,7 +72,7 @@ class ADSREnv {
 				}
 
 				ph_ind += ph_inc_D;
-				adsrAmp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
+				adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
 
 				break;
 
@@ -87,14 +87,16 @@ class ADSREnv {
 					{
 						adsr_st = IDLE_STATE;
 						ph_ind = 0;
+						adsr_amp = 0;
 						break;
 					}
-					adsrAmp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
+					adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
 					ph_ind += ph_inc_R;
 
 
 				break;
 			}
+			amp_mod->adsr_amp = adsr_amp;
 
 
 		}

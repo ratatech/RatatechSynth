@@ -93,53 +93,12 @@ class Oscillator {
 		}
 
 
-//		// Set oscillator shape
-//		void setOscShape(osc_shape shape_type)
-//		{
-//			shape = shape_type;
-//
-//			switch (shape_type)
-//			{
-//
-//			// Sinusoidal shape
-//			case SIN:
-//
-//				// Store address of the sinus wavetable
-//				wavetable = sin_lut;
-//
-//
-//
-//			break;
-//
-//			// Square shape
-//			case SQU:
-//
-//				// Store address of the square wavetable
-//				squareTop = 0xFF;
-//			break;
-//
-//			// Sawtooth shape
-//			case SAW:
-//
-//				// Store address of the sawtooth wavetable
-//				sawTop = 0xFF;
-//			break;
-//
-//			// Triangle shape
-//			case TRI:
-//				//wavetable = tri_lut;
-//
-//			break;
-//			}
-//
-//		}
-
 		// Function prototypes
-		uint16_t updateOsc(void);
-		uint16_t computeSine(int16_t);
-		uint16_t computeSquare(int16_t);
-		uint16_t computeTriangle(int16_t);
-		uint16_t computeSaw(int16_t);
+		uint16_t update(amp_mod_t *amp_mod);
+		uint16_t computeSine(amp_mod_t *amp_mod);
+		uint16_t computeSquare(amp_mod_t *amp_mod);
+		uint16_t computeTriangle(amp_mod_t *amp_mod);
+		uint16_t computeSaw(amp_mod_t *amp_mod);
 
 
 };

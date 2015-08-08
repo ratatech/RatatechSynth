@@ -53,6 +53,7 @@
 #include "circular_buffer.h"
 #include "adsr.h"
 #include "utils.h"
+#include "lfo.h"
 #include "diag/Trace.h"
 #include <stdint.h>
 #include <stdio.h>

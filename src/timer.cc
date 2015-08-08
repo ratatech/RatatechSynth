@@ -42,7 +42,7 @@ void TIM_Config(void)
 	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
 	timerInitStructure.TIM_ClockDivision = 0;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = SystemCoreClock/ISR_LOW_RATE;
+	timerInitStructure.TIM_Period = SystemCoreClock/CONTROL_RATE;
 	timerInitStructure.TIM_Prescaler = 0;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);

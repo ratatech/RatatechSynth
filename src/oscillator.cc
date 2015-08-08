@@ -28,7 +28,7 @@ using namespace std;
 
 
 
-uint16_t Oscillator::computeSine(int16_t adsrEnv)
+uint16_t Oscillator::computeSine(amp_mod_t *amp_mod)
 {
 	int32_t interpLut;
 	uint16_t u_interpLut;
@@ -42,7 +42,10 @@ uint16_t Oscillator::computeSine(int16_t adsrEnv)
 	interpLut = arm_linear_interp_q15((int16_t*)sin_lut_q15,ph_ind_frac,LUT_SIN_8_BIT)<<8;
 
 	// Modulate signal with the ADSR envelope
-	interpLut = ((int32_t)(interpLut)*(adsrEnv)>>15);
+	interpLut = ((int32_t)(interpLut)*(amp_mod->adsr_amp)>>15);
+
+	// Modulate signal with the LFO
+	interpLut = ((int32_t)(interpLut)*(amp_mod->lfo_amp)>>15);
 
 	// Convert to unsigned
 	u_interpLut = int16_2_uint16(interpLut);
@@ -55,7 +58,7 @@ uint16_t Oscillator::computeSine(int16_t adsrEnv)
 
 }
 
-uint16_t Oscillator::computeTriangle(int16_t adsrEnv)
+uint16_t Oscillator::computeTriangle(amp_mod_t *amp_mod)
 {
 	int32_t interpLut;
 	uint16_t u_interpLut;
@@ -68,7 +71,10 @@ uint16_t Oscillator::computeTriangle(int16_t adsrEnv)
 	interpLut = arm_linear_interp_q15((int16_t*)tri_lut_q15,ph_ind_frac,LUT_SIN_8_BIT<<1)<<8;
 
 	// Modulate signal with the ADSR envelope
-	interpLut = ((int32_t)(interpLut)*(adsrEnv)>>15);
+	//interpLut = ((int32_t)(interpLut)*(amp_mod->adsr_amp)>>15);
+
+	// Modulate signal with the LFO
+	//interpLut = ((int32_t)(interpLut)*(amp_mod->lfo_amp)>>15);
 
 	// Convert to unsigned
 	u_interpLut = int16_2_uint16(interpLut);
@@ -82,31 +88,36 @@ uint16_t Oscillator::computeTriangle(int16_t adsrEnv)
 
 
 
-uint16_t Oscillator::computeSaw(int16_t adsrEnv)
+uint16_t Oscillator::computeSaw(amp_mod_t *amp_mod)
 {
-	int32_t saw_gen;
-	uint16_t u_saw_gen;
+
+	int32_t interpLut;
+	uint16_t u_interpLut;
 
 	ph_ind_frac += ph_inc_frac;
-
-	if (ph_ind_frac>=(LUT_SIN_20_BIT>>1))
-	{
+	if (ph_ind_frac>=(LUT_SIN_20_BIT))
 		ph_ind_frac -= (LUT_SIN_20_BIT);
-	}
-	saw_gen = ph_ind_frac>>12;
+
+
+	// Interpolate LUT
+	interpLut = arm_linear_interp_q15((int16_t*)saw_lut_q15,ph_ind_frac,LUT_SIN_8_BIT)<<8;
 
 	// Modulate signal with the ADSR envelope
-	saw_gen = ((int32_t)(saw_gen)*(adsrEnv)>>15);
+	interpLut = ((int32_t)(interpLut)*(amp_mod->adsr_amp)>>15);
+
+	// Modulate signal with the LFO
+	interpLut = ((int32_t)(interpLut)*(amp_mod->lfo_amp)>>15);
 
 	// Convert to unsigned
-	u_saw_gen = int16_2_uint16(saw_gen);
+	u_interpLut = int16_2_uint16(interpLut);
 
 	// Shift back to 12 bits required by the DAC
-	u_saw_gen>>=4;
+	u_interpLut>>=4;
 
-	return u_saw_gen;
+	return u_interpLut;
 }
-uint16_t Oscillator::computeSquare(int16_t adsrEnv)
+
+uint16_t Oscillator::computeSquare(amp_mod_t *amp_mod)
 {
 	int32_t sq_gen;
 	uint16_t u_sq_gen;
@@ -128,7 +139,10 @@ uint16_t Oscillator::computeSquare(int16_t adsrEnv)
 	}
 
 	// Modulate signal with the ADSR envelope
-	sq_gen = ((int32_t)(sq_gen)*(adsrEnv)>>15);
+	sq_gen = ((int32_t)(sq_gen)*(amp_mod->adsr_amp)>>15);
+
+	// Modulate signal with the LFO
+	sq_gen = ((int32_t)(sq_gen)*(amp_mod->lfo_amp)>>15);
 
 	// Convert to unsigned
 	u_sq_gen = int16_2_uint16(sq_gen);
@@ -138,4 +152,31 @@ uint16_t Oscillator::computeSquare(int16_t adsrEnv)
 
 	return u_sq_gen;
 
+}
+
+uint16_t Oscillator::update(amp_mod_t *amp_mod)
+{
+	uint16_t u_data;
+
+	// Get a new oscillator sample
+	switch (shape)
+	{
+		case SIN:
+			u_data = Oscillator::computeSine(amp_mod);
+			break;
+
+		case SQU:
+			u_data = Oscillator::computeSquare(amp_mod);
+			break;
+
+		case SAW:
+			u_data = Oscillator::computeSaw(amp_mod);
+			break;
+
+		case TRI:
+			u_data = Oscillator::computeTriangle(amp_mod);
+			break;
+
+	}
+	return u_data;
 }

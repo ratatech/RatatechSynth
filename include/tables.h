@@ -21,6 +21,7 @@
 
 extern const int16_t sin_lut_q15[LUT_SIN_8_BIT];
 extern const int16_t tri_lut_q15[LUT_TRI_8_BIT];
+extern const int16_t saw_lut_q15[LUT_TRI_8_BIT];
 extern const int16_t env_up_lut_q15[LUT_ENV_5_BIT];
 extern const int16_t env_down_lut_q15[LUT_ENV_5_BIT];
 extern const int16_t sin_lut_lfo[LUT_ENV_5_BIT];
