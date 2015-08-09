@@ -33,7 +33,7 @@ class Oscillator {
 		uint16_t phaseInc;
 		uint16_t K;
 		double KFrac;
-		const char *wavetable;
+		const int16_t *wavetable;
 		uint16_t tableShift;
 		double sampleDebug;
 		double sampleDebug2;
@@ -45,7 +45,7 @@ class Oscillator {
 		uint16_t triangleMax;
 		uint16_t sawTop;
 		uint16_t squareTop;
-		osc_shape shape;
+		osc_shape_t shape;
 
 
 		int32_t ph_inc_frac;
@@ -69,36 +69,41 @@ class Oscillator {
 
 			if(shape == TRI)
 			{
-				ph_inc_frac = (int32_t)((((double)LUT_TRI_8_BIT/(double)FS)*freqHz)*1048576);
+				ph_inc_frac = (int32_t)((((double)LUT_TRI_8_BIT/(double)FS)*(freqHz/2))*1048576);
 				k_frac = ph_inc_frac & 0xFFFFF;
 
-
 			}
 
-			if(shape == SAW)
+		}
+		/** BLALALALALALAFAFDDFAF
+		@param frequency FADFADFADFDFD
+		*/
+		void set_shape(osc_shape_t _shape)
+		{
+			switch(_shape)
 			{
-				phaseIncFrac = (((double)(sawTop)/(double)FS)*freqHz*2);
-				phaseInc = floor(phaseIncFrac);
-				KFrac = phaseIncFrac - phaseInc;
-				K = round(KFrac*(sawTop<<1)); // round or floor? needs to be tested
+				case SIN:
+					wavetable = sin_lut_q15;
+				break;
 
-			}
-			if(shape == SQU)
-			{
-				phaseIncFrac = (((double)(squareTop)/(double)FS)*freqHz*2);
-				phaseInc = floor(phaseIncFrac);
-				phaseInd = squareTop;
+				case TRI:
+					wavetable = tri_lut_q15;
+				break;
 
+				case SAW:
+					wavetable = saw_lut_q15;
+				break;
+
+				case SQU:
+					wavetable = square_lut_q15;
+				break;
 			}
+
+
 		}
 
-
 		// Function prototypes
-		uint16_t update(amp_mod_t *amp_mod);
-		uint16_t computeSine(amp_mod_t *amp_mod);
-		uint16_t computeSquare(amp_mod_t *amp_mod);
-		uint16_t computeTriangle(amp_mod_t *amp_mod);
-		uint16_t computeSaw(amp_mod_t *amp_mod);
+		uint16_t compute_osc(amp_mod_t *amp_mod);
 
 
 };

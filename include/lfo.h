@@ -30,13 +30,14 @@ class LFO {
 
 
 
-	    osc_shape shape;
+	    osc_shape_t shape;
 		int32_t ph_inc_frac;
 		int32_t ph_ind_frac;
 		int32_t ph_inc;
 		int32_t ph_ind;
 		int32_t k_frac;
 		int32_t lfo_amp = 0;
+		int32_t lfo_amo = 0;
 
 		bool top;
 

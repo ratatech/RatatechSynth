@@ -57,13 +57,17 @@ int main(void)
 
 	// Configure oscillator
 
-	osc_shape shape_osc = SAW;
-	osc_shape shape_lfo = SAW;
-	//osc.setOscShape(shape);
+	osc_shape_t shape_osc = SAW;
+	osc_shape_t shape_lfo = SAW;
+	osc.set_shape(shape_osc);
 	osc.shape = shape_osc;
 	lfo.shape = shape_lfo;
-	lfo.setFreqFrac(0.1);
-	osc.setFreqFrac(1800);
+//	lfo.lfo_amo = 0x7FFF;
+//	lfo.lfo_amo = 0x4000;
+//	lfo.lfo_amo = 0x2000;
+	lfo.lfo_amo = 0xA;
+	lfo.setFreqFrac(10);
+	osc.setFreqFrac(17000);
 
 
 	SystemInit();
@@ -134,7 +138,7 @@ inline void fill_buffer(void)
 
 	while(out_buffer.check_status()){
 
-		status = out_buffer.write(osc.update(&amp_mod));
+		status = out_buffer.write(osc.compute_osc(&amp_mod));
 
 	}
 
