@@ -27,7 +27,7 @@
 using namespace std;
 
 
-uint16_t Oscillator::compute_osc(amp_mod_t *amp_mod)
+uint16_t Oscillator::compute_osc(synth_params_t *synth_params)
 {
 	int32_t interp_lut,interp_lut_temp;
 	uint16_t u_interp_lut;
@@ -42,13 +42,13 @@ uint16_t Oscillator::compute_osc(amp_mod_t *amp_mod)
 
 	// Modulate signal with the LFO
 	interp_lut_temp = interp_lut;
-	interp_lut = ((int32_t)(interp_lut)*(amp_mod->lfo_amp)>>15);
+	interp_lut = ((int32_t)(interp_lut)*(synth_params->lfo_amp)>>15);
 
 	// Mix LFO with amount parameter
-	interp_lut = interp_lut + ((int32_t)(interp_lut_temp)*(0x7FFF - amp_mod->lfo_amo)>>15);
+	interp_lut = interp_lut + ((int32_t)(interp_lut_temp)*(0x7FFF - synth_params->lfo_amo)>>15);
 
 	// Modulate signal with the ADSR envelope
-	interp_lut = ((int32_t)(interp_lut)*(amp_mod->adsr_amp)>>15);
+	interp_lut = ((int32_t)(interp_lut)*(synth_params->adsr_amp)>>15);
 
 	// Convert to unsigned
 	u_interp_lut = int16_2_uint16(interp_lut);

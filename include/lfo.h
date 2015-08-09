@@ -59,7 +59,7 @@ class LFO {
 
 
 		// Function prototypes
-		void update(amp_mod_t*);
+		void update(synth_params_t*);
 		void compute_lfo_Sine(void);
 		void compute_lfo_Square(void);
 		void compute_lfo_Triangle(void);

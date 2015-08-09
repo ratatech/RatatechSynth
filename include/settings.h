@@ -15,10 +15,11 @@
 
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 
-struct amp_mod_t{
+struct synth_params_t{
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	int16_t adsr_amp;
+	uint16_t osc_mix;
 };
 
 #endif /* INCLUDE_SETTINGS_H_ */

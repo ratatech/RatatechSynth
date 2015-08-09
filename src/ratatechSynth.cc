@@ -31,13 +31,13 @@ using namespace std;
 #define DEBUG_AMP 32767
 
 // Object instances
-Oscillator osc;
+Oscillator osc1,osc2;
 CircularBuffer out_buffer;
 ADSREnv adsrEnv;
 LFO lfo;
 
 // Structure instances
-amp_mod_t amp_mod;
+synth_params_t synth_params;
 
 int16_t data;
 int32_t data_acc;
@@ -55,19 +55,27 @@ uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 int main(void)
 	{
 
-	// Configure oscillator
-
-	osc_shape_t shape_osc = SAW;
+	// Configure lfo
 	osc_shape_t shape_lfo = SAW;
-	osc.set_shape(shape_osc);
-	osc.shape = shape_osc;
 	lfo.shape = shape_lfo;
 //	lfo.lfo_amo = 0x7FFF;
-//	lfo.lfo_amo = 0x4000;
+	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
-	lfo.lfo_amo = 0xA;
-	lfo.setFreqFrac(10);
-	osc.setFreqFrac(17000);
+//	lfo.lfo_amo = 0xA;
+	lfo.setFreqFrac(2);
+
+	// Configure oscillator 1
+	osc_shape_t shape_osc1 = SIN;
+	osc1.set_shape(shape_osc1);
+	osc1.setFreqFrac(100);
+
+	// Configure oscillator 2
+	osc_shape_t shape_osc2 = SAW;
+	osc2.set_shape(shape_osc2);
+	osc2.setFreqFrac(232);
+
+	// Mix Parameter between osc1 and osc2
+	synth_params.osc_mix = 32768;
 
 
 	SystemInit();
@@ -113,8 +121,8 @@ int main(void)
 
 			}
 
-			adsrEnv.update(&amp_mod);
-			lfo.update(&amp_mod);
+			adsrEnv.update(&synth_params);
+			lfo.update(&synth_params);
 
 			low_rate_ISR_flag = false;
 		}
@@ -135,10 +143,16 @@ int main(void)
  */
 inline void fill_buffer(void)
 {
-
+	uint32_t osc_mix,osc_mix_temp;
 	while(out_buffer.check_status()){
 
-		status = out_buffer.write(osc.compute_osc(&amp_mod));
+		osc_mix = osc1.compute_osc(&synth_params);
+		osc_mix = ((uint32_t)(osc_mix)*(synth_params.osc_mix)>>16);
+		osc_mix_temp = osc_mix;
+		osc_mix = osc2.compute_osc(&synth_params);
+		osc_mix = ((uint32_t)(osc_mix)*(0xFFFF-synth_params.osc_mix)>>16);
+		osc_mix += osc_mix_temp;
+		status = out_buffer.write(osc_mix);
 
 	}
 
@@ -184,7 +198,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(600);
+    	osc1.setFreqFrac(600);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -205,7 +219,7 @@ void EXTI1_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line1) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(C4_Octave[2]);
+    	osc1.setFreqFrac(C4_Octave[2]);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -226,7 +240,7 @@ void EXTI2_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line2) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(C4_Octave[4]);
+    	osc1.setFreqFrac(C4_Octave[4]);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -247,7 +261,7 @@ void EXTI3_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line3) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(C4_Octave[5]);
+    	osc1.setFreqFrac(C4_Octave[5]);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -268,7 +282,7 @@ void EXTI4_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line4) != RESET)
     {
     	//Set freq
-    	osc.setFreqFrac(C4_Octave[7]);
+    	osc1.setFreqFrac(C4_Octave[7]);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
@@ -291,7 +305,7 @@ void EXTI4_IRQHandler(void)
 //    if(EXTI_GetITStatus(EXTI_Line5) != RESET)
 //    {
 //    	//Set freq
-//    	osc.setFreqFrac(C4_Octave[9]);
+//    	osc1.setFreqFrac(C4_Octave[9]);
 //		adsrEnv.adsr_st = ATTACK_STATE;
 //    }
 //    //we need to clear line pending bit manually
@@ -311,7 +325,7 @@ void EXTI4_IRQHandler(void)
 //    if(EXTI_GetITStatus(EXTI_Line6) != RESET)
 //    {
 //    	//Set freq
-//    	osc.setFreqFrac(C4_Octave[10]);
+//    	osc1.setFreqFrac(C4_Octave[10]);
 //		adsrEnv.adsr_st = ATTACK_STATE;
 //    }
 //    //we need to clear line pending bit manually

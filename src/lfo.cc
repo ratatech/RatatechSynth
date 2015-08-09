@@ -72,7 +72,7 @@ void LFO::compute_lfo_Saw(void)
 }
 
 
-void LFO::update(amp_mod_t *amp_mod)
+void LFO::update(synth_params_t *synth_params)
 {
 
 	// Get a new oscillator sample
@@ -92,7 +92,7 @@ void LFO::update(amp_mod_t *amp_mod)
 
 	}
 
-	amp_mod->lfo_amp = lfo_amp;
-	amp_mod->lfo_amo = lfo_amo;
+	synth_params->lfo_amp = lfo_amp;
+	synth_params->lfo_amo = lfo_amo;
 
 }

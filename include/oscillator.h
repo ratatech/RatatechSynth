@@ -80,6 +80,7 @@ class Oscillator {
 		*/
 		void set_shape(osc_shape_t _shape)
 		{
+			shape = _shape;
 			switch(_shape)
 			{
 				case SIN:
@@ -103,7 +104,7 @@ class Oscillator {
 		}
 
 		// Function prototypes
-		uint16_t compute_osc(amp_mod_t *amp_mod);
+		uint16_t compute_osc(synth_params_t *synth_params);
 
 
 };

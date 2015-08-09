@@ -46,7 +46,7 @@ class ADSREnv {
 
 		}
 
-		void update(amp_mod_t *amp_mod){
+		void update(synth_params_t *synth_params){
 
 			switch (adsr_st)
 			{
@@ -96,7 +96,7 @@ class ADSREnv {
 
 				break;
 			}
-			amp_mod->adsr_amp = adsr_amp;
+			synth_params->adsr_amp = adsr_amp;
 
 
 		}
