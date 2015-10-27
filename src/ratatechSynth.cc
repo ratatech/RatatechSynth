@@ -56,23 +56,23 @@ int main(void)
 	{
 
 	// Configure lfo
-	osc_shape_t shape_lfo = SAW;
+	osc_shape_t shape_lfo = TRI;
 	lfo.shape = shape_lfo;
-//	lfo.lfo_amo = 0x7FFF;
-	lfo.lfo_amo = 0x4000;
+	lfo.lfo_amo = 0x7FFF;
+//	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
-	lfo.setFreqFrac(2);
+	lfo.setFreqFrac(4);
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SIN;
+	osc_shape_t shape_osc1 = TRI;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(100);
+	osc1.setFreqFrac(60);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = TRI;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(232);
+	osc2.setFreqFrac(60);
 
 	// Mix Parameter between osc1 and osc2
 	synth_params.osc_mix = 32768;
@@ -110,14 +110,16 @@ int main(void)
 
 		if(low_rate_ISR_flag)
 		{
-			//Read note button
-			if (keyPressed)
-			{
-				if (!ButtonRead(GPIOA, GPIO_Pin_0))
-				{
-					adsrEnv.adsr_st = RELEASE_STATE;
-					keyPressed = false;
-				}
+
+// Temporary disabled to stay at sustain level all the time
+//			//Read note button
+//			if (keyPressed)
+//			{
+//				if (!ButtonRead(GPIOA, GPIO_Pin_0))
+//				{
+//					adsrEnv.adsr_st = RELEASE_STATE;
+//					keyPressed = false;
+//				}
 
 			}
 
@@ -198,7 +200,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc1.setFreqFrac(600);
+    	osc1.setFreqFrac(7000);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
