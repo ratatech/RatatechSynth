@@ -120,11 +120,12 @@ int main(void)
 //					adsrEnv.adsr_st = RELEASE_STATE;
 //					keyPressed = false;
 //				}
-
-			}
+//
+//			}
 
 			adsrEnv.update(&synth_params);
 			lfo.update(&synth_params);
+			pot_write(NULL,123);
 
 			low_rate_ISR_flag = false;
 		}

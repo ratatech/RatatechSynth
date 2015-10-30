@@ -28,10 +28,23 @@ void SPI_Config(void){
 	GPIO_InitTypeDef GPIO_InitStructure;
 	SPI_InitTypeDef SPI_InitStruct;
 
-	/*  MISO(PA6), MOSI(PA7) and SCLK (PA5)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+
+	//****************************************************************************************
+	//
+	//	Configure SPI1 for DAC AUDIO Output
+	//
+	//****************************************************************************************
+
+	/*  MOSI(PA7) and SCLK (PA5)*/
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/*  MISO(PA6)*/
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* CS (PA9)*/
@@ -40,10 +53,6 @@ void SPI_Config(void){
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-
-
-	/* Put CS high */
-	GPIOA->BSRR = GPIO_Pin_9;
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
@@ -56,19 +65,58 @@ void SPI_Config(void){
 	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
 	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_Init(SPI1, &SPI_InitStruct);
-	//
-	//    Enable SPI.
-	//
 	SPI_Cmd(SPI1, ENABLE);
 
+	//****************************************************************************************
+	//
+	//	Configure SPI2 for Digital Potentiometers
+	//
+	//****************************************************************************************
+
+	/* MOSI(PB5) and SCLK (PB3)*/
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	/*  MISO(PB4) */
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/* CS (PA8)*/
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	RCC_APB2PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+
+	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStruct.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b;
+	SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
+	SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
+	SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
+	SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
+	SPI_Init(SPI2, &SPI_InitStruct);
+	SPI_Cmd(SPI2, ENABLE);
+
+	/* Put CS high */
+	GPIOA->BSRR = GPIO_Pin_9;
+
+	/* Put CS high */
+	GPIOA->BSRR = GPIO_Pin_8;
 }
 
-uint8_t SPI_send(uint8_t data){
+uint8_t SPI_send(SPI_TypeDef* SPIx, uint8_t data){
 
 
-	while (!(SPI1->SR & SPI_SR_TXE));
-	SPI_I2S_SendData(SPI1, data);
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);
+	while (!(SPIx->SR & SPI_SR_TXE));
+	SPI_I2S_SendData(SPIx, data);
+	while (SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_RXNE) == RESET);
 	return 0;
 }
 

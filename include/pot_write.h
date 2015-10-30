@@ -1,9 +1,9 @@
 /*
-@file fileName.cc
+@file fileName.h
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Jun 21, 2015
+@ Created by Jordi Hidalgo, Ratatech, Oct 30, 2015
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -19,30 +19,19 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
+#ifndef INCLUDE_POT_WRITE_H_
+#define INCLUDE_POT_WRITE_H_
 
-#include "audio_out.h"
-
-
-uint8_t dataLow,dataHigh;
+#include "ratatechSynth.h"
 
 using namespace std;
 
-void audio_out_write(uint16_t data)
-{
 
-	// Split 12bit data and store it into 2 8bit
-	dataHigh = 0b00110000 | data>>8;
-	dataLow  = (0x00FF & data);
+#define BUFFER_FAIL     0
+#define BUFFER_SUCCESS  1
 
-	// CS High
-	GPIOA->BRR = GPIO_Pin_9;
-
-	// Transmit the two 8bit SPI messages
-//	SPI_send(SPI1,dataHigh);
-//	SPI_send(SPI1,dataLow);
+void pot_write(uint8_t cmd,uint8_t pot_val);
 
 
-	// CS Low
-	GPIOA->BSRR = GPIO_Pin_9;
 
-}
+#endif /* INCLUDE_POT_WRITE_H_ */

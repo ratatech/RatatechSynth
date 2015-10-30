@@ -3,7 +3,7 @@
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Jun 21, 2015
+@ Created by Jordi Hidalgo, Ratatech, Oct 30, 2015
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -20,29 +20,31 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include "audio_out.h"
+#include "pot_write.h"
 
 
-uint8_t dataLow,dataHigh;
+
 
 using namespace std;
 
-void audio_out_write(uint16_t data)
+void pot_write(uint8_t cmd, uint8_t pot_val)
 {
 
 	// Split 12bit data and store it into 2 8bit
-	dataHigh = 0b00110000 | data>>8;
-	dataLow  = (0x00FF & data);
+	uint8_t dataHigh = 0b00000011;
+	uint8_t dataLow  = (0x00FF & 0x0000);
+
+
 
 	// CS High
-	GPIOA->BRR = GPIO_Pin_9;
+	GPIOA->BRR = GPIO_Pin_8;
 
 	// Transmit the two 8bit SPI messages
-//	SPI_send(SPI1,dataHigh);
-//	SPI_send(SPI1,dataLow);
-
+	SPI_send(SPI2,dataHigh);
+	SPI_send(SPI2,dataLow);
 
 	// CS Low
-	GPIOA->BSRR = GPIO_Pin_9;
+	GPIOA->BSRR = GPIO_Pin_8;
+
 
 }

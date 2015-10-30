@@ -55,6 +55,8 @@
 #include "utils.h"
 #include "lfo.h"
 #include "diag/Trace.h"
+#include "pot_write.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
