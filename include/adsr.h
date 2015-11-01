@@ -65,20 +65,21 @@ class ADSREnv {
 
 				case DECAY_STATE:
 
-				if (ph_ind>=(decay_len))
-				{
-					//adsr_st = SUSTAIN_STATE;
-					break;
-				}
+					if (ph_ind>=(decay_len))
+					{
+						adsr_st = SUSTAIN_STATE;
+						break;
+					}
 
-				ph_ind += ph_inc_D;
-				adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
+					ph_ind += ph_inc_D;
+					adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
 
 				break;
 
 				case SUSTAIN_STATE:
 					//do nothing, wait the key to be released and jump to the next state
 					//trace_printf("SUSTAINEDDD!\n");
+					adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_up_lut_q15,ph_ind,LUT_ENV_5_BIT);
 				break;
 
 				case RELEASE_STATE:

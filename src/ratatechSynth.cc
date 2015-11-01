@@ -65,12 +65,12 @@ int main(void)
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
 //	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(2);
+	lfo.setFreqFrac(0.1);
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = TRI;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(100);
+	osc1.setFreqFrac(440);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = TRI;
@@ -78,8 +78,11 @@ int main(void)
 	osc2.setFreqFrac(1000);
 
 	// Mix Parameter between osc1 and osc2
-	synth_params.osc_mix = 32768;
-
+	//synth_params.osc_mix = 32768;
+	// 0x0000 Mix 100% Osc2
+	// 0xFFFF Mix 100% Osc1
+	// 0x00FF Mix 50%
+	synth_params.osc_mix = 0xFFFF;
 
 	SystemInit();
 	RCC_Clocks_Init();
@@ -100,10 +103,10 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =0.2;
-	adsrEnv.decay = 0.4;
-	adsrEnv.sustain = 1-0.5;
-	adsrEnv.release = 0.3;
+	adsrEnv.attack =2;
+	adsrEnv.decay = 0.2;
+	adsrEnv.sustain = 1-0.9;
+	adsrEnv.release = 1;
 	adsrEnv.calcAdsrSteps();
 
 	/* Infinite loop */
@@ -115,24 +118,25 @@ int main(void)
 		{
 
 // Temporary disabled to stay at sustain level all the time
-//			//Read note button
-//			if (keyPressed)
-//			{
-//				if (!ButtonRead(GPIOA, GPIO_Pin_0))
-//				{
-//					adsrEnv.adsr_st = RELEASE_STATE;
-//					keyPressed = false;
-//				}
-//
-//			}
+			//Read note button
+			if (keyPressed)
+			{
+				if (!ButtonRead(GPIOA, GPIO_Pin_0))
+				{
+					adsrEnv.adsr_st = RELEASE_STATE;
+					keyPressed = false;
+				}
+
+			}
 
 			adsrEnv.update(&synth_params);
 			lfo.update(&synth_params);
 //			pot0.write(lfo.lfo_amp>>8);
 //			pot1.write((lfo.lfo_amp>>8)-128);
 //			pot2.write((lfo.lfo_amp>>8)-34);
-			Q = 28;
-			fc = lfo.lfo_amp>>8;
+			Q = 55;
+			fc = (adsrEnv.adsr_amp>>7)+50;
+
 			potQ.write(Q);
 			potFc0.write(fc);
 			potFc1.write(fc);
@@ -211,7 +215,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc1.setFreqFrac(7000);
+    	osc1.setFreqFrac(C4_Octave[9]);
     	keyPressed = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }

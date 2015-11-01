@@ -40,12 +40,12 @@ uint16_t Oscillator::compute_osc(synth_params_t *synth_params)
 	// Interpolate LUT
 	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_SIN_8_BIT)<<8;
 
-	// Modulate signal with the LFO
-	interp_lut_temp = interp_lut;
-	interp_lut = ((int32_t)(interp_lut)*(synth_params->lfo_amp)>>15);
-
-	// Mix LFO with amount parameter
-	interp_lut = interp_lut + ((int32_t)(interp_lut_temp)*(0x7FFF - synth_params->lfo_amo)>>15);
+//	// Modulate signal with the LFO
+//	interp_lut_temp = interp_lut;
+//	interp_lut = ((int32_t)(interp_lut)*(synth_params->lfo_amp)>>15);
+//
+//	// Mix LFO with amount parameter
+//	interp_lut = interp_lut + ((int32_t)(interp_lut_temp)*(0x7FFF - synth_params->lfo_amo)>>15);
 
 	// Modulate signal with the ADSR envelope
 	interp_lut = ((int32_t)(interp_lut)*(synth_params->adsr_amp)>>15);
