@@ -31,20 +31,21 @@ void pot_write(uint8_t cmd, uint8_t pot_val)
 {
 
 	// Split 12bit data and store it into 2 8bit
-	uint8_t dataHigh = 0b00000011;
+	uint8_t dataHigh = 0b00000000;
 	uint8_t dataLow  = (0x00FF & 0x0000);
-
-
 
 	// CS High
 	GPIOA->BRR = GPIO_Pin_8;
+
 
 	// Transmit the two 8bit SPI messages
 	SPI_send(SPI2,dataHigh);
 	SPI_send(SPI2,dataLow);
 
 	// CS Low
-	GPIOA->BSRR = GPIO_Pin_8;
+		GPIOA->BSRR = GPIO_Pin_8;
+
+
 
 
 }

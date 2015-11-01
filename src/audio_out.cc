@@ -38,8 +38,8 @@ void audio_out_write(uint16_t data)
 	GPIOA->BRR = GPIO_Pin_9;
 
 	// Transmit the two 8bit SPI messages
-//	SPI_send(SPI1,dataHigh);
-//	SPI_send(SPI1,dataLow);
+	SPI_send(SPI1,dataHigh);
+	SPI_send(SPI1,dataLow);
 
 
 	// CS Low

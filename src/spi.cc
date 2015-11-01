@@ -73,17 +73,17 @@ void SPI_Config(void){
 	//
 	//****************************************************************************************
 
-	/* MOSI(PB5) and SCLK (PB3)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3;
+	/* MOSI(PB15) and SCLK (PB13)*/
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_13;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	/*  MISO(PB4) */
-	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6;
+	/*  MISO(PB14) */
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_14;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	/* CS (PA8)*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
@@ -91,7 +91,7 @@ void SPI_Config(void){
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	RCC_APB2PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 
 	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
 	SPI_InitStruct.SPI_Mode = SPI_Mode_Master;
