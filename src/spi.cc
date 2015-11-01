@@ -47,13 +47,6 @@ void SPI_Config(void){
 	GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	/* CS (PA9)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
 	SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
@@ -85,11 +78,6 @@ void SPI_Config(void){
 	GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	/* CS (PA8)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 
@@ -104,11 +92,6 @@ void SPI_Config(void){
 	SPI_Init(SPI2, &SPI_InitStruct);
 	SPI_Cmd(SPI2, ENABLE);
 
-	/* Put CS high */
-	GPIOA->BSRR = GPIO_Pin_9;
-
-	/* Put CS high */
-	GPIOA->BSRR = GPIO_Pin_8;
 }
 
 uint8_t SPI_send(SPI_TypeDef* SPIx, uint8_t data){

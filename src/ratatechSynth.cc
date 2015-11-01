@@ -35,7 +35,7 @@ Oscillator osc1,osc2;
 CircularBuffer out_buffer;
 ADSREnv adsrEnv;
 LFO lfo;
-
+DIGI_POT potQ(GPIO_Pin_10),potFc0(GPIO_Pin_12),potFc1(GPIO_Pin_8);
 // Structure instances
 synth_params_t synth_params;
 
@@ -50,6 +50,8 @@ bool keyPressed = false;
 int a = 0;
 bool low_rate_ISR_flag = false;
 
+uint8_t Q,fc = 0;
+
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 
 int main(void)
@@ -62,17 +64,18 @@ int main(void)
 //	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
-	lfo.setFreqFrac(4);
+//	lfo.lfo_amo = 0;
+	lfo.setFreqFrac(2);
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = TRI;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(60);
+	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = TRI;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(60);
+	osc2.setFreqFrac(1000);
 
 	// Mix Parameter between osc1 and osc2
 	synth_params.osc_mix = 32768;
@@ -125,7 +128,14 @@ int main(void)
 
 			adsrEnv.update(&synth_params);
 			lfo.update(&synth_params);
-			pot_write(NULL,123);
+//			pot0.write(lfo.lfo_amp>>8);
+//			pot1.write((lfo.lfo_amp>>8)-128);
+//			pot2.write((lfo.lfo_amp>>8)-34);
+			Q = 28;
+			fc = lfo.lfo_amp>>8;
+			potQ.write(Q);
+			potFc0.write(fc);
+			potFc1.write(fc);
 
 			low_rate_ISR_flag = false;
 		}

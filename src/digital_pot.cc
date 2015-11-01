@@ -3,7 +3,7 @@
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Oct 30, 2015
+@ Created by Jordi Hidalgo, Ratatech, Nov 1, 2015
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -20,22 +20,16 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include "pot_write.h"
+#include "digital_pot.h"
 
-
-
-
-using namespace std;
-
-void pot_write(uint8_t cmd, uint8_t pot_val)
-{
+void DIGI_POT::write(uint8_t val){
 
 	// Split 12bit data and store it into 2 8bit
 	uint8_t dataHigh = 0b00000000;
-	uint8_t dataLow  = (0x00FF & 0x0000);
+	uint8_t dataLow  = (0x00FF & val);
 
 	// CS High
-	GPIOA->BRR = GPIO_Pin_8;
+	GPIOA->BRR = CS_pin;
 
 
 	// Transmit the two 8bit SPI messages
@@ -43,9 +37,6 @@ void pot_write(uint8_t cmd, uint8_t pot_val)
 	SPI_send(SPI2,dataLow);
 
 	// CS Low
-		GPIOA->BSRR = GPIO_Pin_8;
-
-
-
+   GPIOA->BSRR = CS_pin;
 
 }

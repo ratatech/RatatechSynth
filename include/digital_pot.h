@@ -3,7 +3,7 @@
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Oct 30, 2015
+@ Created by Jordi Hidalgo, Ratatech, Nov 1, 2015
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -19,19 +19,39 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef INCLUDE_POT_WRITE_H_
-#define INCLUDE_POT_WRITE_H_
+#ifndef INCLUDE_DIGITAL_POT_H_
+#define INCLUDE_DIGITAL_POT_H_
 
 #include "ratatechSynth.h"
 
-using namespace std;
+
+/**
+BABLALBALBALBL
+ABABABA
+BABAB
+BABABA
+@todo BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+@note BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+@section BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
+*/
+class DIGI_POT {
+
+	public:
+
+		uint16_t CS_pin;
+
+		DIGI_POT(uint16_t pin){
+			CS_pin = pin;
+		}
+
+		// Function prototypes
+		void write(uint8_t val);
+
+};
 
 
-#define BUFFER_FAIL     0
-#define BUFFER_SUCCESS  1
-
-void pot_write(uint8_t cmd,uint8_t pot_val);
 
 
 
-#endif /* INCLUDE_POT_WRITE_H_ */
+#endif /* INCLUDE_DIGITAL_POT_H_ */
