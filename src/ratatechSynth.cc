@@ -46,13 +46,13 @@ uint16_t out_sample;
 int16_t envt;
 double env=0;
 bool status = true;
-bool keyPressed = false;
 int a = 0;
 bool low_rate_ISR_flag = false;
 
 uint8_t Q,fc = 0;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
+uint16_t octaveCounter = 0;
 
 int main(void)
 	{
@@ -64,13 +64,13 @@ int main(void)
 //	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
-//	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(0.1);
+	lfo.lfo_amo = 0;
+	lfo.setFreqFrac(1);
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = TRI;
+	osc_shape_t shape_osc1 = SAW;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(440);
+	osc1.setFreqFrac(2000);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = TRI;
@@ -103,11 +103,18 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =2;
+	adsrEnv.attack =0.2;
 	adsrEnv.decay = 0.2;
-	adsrEnv.sustain = 1-0.9;
-	adsrEnv.release = 1;
+	adsrEnv.sustain = 0.5;
+	adsrEnv.release = 0.1;
 	adsrEnv.calcAdsrSteps();
+	adsrEnv.note_ON = false;
+	adsrEnv.adsr_st = IDLE_STATE;
+
+
+	double randNumFreq;
+	int randNum;
+	uint32_t noteCounter = 0;
 
 	/* Infinite loop */
 	while(1)
@@ -117,30 +124,55 @@ int main(void)
 		if(low_rate_ISR_flag)
 		{
 
-// Temporary disabled to stay at sustain level all the time
-			//Read note button
-			if (keyPressed)
-			{
-				if (!ButtonRead(GPIOA, GPIO_Pin_0))
-				{
-					adsrEnv.adsr_st = RELEASE_STATE;
-					keyPressed = false;
-				}
 
-			}
+//			//Read note button
+//			if (adsrEnv.note_ON)
+//			{
+//				if (!ButtonRead(GPIOA, GPIO_Pin_0))
+//				{
+//					adsrEnv.calcAdsrSteps();
+//					adsrEnv.adsr_st = RELEASE_STATE;
+//					adsrEnv.note_ON = false;
+//				}
+//
+//			}
 
+			// Update Envelope and LFO objects
 			adsrEnv.update(&synth_params);
 			lfo.update(&synth_params);
-//			pot0.write(lfo.lfo_amp>>8);
-//			pot1.write((lfo.lfo_amp>>8)-128);
-//			pot2.write((lfo.lfo_amp>>8)-34);
-			Q = 55;
-			fc = (adsrEnv.adsr_amp>>7)+50;
+
+			Q = 10;
+			//fc = (adsrEnv.adsr_amp>>7)+50;
+			//fc = (lfo.lfo_amp>>9);
+
+
+
+			if(noteCounter>=8000 ){
+				randNum = rand();
+				randNumFreq = (double)(randNum>>24)*2;
+				if(randNumFreq>8000)
+					randNumFreq = 8000;
+				if(randNumFreq<30)
+					randNumFreq = 30;
+				osc1.setFreqFrac(C4_Octave[octaveCounter]);
+		    	//adsrEnv.note_ON = true;
+				adsrEnv.adsr_st = ATTACK_STATE;
+				noteCounter=0;
+				octaveCounter++;
+				if(octaveCounter>=12)
+					octaveCounter = 0;
+				fc = (adsrEnv.adsr_amp>>7)+4;
+
+			}
+			noteCounter++;
+
 
 			potQ.write(Q);
 			potFc0.write(fc);
 			potFc1.write(fc);
 
+
+			// Put low rate interrupt flag down
 			low_rate_ISR_flag = false;
 		}
 
@@ -216,7 +248,7 @@ void EXTI0_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[9]);
-    	keyPressed = true;
+    	adsrEnv.note_ON = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -237,7 +269,7 @@ void EXTI1_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[2]);
-    	keyPressed = true;
+    	adsrEnv.note_ON = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -258,7 +290,7 @@ void EXTI2_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[4]);
-    	keyPressed = true;
+    	adsrEnv.note_ON = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -279,7 +311,7 @@ void EXTI3_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[5]);
-    	keyPressed = true;
+    	adsrEnv.note_ON = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
@@ -300,7 +332,7 @@ void EXTI4_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[7]);
-    	keyPressed = true;
+    	adsrEnv.note_ON = true;
 		adsrEnv.adsr_st = ATTACK_STATE;
     }
     //we need to clear line pending bit manually

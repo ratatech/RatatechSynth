@@ -31,6 +31,7 @@ class ADSREnv {
 		int32_t ph_inc_R;
 		int32_t ph_ind;
 		int32_t decay_len;
+		bool note_ON;
 
 
 		void calcAdsrSteps(void){
@@ -67,7 +68,13 @@ class ADSREnv {
 
 					if (ph_ind>=(decay_len))
 					{
-						adsr_st = SUSTAIN_STATE;
+						if (note_ON)
+						{
+							adsr_st = SUSTAIN_STATE;
+						}else{
+							adsr_st = RELEASE_STATE;
+						}
+
 						break;
 					}
 
@@ -89,6 +96,7 @@ class ADSREnv {
 						adsr_st = IDLE_STATE;
 						ph_ind = 0;
 						adsr_amp = 0;
+						note_ON = false;
 						break;
 					}
 					adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
