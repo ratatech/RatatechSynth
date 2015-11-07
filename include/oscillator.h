@@ -63,13 +63,13 @@ class Oscillator {
 		*/
 		void setFreqFrac(double freqHz)
 		{
-			ph_inc_frac = (int32_t)((((double)LUT_SIN_8_BIT/(double)FS)*freqHz)*1048576);
+			ph_inc_frac = (int32_t)((((double)LUT_SIN_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
 			k_frac = ph_inc_frac & 0xFFFFF;
 
 
 			if(shape == TRI)
 			{
-				ph_inc_frac = (int32_t)((((double)LUT_TRI_8_BIT/(double)FS)*(freqHz/2))*1048576);
+				ph_inc_frac = (int32_t)((((double)LUT_TRI_8_BIT/(double)FS)*(freqHz/2))*SHIFT_20_BIT);
 				k_frac = ph_inc_frac & 0xFFFFF;
 
 			}

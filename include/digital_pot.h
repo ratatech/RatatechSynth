@@ -26,26 +26,25 @@ This file is part of XXXXXXX
 
 
 /**
-BABLALBALBALBL
-ABABABA
-BABAB
-BABABA
-@todo BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-@note BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-@section BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-*/
+ * Digital potentiometer class
+ */
 class DIGI_POT {
 
 	public:
 
 		uint16_t CS_pin;
 
+		/** Constructor.
+		@param pin The pin number used for the SPI chip select.
+		*/
 		DIGI_POT(uint16_t pin){
 			CS_pin = pin;
 		}
 
-		// Function prototypes
+		/**
+		 * Writes a 8bit value into the digital potentiometer
+		 * @param val
+		 */
 		void write(uint8_t val);
 
 };

@@ -73,7 +73,7 @@ void RCC_Clocks_Init(void)
 		while(RCC_GetSYSCLKSource() != 0x08);
 	}
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_SPI1 |
-						  RCC_APB2Periph_TIM1, ENABLE);
+						  RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1, ENABLE);
 	RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM2 | RCC_APB1Periph_SPI2, ENABLE);
 
 
