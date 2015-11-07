@@ -14,5 +14,6 @@
 void RCC_Clocks_Init(void);
 void GPIO_Conf_Init(void);
 void ButtonsInitEXTI(void);
+void ADC_Conf_Init(void);
 
 #endif /* INCLUDE_SYSTEM_INIT_H_ */

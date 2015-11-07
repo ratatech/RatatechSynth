@@ -99,6 +99,7 @@ int main(void)
 	fill_buffer();
 	TIM_Config();
 	ButtonsInitEXTI();
+	ADC_Conf_Init();
 
 
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
@@ -159,7 +160,25 @@ int main(void)
 //			}
 //			noteCounter++;
 
-			Q = 255;
+
+			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET)
+			{
+				int16_t adc;
+
+				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
+
+				fc = adc;
+				trace_printf("%i\n",adc);
+
+				/* Probably overkill */
+				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+
+				/* Start ADC1 Software Conversion */
+				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+			}
+
+
+
 			//fc = 255-(adsrEnv.adsr_amp>>7)+1;
 			//fc = (adsrEnv.adsr_amp>>7)+1;
 			//fc = (lfo.lfo_amp>>7);

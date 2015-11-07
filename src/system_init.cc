@@ -74,7 +74,7 @@ void RCC_Clocks_Init(void)
 	}
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_SPI1 |
 						  RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1, ENABLE);
-	RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM2 | RCC_APB1Periph_SPI2, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_SPI2, ENABLE);
 
 
 
@@ -108,16 +108,15 @@ void GPIO_Conf_Init(void)
 
 	/* Configure PA0 PA1 pins as input floating */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
-	/* Configure PC13  PC0 PC1 pins as input floating */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_1 | GPIO_Pin_0 ;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	/* Configure PA1pins as analog input */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* Configure PB0 pins as input floating */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
@@ -245,6 +244,42 @@ void ButtonsInitEXTI(void)
 //    NVIC_InitStructure.NVIC_IRQChannel = EXTI6_IRQn;
 //    //update NVIC registers
 //    NVIC_Init(&NVIC_InitStructure);
+
+}
+void ADC_Conf_Init(void){
+
+	ADC_InitTypeDef ADC_InitStructure;
+
+	  /* ADC1 configuration ------------------------------------------------------*/
+	  ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+	  ADC_InitStructure.ADC_ScanConvMode = DISABLE; // Single Channel
+	  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE; // Scan on Demand
+	  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+	  ADC_InitStructure.ADC_NbrOfChannel = 1;
+	  ADC_Init(ADC1, &ADC_InitStructure);
+
+	  /* ADC1 regular channel1 configuration */
+	  ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_55Cycles5);
+
+	  /* Enable ADC1 */
+	  ADC_Cmd(ADC1, ENABLE);
+
+	  /* Enable ADC1 reset calibaration register */
+	  ADC_ResetCalibration(ADC1);
+
+	  /* Check the end of ADC1 reset calibration register */
+	  while(ADC_GetResetCalibrationStatus(ADC1));
+
+	  /* Start ADC1 calibaration */
+	  ADC_StartCalibration(ADC1);
+
+	  /* Check the end of ADC1 calibration */
+	  while(ADC_GetCalibrationStatus(ADC1));
+
+	  /* Start ADC1 Software Conversion */
+	  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+
 
 }
 
