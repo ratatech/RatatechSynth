@@ -12,7 +12,9 @@
 #define FS 96000
 //#define FS 44100
 #define CONTROL_RATE 16000
-#define SHIFT_20_BIT 1048576
+#define SHIFT_20_BIT 0xFFFFF
+#define SHIFT_31_BIT 0x7FFFFFFF
+#define SHIFT_15_BIT 0x7FFF
 
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 

@@ -35,7 +35,7 @@ Oscillator osc1,osc2;
 CircularBuffer out_buffer;
 ADSREnv adsrEnv(EXP);
 LFO lfo;
-DIGI_POT potQ(GPIO_Pin_10),potFc0(GPIO_Pin_12),potFc1(GPIO_Pin_8);
+DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 // Structure instances
 synth_params_t synth_params;
 
@@ -65,11 +65,11 @@ int main(void)
 //	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
-	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(0.1);
+//	lfo.lfo_amo = 0;
+	lfo.setFreqFrac(15);
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = TRI;
+	osc_shape_t shape_osc1 = SAW;
 	osc1.set_shape(shape_osc1);
 	osc1.setFreqFrac(12000);
 
@@ -105,17 +105,16 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =1;
-	adsrEnv.decay = 1;
-	adsrEnv.sustain = 0.5;
-	adsrEnv.release = 0.1;
+	adsrEnv.attack =0.1;
+	adsrEnv.decay = 0.4;
+	adsrEnv.sustain = 0.7;
+	adsrEnv.release = 5;
 	adsrEnv.calcAdsrSteps();
 
-
-	double randNumFreq;
-	int randNum;
+	int32_t randNum;
 	uint32_t noteCounter = 0;
-
+	int16_t adc;
+	srand(1);
 	/* Infinite loop */
 	while(1)
 	{
@@ -142,52 +141,61 @@ int main(void)
 			lfo.update(&synth_params);
 
 
-//			if(noteCounter>=8000 ){
-//				randNum = rand();
-//				randNumFreq = (double)(randNum>>24)*10;
-//				if(randNumFreq>8000)
-//					randNumFreq = 8000;
-//				if(randNumFreq<30)
-//					randNumFreq = 30;
-//				//osc1.setFreqFrac(C4_Octave[octaveCounter]);
-//				osc1.setFreqFrac(randNumFreq);
-//		    	//adsrEnv.note_ON = true;
-//				adsrEnv.adsr_state = ATTACK_STATE;
-//				noteCounter=0;
-//				octaveCounter++;
-//				if(octaveCounter>=255)
-//					octaveCounter = 0;
+			if(noteCounter>=1000 ){
+				randNum = rand();
+				randNum = ((randNum>>21));
+				trace_printf("random num = %i\n",randNum);
+				if(randNum>8000)
+					randNum = 8000;
+				if(randNum<30)
+					randNum = 30;
+				//osc1.setFreqFrac(C4_Octave[octaveCounter]);
+				osc1.setFreqFrac(randNum);
+		    	//adsrEnv.note_ON = true;
+				adsrEnv.adsr_state = ATTACK_STATE;
+				noteCounter=0;
+				octaveCounter++;
+				if(octaveCounter>=12)
+					octaveCounter = 0;
+			}
+			noteCounter++;
+
+
+//			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET)
+//			{
+//
+//
+//				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
+//
+//				fc = adc;
+//				trace_printf("%i\n",adc);
+//
+//				/* Probably overkill */
+//				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+//
+//				/* Start ADC1 Software Conversion */
+//				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 //			}
-//			noteCounter++;
 
+			if(adsrEnv.adsr_state != SUSTAIN_STATE){
 
-			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET)
-			{
-				int16_t adc;
-
-				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
-
-				fc = adc;
-				trace_printf("%i\n",adc);
-
-				/* Probably overkill */
-				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-
-				/* Start ADC1 Software Conversion */
-				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+			    //fc = 255-(adsrEnv.adsr_amp>>7);
+				//fc = (adsrEnv.adsr_amp>>7)+1;
+				//fc = (lfo.lfo_amp>>7);
+				//fc = 4;
+			    //fc = 0;
+				if(fc>250){
+					fc = 200;
+				}
 			}
 
-
-
-			//fc = 255-(adsrEnv.adsr_amp>>7)+1;
-			//fc = (adsrEnv.adsr_amp>>7)+1;
-			//fc = (lfo.lfo_amp>>7);
-
-
 			//fc = octaveCounter;
-			potQ.write(Q);
-			potFc0.write(fc);
-			potFc1.write(fc);
+			potF1P1.write(fc);
+			potF1P2.write(fc);
+			potF2P1.write(fc);
+			potF2P2.write(fc);
+
+
 
 
 			// Put low rate interrupt flag down
@@ -265,7 +273,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc1.setFreqFrac(200);
+    	osc1.setFreqFrac(300);
     	adsrEnv.note_ON = true;
 		adsrEnv.adsr_state = ATTACK_STATE;
 		adsrEnv.calcAdsrSteps();

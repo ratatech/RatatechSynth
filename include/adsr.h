@@ -20,23 +20,13 @@ enum adsr_mode_e {LIN,EXP};
 class ADSREnv {
 	public:
 
-		double attack;
-		double decay;
-		double sustain;
-		double release;
-		int16_t adsr_amp;
+		double attack,decay,sustain,release,k;
+		int16_t adsr_amp,sustain_lvl;
 		adsr_state_e adsr_state;
 		adsr_mode_e adsr_mode;
-		int32_t ph_inc_A;
-		int32_t ph_inc_D;
-		int32_t ph_inc_S;
-		int32_t ph_inc_R;
-		int32_t ph_ind;
-		int32_t decay_len;
+		int32_t ph_inc_A,ph_inc_D,ph_inc_S,ph_inc_R,ph_ind;
+		int32_t decay_len,attack_coeff,decay_coeff,release_coeff,attack_init_val,decay_init_val,release_init_val;
 		bool note_ON;
-		int32_t exp_Coeff;
-		double k;
-		int32_t attack_init_val;
 
 
 		/** Constructor.
@@ -47,7 +37,16 @@ class ADSREnv {
  	 		adsr_mode = mode;
  	 		note_ON = false;
  	 		adsr_state = IDLE_STATE;
- 	 		k = 4;
+ 	 		k = 0.9;
+		}
+
+		/**
+		 * Calculate an exponential coefficient
+		 * @param time The duration of the ADSR state being calculated
+		 * @return The exponential coefficient
+		 */
+		double calcExpCoeff(double time){
+			return((exp(-log((1.0 + k) / k) / (time*CONTROL_RATE))));
 		}
 
 		/**
@@ -69,20 +68,23 @@ class ADSREnv {
 			}else{
 
 				/********************************************//**
-				 *  Exponential ADSR Steps
+				 *  Exponential ADSR coeffs and initial levels
 				 ***********************************************/
-				ph_inc_A = (int32_t)((((double)LUT_ENV_5_BIT/(double)(CONTROL_RATE*attack)))*SHIFT_20_BIT);
-				decay_len = (int64_t)((((double)LUT_ENV_5_BIT*sustain))*SHIFT_20_BIT);
-				ph_inc_D = (int32_t)((((double)decay_len/(double)(CONTROL_RATE*decay))));
-				int32_t release_len = (LUT_ENV_5_BIT<<20)-decay_len;
-				ph_inc_R = (int32_t)((((double)(release_len)/(double)(CONTROL_RATE*release))));
+				sustain_lvl = (int32_t)(sustain*SHIFT_15_BIT);
 
+				double exp_coeff_temp = calcExpCoeff(attack);
+				attack_coeff = (int32_t)(exp_coeff_temp*SHIFT_31_BIT);
+				attack_init_val = (int32_t)((1.0 + k) * (1.0 - exp_coeff_temp)*SHIFT_31_BIT);
 
+				exp_coeff_temp = calcExpCoeff(decay);
+				decay_coeff = (int32_t)(exp_coeff_temp*SHIFT_31_BIT);
+				decay_init_val = (int32_t)((sustain_lvl - k) * (1.0 - exp_coeff_temp)*SHIFT_31_BIT);
 
-				double exp_Coeff_temp = ((exp(-log((1.0 + k) / k) / (attack*CONTROL_RATE))));
-				exp_Coeff = (int32_t)(exp_Coeff_temp*2147483648);
-				attack_init_val = (int32_t)((1.0 + k) * (1.0 - exp_Coeff_temp)*2147483648);
-				ph_inc_A = 0;
+				exp_coeff_temp = calcExpCoeff(release);
+				release_coeff = (int32_t)(exp_coeff_temp*SHIFT_31_BIT);
+				release_init_val = (int32_t)((-k) * (1.0 - exp_coeff_temp)*SHIFT_31_BIT);
+
+				sustain_lvl = (int32_t)(sustain*SHIFT_15_BIT);
 
 			}
 
@@ -166,7 +168,7 @@ class ADSREnv {
 					case ATTACK_STATE:
 						int64_t temp;
 						temp = synth_params->adsr_amp<<15;
-						temp *= exp_Coeff;
+						temp *= attack_coeff;
 						temp >>= 31;
 						temp += attack_init_val;
 						adsr_amp = temp>>15;
@@ -175,7 +177,6 @@ class ADSREnv {
 						{
 							adsr_amp = 0x7FFF;
 							adsr_state = DECAY_STATE;
-							ph_ind = 0;
 							break;
 						}
 
@@ -183,20 +184,23 @@ class ADSREnv {
 
 					case DECAY_STATE:
 
-						if (ph_ind>=(decay_len))
+						temp = synth_params->adsr_amp<<15;
+						temp *= decay_coeff;
+						temp >>= 31;
+						temp += decay_init_val;
+						adsr_amp = temp>>15;
+						//trace_printf("%i\n",adsr_amp);
+						if (adsr_amp <=(sustain_lvl))
 						{
+							adsr_amp = sustain_lvl;
 							if (note_ON)
 							{
 								adsr_state = SUSTAIN_STATE;
 							}else{
 								adsr_state = RELEASE_STATE;
 							}
-
 							break;
 						}
-
-						ph_ind += ph_inc_D;
-						adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
 
 					break;
 
@@ -208,17 +212,18 @@ class ADSREnv {
 
 					case RELEASE_STATE:
 
-						if (ph_ind>=(LUT_ENV_20_BIT))
+						temp = synth_params->adsr_amp<<15;
+						temp *= release_coeff;
+						temp >>= 31;
+						temp += release_init_val;
+						adsr_amp = temp>>15;
+						//trace_printf("%i\n",adsr_amp);
+						if (adsr_amp < 0)
 						{
-							adsr_state = IDLE_STATE;
-							ph_ind = 0;
 							adsr_amp = 0;
-							note_ON = false;
+							adsr_state = IDLE_STATE;
 							break;
 						}
-						adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_down_lut_q15,ph_ind,LUT_ENV_5_BIT);
-						ph_ind += ph_inc_R;
-
 
 					break;
 				}
