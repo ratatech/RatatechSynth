@@ -56,6 +56,7 @@
 #include "lfo.h"
 #include "diag/Trace.h"
 #include "digital_pot.h"
+#include "midi.h"
 
 #include <stdint.h>
 #include <stdio.h>

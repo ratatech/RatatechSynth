@@ -36,6 +36,8 @@ CircularBuffer out_buffer;
 ADSREnv adsrEnv(EXP);
 LFO lfo;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
+MIDI midi;
+
 // Structure instances
 synth_params_t synth_params;
 
@@ -48,6 +50,8 @@ double env=0;
 bool status = true;
 int a = 0;
 bool low_rate_ISR_flag = false;
+bool useADC = false;
+bool randomSeq = false;
 
 uint8_t Q,fc = 0;
 
@@ -65,7 +69,7 @@ int main(void)
 //	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
-//	lfo.lfo_amo = 0;
+	lfo.lfo_amo = 0;
 	lfo.setFreqFrac(3);
 
 	// Configure oscillator 1
@@ -106,26 +110,32 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =0.1;
+	adsrEnv.attack =0.8;
 	adsrEnv.decay = 0.4;
 	adsrEnv.sustain = 0.7;
-	adsrEnv.release = 7;
+	adsrEnv.release = 0.3;
 	adsrEnv.calcAdsrSteps();
 
 	int32_t randNum;
 	uint32_t noteCounter = 0;
 	int16_t adc;
 	srand(1);
-	/* Infinite loop */
+
+
+
+
+	/******************************************************************************************************************//**
+	 *  Main Loop
+	 *********************************************************************************************************************/
 	while(1)
 	{
-		//trace_printf("MAIN a = %i\n",a);
 
+		// Events happening every CONTROL_RATE
 		if(low_rate_ISR_flag)
 		{
 
 
-			//Read note button
+			//Check note button
 			if (adsrEnv.note_ON)
 			{
 				if (!ButtonRead(GPIOA, GPIO_Pin_0))
@@ -134,49 +144,64 @@ int main(void)
 					adsrEnv.adsr_state = RELEASE_STATE;
 					adsrEnv.note_ON = false;
 				}
-
 			}
 
-			// Update Envelope and LFO objects
+			// Update Envelope, LFO and midi objects
+			if(midi.new_event){
+
+				midi.update(&synth_params);
+				osc1.setFreqFrac(synth_params.pitch);
+				if(midi.attack_trigger){
+					adsrEnv.adsr_state = ATTACK_STATE;
+					midi.attack_trigger = false;
+
+				}
+				//adsrEnv.note_ON = synth_params.note_ON;
+				midi.new_event = false;
+			}
+
 			adsrEnv.update(&synth_params);
 			lfo.update(&synth_params);
 
 
-//			if(noteCounter>=1000 ){
-//				randNum = rand();
-//				randNum = ((randNum>>21));
-//				trace_printf("random num = %i\n",randNum);
-//				if(randNum>8000)
-//					randNum = 8000;
-//				if(randNum<30)
-//					randNum = 30;
-//				//osc1.setFreqFrac(C4_Octave[octaveCounter]);
-//				osc1.setFreqFrac(randNum);
-//		    	//adsrEnv.note_ON = true;
-//				adsrEnv.adsr_state = ATTACK_STATE;
-//				noteCounter=0;
-//				octaveCounter++;
-//				if(octaveCounter>=12)
-//					octaveCounter = 0;
-//			}
-//			noteCounter++;
+			//Trigger notes base on a pseudo-random number generation
+			if(randomSeq){
+
+				if(noteCounter>=1000 ){
+					randNum = rand();
+					randNum = ((randNum>>21));
+					trace_printf("random num = %i\n",randNum);
+					if(randNum>8000)
+						randNum = 8000;
+					if(randNum<30)
+						randNum = 30;
+					//osc1.setFreqFrac(C4_Octave[octaveCounter]);
+					osc1.setFreqFrac(randNum);
+					//adsrEnv.note_ON = true;
+					adsrEnv.adsr_state = ATTACK_STATE;
+					noteCounter=0;
+					octaveCounter++;
+					if(octaveCounter>=12)
+						octaveCounter = 0;
+				}
+				noteCounter++;
+			}
+
+			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
+			{
 
 
-//			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET)
-//			{
-//
-//
-//				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
-//
-//				fc = adc;
-//				trace_printf("%i\n",adc);
-//
-//				/* Probably overkill */
-//				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-//
-//				/* Start ADC1 Software Conversion */
-//				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-//			}
+				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
+
+				fc = adc;
+				trace_printf("%i\n",adc);
+
+				/* Probably overkill */
+				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+
+				/* Start ADC1 Software Conversion */
+				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+			}
 
 			if(adsrEnv.adsr_state != SUSTAIN_STATE){
 
@@ -190,19 +215,18 @@ int main(void)
 				}
 			}
 
-			//fc = octaveCounter;
+			// Set potentiometer values
 			potF1P1.write(fc);
 			potF1P2.write(fc);
 			potF2P1.write(fc);
 			potF2P2.write(fc);
 
 
-
-
 			// Put low rate interrupt flag down
 			low_rate_ISR_flag = false;
 		}
 
+		// Fill audio buffer with a new sample
 		fill_buffer();
 
 
@@ -468,25 +492,13 @@ void TIM1_UP_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
 
+	//trace_printf("MIDI Rx\n");
     /* RXNE handler */
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
-    	int midi_in = USART_ReceiveData(USART1);
-    	int midi_status = midi_in & 0xF0;
-    	int midi_data = midi_in & 0x0F;
-    	if(midi_in==144){
-    		adsrEnv.note_ON = true;
-    		trace_printf("MIDI Note On\n",midi_status);
-    	}
-    	if(adsrEnv.note_ON){
-    		trace_printf("MIDI data = %i\n",midi_in);
-    	}
+    	uint16_t midi_in = USART_ReceiveData(USART1);
+    	midi.parseMsg(midi_in);
 
-//        /* If received 't', toggle LED and transmit 'T' */
-//        if((char)USART_ReceiveData(USART1) == 't')
-//        {
-//        	trace_printf("USART received = %i\n",);
-//        }
     }
 
     /* ------------------------------------------------------------ */

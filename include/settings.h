@@ -23,6 +23,10 @@ struct synth_params_t{
 	int16_t lfo_amo;
 	int16_t adsr_amp;
 	uint16_t osc_mix;
+	uint16_t pitch;
+	uint16_t vel;
+	bool note_ON;
+
 };
 
 #endif /* INCLUDE_SETTINGS_H_ */
