@@ -59,14 +59,14 @@ int main(void)
 	{
 
 	// Configure lfo
-	osc_shape_t shape_lfo = SIN;
+	osc_shape_t shape_lfo = SAW;
 	lfo.shape = shape_lfo;
 	lfo.lfo_amo = 0x7FFF;
 //	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
 //	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(15);
+	lfo.setFreqFrac(3);
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SAW;
@@ -74,16 +74,16 @@ int main(void)
 	osc1.setFreqFrac(12000);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = TRI;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(1000);
+	osc2.setFreqFrac(400);
 
 	// Mix Parameter between osc1 and osc2
 	//synth_params.osc_mix = 32768;
 	// 0x0000 Mix 100% Osc2
 	// 0xFFFF Mix 100% Osc1
 	// 0x00FF Mix 50%
-	synth_params.osc_mix = 0xFFFF;
+	synth_params.osc_mix = 0x7FFF;
 
 	SystemInit();
 	RCC_Clocks_Init();
@@ -100,6 +100,7 @@ int main(void)
 	TIM_Config();
 	ButtonsInitEXTI();
 	ADC_Conf_Init();
+	USART_Conf_Init();
 
 
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
@@ -108,7 +109,7 @@ int main(void)
 	adsrEnv.attack =0.1;
 	adsrEnv.decay = 0.4;
 	adsrEnv.sustain = 0.7;
-	adsrEnv.release = 5;
+	adsrEnv.release = 7;
 	adsrEnv.calcAdsrSteps();
 
 	int32_t randNum;
@@ -141,24 +142,24 @@ int main(void)
 			lfo.update(&synth_params);
 
 
-			if(noteCounter>=1000 ){
-				randNum = rand();
-				randNum = ((randNum>>21));
-				trace_printf("random num = %i\n",randNum);
-				if(randNum>8000)
-					randNum = 8000;
-				if(randNum<30)
-					randNum = 30;
-				//osc1.setFreqFrac(C4_Octave[octaveCounter]);
-				osc1.setFreqFrac(randNum);
-		    	//adsrEnv.note_ON = true;
-				adsrEnv.adsr_state = ATTACK_STATE;
-				noteCounter=0;
-				octaveCounter++;
-				if(octaveCounter>=12)
-					octaveCounter = 0;
-			}
-			noteCounter++;
+//			if(noteCounter>=1000 ){
+//				randNum = rand();
+//				randNum = ((randNum>>21));
+//				trace_printf("random num = %i\n",randNum);
+//				if(randNum>8000)
+//					randNum = 8000;
+//				if(randNum<30)
+//					randNum = 30;
+//				//osc1.setFreqFrac(C4_Octave[octaveCounter]);
+//				osc1.setFreqFrac(randNum);
+//		    	//adsrEnv.note_ON = true;
+//				adsrEnv.adsr_state = ATTACK_STATE;
+//				noteCounter=0;
+//				octaveCounter++;
+//				if(octaveCounter>=12)
+//					octaveCounter = 0;
+//			}
+//			noteCounter++;
 
 
 //			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET)
@@ -457,7 +458,38 @@ void TIM1_UP_IRQHandler(void)
 
 }
 
+/*****************************************************************************************************************************
+******************* USART INTERRUPTS *****************************************************************************************
+******************************************************************************************************************************/
+
 /**
-* @}
+* USART interrupt handler
 */
+void USART1_IRQHandler(void)
+{
+
+    /* RXNE handler */
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+    	int midi_in = USART_ReceiveData(USART1);
+    	int midi_status = midi_in & 0xF0;
+    	int midi_data = midi_in & 0x0F;
+    	if(midi_in==144){
+    		adsrEnv.note_ON = true;
+    		trace_printf("MIDI Note On\n",midi_status);
+    	}
+    	if(adsrEnv.note_ON){
+    		trace_printf("MIDI data = %i\n",midi_in);
+    	}
+
+//        /* If received 't', toggle LED and transmit 'T' */
+//        if((char)USART_ReceiveData(USART1) == 't')
+//        {
+//        	trace_printf("USART received = %i\n",);
+//        }
+    }
+
+    /* ------------------------------------------------------------ */
+    /* Other USART1 interrupts handler can go here ...             */
+}
 // ----------------------------------------------------------------------------

@@ -73,7 +73,7 @@ void RCC_Clocks_Init(void)
 		while(RCC_GetSYSCLKSource() != 0x08);
 	}
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_SPI1 |
-						  RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1, ENABLE);
+						  RCC_APB2Periph_TIM1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_ADC1, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_SPI2, ENABLE);
 
 
@@ -136,12 +136,6 @@ void GPIO_Conf_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	/* CS POT_F2P2 (PA10)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
 	/* CS POT_F1P1 (PA12)*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -154,6 +148,11 @@ void GPIO_Conf_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+	/* USART Rx */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 }
 
@@ -252,6 +251,10 @@ void ButtonsInitEXTI(void)
 //    NVIC_Init(&NVIC_InitStructure);
 
 }
+
+/**
+ * Configure and initialize ADC Peripheral
+ */
 void ADC_Conf_Init(void){
 
 	ADC_InitTypeDef ADC_InitStructure;
@@ -289,6 +292,46 @@ void ADC_Conf_Init(void){
 
 }
 
+/**
+ * Configure and initialize USART Peripheral
+ */
+void USART_Conf_Init(void){
+
+    /* USART configuration structure for USART1 */
+    USART_InitTypeDef usart1_InitStructure;
+
+    /* NVIC configuration structure for USART1 */
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    /* Enable USART1 */
+    USART_Cmd(USART1, ENABLE);
+    /* Baud rate 31250, 8-bit data, One stop bit
+     * No parity, Do both Rx and Tx, No HW flow control
+     */
+    usart1_InitStructure.USART_BaudRate = 31250;
+    usart1_InitStructure.USART_WordLength = USART_WordLength_8b;
+    usart1_InitStructure.USART_StopBits = USART_StopBits_1;
+    usart1_InitStructure.USART_Parity = USART_Parity_No ;
+    usart1_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    usart1_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+
+
+	/* USART1 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+    /* Configure USART1 */
+    USART_Init(USART1, &usart1_InitStructure);
+    /* Enable RXNE interrupt */
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+    /* Enable USART1 global interrupt */
+    NVIC_EnableIRQ(USART1_IRQn);
+
+
+}
 
 
 
