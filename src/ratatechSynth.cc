@@ -66,14 +66,14 @@ int main(void)
 	osc_shape_t shape_lfo = SAW;
 	lfo.shape = shape_lfo;
 	lfo.lfo_amo = 0x7FFF;
-//	lfo.lfo_amo = 0x4000;
+	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
 	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(3);
+	lfo.setFreqFrac(15);
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SAW;
+	osc_shape_t shape_osc1 = SQU;
 	osc1.set_shape(shape_osc1);
 	osc1.setFreqFrac(12000);
 
@@ -110,25 +110,28 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =0.8;
-	adsrEnv.decay = 0.4;
+	adsrEnv.attack =0.2;
+	adsrEnv.decay = 0.2;
 	adsrEnv.sustain = 0.7;
-	adsrEnv.release = 0.3;
+	adsrEnv.release = 0.8;
 	adsrEnv.calcAdsrSteps();
 
 	int32_t randNum;
 	uint32_t noteCounter = 0;
 	int16_t adc;
 	srand(1);
-
-
-
+	int brightness = 0;
+	int n = -1;
 
 	/******************************************************************************************************************//**
 	 *  Main Loop
 	 *********************************************************************************************************************/
 	while(1)
 	{
+
+
+
+
 
 		// Events happening every CONTROL_RATE
 		if(low_rate_ISR_flag)
@@ -150,7 +153,8 @@ int main(void)
 			if(midi.new_event){
 
 				midi.update(&synth_params);
-				osc1.setFreqFrac(synth_params.pitch);
+				osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
 				if(midi.attack_trigger){
 					adsrEnv.adsr_state = ATTACK_STATE;
 					midi.attack_trigger = false;
@@ -220,6 +224,18 @@ int main(void)
 			potF1P2.write(fc);
 			potF2P1.write(fc);
 			potF2P2.write(fc);
+
+
+//		    if (((brightness + n) >= 1000) || ((brightness + n) <= 0))
+//		      n = -n; // if  brightness maximum/maximum change direction
+//
+//		        brightness += n;
+//
+//		    TIM3->CCR3 = brightness; // set brightness
+//		    TIM3->CCR4 = 1000 - brightness; // set brightness
+//
+//		    for(int i=0;i<10000;i++);  // delay
+
 
 
 			// Put low rate interrupt flag down

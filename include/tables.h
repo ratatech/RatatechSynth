@@ -18,6 +18,7 @@
 #define LUT_SIN_20_BIT LUT_SIN_8_BIT << 20
 #define LUT_TRI_20_BIT LUT_TRI_8_BIT << 20
 #define LUT_ENV_20_BIT LUT_ENV_5_BIT << 20
+#define MIDI_FREQ_LUT_SIZE 128
 
 extern const int16_t sin_lut_q15[LUT_SIN_8_BIT];
 extern const int16_t tri_lut_q15[LUT_TRI_8_BIT];
@@ -26,6 +27,7 @@ extern const int16_t square_lut_q15[LUT_TRI_8_BIT];
 extern const int16_t env_up_lut_q15[LUT_ENV_5_BIT];
 extern const int16_t env_down_lut_q15[LUT_ENV_5_BIT];
 extern const int16_t sin_lut_lfo[LUT_ENV_5_BIT];
+extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];
 
 
 #endif /* TABLES_H_ */

@@ -28,6 +28,7 @@ void TIM_Config(void)
 {
 
 	TIM_TimeBaseInitTypeDef timerInitStructure;
+	TIM_OCInitTypeDef timeOCInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* TIM2 NVIC configuration */
@@ -52,7 +53,7 @@ void TIM_Config(void)
 
 	/* Set audio_on flag to true to have the audio rate interrupt
 	* working. Disabling it helps to speed up debugging */
-	bool audio_on = true;
+	bool audio_on = false;
 	if(audio_on){
 
 		/* TIM1 configuration
@@ -80,8 +81,37 @@ void TIM_Config(void)
 
 
 	// Parameters to configure timer at 1hz ie. every 1s
-	//	timerInitStructure.TIM_Period = 32768;
+	//	timerInitStructure.TIM_Period    = 32768;
 	//	timerInitStructure.TIM_Prescaler = 2197;
+
+
+	/* PWM Timer3 configuration*/
+	uint16_t period = (SystemCoreClock / 20000 ) - 1;
+	uint16_t pulse = (uint16_t) (((uint32_t) 5 * (period - 1)) / 10);
+
+	TIM_TimeBaseStructInit( &timerInitStructure );
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = 500;
+	timerInitStructure.TIM_Prescaler = 40000;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM3, &timerInitStructure);
+	/* TIM3 Main Output Enable */
+	TIM_CtrlPWMOutputs(TIM3, ENABLE);
+
+	TIM_ARRPreloadConfig(TIM3, ENABLE);
+	TIM_Cmd( TIM3, ENABLE );
+
+	TIM_OCStructInit( &timeOCInitStructure );
+	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	timeOCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+	timeOCInitStructure.TIM_Pulse = 10;
+	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+	timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+    TIM_OC2Init( TIM3, &timeOCInitStructure );
+    TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+
 
 
 }
