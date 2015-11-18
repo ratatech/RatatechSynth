@@ -90,14 +90,13 @@ void TIM_Config(void)
 	uint16_t pulse = (uint16_t) (((uint32_t) 5 * (period - 1)) / 10);
 
 	TIM_TimeBaseStructInit( &timerInitStructure );
-	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV4;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 500;
-	timerInitStructure.TIM_Prescaler = 40000;
+	timerInitStructure.TIM_Period = 1000 - 1;   // 0..999
+	timerInitStructure.TIM_Prescaler = 240 - 1; // Div 240
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM3, &timerInitStructure);
 	/* TIM3 Main Output Enable */
-	TIM_CtrlPWMOutputs(TIM3, ENABLE);
 
 	TIM_ARRPreloadConfig(TIM3, ENABLE);
 	TIM_Cmd( TIM3, ENABLE );
@@ -105,9 +104,9 @@ void TIM_Config(void)
 	TIM_OCStructInit( &timeOCInitStructure );
 	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	timeOCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	timeOCInitStructure.TIM_Pulse = 10;
-	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
-	timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+	timeOCInitStructure.TIM_Pulse = 0;
+//	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+//	timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
     TIM_OC2Init( TIM3, &timeOCInitStructure );
     TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 

@@ -63,14 +63,14 @@ int main(void)
 	{
 
 	// Configure lfo
-	osc_shape_t shape_lfo = SAW;
+	osc_shape_t shape_lfo = SIN;
 	lfo.shape = shape_lfo;
 	lfo.lfo_amo = 0x7FFF;
 	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
 	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(15);
+	lfo.setFreqFrac(0.1);
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SQU;
@@ -110,17 +110,17 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =0.2;
+	adsrEnv.attack =3;
 	adsrEnv.decay = 0.2;
 	adsrEnv.sustain = 0.7;
-	adsrEnv.release = 0.8;
+	adsrEnv.release = 10;
 	adsrEnv.calcAdsrSteps();
 
 	int32_t randNum;
 	uint32_t noteCounter = 0;
 	int16_t adc;
 	srand(1);
-	int brightness = 0;
+	int16_t brightness = 0;
 	int n = -1;
 
 	/******************************************************************************************************************//**
@@ -236,6 +236,8 @@ int main(void)
 //
 //		    for(int i=0;i<10000;i++);  // delay
 
+			brightness = (int16_t)((double)adsrEnv.adsr_amp*1000/0x7FFF);
+		    TIM3->CCR2 = brightness;
 
 
 			// Put low rate interrupt flag down
