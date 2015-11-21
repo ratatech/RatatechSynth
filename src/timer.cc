@@ -53,7 +53,7 @@ void TIM_Config(void)
 
 	/* Set audio_on flag to true to have the audio rate interrupt
 	* working. Disabling it helps to speed up debugging */
-	bool audio_on = false;
+	bool audio_on = true;
 	if(audio_on){
 
 		/* TIM1 configuration
@@ -86,9 +86,6 @@ void TIM_Config(void)
 
 
 	/* PWM Timer3 configuration*/
-	uint16_t period = (SystemCoreClock / 20000 ) - 1;
-	uint16_t pulse = (uint16_t) (((uint32_t) 5 * (period - 1)) / 10);
-
 	TIM_TimeBaseStructInit( &timerInitStructure );
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV4;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;

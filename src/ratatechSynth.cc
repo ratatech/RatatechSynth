@@ -59,6 +59,9 @@ uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
 uint16_t octaveCounter = 0;
 
+enum application_e {NORMAL,NO_ADSR};
+application_e app = NO_ADSR;
+
 int main(void)
 	{
 
@@ -67,27 +70,27 @@ int main(void)
 	lfo.shape = shape_lfo;
 	lfo.lfo_amo = 0x7FFF;
 	lfo.lfo_amo = 0x4000;
-//	lfo.lfo_amo = 0x2000;
-//	lfo.lfo_amo = 0xA;
-	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(0.1);
+	lfo.lfo_amo = 0x2000;
+	//lfo.lfo_amo = 0xA;
+	//lfo.lfo_amo = 0;
+	lfo.setFreqFrac(1);
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SQU;
+	osc_shape_t shape_osc1 = SIN;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(12000);
+	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(400);
+	osc2.setFreqFrac(100);
 
 	// Mix Parameter between osc1 and osc2
 	//synth_params.osc_mix = 32768;
 	// 0x0000 Mix 100% Osc2
 	// 0xFFFF Mix 100% Osc1
 	// 0x00FF Mix 50%
-	synth_params.osc_mix = 0x7FFF;
+	synth_params.osc_mix = 0x0000;
 
 	SystemInit();
 	RCC_Clocks_Init();
@@ -110,18 +113,17 @@ int main(void)
 	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
 	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
 	// amplitude of the sustain value.
-	adsrEnv.attack =3;
+	adsrEnv.attack =0.2;
 	adsrEnv.decay = 0.2;
 	adsrEnv.sustain = 0.7;
-	adsrEnv.release = 10;
+	adsrEnv.release = 0.1;
 	adsrEnv.calcAdsrSteps();
 
 	int32_t randNum;
 	uint32_t noteCounter = 0;
 	int16_t adc;
 	srand(1);
-	int16_t brightness = 0;
-	int n = -1;
+
 
 	/******************************************************************************************************************//**
 	 *  Main Loop
@@ -129,120 +131,124 @@ int main(void)
 	while(1)
 	{
 
-
-
-
-
 		// Events happening every CONTROL_RATE
 		if(low_rate_ISR_flag)
 		{
 
+			switch(app){
 
-			//Check note button
-			if (adsrEnv.note_ON)
-			{
-				if (!ButtonRead(GPIOA, GPIO_Pin_0))
-				{
-					adsrEnv.calcAdsrSteps();
-					adsrEnv.adsr_state = RELEASE_STATE;
-					adsrEnv.note_ON = false;
-				}
+				case NORMAL:
+
+					//Check note button
+					if (adsrEnv.note_ON)
+					{
+						if (!ButtonRead(GPIOA, GPIO_Pin_0))
+						{
+							adsrEnv.calcAdsrSteps();
+							adsrEnv.adsr_state = RELEASE_STATE;
+							adsrEnv.note_ON = false;
+						}
+					}
+
+					// Update Envelope, LFO and midi objects
+					if(midi.new_event){
+
+						midi.update(&synth_params);
+						osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+						osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+						if(midi.attack_trigger){
+							adsrEnv.adsr_state = ATTACK_STATE;
+							midi.attack_trigger = false;
+
+						}
+						//adsrEnv.note_ON = synth_params.note_ON;
+						midi.new_event = false;
+					}
+
+					adsrEnv.update(&synth_params);
+					lfo.update(&synth_params);
+
+
+					//Trigger notes base on a pseudo-random number generation
+					if(randomSeq){
+
+						if(noteCounter>=1000 ){
+							randNum = rand();
+							randNum = ((randNum>>21));
+							trace_printf("random num = %i\n",randNum);
+							if(randNum>8000)
+								randNum = 8000;
+							if(randNum<30)
+								randNum = 30;
+							//osc1.setFreqFrac(C4_Octave[octaveCounter]);
+							osc1.setFreqFrac(randNum);
+							//adsrEnv.note_ON = true;
+							adsrEnv.adsr_state = ATTACK_STATE;
+							noteCounter=0;
+							octaveCounter++;
+							if(octaveCounter>=12)
+								octaveCounter = 0;
+						}
+						noteCounter++;
+					}
+
+					if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
+					{
+
+
+						adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
+
+						fc = adc;
+						trace_printf("%i\n",adc);
+
+						/* Probably overkill */
+						ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+
+						/* Start ADC1 Software Conversion */
+						ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+					}
+
+					if(adsrEnv.adsr_state != SUSTAIN_STATE){
+
+						//fc = 255-(adsrEnv.adsr_amp>>7);
+						//fc = (adsrEnv.adsr_amp>>7)+1;
+						//fc = (lfo.lfo_amp>>7);
+						//fc = 4;
+						//fc = 0;
+						if(fc>250){
+							fc = 200;
+						}
+					}
+
+					// Set potentiometer values
+					potF1P1.write(fc);
+					potF1P2.write(fc);
+					potF2P1.write(fc);
+					potF2P2.write(fc);
+
+
+					//brightness = (int16_t)((double)adsrEnv.adsr_amp*1000/0x7FFF);
+					TIM3->CCR2 = 1000;
+
+
+				break;
+
+				case NO_ADSR:
+
+					/*Set amplitude to 1, no ADSR*/
+					synth_params.adsr_amp = 0x7FFF;
+					/*Update LFO*/
+					lfo.update(&synth_params);
+
+				break;
 			}
-
-			// Update Envelope, LFO and midi objects
-			if(midi.new_event){
-
-				midi.update(&synth_params);
-				osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
-				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
-				if(midi.attack_trigger){
-					adsrEnv.adsr_state = ATTACK_STATE;
-					midi.attack_trigger = false;
-
-				}
-				//adsrEnv.note_ON = synth_params.note_ON;
-				midi.new_event = false;
-			}
-
-			adsrEnv.update(&synth_params);
-			lfo.update(&synth_params);
-
-
-			//Trigger notes base on a pseudo-random number generation
-			if(randomSeq){
-
-				if(noteCounter>=1000 ){
-					randNum = rand();
-					randNum = ((randNum>>21));
-					trace_printf("random num = %i\n",randNum);
-					if(randNum>8000)
-						randNum = 8000;
-					if(randNum<30)
-						randNum = 30;
-					//osc1.setFreqFrac(C4_Octave[octaveCounter]);
-					osc1.setFreqFrac(randNum);
-					//adsrEnv.note_ON = true;
-					adsrEnv.adsr_state = ATTACK_STATE;
-					noteCounter=0;
-					octaveCounter++;
-					if(octaveCounter>=12)
-						octaveCounter = 0;
-				}
-				noteCounter++;
-			}
-
-			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
-			{
-
-
-				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
-
-				fc = adc;
-				trace_printf("%i\n",adc);
-
-				/* Probably overkill */
-				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-
-				/* Start ADC1 Software Conversion */
-				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-			}
-
-			if(adsrEnv.adsr_state != SUSTAIN_STATE){
-
-			    //fc = 255-(adsrEnv.adsr_amp>>7);
-				//fc = (adsrEnv.adsr_amp>>7)+1;
-				//fc = (lfo.lfo_amp>>7);
-				//fc = 4;
-			    //fc = 0;
-				if(fc>250){
-					fc = 200;
-				}
-			}
-
-			// Set potentiometer values
-			potF1P1.write(fc);
-			potF1P2.write(fc);
-			potF2P1.write(fc);
-			potF2P2.write(fc);
-
-
-//		    if (((brightness + n) >= 1000) || ((brightness + n) <= 0))
-//		      n = -n; // if  brightness maximum/maximum change direction
-//
-//		        brightness += n;
-//
-//		    TIM3->CCR3 = brightness; // set brightness
-//		    TIM3->CCR4 = 1000 - brightness; // set brightness
-//
-//		    for(int i=0;i<10000;i++);  // delay
-
-			brightness = (int16_t)((double)adsrEnv.adsr_amp*1000/0x7FFF);
-		    TIM3->CCR2 = brightness;
-
 
 			// Put low rate interrupt flag down
 			low_rate_ISR_flag = false;
+
 		}
+
+
 
 		// Fill audio buffer with a new sample
 		fill_buffer();
