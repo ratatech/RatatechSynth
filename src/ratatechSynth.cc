@@ -23,7 +23,7 @@
 
 
 
-RCC_ClocksTypeDef RCC_Clocks;
+
 
 
 using namespace std;
@@ -53,6 +53,10 @@ bool low_rate_ISR_flag = false;
 bool useADC = false;
 bool randomSeq = false;
 
+int32_t randNum;
+uint32_t noteCounter = 0;
+int16_t adc;
+
 uint8_t Q,fc = 0;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
@@ -62,220 +66,265 @@ uint16_t octaveCounter = 0;
 enum application_e {NORMAL,NO_ADSR};
 application_e app = NO_ADSR;
 
+
 int main(void)
 	{
+
+	ratatech_init();
+
+
 
 	// Configure lfo
 	osc_shape_t shape_lfo = SIN;
 	lfo.shape = shape_lfo;
 	lfo.lfo_amo = 0x7FFF;
-	lfo.lfo_amo = 0x4000;
-	lfo.lfo_amo = 0x2000;
-	//lfo.lfo_amo = 0xA;
-	//lfo.lfo_amo = 0;
+//	lfo.lfo_amo = 0x4000;
+//	lfo.lfo_amo = 0x2000;
+//	lfo.lfo_amo = 0xA;
+//	lfo.lfo_amo = 0;
 	lfo.setFreqFrac(1);
+
+	//LFO destination
+	synth_params.lfo_dest = OSC1;
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SIN;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(100);
+	osc1.setFreqFrac(8000);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(100);
+	osc2.setFreqFrac(16000);
 
 	// Mix Parameter between osc1 and osc2
 	//synth_params.osc_mix = 32768;
 	// 0x0000 Mix 100% Osc2
-	// 0xFFFF Mix 100% Osc1
+	// 0x7FFF Mix 100% Osc1
 	// 0x00FF Mix 50%
-	synth_params.osc_mix = 0x0000;
-
-	SystemInit();
-	RCC_Clocks_Init();
-	SystemCoreClockUpdate();
-
-	/* SysTick end of count event each 1ms */
-	RCC_GetClocksFreq(&RCC_Clocks);
-	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
-
-    // COnfigure and init peripherals
-	GPIO_Conf_Init();
-	SPI_Config();
-	fill_buffer();
-	TIM_Config();
-	ButtonsInitEXTI();
-	ADC_Conf_Init();
-	USART_Conf_Init();
+	synth_params.osc_mix = 0x7FFF;
 
 
-	//Configure ADSR. Values correspond for duration of the states in seconds except for the sustain which is the amplitude
-	//(substracted from 1, -1 corresponds to 1). Duration of the Decay and release states is calculated based on the
-	// amplitude of the sustain value.
+	/* *****************************************************************************************
+	 *
+	 * ADSR
+	 *
+	 * Configure ADSR. Values correspond for duration of the states in seconds except for
+	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
+	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
+	 * * *****************************************************************************************/
 	adsrEnv.attack =0.2;
 	adsrEnv.decay = 0.2;
 	adsrEnv.sustain = 0.7;
 	adsrEnv.release = 0.1;
 	adsrEnv.calcAdsrSteps();
 
-	int32_t randNum;
-	uint32_t noteCounter = 0;
-	int16_t adc;
-	srand(1);
 
+	//Pre-fill the output buffer
+	fill_buffer();
 
-	/******************************************************************************************************************//**
-	 *  Main Loop
-	 *********************************************************************************************************************/
+	/* *****************************************************************************************
+	 * Main Loop
+	 *
+	 * *****************************************************************************************/
 	while(1)
 	{
 
 		// Events happening every CONTROL_RATE
 		if(low_rate_ISR_flag)
-		{
-
-			switch(app){
-
-				case NORMAL:
-
-					//Check note button
-					if (adsrEnv.note_ON)
-					{
-						if (!ButtonRead(GPIOA, GPIO_Pin_0))
-						{
-							adsrEnv.calcAdsrSteps();
-							adsrEnv.adsr_state = RELEASE_STATE;
-							adsrEnv.note_ON = false;
-						}
-					}
-
-					// Update Envelope, LFO and midi objects
-					if(midi.new_event){
-
-						midi.update(&synth_params);
-						osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
-						osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
-						if(midi.attack_trigger){
-							adsrEnv.adsr_state = ATTACK_STATE;
-							midi.attack_trigger = false;
-
-						}
-						//adsrEnv.note_ON = synth_params.note_ON;
-						midi.new_event = false;
-					}
-
-					adsrEnv.update(&synth_params);
-					lfo.update(&synth_params);
-
-
-					//Trigger notes base on a pseudo-random number generation
-					if(randomSeq){
-
-						if(noteCounter>=1000 ){
-							randNum = rand();
-							randNum = ((randNum>>21));
-							trace_printf("random num = %i\n",randNum);
-							if(randNum>8000)
-								randNum = 8000;
-							if(randNum<30)
-								randNum = 30;
-							//osc1.setFreqFrac(C4_Octave[octaveCounter]);
-							osc1.setFreqFrac(randNum);
-							//adsrEnv.note_ON = true;
-							adsrEnv.adsr_state = ATTACK_STATE;
-							noteCounter=0;
-							octaveCounter++;
-							if(octaveCounter>=12)
-								octaveCounter = 0;
-						}
-						noteCounter++;
-					}
-
-					if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
-					{
-
-
-						adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
-
-						fc = adc;
-						trace_printf("%i\n",adc);
-
-						/* Probably overkill */
-						ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-
-						/* Start ADC1 Software Conversion */
-						ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-					}
-
-					if(adsrEnv.adsr_state != SUSTAIN_STATE){
-
-						//fc = 255-(adsrEnv.adsr_amp>>7);
-						//fc = (adsrEnv.adsr_amp>>7)+1;
-						//fc = (lfo.lfo_amp>>7);
-						//fc = 4;
-						//fc = 0;
-						if(fc>250){
-							fc = 200;
-						}
-					}
-
-					// Set potentiometer values
-					potF1P1.write(fc);
-					potF1P2.write(fc);
-					potF2P1.write(fc);
-					potF2P2.write(fc);
-
-
-					//brightness = (int16_t)((double)adsrEnv.adsr_amp*1000/0x7FFF);
-					TIM3->CCR2 = 1000;
-
-
-				break;
-
-				case NO_ADSR:
-
-					/*Set amplitude to 1, no ADSR*/
-					synth_params.adsr_amp = 0x7FFF;
-					/*Update LFO*/
-					lfo.update(&synth_params);
-
-				break;
-			}
-
-			// Put low rate interrupt flag down
-			low_rate_ISR_flag = false;
-
-		}
-
-
+			low_rate_tasks();
 
 		// Fill audio buffer with a new sample
 		fill_buffer();
-
-
 	}
-
 
 }
 
+/**
+ * Execute all tasks running at CONTROL_RATE
+ */
+inline void low_rate_tasks(void){
 
-/** Fill the main buffer containing the output audio samples
+
+	switch(app){
+
+		case NORMAL:
+
+			//Check note button
+			if (adsrEnv.note_ON)
+			{
+				if (!ButtonRead(GPIOA, GPIO_Pin_0))
+				{
+					adsrEnv.calcAdsrSteps();
+					adsrEnv.adsr_state = RELEASE_STATE;
+					adsrEnv.note_ON = false;
+				}
+			}
+
+			// Update Envelope, LFO and midi objects
+			if(midi.new_event){
+
+				midi.update(&synth_params);
+				osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+				if(midi.attack_trigger){
+					adsrEnv.adsr_state = ATTACK_STATE;
+					midi.attack_trigger = false;
+
+				}
+				//adsrEnv.note_ON = synth_params.note_ON;
+				midi.new_event = false;
+			}
+
+			adsrEnv.update(&synth_params);
+			lfo.update(&synth_params);
+
+
+			//Trigger notes base on a pseudo-random number generation
+			if(randomSeq){
+				srand(1);
+				if(noteCounter>=1000 ){
+					randNum = rand();
+					randNum = ((randNum>>21));
+					trace_printf("random num = %i\n",randNum);
+					if(randNum>8000)
+						randNum = 8000;
+					if(randNum<30)
+						randNum = 30;
+					//osc1.setFreqFrac(C4_Octave[octaveCounter]);
+					osc1.setFreqFrac(randNum);
+					//adsrEnv.note_ON = true;
+					adsrEnv.adsr_state = ATTACK_STATE;
+					noteCounter=0;
+					octaveCounter++;
+					if(octaveCounter>=12)
+						octaveCounter = 0;
+				}
+				noteCounter++;
+			}
+
+			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
+			{
+
+
+				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
+
+				fc = adc;
+				trace_printf("%i\n",adc);
+
+				/* Probably overkill */
+				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+
+				/* Start ADC1 Software Conversion */
+				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+			}
+
+			if(adsrEnv.adsr_state != SUSTAIN_STATE){
+
+				//fc = 255-(adsrEnv.adsr_amp>>7);
+				//fc = (adsrEnv.adsr_amp>>7)+1;
+				//fc = (lfo.lfo_amp>>7);
+				//fc = 4;
+				//fc = 0;
+				if(fc>250){
+					fc = 200;
+				}
+			}
+
+			// Set potentiometer values
+			potF1P1.write(fc);
+			potF1P2.write(fc);
+			potF2P1.write(fc);
+			potF2P2.write(fc);
+
+
+			//brightness = (int16_t)((double)adsrEnv.adsr_amp*1000/0x7FFF);
+			TIM3->CCR2 = 1000;
+
+
+		break;
+
+		case NO_ADSR:
+
+			/*Set amplitude to 1, no ADSR*/
+			synth_params.adsr_amp = 0x7FFF;
+			/*Update LFO*/
+			lfo.update(&synth_params);
+
+		break;
+	}
+
+	// Put low rate interrupt flag down
+	low_rate_ISR_flag = false;
+
+}
+
+/**
+ * Fill the main buffer containing the output audio samples
  *
  * @param void
  * @return void
  */
 inline void fill_buffer(void)
 {
-	uint32_t osc_mix,osc_mix_temp;
+	int32_t osc_mix,osc1_mix_temp,osc2_mix_temp;
 	while(out_buffer.check_status()){
 
+		/* *****************************************************************************************
+		 * OSCILLATOR 1
+		 *
+		 * Compute a new oscillator1 sample and apply modulations
+		 * *****************************************************************************************/
+
 		osc_mix = osc1.compute_osc(&synth_params);
-		osc_mix = ((uint32_t)(osc_mix)*(synth_params.osc_mix)>>16);
-		osc_mix_temp = osc_mix;
+		osc_mix = ((int32_t)(osc_mix)*(synth_params.osc_mix)>>15);
+
+		// Modulate signal with the LFO
+		osc1_mix_temp = osc_mix;
+		osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
+
+		// Mix LFO with amount parameter
+		osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
+
+		// Save temporal output
+		osc1_mix_temp = osc_mix;
+
+		/* *****************************************************************************************
+		 * OSCILLATOR 2
+		 *
+		 * Compute a new oscillator2 sample and apply modulations
+		 * *****************************************************************************************/
+
 		osc_mix = osc2.compute_osc(&synth_params);
-		osc_mix = ((uint32_t)(osc_mix)*(0xFFFF-synth_params.osc_mix)>>16);
-		osc_mix += osc_mix_temp;
+		osc_mix = ((int32_t)(osc_mix)*(0x7FFF-synth_params.osc_mix)>>15);
+
+		// Modulate signal with the LFO
+		osc2_mix_temp = osc_mix;
+		osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
+
+		// Mix LFO with amount parameter
+		osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
+
+
+		/* *****************************************************************************************
+		 * OSC1/OSC2 MIXING
+		 *
+		 * Mix the the two nex computed samples and apply ADSR Modulation.
+		 * Finally scale the signal to 12 bits and store it in the output buffer.
+		 * *****************************************************************************************/
+
+		// Mix the two oscillators
+		osc_mix += osc1_mix_temp;
+
+		// Modulate signal with the ADSR envelope
+		osc_mix = ((int32_t)(osc_mix)*(synth_params.adsr_amp)>>15);
+
+		// Convert to unsigned
+		osc_mix = int16_2_uint16(osc_mix);
+
+		// Shift back to 12 bits required by the DAC
+		osc_mix>>=4;
+
 		status = out_buffer.write(osc_mix);
 
 	}

@@ -66,6 +66,7 @@
 
 
 void fill_buffer(void);
+void low_rate_tasks(void);
 uint32_t ButtonRead(GPIO_TypeDef*, uint16_t);
 
 extern "C" {

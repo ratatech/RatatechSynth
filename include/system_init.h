@@ -16,5 +16,6 @@ void GPIO_Conf_Init(void);
 void ButtonsInitEXTI(void);
 void ADC_Conf_Init(void);
 void USART_Conf_Init(void);
+void ratatech_init(void);
 
 #endif /* INCLUDE_SYSTEM_INIT_H_ */

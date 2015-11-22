@@ -17,12 +17,14 @@
 #define SHIFT_15_BIT 0x7FFF
 
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
+enum lfo_dest_e {OSC1,OSC2,VCF} ;
 
 struct synth_params_t{
 	int16_t lfo_amp;
 	int16_t lfo_amo;
+	lfo_dest_e lfo_dest;
 	int16_t adsr_amp;
-	uint16_t osc_mix;
+	int16_t osc_mix;
 	uint16_t pitch;
 	uint16_t vel;
 	bool note_ON;

@@ -104,7 +104,7 @@ class Oscillator {
 		}
 
 		// Function prototypes
-		uint16_t compute_osc(synth_params_t *synth_params);
+		int32_t compute_osc(synth_params_t *synth_params);
 
 
 };

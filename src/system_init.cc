@@ -21,6 +21,7 @@ This file is part of XXXXXXX
 */
 
 #include "system_init.h"
+#include "ratatechSynth.h"
 
 
 void RCC_Clocks_Init(void)
@@ -330,6 +331,31 @@ void USART_Conf_Init(void){
     /* Enable USART1 global interrupt */
     NVIC_EnableIRQ(USART1_IRQn);
 
+
+}
+
+/**
+ * Init system related routines(STM32F1) and all prefipherals needed for the synthesizer
+ */
+void ratatech_init(void){
+
+	RCC_ClocksTypeDef RCC_Clocks;
+
+	SystemInit();
+	RCC_Clocks_Init();
+	SystemCoreClockUpdate();
+
+	/* SysTick end of count event each 1ms */
+	RCC_GetClocksFreq(&RCC_Clocks);
+	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
+
+    // COnfigure and init peripherals
+	GPIO_Conf_Init();
+	SPI_Config();
+	TIM_Config();
+	ButtonsInitEXTI();
+	ADC_Conf_Init();
+	USART_Conf_Init();
 
 }
 
