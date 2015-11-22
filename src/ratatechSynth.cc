@@ -34,7 +34,7 @@ using namespace std;
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
 ADSREnv adsrEnv(EXP);
-LFO lfo;
+LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
 
@@ -70,40 +70,45 @@ application_e app = NO_ADSR;
 int main(void)
 	{
 
+	// Init system and peripherals
 	ratatech_init();
 
-
-
-	// Configure lfo
+	// Configure LFO
 	osc_shape_t shape_lfo = SIN;
 	lfo.shape = shape_lfo;
 	lfo.lfo_amo = 0x7FFF;
 //	lfo.lfo_amo = 0x4000;
 //	lfo.lfo_amo = 0x2000;
 //	lfo.lfo_amo = 0xA;
-//	lfo.lfo_amo = 0;
+	lfo.lfo_amo = 0;
 	lfo.setFreqFrac(1);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC1;
+	synth_params.lfo_dest = OSC2;
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SIN;
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(8000);
+	osc1.setFreqFrac(800);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(16000);
+	osc2.setFreqFrac(800);
 
 	// Mix Parameter between osc1 and osc2
 	//synth_params.osc_mix = 32768;
 	// 0x0000 Mix 100% Osc2
 	// 0x7FFF Mix 100% Osc1
-	// 0x00FF Mix 50%
-	synth_params.osc_mix = 0x7FFF;
+	// 0x4000 Mix 50%
+	synth_params.osc_mix = 0x0000;
 
+	// Configure FM modulator oscillator
+	osc_shape_t shape_FM_mod = SIN;
+	FM_mod.shape = shape_FM_mod;
+	FM_mod.lfo_amo = 0x7FFF;
+	FM_mod.FM_synth = true;
+	FM_mod.setFreqFrac(2);
 
 	/* *****************************************************************************************
 	 *
@@ -250,6 +255,8 @@ inline void low_rate_tasks(void){
 			synth_params.adsr_amp = 0x7FFF;
 			/*Update LFO*/
 			lfo.update(&synth_params);
+			/*Update FM modulator*/
+			FM_mod.update(&synth_params);
 
 		break;
 	}
@@ -277,17 +284,20 @@ inline void fill_buffer(void)
 		 * *****************************************************************************************/
 
 		osc_mix = osc1.compute_osc(&synth_params);
-		osc_mix = ((int32_t)(osc_mix)*(synth_params.osc_mix)>>15);
-
-		// Modulate signal with the LFO
-		osc1_mix_temp = osc_mix;
-		osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
-
-		// Mix LFO with amount parameter
-		osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
-
-		// Save temporal output
-		osc1_mix_temp = osc_mix;
+//		osc_mix = ((int32_t)(osc_mix)*(synth_params.osc_mix)>>15);
+//
+//		// Modulate signal with the LFO
+//		if(synth_params.lfo_dest == OSC1){
+//
+//			osc1_mix_temp = osc_mix;
+//			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
+//
+//			// Mix LFO with amount parameter
+//			osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
+//		}
+//
+//		// Save temporal output
+//		osc1_mix_temp = osc_mix;
 
 		/* *****************************************************************************************
 		 * OSCILLATOR 2
@@ -295,16 +305,18 @@ inline void fill_buffer(void)
 		 * Compute a new oscillator2 sample and apply modulations
 		 * *****************************************************************************************/
 
-		osc_mix = osc2.compute_osc(&synth_params);
-		osc_mix = ((int32_t)(osc_mix)*(0x7FFF-synth_params.osc_mix)>>15);
-
-		// Modulate signal with the LFO
-		osc2_mix_temp = osc_mix;
-		osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
-
-		// Mix LFO with amount parameter
-		osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
-
+//		osc_mix = osc2.compute_osc(&synth_params);
+//		osc_mix = ((int32_t)(osc_mix)*(0x7FFF-synth_params.osc_mix)>>15);
+//
+//		// Modulate signal with the LFO
+//		if(synth_params.lfo_dest == OSC2){
+//
+//			osc2_mix_temp = osc_mix;
+//			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
+//
+//			// Mix LFO with amount parameter
+//			osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
+//		}
 
 		/* *****************************************************************************************
 		 * OSC1/OSC2 MIXING
@@ -313,11 +325,11 @@ inline void fill_buffer(void)
 		 * Finally scale the signal to 12 bits and store it in the output buffer.
 		 * *****************************************************************************************/
 
-		// Mix the two oscillators
-		osc_mix += osc1_mix_temp;
-
-		// Modulate signal with the ADSR envelope
-		osc_mix = ((int32_t)(osc_mix)*(synth_params.adsr_amp)>>15);
+//		// Mix the two oscillators
+//		osc_mix += osc1_mix_temp;
+//
+//		// Modulate signal with the ADSR envelope
+//		osc_mix = ((int32_t)(osc_mix)*(synth_params.adsr_amp)>>15);
 
 		// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);

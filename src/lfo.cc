@@ -92,7 +92,12 @@ void LFO::update(synth_params_t *synth_params)
 
 	}
 
-	synth_params->lfo_amp = lfo_amp;
-	synth_params->lfo_amo = lfo_amo;
+	if(FM_synth){
+		synth_params->FM_mod_amp = lfo_amp;
+	}else{
+		synth_params->lfo_amp = lfo_amp;
+		synth_params->lfo_amo = lfo_amo;
+	}
+
 
 }

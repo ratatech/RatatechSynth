@@ -29,17 +29,20 @@ using namespace std;
 
 int32_t Oscillator::compute_osc(synth_params_t *synth_params)
 {
-	int32_t interp_lut,interp_lut_temp;
-	uint16_t u_interp_lut;
+	int32_t interp_lut,interp_lut_temp,frac,mod;
+	int64_t ph_mod_index;
 
-	ph_ind_frac += ph_inc_frac;
+
+
+	ph_mod_index =((ph_inc_frac>>15)*(synth_params->FM_mod_amp));
+	ph_mod_index *= 10;
+
+	ph_ind_frac += ph_mod_index;
 	if (ph_ind_frac>=(LUT_SIN_20_BIT))
 		ph_ind_frac -= (LUT_SIN_20_BIT);
 
-
 	// Interpolate LUT
 	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_SIN_8_BIT)<<8;
-
 
 
 

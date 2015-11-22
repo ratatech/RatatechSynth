@@ -56,7 +56,14 @@ class Oscillator {
 		int32_t square_out;
 
 		bool top;
+		int32_t scaled_LUT;
 
+		/** Constructor.
+		@param Scale table size.
+		*/
+		Oscillator(void){
+			scaled_LUT = (int32_t)(((double)LUT_SIN_8_BIT)*SHIFT_20_BIT);
+		}
 
 		/** BLALALALALALAFAFDDFAF
 		@param frequency FADFADFADFDFD

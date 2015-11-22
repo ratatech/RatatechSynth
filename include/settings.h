@@ -11,6 +11,7 @@
 
 #define FS 96000
 //#define FS 44100
+//#define FS 16000
 #define CONTROL_RATE 16000
 #define SHIFT_20_BIT 0xFFFFF
 #define SHIFT_31_BIT 0x7FFFFFFF
@@ -27,6 +28,7 @@ struct synth_params_t{
 	int16_t osc_mix;
 	uint16_t pitch;
 	uint16_t vel;
+	int16_t FM_mod_amp;
 	bool note_ON;
 
 };
