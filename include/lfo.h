@@ -40,7 +40,7 @@ class LFO {
 		int32_t lfo_amo = 0;
 
 		bool top;
-		bool FM_synth = false;
+		bool FM_synth;
 
 
 		/** BLALALALALALAFAFDDFAF

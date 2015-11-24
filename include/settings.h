@@ -28,9 +28,10 @@ struct synth_params_t{
 	int16_t osc_mix;
 	uint16_t pitch;
 	uint16_t vel;
-	int16_t FM_mod_amp;
 	bool note_ON;
-
+	int16_t FM_mod_amp;
+	uint8_t I;
+	bool FM_synth;
 };
 
 #endif /* INCLUDE_SETTINGS_H_ */

@@ -30,22 +30,47 @@ using namespace std;
 int32_t Oscillator::compute_osc(synth_params_t *synth_params)
 {
 	int32_t interp_lut,interp_lut_temp,frac,mod;
-	int64_t ph_mod_index;
+	int64_t ph_mod_index = 0;
 
+	/*
+	 * FM Synthesis
+	 *
+	 * Use a modulation wave to modify the instantaneus frequency of the
+	 * carrier wave. The equation for a frequency-modulated wave where both the
+	 * carrier and modulating waves are sinusoids is
+	 *
+	 * 		e = A*sin(alpha*t + I*sin(beta*t))
+	 *
+	 * 	where
+	 *
+	 * 		e     = instantaneous amplitude of the modulated carrier
+	 * 		alpha = the carrier frequency
+	 * 		beta  = the modulating frequency
+	 * 		I     = d/m = the modulation index, the ratio fo the peak deviation
+	 * 		        to the modulating requency
+	 *
+	 * See more about this amazing technique on John M.Chowwning paper on FM Synthesis
+	 *
+	 * */
+	if(FM_synth){
 
+		// Get modulator increment scaled by the modulation index I
+		ph_mod_index =((synth_params->I*synth_params->FM_mod_amp>>15));
 
-	ph_mod_index =((ph_inc_frac>>15)*(synth_params->FM_mod_amp));
-	ph_mod_index *= 10;
+		// Shift 20 bits as the fractional index of the carrier wave
+		ph_mod_index <<= 20;
 
-	ph_ind_frac += ph_mod_index;
-	if (ph_ind_frac>=(LUT_SIN_20_BIT))
-		ph_ind_frac -= (LUT_SIN_20_BIT);
+	}
+
+	/* If FM Synthesis is not enabled, the wavetable is read as usual with the calculated
+	 * fractional increment
+	 * */
+	ph_ind_frac += (ph_inc_frac + ph_mod_index);
+	ph_ind_frac %= LUT_SIN_20_BIT;
+
 
 	// Interpolate LUT
 	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_SIN_8_BIT)<<8;
-
-
-
 
 	return interp_lut;
 

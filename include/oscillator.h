@@ -55,7 +55,7 @@ class Oscillator {
 		int32_t triangle_ref;
 		int32_t square_out;
 
-		bool top;
+		bool top,FM_synth;
 		int32_t scaled_LUT;
 
 		/** Constructor.

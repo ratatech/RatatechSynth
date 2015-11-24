@@ -75,40 +75,58 @@ int main(void)
 
 	// Configure LFO
 	osc_shape_t shape_lfo = SIN;
+	lfo.FM_synth = false;
 	lfo.shape = shape_lfo;
+	/* LFO Amount Parameter
+	 *
+	 * lfo.lfo_amo = 0x7FFF;
+	 * lfo.lfo_amo = 0x4000;
+	 * lfo.lfo_amo = 0x2000;
+	 * lfo.lfo_amo = 0xA;
+	 * lfo.lfo_amo = 0;
+	 *
+	 * */
 	lfo.lfo_amo = 0x7FFF;
-//	lfo.lfo_amo = 0x4000;
-//	lfo.lfo_amo = 0x2000;
-//	lfo.lfo_amo = 0xA;
-	lfo.lfo_amo = 0;
-	lfo.setFreqFrac(1);
+	lfo.setFreqFrac(3);
 
 	//LFO destination
 	synth_params.lfo_dest = OSC2;
 
+	// Configure FM modulator oscillator
+	synth_params.FM_synth = true;
+	if(synth_params.FM_synth){
+		osc_shape_t shape_FM_mod = SIN;
+		FM_mod.shape = shape_FM_mod;
+		FM_mod.FM_synth = true;
+		FM_mod.lfo_amo = 0x7FFF;
+		synth_params.I = 20;
+		FM_mod.setFreqFrac(200);
+	}
+
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SIN;
+	if(synth_params.FM_synth){
+		osc_shape_t shape_osc1 = SIN;
+		osc1.FM_synth = synth_params.FM_synth;
+	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(800);
+	osc1.setFreqFrac(8000);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(800);
+	osc2.setFreqFrac(440);
 
-	// Mix Parameter between osc1 and osc2
-	//synth_params.osc_mix = 32768;
-	// 0x0000 Mix 100% Osc2
-	// 0x7FFF Mix 100% Osc1
-	// 0x4000 Mix 50%
-	synth_params.osc_mix = 0x0000;
+	/* Mix Parameter between osc1 and osc2
+	 *
+	 * synth_params.osc_mix = 32768;
+	 * 0x0000 Mix 100% Osc2
+	 * 0x7FFF Mix 100% Osc1
+	 * 0x4000 Mix 50%
+	 *
+	 * */
+	synth_params.osc_mix = 0x4000;
 
-	// Configure FM modulator oscillator
-	osc_shape_t shape_FM_mod = SIN;
-	FM_mod.shape = shape_FM_mod;
-	FM_mod.lfo_amo = 0x7FFF;
-	FM_mod.FM_synth = true;
-	FM_mod.setFreqFrac(2);
 
 	/* *****************************************************************************************
 	 *
@@ -284,20 +302,20 @@ inline void fill_buffer(void)
 		 * *****************************************************************************************/
 
 		osc_mix = osc1.compute_osc(&synth_params);
-//		osc_mix = ((int32_t)(osc_mix)*(synth_params.osc_mix)>>15);
-//
-//		// Modulate signal with the LFO
-//		if(synth_params.lfo_dest == OSC1){
-//
-//			osc1_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
-//
-//			// Mix LFO with amount parameter
-//			osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
-//		}
-//
-//		// Save temporal output
-//		osc1_mix_temp = osc_mix;
+		osc_mix = ((int32_t)(osc_mix)*(synth_params.osc_mix)>>15);
+
+		// Modulate signal with the LFO
+		if(synth_params.lfo_dest == OSC1){
+
+			osc1_mix_temp = osc_mix;
+			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
+
+			// Mix LFO with amount parameter
+			osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
+		}
+
+		// Save temporal output
+		osc1_mix_temp = osc_mix;
 
 		/* *****************************************************************************************
 		 * OSCILLATOR 2
@@ -305,18 +323,18 @@ inline void fill_buffer(void)
 		 * Compute a new oscillator2 sample and apply modulations
 		 * *****************************************************************************************/
 
-//		osc_mix = osc2.compute_osc(&synth_params);
-//		osc_mix = ((int32_t)(osc_mix)*(0x7FFF-synth_params.osc_mix)>>15);
-//
-//		// Modulate signal with the LFO
-//		if(synth_params.lfo_dest == OSC2){
-//
-//			osc2_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
-//
-//			// Mix LFO with amount parameter
-//			osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
-//		}
+		osc_mix = osc2.compute_osc(&synth_params);
+		osc_mix = ((int32_t)(osc_mix)*(0x7FFF-synth_params.osc_mix)>>15);
+
+		// Modulate signal with the LFO
+		if(synth_params.lfo_dest == OSC2){
+
+			osc2_mix_temp = osc_mix;
+			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
+
+			// Mix LFO with amount parameter
+			osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
+		}
 
 		/* *****************************************************************************************
 		 * OSC1/OSC2 MIXING
@@ -325,11 +343,11 @@ inline void fill_buffer(void)
 		 * Finally scale the signal to 12 bits and store it in the output buffer.
 		 * *****************************************************************************************/
 
-//		// Mix the two oscillators
-//		osc_mix += osc1_mix_temp;
-//
-//		// Modulate signal with the ADSR envelope
-//		osc_mix = ((int32_t)(osc_mix)*(synth_params.adsr_amp)>>15);
+		// Mix the two oscillators
+		osc_mix += osc1_mix_temp;
+
+		// Modulate signal with the ADSR envelope
+		osc_mix = ((int32_t)(osc_mix)*(synth_params.adsr_amp)>>15);
 
 		// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);
