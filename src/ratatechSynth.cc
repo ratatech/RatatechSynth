@@ -57,14 +57,14 @@ int32_t randNum;
 uint32_t noteCounter = 0;
 int16_t adc;
 
-uint8_t Q,fc = 0;
+uint32_t Q,fc = 0;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
 uint16_t octaveCounter = 0;
 
 enum application_e {NORMAL,NO_ADSR};
-application_e app = NO_ADSR;
+application_e app = NORMAL;
 
 
 int main(void)
@@ -86,21 +86,21 @@ int main(void)
 	 * lfo.lfo_amo = 0;
 	 *
 	 * */
-	lfo.lfo_amo = 0x7FFF;
-	lfo.setFreqFrac(3);
+	lfo.lfo_amo = 0x0;
+	lfo.setFreqFrac(0.1);
 
 	//LFO destination
 	synth_params.lfo_dest = OSC2;
 
 	// Configure FM modulator oscillator
-	synth_params.FM_synth = true;
+	synth_params.FM_synth = false;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_FM_mod = SIN;
 		FM_mod.shape = shape_FM_mod;
 		FM_mod.FM_synth = true;
 		FM_mod.lfo_amo = 0x7FFF;
-		synth_params.I = 20;
-		FM_mod.setFreqFrac(200);
+		synth_params.I = 1;
+		FM_mod.setFreqFrac(2000);
 	}
 
 	// Configure oscillator 1
@@ -110,10 +110,10 @@ int main(void)
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(8000);
+	osc1.setFreqFrac(2600);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SIN;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(440);
 
@@ -125,7 +125,7 @@ int main(void)
 	 * 0x4000 Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x4000;
+	synth_params.osc_mix = 0x8000;
 
 
 	/* *****************************************************************************************
@@ -137,9 +137,9 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	adsrEnv.attack =0.2;
-	adsrEnv.decay = 0.2;
-	adsrEnv.sustain = 0.7;
-	adsrEnv.release = 0.1;
+	adsrEnv.decay = 0.3;
+	adsrEnv.sustain = 0.8;
+	adsrEnv.release = 0.6;
 	adsrEnv.calcAdsrSteps();
 
 
@@ -201,7 +201,8 @@ inline void low_rate_tasks(void){
 
 			adsrEnv.update(&synth_params);
 			lfo.update(&synth_params);
-
+			/*Update FM modulator*/
+			FM_mod.update(&synth_params);
 
 			//Trigger notes base on a pseudo-random number generation
 			if(randomSeq){
@@ -255,14 +256,15 @@ inline void low_rate_tasks(void){
 			}
 
 			// Set potentiometer values
-			potF1P1.write(fc);
-			potF1P2.write(fc);
-			potF2P1.write(fc);
-			potF2P2.write(fc);
+//			potF1P1.write(fc);
+//			potF1P2.write(fc);
+//			potF2P1.write(fc);
+//			potF2P2.write(fc);
 
-
-			//brightness = (int16_t)((double)adsrEnv.adsr_amp*1000/0x7FFF);
-			TIM3->CCR2 = 1000;
+			//fc = 255-(adsrEnv.adsr_amp>>7);
+			fc = (int16_t)((double)(adsrEnv.adsr_amp)*1000/0x7FFF);
+			//fc = 500;
+			TIM3->CCR2 = fc;
 
 
 		break;

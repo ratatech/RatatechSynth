@@ -35,7 +35,7 @@ int32_t Oscillator::compute_osc(synth_params_t *synth_params)
 	/*
 	 * FM Synthesis
 	 *
-	 * Use a modulation wave to modify the instantaneus frequency of the
+	 * Use a modulation wave to modify the instantaneous frequency of the
 	 * carrier wave. The equation for a frequency-modulated wave where both the
 	 * carrier and modulating waves are sinusoids is
 	 *
@@ -46,8 +46,8 @@ int32_t Oscillator::compute_osc(synth_params_t *synth_params)
 	 * 		e     = instantaneous amplitude of the modulated carrier
 	 * 		alpha = the carrier frequency
 	 * 		beta  = the modulating frequency
-	 * 		I     = d/m = the modulation index, the ratio fo the peak deviation
-	 * 		        to the modulating requency
+	 * 		I     = d/m = the modulation index, the ratio of the peak deviation
+	 * 		        to the modulating frequency
 	 *
 	 * See more about this amazing technique on John M.Chowwning paper on FM Synthesis
 	 *
