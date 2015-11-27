@@ -86,11 +86,15 @@ void TIM_Config(void)
 
 
 	/* PWM Timer3 configuration*/
+
+	/*
+	 * PWM_frequency = timer_tick_frequency / (TIM_Period + 1)
+	*/
 	TIM_TimeBaseStructInit( &timerInitStructure );
-	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV4;
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 1000 - 1;   // 0..999
-	timerInitStructure.TIM_Prescaler = 240 - 1; // Div 240
+	timerInitStructure.TIM_Period = (0x10000>>2) - 1;   // 0..999
+	timerInitStructure.TIM_Prescaler = 0; // Div 240
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM3, &timerInitStructure);
 	/* TIM3 Main Output Enable */
