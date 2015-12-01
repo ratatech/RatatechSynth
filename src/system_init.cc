@@ -133,7 +133,7 @@ void GPIO_Conf_Init(void)
 	/* CS POT_F1P1 (PA12)*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* CS POT_F1P2 (PA8)
@@ -150,8 +150,9 @@ void GPIO_Conf_Init(void)
 
 	/* Setup Blue & Green LED on STM32-Discovery Board to use PWM.*/
 	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
+
 	GPIO_Init( GPIOC, &GPIO_InitStructure );
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
 

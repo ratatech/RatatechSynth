@@ -106,8 +106,8 @@ void TIM_Config(void)
 	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	timeOCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	timeOCInitStructure.TIM_Pulse = 0;
-//	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
-//	timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	//timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
     TIM_OC2Init( TIM3, &timeOCInitStructure );
     TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 

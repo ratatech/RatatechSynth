@@ -73,6 +73,8 @@ int main(void)
 	// Init system and peripherals
 	ratatech_init();
 
+	GPIOA->BSRR = GPIO_Pin_12;
+
 	// Configure LFO
 	osc_shape_t shape_lfo = SIN;
 	lfo.FM_synth = false;
@@ -125,7 +127,7 @@ int main(void)
 	 * 0x4000 Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x4000;
+	synth_params.osc_mix = 0x0000;
 
 
 	/* *****************************************************************************************
@@ -137,9 +139,9 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	adsrEnv.attack =0.6;
-	adsrEnv.decay = 0.1;
+	adsrEnv.decay = 0.3;
 	adsrEnv.sustain = 0.5;
-	adsrEnv.release = 0.7;
+	adsrEnv.release = 0.1;
 	adsrEnv.calcAdsrSteps();
 
 
@@ -267,7 +269,7 @@ inline void low_rate_tasks(void){
 			//fc = 0;
 			//fc = 65535 - 1;
 			//fc = 4096;
-			//fc = 0x10000>>1;
+			//fc = 0x10000>>2;
 			TIM3->CCR2 = fc;
 
 
