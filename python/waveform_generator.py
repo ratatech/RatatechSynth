@@ -55,11 +55,16 @@ import matplotlib.pyplot as plt
 
 def writeTable(name,N,data):
     
+    lineBreakCtr = 0
     outstring = 'const int16_t ' + str(name) + '[' + str(N) + '] = {'
     for element in data:
         outstring = outstring + str(element) + ','
-        if (len(outstring)%50)==0:
+        lineBreakCtr = lineBreakCtr + len(str(element)) + 1
+        if (lineBreakCtr)>=100:
             outstring = outstring + '\n'
+            outstring = outstring + '                                         '
+            lineBreakCtr = 0
+        
     outstring = outstring + '};'
     return outstring
 
