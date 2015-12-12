@@ -37,7 +37,7 @@ class ADSREnv {
  	 		adsr_mode = mode;
  	 		note_ON = false;
  	 		adsr_state = IDLE_STATE;
- 	 		k = 0.0009;
+ 	 		k = 0.09;
 		}
 
 		/**

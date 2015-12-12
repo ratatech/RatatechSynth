@@ -89,10 +89,10 @@ int main(void)
 	 *
 	 * */
 	lfo.lfo_amo = 0x0;
-	lfo.setFreqFrac(0.1);
+	lfo.setFreqFrac(50);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC2;
+	synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = true;
@@ -101,7 +101,7 @@ int main(void)
 		FM_mod.shape = shape_FM_mod;
 		FM_mod.FM_synth = true;
 		FM_mod.lfo_amo = 0x7FFF;
-		synth_params.I = 10;
+		synth_params.I = 7;
 		FM_mod.setFreqFrac(2000);
 	}
 
@@ -127,7 +127,7 @@ int main(void)
 	 * 0x4000 Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x0000;
+	synth_params.osc_mix = 0x0;
 
 
 	/* *****************************************************************************************
@@ -138,10 +138,10 @@ int main(void)
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
-	adsrEnv.attack =0.6;
-	adsrEnv.decay = 0.3;
-	adsrEnv.sustain = 0.5;
-	adsrEnv.release = 0.1;
+	adsrEnv.attack =0.5;
+	adsrEnv.decay = 0.2;
+	adsrEnv.sustain = 0.99;
+	adsrEnv.release = 0.21;
 	adsrEnv.calcAdsrSteps();
 
 
@@ -264,7 +264,8 @@ inline void low_rate_tasks(void){
 //			potF2P2.write(fc);
 
 			//fc = 255-(adsrEnv.adsr_amp>>7);
-			fc = (int16_t)((double)(adsrEnv.adsr_amp)*(0x10000>>2)/0x7FFF);
+			fc = (int16_t)((double)(adsrEnv.adsr_amp)*(0x10000>>7)/0x7FFF);
+			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			//fc = 13107;
 			//fc = 0;
 			//fc = 65535 - 1;
