@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsrEnv(EXP);
+ADSREnv adsrEnv(EXP,0.009);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -138,12 +138,12 @@ int main(void)
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
-	adsrEnv.attack =0.5;
-	adsrEnv.decay = 0.2;
-	adsrEnv.sustain = 0.99;
-	adsrEnv.release = 0.21;
+	adsrEnv.attack  = 1;
+	adsrEnv.decay   = 2;
+	adsrEnv.sustain = 0.5;
+	adsrEnv.release = 2;
 	adsrEnv.calcAdsrSteps();
-
+	adsrEnv.adsr_state = ATTACK_STATE;
 
 	//Pre-fill the output buffer
 	fill_buffer();
