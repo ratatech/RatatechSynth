@@ -31,11 +31,13 @@ state = ADSR_PAR.state_att;
 peakLevel = ADSR_PAR.peak_att;
 sgn = ADSR_PAR.sgn_att;
 ADSR_STATE = 1;
-
+env = 0;
+env_mem = [];
 % Run the envelope
 for i=[1:N]
-	% Output = signal * envelope
-	x(i) = x(i) * (env);
+   % Output = signal * envelope
+    x(i) = x(i) * (env);
+    env_mem = [env_mem,env];
     state = b*state;
     env = (peakLevel+sgn*(((state - ADSR_PAR.expMin)) * range) + offs);
 
@@ -79,6 +81,7 @@ end
 
 figure(1)
 plot(t/fs,x)
-hold on;
 
-hold off;
+envelope_q15 = (env_mem*2^31)/2^16;
+figure(2)
+plot(envelope_q15)

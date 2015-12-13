@@ -24,9 +24,9 @@ class ADSREnv {
 		int8_t env_bits;
 		int16_t adsr_amp;
 		adsr_state_e adsr_state;
-		adsr_mode_e adsr_mode;
+		adsr_mode_e adsr_mode_att,adsr_mode_dec,adsr_mode_rel;
 		int64_t b_att,range_att,offs_att,state_att,peak_att,sgn_att,b_dec,range_dec,offs_dec,state_dec,peak_dec,sgn_dec;
-		int64_t b_rel,range_rel,offs_rel,state_rel,peak_rel,sgn_rel,env_max,k_int,env_state,sustain_lvl;
+		int64_t b_rel,range_rel,offs_rel,state_rel,peak_rel,sgn_rel,env_max,k_int,env_state,sustain_lvl,counter,init_state_att,init_state_dec,init_state_rel;
 		bool note_ON;
 
 
@@ -34,14 +34,16 @@ class ADSREnv {
 		 * Set the Linear/Exponential envelope generator mode and initialize several parameters
 		 * @param mode
 		 */
-		ADSREnv(adsr_mode_e mode, double k_in){
- 	 		adsr_mode = mode;
+		ADSREnv(adsr_mode_e mode_att,adsr_mode_e mode_dec,adsr_mode_e mode_rel, double k_in){
+ 	 		adsr_mode_att = mode_att;
+ 	 		adsr_mode_dec = mode_dec;
+ 	 		adsr_mode_rel = mode_rel;
  	 		note_ON = false;
  	 		adsr_state = IDLE_STATE;
  	 		k = k_in;
  	 		env_bits = 31;
  	 		env_max = (1<<env_bits)-1;
- 	 		k_int = (int32_t)(k*env_max);
+ 	 		k_int = (int64_t)(k*env_max);
 		}
 
 		/**
@@ -59,7 +61,6 @@ class ADSREnv {
 		 * @param mode
 		 */
 		void calcAttack(double time, adsr_mode_e mode){
-			double tempCalc;
 
 			switch(mode){
 
@@ -69,6 +70,7 @@ class ADSREnv {
 					range_att = env_max;
 					offs_att = 0;
 					state_att = k_int;
+					init_state_att = state_att;
 					peak_att = 0;
 					sgn_att = 1;
 				break;
@@ -79,6 +81,7 @@ class ADSREnv {
 					range_att = env_max;
 					offs_att = 0;
 					state_att = k_int+env_max;
+					init_state_att = state_att;
 					peak_att = env_max;
 					sgn_att = -1;
 				break;
@@ -101,6 +104,7 @@ class ADSREnv {
 		            range_dec = env_max-sustain_lvl;
 		            offs_dec = sustain_lvl;
 		            state_dec = k_int+env_max;
+		            init_state_dec = state_dec;
 		            peak_dec = 0;
 		            sgn_dec = 1;
 				break;
@@ -111,6 +115,7 @@ class ADSREnv {
 		            range_dec = env_max-sustain_lvl;
 		            offs_dec = 0;
 		            state_dec = k_int;
+		            init_state_dec = state_dec;
 		            peak_dec = env_max;
 		            sgn_dec = -1;
 				break;
@@ -133,6 +138,7 @@ class ADSREnv {
 					range_rel = sustain_lvl;
 		            offs_rel = 0;
 		            state_rel = env_max+k_int;
+		            init_state_rel = state_rel;
 		            peak_rel = 0;
 		            sgn_rel = 1;
 				break;
@@ -143,11 +149,28 @@ class ADSREnv {
 		            range_rel = sustain_lvl;
 		            offs_rel = 0;
 		            state_rel = k_int;
+		            init_state_rel = state_rel;
 		            peak_rel = sustain_lvl;
 		            sgn_rel = -1;
 				break;
 
 			}
+		}
+		/**
+		 * Reset state internal values to the original
+		 */
+		void initStates(void){
+//			if(adsr_amp==0){
+//				state_att = init_state_att;
+//			}else{
+//				state_att = init_state_att+(adsr_amp<<16);
+//				range_att = env_max-(adsr_amp<<16);
+//			}
+////			state_att = init_state_att;
+//			state_dec = init_state_dec;
+//			state_rel = init_state_rel;
+			adsr_state = ATTACK_STATE;
+
 		}
 
 		/**
@@ -155,10 +178,13 @@ class ADSREnv {
 		 */
 		void calcAdsrSteps(void){
 			sustain_lvl = (int64_t)(sustain*env_max);
-			calcAttack(attack,LOG);
-			calcDecay(decay,LOG);
-			calcRelease(release,LOG);
-
+			counter = 0;
+			calcAttack(attack,adsr_mode_att);
+			calcDecay(decay,adsr_mode_dec);
+			calcRelease(release,adsr_mode_rel);
+//			calcAttack(attack,EXP);
+//			calcDecay(decay,EXP);
+//			calcRelease(release,EXP);
 
 //			if(adsr_mode == LIN){
 //
@@ -213,30 +239,32 @@ class ADSREnv {
 					int64_t temp;
 					temp = (b_att*state_att);
 					state_att = temp>>env_bits;
-					temp = (peak_att+sgn_att*(((state_att - k_int)) * range_att)>>env_bits + offs_att);
-					adsr_amp = temp>>15;
+					temp = (peak_att+sgn_att*(((state_att - k_int) * range_att)>>env_bits) + offs_att);
+					adsr_amp = temp>>16;
 					if (adsr_amp >=(0x7FFF)  || adsr_amp <0)
 					{
 						adsr_amp = 0x7FFF;
 						adsr_state = DECAY_STATE;
 						break;
 					}
+					counter++;
 
 				break;
 
 				case DECAY_STATE:
 					temp = (b_dec*state_dec);
 					state_dec = temp>>env_bits;
-					temp = (peak_dec+sgn_dec*(((state_dec - k_int)) * range_dec)>>env_bits + offs_dec);
-					adsr_amp = temp>>15;
-					if (adsr_amp <=(sustain_lvl>>15))
+					temp = peak_dec+sgn_dec*(((state_dec - k_int) * range_dec)>>env_bits) + offs_dec;
+					adsr_amp = temp>>16;
+					if (adsr_amp <=(sustain_lvl>>16))
 					{
-						adsr_amp = sustain_lvl>>15;
+						adsr_amp = sustain_lvl>>16;
 						if (note_ON)
 						{
 							adsr_state = SUSTAIN_STATE;
 						}else{
 							adsr_state = RELEASE_STATE;
+							range_rel = adsr_amp<<16;
 						}
 						break;
 					}
@@ -253,8 +281,8 @@ class ADSREnv {
 
 					temp = (b_rel*state_rel);
 					state_rel = temp>>env_bits;
-					temp = (peak_rel+sgn_rel*(((state_rel - k_int)) * range_rel)>>env_bits + offs_rel);
-					adsr_amp = temp>>15;
+					temp = (peak_rel+sgn_rel*(((state_rel - k_int) * range_rel)>>env_bits) + offs_rel);
+					adsr_amp = temp>>16;
 //					//trace_printf("%i\n",adsr_amp);
 					if (adsr_amp < 0)
 					{

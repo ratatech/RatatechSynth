@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsrEnv(EXP,0.09);
+ADSREnv adsrEnv(EXP,EXP,EXP,0.09);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -95,7 +95,7 @@ int main(void)
 	synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
-	synth_params.FM_synth = true;
+	synth_params.FM_synth = false;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_FM_mod = SIN;
 		FM_mod.shape = shape_FM_mod;
@@ -106,7 +106,7 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SAW;
+	osc_shape_t shape_osc1 = SIN;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
@@ -127,7 +127,7 @@ int main(void)
 	 * 0x4000 Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x0;
+	synth_params.osc_mix = 0x7FFF;
 
 
 	/* *****************************************************************************************
@@ -138,12 +138,12 @@ int main(void)
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
-	adsrEnv.attack  = 0.5;
-	adsrEnv.decay   = 0.5;
+	adsrEnv.attack  = 0.1;
+	adsrEnv.decay   = 0.2;
 	adsrEnv.sustain = 0.5;
-	adsrEnv.release = 0.5;
+	adsrEnv.release = 0.2;
 	adsrEnv.calcAdsrSteps();
-
+	//adsrEnv.adsr_state = ATTACK_STATE;
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -183,7 +183,7 @@ inline void low_rate_tasks(void){
 					adsrEnv.calcAdsrSteps();
 					adsrEnv.adsr_state = RELEASE_STATE;
 					adsrEnv.note_ON = false;
-					adsrEnv.range_rel = adsrEnv.adsr_amp<<15;
+					adsrEnv.range_rel = adsrEnv.adsr_amp<<16;
 				}
 			}
 
@@ -194,7 +194,7 @@ inline void low_rate_tasks(void){
 				osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
 				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
 				if(midi.attack_trigger){
-					adsrEnv.adsr_state = ATTACK_STATE;
+					adsrEnv.initStates();
 					midi.attack_trigger = false;
 
 				}
