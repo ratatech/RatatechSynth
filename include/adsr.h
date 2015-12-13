@@ -22,12 +22,11 @@ class ADSREnv {
 
 		double attack,decay,sustain,release,k;
 		int8_t env_bits;
-		int16_t adsr_amp,sustain_lvl;
+		int16_t adsr_amp;
 		adsr_state_e adsr_state;
 		adsr_mode_e adsr_mode;
-		int32_t ph_inc_A,ph_inc_D,ph_inc_S,ph_inc_R,ph_ind;
-		int32_t b_att,range_att,offs_att,state_att,peak_att,sgn_att,b_dec,range_dec,offs_dec,state_dec,peak_dec,sgn_dec;
-		int32_t b_rel,range_rel,offs_rel,state_rel,peak_rel,sgn_rel,env_max,k_int,env_state;
+		int64_t b_att,range_att,offs_att,state_att,peak_att,sgn_att,b_dec,range_dec,offs_dec,state_dec,peak_dec,sgn_dec;
+		int64_t b_rel,range_rel,offs_rel,state_rel,peak_rel,sgn_rel,env_max,k_int,env_state,sustain_lvl;
 		bool note_ON;
 
 
@@ -66,7 +65,7 @@ class ADSREnv {
 
 				case EXP:
 
-					b_att = (int32_t)round((double)pow((k+1)/k,1/(time*CONTROL_RATE))*env_max);
+					b_att = (int64_t)round((double)pow((k+1)/k,1/(time*CONTROL_RATE))*env_max);
 					range_att = env_max;
 					offs_att = 0;
 					state_att = k_int;
@@ -76,7 +75,7 @@ class ADSREnv {
 
 				case LOG:
 
-					b_att = (int32_t)round((double)pow(k/(k+1),1/(time*CONTROL_RATE))*env_max);
+					b_att = (int64_t)round((double)pow(k/(k+1),1/(time*CONTROL_RATE))*env_max);
 					range_att = env_max;
 					offs_att = 0;
 					state_att = k_int+env_max;
@@ -98,7 +97,7 @@ class ADSREnv {
 			switch(mode){
 
 				case EXP:
-					b_dec = (int32_t)round((double)pow(k/(k+1),1/(time*CONTROL_RATE))*env_max);
+					b_dec = (int64_t)round((double)pow(k/(k+1),1/(time*CONTROL_RATE))*env_max);
 		            range_dec = env_max-sustain_lvl;
 		            offs_dec = sustain_lvl;
 		            state_dec = k_int+env_max;
@@ -108,7 +107,7 @@ class ADSREnv {
 
 				case LOG:
 
-					b_dec = (int32_t)round((double)pow((k+1)/k,1/(time*CONTROL_RATE))*env_max);
+					b_dec = (int64_t)round((double)pow((k+1)/k,1/(time*CONTROL_RATE))*env_max);
 		            range_dec = env_max-sustain_lvl;
 		            offs_dec = 0;
 		            state_dec = k_int;
@@ -130,7 +129,7 @@ class ADSREnv {
 
 				case EXP:
 
-					b_rel = (int32_t)round((double)pow(k/(k+1),1/(time*CONTROL_RATE))*env_max);
+					b_rel = (int64_t)round((double)pow(k/(k+1),1/(time*CONTROL_RATE))*env_max);
 					range_rel = sustain_lvl;
 		            offs_rel = 0;
 		            state_rel = env_max+k_int;
@@ -140,7 +139,7 @@ class ADSREnv {
 
 				case LOG:
 
-		            b_rel = (int32_t)round((double)pow((k+1)/k,1/(time*CONTROL_RATE))*env_max);
+		            b_rel = (int64_t)round((double)pow((k+1)/k,1/(time*CONTROL_RATE))*env_max);
 		            range_rel = sustain_lvl;
 		            offs_rel = 0;
 		            state_rel = k_int;
@@ -155,10 +154,10 @@ class ADSREnv {
 		 * Calculate the number of steps needed in each of the ADSR states
 		 */
 		void calcAdsrSteps(void){
-			sustain_lvl = (int32_t)(sustain*env_max);
-			calcAttack(attack,EXP);
-			calcDecay(decay,EXP);
-			calcRelease(release,EXP);
+			sustain_lvl = (int64_t)(sustain*env_max);
+			calcAttack(attack,LOG);
+			calcDecay(decay,LOG);
+			calcRelease(release,LOG);
 
 
 //			if(adsr_mode == LIN){
@@ -214,8 +213,8 @@ class ADSREnv {
 					int64_t temp;
 					temp = (b_att*state_att);
 					state_att = temp>>env_bits;
-					adsr_amp = (peak_att+sgn_att*(((state_att - k_int)) * range_att)>>env_bits + offs_att);
-					adsr_amp >>= 15;
+					temp = (peak_att+sgn_att*(((state_att - k_int)) * range_att)>>env_bits + offs_att);
+					adsr_amp = temp>>15;
 					if (adsr_amp >=(0x7FFF)  || adsr_amp <0)
 					{
 						adsr_amp = 0x7FFF;
@@ -226,16 +225,13 @@ class ADSREnv {
 				break;
 
 				case DECAY_STATE:
-//
-//					temp = synth_params->adsr_amp<<15;
-//					temp *= decay_coeff;
-//					temp >>= 31;
-//					temp += decay_init_val;
-//					adsr_amp = temp>>15;
-//					//trace_printf("%i\n",adsr_amp);
-					if (adsr_amp <=(sustain_lvl))
+					temp = (b_dec*state_dec);
+					state_dec = temp>>env_bits;
+					temp = (peak_dec+sgn_dec*(((state_dec - k_int)) * range_dec)>>env_bits + offs_dec);
+					adsr_amp = temp>>15;
+					if (adsr_amp <=(sustain_lvl>>15))
 					{
-						adsr_amp = sustain_lvl;
+						adsr_amp = sustain_lvl>>15;
 						if (note_ON)
 						{
 							adsr_state = SUSTAIN_STATE;
@@ -255,11 +251,10 @@ class ADSREnv {
 
 				case RELEASE_STATE:
 
-//					temp = synth_params->adsr_amp<<15;
-//					temp *= release_coeff;
-//					temp >>= 31;
-//					temp += release_init_val;
-//					adsr_amp = temp>>15;
+					temp = (b_rel*state_rel);
+					state_rel = temp>>env_bits;
+					temp = (peak_rel+sgn_rel*(((state_rel - k_int)) * range_rel)>>env_bits + offs_rel);
+					adsr_amp = temp>>15;
 //					//trace_printf("%i\n",adsr_amp);
 					if (adsr_amp < 0)
 					{

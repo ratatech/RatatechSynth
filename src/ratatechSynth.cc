@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsrEnv(EXP,0.009);
+ADSREnv adsrEnv(EXP,0.09);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -115,7 +115,7 @@ int main(void)
 	osc1.setFreqFrac(2600);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(440);
 
@@ -138,12 +138,12 @@ int main(void)
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
-	adsrEnv.attack  = 1;
-	adsrEnv.decay   = 2;
+	adsrEnv.attack  = 0.5;
+	adsrEnv.decay   = 0.5;
 	adsrEnv.sustain = 0.5;
-	adsrEnv.release = 2;
+	adsrEnv.release = 0.5;
 	adsrEnv.calcAdsrSteps();
-	adsrEnv.adsr_state = ATTACK_STATE;
+
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -183,6 +183,7 @@ inline void low_rate_tasks(void){
 					adsrEnv.calcAdsrSteps();
 					adsrEnv.adsr_state = RELEASE_STATE;
 					adsrEnv.note_ON = false;
+					adsrEnv.range_rel = adsrEnv.adsr_amp<<15;
 				}
 			}
 
@@ -410,7 +411,7 @@ void EXTI0_IRQHandler(void)
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
     	//Set freq
-    	osc1.setFreqFrac(300);
+    	osc1.setFreqFrac(12000);
     	adsrEnv.note_ON = true;
 		adsrEnv.adsr_state = ATTACK_STATE;
 		adsrEnv.calcAdsrSteps();
