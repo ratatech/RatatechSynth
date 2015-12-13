@@ -7,9 +7,9 @@ state = 0;
 ampli = 1;
 
 
-attackTime = 1;
-decayTime = 2;
-releaseTime = 2;
+attackTime = 0.3;
+decayTime = 0.2;
+releaseTime = 0.2;
 sustainLevel = 0.5;
 
 expMin = 0.009; % adjust to change curvature

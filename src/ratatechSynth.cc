@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsrEnv(LOG,EXP,EXP,0.09);
+ADSREnv adsr_vol(LOG,EXP,EXP,0.9),adsr_fc(EXP,EXP,EXP,0.9);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -106,7 +106,7 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SIN;
+	osc_shape_t shape_osc1 = SAW;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
@@ -138,12 +138,12 @@ int main(void)
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
-	adsrEnv.attack  = 0.1;
-	adsrEnv.decay   = 0.2;
-	adsrEnv.sustain = 0.5;
-	adsrEnv.release = 0.2;
-	adsrEnv.calcAdsrSteps();
-	//adsrEnv.adsr_state = ATTACK_STATE;
+	adsr_vol.attack  = 0.08;
+	adsr_vol.decay   = 0.01;
+	adsr_vol.sustain = 0.6;
+	adsr_vol.release = 0.08;
+	adsr_vol.calcAdsrSteps();
+	//adsr_vol.adsr_state = ATTACK_STATE;
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -176,14 +176,14 @@ inline void low_rate_tasks(void){
 		case NORMAL:
 
 			//Check note button
-			if (adsrEnv.note_ON)
+			if (adsr_vol.note_ON)
 			{
 				if (!ButtonRead(GPIOA, GPIO_Pin_0))
 				{
-					adsrEnv.calcAdsrSteps();
-					adsrEnv.adsr_state = RELEASE_STATE;
-					adsrEnv.note_ON = false;
-					adsrEnv.range_rel = adsrEnv.adsr_amp<<16;
+					adsr_vol.calcAdsrSteps();
+					adsr_vol.adsr_state = RELEASE_STATE;
+					adsr_vol.note_ON = false;
+					adsr_vol.range_rel = adsr_vol.adsr_amp<<16;
 				}
 			}
 
@@ -194,15 +194,16 @@ inline void low_rate_tasks(void){
 				osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
 				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
 				if(midi.attack_trigger){
-					adsrEnv.initStates();
+					adsr_vol.initStates();
 					midi.attack_trigger = false;
 
 				}
-				//adsrEnv.note_ON = synth_params.note_ON;
+				//adsr_vol.note_ON = synth_params.note_ON;
 				midi.new_event = false;
 			}
 
-			adsrEnv.update(&synth_params);
+			adsr_vol.update(&synth_params);
+			//adsr_vol.update(&synth_params);
 			lfo.update(&synth_params);
 			/*Update FM modulator*/
 			FM_mod.update(&synth_params);
@@ -220,8 +221,8 @@ inline void low_rate_tasks(void){
 						randNum = 30;
 					//osc1.setFreqFrac(C4_Octave[octaveCounter]);
 					osc1.setFreqFrac(randNum);
-					//adsrEnv.note_ON = true;
-					adsrEnv.adsr_state = ATTACK_STATE;
+					//adsr_vol.note_ON = true;
+					adsr_vol.adsr_state = ATTACK_STATE;
 					noteCounter=0;
 					octaveCounter++;
 					if(octaveCounter>=12)
@@ -246,10 +247,10 @@ inline void low_rate_tasks(void){
 				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 			}
 
-			if(adsrEnv.adsr_state != SUSTAIN_STATE){
+			if(adsr_vol.adsr_state != SUSTAIN_STATE){
 
-				//fc = 255-(adsrEnv.adsr_amp>>7);
-				//fc = (adsrEnv.adsr_amp>>7)+1;
+				//fc = 255-(adsr_vol.adsr_amp>>7);
+				//fc = (adsr_vol.adsr_amp>>7)+1;
 				//fc = (lfo.lfo_amp>>7);
 				//fc = 4;
 				//fc = 0;
@@ -264,8 +265,8 @@ inline void low_rate_tasks(void){
 //			potF2P1.write(fc);
 //			potF2P2.write(fc);
 
-			//fc = 255-(adsrEnv.adsr_amp>>7);
-			fc = (int16_t)((double)(adsrEnv.adsr_amp)*(0x10000>>7)/0x7FFF);
+			//fc = 255-(adsr_vol.adsr_amp>>7);
+			fc = (int16_t)((double)(adsr_vol.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			//fc = 13107;
 			//fc = 0;
@@ -412,9 +413,9 @@ void EXTI0_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(12000);
-    	adsrEnv.note_ON = true;
-		adsrEnv.adsr_state = ATTACK_STATE;
-		adsrEnv.calcAdsrSteps();
+    	adsr_vol.note_ON = true;
+		adsr_vol.adsr_state = ATTACK_STATE;
+		adsr_vol.calcAdsrSteps();
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line0);
@@ -434,8 +435,8 @@ void EXTI1_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[2]);
-    	adsrEnv.note_ON = true;
-		adsrEnv.adsr_state = ATTACK_STATE;
+    	adsr_vol.note_ON = true;
+		adsr_vol.adsr_state = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line1);
@@ -455,8 +456,8 @@ void EXTI2_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[4]);
-    	adsrEnv.note_ON = true;
-		adsrEnv.adsr_state = ATTACK_STATE;
+    	adsr_vol.note_ON = true;
+		adsr_vol.adsr_state = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line2);
@@ -476,8 +477,8 @@ void EXTI3_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[5]);
-    	adsrEnv.note_ON = true;
-		adsrEnv.adsr_state = ATTACK_STATE;
+    	adsr_vol.note_ON = true;
+		adsr_vol.adsr_state = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line3);
@@ -497,8 +498,8 @@ void EXTI4_IRQHandler(void)
     {
     	//Set freq
     	osc1.setFreqFrac(C4_Octave[7]);
-    	adsrEnv.note_ON = true;
-		adsrEnv.adsr_state = ATTACK_STATE;
+    	adsr_vol.note_ON = true;
+		adsr_vol.adsr_state = ATTACK_STATE;
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line4);
@@ -520,7 +521,7 @@ void EXTI4_IRQHandler(void)
 //    {
 //    	//Set freq
 //    	osc1.setFreqFrac(C4_Octave[9]);
-//		adsrEnv.adsr_state = ATTACK_STATE;
+//		adsr_vol.adsr_state = ATTACK_STATE;
 //    }
 //    //we need to clear line pending bit manually
 //    EXTI_ClearITPendingBit(EXTI_Line5);
@@ -540,7 +541,7 @@ void EXTI4_IRQHandler(void)
 //    {
 //    	//Set freq
 //    	osc1.setFreqFrac(C4_Octave[10]);
-//		adsrEnv.adsr_state = ATTACK_STATE;
+//		adsr_vol.adsr_state = ATTACK_STATE;
 //    }
 //    //we need to clear line pending bit manually
 //    EXTI_ClearITPendingBit(EXTI_Line6);

@@ -16,6 +16,7 @@
 #define SHIFT_20_BIT 0xFFFFF
 #define SHIFT_31_BIT 0x7FFFFFFF
 #define SHIFT_15_BIT 0x7FFF
+#define PWM_PERIOD (0x10000>>2) - 1
 
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 enum lfo_dest_e {OSC1,OSC2,VCF} ;
