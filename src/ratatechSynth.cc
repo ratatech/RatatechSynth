@@ -139,17 +139,17 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.08;
+	adsr_vol.attack  = 0.2;
 	adsr_vol.decay   = 0.01;
 	adsr_vol.sustain = 0.6;
 	adsr_vol.release = 0.08;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.2;
+	adsr_fc.attack  = 0.07;
 	adsr_fc.decay   = 0.01;
 	adsr_fc.sustain = 0.8;
-	adsr_fc.release = 0.2;
+	adsr_fc.release = 0.02;
 	adsr_fc.calcAdsrSteps();
 
 	//Pre-fill the output buffer
