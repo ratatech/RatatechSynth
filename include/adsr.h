@@ -160,15 +160,31 @@ class ADSREnv {
 		 * Reset state internal values to the original
 		 */
 		void initStates(void){
-//			if(adsr_amp==0){
-//				state_att = init_state_att;
-//			}else{
-//				state_att = init_state_att+(adsr_amp<<16);
-//				range_att = env_max-(adsr_amp<<16);
-//			}
-////			state_att = init_state_att;
-//			state_dec = init_state_dec;
-//			state_rel = init_state_rel;
+				switch(adsr_mode_att){
+
+					case EXP:
+						if(adsr_amp==0){
+							state_att = init_state_att;
+						}else{
+							state_att = init_state_att;
+							range_att = env_max-(adsr_amp<<16);
+							offs_att = (adsr_amp<<16);
+						}
+					break;
+					case LOG:
+						if(adsr_amp==0){
+							state_att = init_state_att;
+							range_att = env_max;
+
+						}else{
+							state_att = init_state_att;
+							range_att = env_max-(adsr_amp<<16);
+						}
+					break;
+			}
+			//state_att = init_state_att;
+			state_dec = init_state_dec;
+			state_rel = init_state_rel;
 			adsr_state = ATTACK_STATE;
 
 		}
@@ -284,7 +300,7 @@ class ADSREnv {
 					temp = (peak_rel+sgn_rel*(((state_rel - k_int) * range_rel)>>env_bits) + offs_rel);
 					adsr_amp = temp>>16;
 //					//trace_printf("%i\n",adsr_amp);
-					if (adsr_amp < 0)
+					if (adsr_amp <= 0)
 					{
 						adsr_amp = 0;
 						adsr_state = IDLE_STATE;

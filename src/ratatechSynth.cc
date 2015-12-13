@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsrEnv(EXP,EXP,EXP,0.09);
+ADSREnv adsrEnv(LOG,EXP,EXP,0.09);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
