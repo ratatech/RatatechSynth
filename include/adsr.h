@@ -243,7 +243,7 @@ class ADSREnv {
 		 * Update ADSR states
 		 * @param synth_params
 		 */
-		void update(synth_params_t *synth_params){
+		int16_t update(void){
 
 
 			/********************************************//**
@@ -309,10 +309,6 @@ class ADSREnv {
 
 				break;
 			}
-
-
-			// Save calculated amplitude to the data structure
-			synth_params->adsr_amp = adsr_amp;
 
 
 		}

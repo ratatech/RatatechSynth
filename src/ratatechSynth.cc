@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsr_vol(LOG,EXP,EXP,0.9),adsr_fc(EXP,EXP,EXP,0.9);
+ADSREnv adsr_vol(LOG,EXP,EXP,0.09),adsr_fc(EXP,EXP,EXP,0.9);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -138,12 +138,19 @@ int main(void)
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
+	// Volume envelope
 	adsr_vol.attack  = 0.08;
 	adsr_vol.decay   = 0.01;
 	adsr_vol.sustain = 0.6;
 	adsr_vol.release = 0.08;
 	adsr_vol.calcAdsrSteps();
-	//adsr_vol.adsr_state = ATTACK_STATE;
+
+	// VCF envelope
+	adsr_fc.attack  = 0.2;
+	adsr_fc.decay   = 0.01;
+	adsr_fc.sustain = 0.8;
+	adsr_fc.release = 0.2;
+	adsr_fc.calcAdsrSteps();
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -184,6 +191,11 @@ inline void low_rate_tasks(void){
 					adsr_vol.adsr_state = RELEASE_STATE;
 					adsr_vol.note_ON = false;
 					adsr_vol.range_rel = adsr_vol.adsr_amp<<16;
+
+					adsr_fc.calcAdsrSteps();
+					adsr_fc.adsr_state = RELEASE_STATE;
+					adsr_fc.note_ON = false;
+					adsr_fc.range_rel = adsr_fc.adsr_amp<<16;
 				}
 			}
 
@@ -195,6 +207,7 @@ inline void low_rate_tasks(void){
 				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
 				if(midi.attack_trigger){
 					adsr_vol.initStates();
+					adsr_fc.initStates();
 					midi.attack_trigger = false;
 
 				}
@@ -202,8 +215,8 @@ inline void low_rate_tasks(void){
 				midi.new_event = false;
 			}
 
-			adsr_vol.update(&synth_params);
-			//adsr_vol.update(&synth_params);
+			adsr_vol.update();
+			adsr_fc.update();
 			lfo.update(&synth_params);
 			/*Update FM modulator*/
 			FM_mod.update(&synth_params);
@@ -266,7 +279,7 @@ inline void low_rate_tasks(void){
 //			potF2P2.write(fc);
 
 			//fc = 255-(adsr_vol.adsr_amp>>7);
-			fc = (int16_t)((double)(adsr_vol.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
+			fc = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			//fc = 13107;
 			//fc = 0;
@@ -281,7 +294,7 @@ inline void low_rate_tasks(void){
 		case NO_ADSR:
 
 			/*Set amplitude to 1, no ADSR*/
-			synth_params.adsr_amp = 0x7FFF;
+			synth_params.adsr_amp_vol = 0x7FFF;
 			/*Update LFO*/
 			lfo.update(&synth_params);
 			/*Update FM modulator*/
@@ -358,7 +371,7 @@ inline void fill_buffer(void)
 		osc_mix += osc1_mix_temp;
 
 		// Modulate signal with the ADSR envelope
-		osc_mix = ((int32_t)(osc_mix)*(synth_params.adsr_amp)>>15);
+		osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
 
 		// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);

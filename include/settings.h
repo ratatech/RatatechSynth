@@ -25,7 +25,7 @@ struct synth_params_t{
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	lfo_dest_e lfo_dest;
-	int16_t adsr_amp;
+	int16_t adsr_amp_vol;
 	int16_t osc_mix;
 	uint16_t pitch;
 	uint16_t vel;
