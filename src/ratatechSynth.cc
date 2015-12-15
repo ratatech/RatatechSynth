@@ -50,12 +50,12 @@ double env=0;
 bool status = true;
 int a = 0;
 bool low_rate_ISR_flag = false;
-bool useADC = false;
+bool useADC = true;
 bool randomSeq = false;
 
 int32_t randNum;
 uint32_t noteCounter = 0;
-int16_t adc;
+int32_t adc;
 
 uint32_t Q,fc = 0;
 
@@ -106,7 +106,7 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SAW;
+	osc_shape_t shape_osc1 = SQU;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
@@ -139,10 +139,10 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.2;
+	adsr_vol.attack  = 0.08;
 	adsr_vol.decay   = 0.01;
 	adsr_vol.sustain = 0.6;
-	adsr_vol.release = 0.08;
+	adsr_vol.release = 0.1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
@@ -248,10 +248,10 @@ inline void low_rate_tasks(void){
 			{
 
 
-				adc = (int16_t)((double)ADC_GetConversionValue(ADC1)*255/4095);
-
-				fc = adc;
-				trace_printf("%i\n",adc);
+				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
+				adc = ADC_GetConversionValue(ADC1);
+				fc = exp_curve_q15_12bit[adc];
+				trace_printf("%i\n",exp_curve_q15_12bit[adc]);
 
 				/* Probably overkill */
 				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
@@ -260,17 +260,6 @@ inline void low_rate_tasks(void){
 				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 			}
 
-			if(adsr_vol.adsr_state != SUSTAIN_STATE){
-
-				//fc = 255-(adsr_vol.adsr_amp>>7);
-				//fc = (adsr_vol.adsr_amp>>7)+1;
-				//fc = (lfo.lfo_amp>>7);
-				//fc = 4;
-				//fc = 0;
-				if(fc>250){
-					fc = 200;
-				}
-			}
 
 			// Set potentiometer values
 //			potF1P1.write(fc);
@@ -279,12 +268,13 @@ inline void low_rate_tasks(void){
 //			potF2P2.write(fc);
 
 			//fc = 255-(adsr_vol.adsr_amp>>7);
-			fc = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
+			//fc = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			//fc = 13107;
 			//fc = 0;
 			//fc = 65535 - 1;
-			//fc = 4096;
+//			fc = PWM_PERIOD;
+//			fc = 16384;
 			//fc = 0x10000>>2;
 			TIM3->CCR2 = fc;
 

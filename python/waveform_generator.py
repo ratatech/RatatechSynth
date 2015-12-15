@@ -73,7 +73,7 @@ filename = 'tables.cc'
 fp = open(filename, 'w')
 
 # Optionally plot the table
-plotting = False
+plotting = True
 
 file_header = """/*
 @file tables.cc
@@ -183,5 +183,28 @@ if plotting:
 
 # Write to output file
 fp.writelines(table)
+fp.writelines('\n\n')
+
+'''-------------------------------------------------------------------------------
+ POT EXP TABLE
+------------------------------------------------------------------------------'''
+bits = 12;
+N = (2**bits)-1;
+t = np.arange(0,N+1, dtype=np.float)
+c = 100;
+b = np.power((2**14/c),(np.divide(1.0, N)));
+exp_curve = np.int16(np.round(np.power(b, t)*c))
+
+name = 'exp_curve_q15_' + str(bits) + 'bit'
+table = writeTable(name,N,exp_curve)
+
+if plotting:
+    plt.figure(5)
+    plt.plot(exp_curve)
+    plt.show()
+
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
 
 fp.close()

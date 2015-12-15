@@ -9,9 +9,9 @@
 #define INCLUDE_SETTINGS_H_
 
 
-#define FS 96000
+//#define FS 96000
 //#define FS 44100
-//#define FS 16000
+#define FS 16000
 #define CONTROL_RATE 4000
 #define SHIFT_20_BIT 0xFFFFF
 #define SHIFT_31_BIT 0x7FFFFFFF

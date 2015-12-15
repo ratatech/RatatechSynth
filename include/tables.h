@@ -28,6 +28,6 @@ extern const int16_t env_up_lut_q15[LUT_ENV_5_BIT];
 extern const int16_t env_down_lut_q15[LUT_ENV_5_BIT];
 extern const int16_t sin_lut_lfo[LUT_ENV_5_BIT];
 extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];
-
+extern const int16_t exp_curve_q15_12bit[4096];
 
 #endif /* TABLES_H_ */
