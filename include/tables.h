@@ -11,23 +11,21 @@
 
 #include "arm_math.h"
 
-#define LUT_SIN_8_BIT 256
-#define LUT_TRI_8_BIT 512
-#define LUT_ENV_5_BIT 32
-#define LUT_LFO_5_BIT 32
-#define LUT_SIN_20_BIT LUT_SIN_8_BIT << 20
-#define LUT_TRI_20_BIT LUT_TRI_8_BIT << 20
-#define LUT_ENV_20_BIT LUT_ENV_5_BIT << 20
+#define LUT_8_BIT 256
+#define LUT_9_BIT 512
+#define LUT_10_BIT 1024
+#define LUT_5_BIT 32
+#define LUT_12_BIT 4096
+#define LUT_8_20_BIT LUT_8_BIT << 20
+#define LUT_5_20_BIT LUT_5_BIT << 20
 #define MIDI_FREQ_LUT_SIZE 128
 
-extern const int16_t sin_lut_q15[LUT_SIN_8_BIT];
-extern const int16_t tri_lut_q15[LUT_TRI_8_BIT];
-extern const int16_t saw_lut_q15[LUT_TRI_8_BIT];
-extern const int16_t square_lut_q15[LUT_TRI_8_BIT];
-extern const int16_t env_up_lut_q15[LUT_ENV_5_BIT];
-extern const int16_t env_down_lut_q15[LUT_ENV_5_BIT];
-extern const int16_t sin_lut_lfo[LUT_ENV_5_BIT];
+extern const int16_t sin_lut_q15[LUT_10_BIT];
+extern const int16_t tri_lut_q15[LUT_8_BIT];
+extern const int16_t saw_lut_q15[LUT_10_BIT];
+extern const int16_t squ_lut_q15[LUT_8_BIT];
+extern const int16_t sin_lut_lfo[LUT_5_BIT];
 extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];
-extern const int16_t exp_curve_q15_12bit[4096];
+extern const int16_t exp_curve_q15[4096];
 
 #endif /* TABLES_H_ */

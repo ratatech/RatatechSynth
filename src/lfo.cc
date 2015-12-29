@@ -30,8 +30,8 @@ void LFO::compute_lfo_Sine(void)
 {
 	uint32_t int_ind;
 	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac >=(LUT_SIN_20_BIT))
-		ph_ind_frac -= (LUT_SIN_20_BIT);
+	if (ph_ind_frac >=(LUT_8_20_BIT))
+		ph_ind_frac -= (LUT_8_20_BIT);
 
 	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
 	lfo_amp = sin_lut_q15[int_ind]<<8;
@@ -45,8 +45,8 @@ void LFO::compute_lfo_Triangle(void)
 
 	uint32_t int_ind;
 	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac>=(LUT_SIN_20_BIT<<1))
-		ph_ind_frac -= (LUT_SIN_20_BIT<<1);
+	if (ph_ind_frac>=(LUT_8_20_BIT<<1))
+		ph_ind_frac -= (LUT_8_20_BIT<<1);
 
 	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
 	lfo_amp = tri_lut_q15[int_ind]<<8;
@@ -61,8 +61,8 @@ void LFO::compute_lfo_Saw(void)
 {
 	uint32_t int_ind;
 	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac >=(LUT_SIN_20_BIT))
-		ph_ind_frac -= (LUT_SIN_20_BIT);
+	if (ph_ind_frac >=(LUT_8_20_BIT))
+		ph_ind_frac -= (LUT_8_20_BIT);
 
 	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
 

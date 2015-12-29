@@ -1,79 +1,27 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# 
-# 
-# # N = 2**5;
-# # t = np.arange(0,N, dtype=np.float)
-# # sinWave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**8-1)/2))
-# # 
-# # t = np.linspace( 0, 1, N )
-# # exp_line =  ( 1 - np.exp(-(1/t*44100)))
-# # print exp_line
-# # plt.plot(exp_line)
-# # plt.show()
-# 
-# 
-# ###############################
-# # EXPONENTIAL TABLE GENERATION
-# ###############################
-# fc_final =20e3;
-# fc_initial = 20;
-# potVal = 10e3;
-# potTaps = 255;
-# C = 1/(potVal*2*np.pi*fc_initial);
-# # Manually selected C
-# # C = 680e-9;
-# 
-# 
-# t = range(255, 0, -1)
-# eN = potTaps;
-# #a = 1/np.exp(t[-1]/tau);
-# a = 1;
-# tau = t[0]/np.log(eN/a);
-# Rfc_exp_8bit = a*np.exp(t/tau);
-# Rfc_lin = (t);
-# 
-# print(np.round(Rfc_exp_8bit))
-# 
-# 
-# Rfc_exp = np.round((Rfc_exp_8bit/potTaps)*potVal);
-# # Rfc_lin = np.round((Rfc_lin/potTaps)*potVal);
-# # 
-# fc_exp = (1/((Rfc_exp)*C*2*np.pi));
-# # fc_lin = (1/((Rfc_lin)*C*2*np.pi));
-# # 
-# # 
-# 
-# # plt.figure(1)
-# # plt.plot(fc_exp)
-# # plt.show()
-#  
-# plt.figure(2)
-# plt.plot(Rfc_exp_8bit)
-# plt.show()
 
-
-def writeTable(name,N,data):
+def writeTable(name,N,data,type):
     
     lineBreakCtr = 0
-    outstring = 'const int16_t ' + str(name) + '[' + str(N) + '] = {'
+    outstring = 'const ' + str(type) + ' ' + str(name) + '[' + str(N) + '] = {\n'
     for element in data:
         outstring = outstring + str(element) + ','
         lineBreakCtr = lineBreakCtr + len(str(element)) + 1
         if (lineBreakCtr)>=100:
             outstring = outstring + '\n'
-            outstring = outstring + '                                         '
+            #outstring = outstring + '                                         '
             lineBreakCtr = 0
         
     outstring = outstring + '};'
     return outstring
 
 # Define output file
-filename = 'tables.cc'
+filename = '../src/tables.cc'
 fp = open(filename, 'w')
 
 # Optionally plot the table
-plotting = True
+plotting = False
 
 file_header = """/*
 @file tables.cc
@@ -112,9 +60,11 @@ fp.writelines(file_header)
 bits = 10;
 N = 2**bits;
 t = np.arange(0,N, dtype=np.float)
-wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**bits-1)/2))
-name = 'sin_lut_q15_' + str(bits) + 'bit'
-table = writeTable(name,N,wave)
+wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**bits-1)/8))
+
+name = 'sin_lut_q15' 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,wave,'int16_t')
 
 if plotting:
     plt.figure(1)
@@ -128,15 +78,39 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  SAW TABLE
 ------------------------------------------------------------------------------'''
-bits = 8;
+bits = 10;
 N = 2**bits;
-t = np.arange(-128,128, dtype=np.float)
+t = np.floor(np.arange(-128,128,0.25, dtype=np.float))
 wave = np.int16(t)
-name = 'saw_lut_q15_' + str(bits) + 'bit'
-table = writeTable(name,N,wave)
+print(np.size(wave))
+name = 'saw_lut_q15' 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,wave,'int16_t')
 
 if plotting:
     plt.figure(2)
+    plt.plot(wave)
+    plt.show()
+
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+'''-------------------------------------------------------------------------------
+ TRIANGLE TABLE    
+------------------------------------------------------------------------------'''
+bits = 8;
+N = 2**bits;
+a = np.arange(-128,128,2, dtype=np.float)
+b = np.arange(127,-128,-2, dtype=np.float)
+t = np.append(a,b)
+wave = np.int16(t)
+name = 'tri_lut_q15' 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,wave,'int16_t')
+
+if plotting:
+    plt.figure(3)
     plt.plot(wave)
     plt.show()
 
@@ -152,11 +126,12 @@ N = 2**bits;
 ones_neg = np.ones(N/2)*(-N/2);
 ones_pos = np.ones(N/2)*((N/2)-1);
 wave = np.int16(np.concatenate((ones_neg,ones_pos), axis=1))
-name = 'squ_lut_q15_' + str(bits) + 'bit'
-table = writeTable(name,N,wave)
+name = 'squ_lut_q15' 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,wave,'int16_t')
 
 if plotting:
-    plt.figure(3)
+    plt.figure(4)
     plt.plot(wave)
     plt.show()
 
@@ -173,11 +148,12 @@ N = 2**bits;
 t = np.arange(0,N, dtype=np.float)
 wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**8-1)/2))
 
-name = 'sin_lut_q15_' + str(bits) + 'bit'
-table = writeTable(name,N,wave)
+name = 'sin_lfo_lut_q15' 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,wave,'int16_t')
 
 if plotting:
-    plt.figure(4)
+    plt.figure(5)
     plt.plot(wave)
     plt.show()
 
@@ -189,19 +165,39 @@ fp.writelines('\n\n')
  POT EXP TABLE
 ------------------------------------------------------------------------------'''
 bits = 12;
-N = (2**bits)-1;
-t = np.arange(0,N+1, dtype=np.float)
+N = (2**bits);
+t = np.arange(0,N, dtype=np.float)
 c = 100;
-b = np.power((2**14/c),(np.divide(1.0, N)));
+b = np.power((2**14/c),(np.divide(1.0, N-1)))
 exp_curve = np.int16(np.round(np.power(b, t)*c))
 
-name = 'exp_curve_q15_' + str(bits) + 'bit'
-table = writeTable(name,N,exp_curve)
+name = 'exp_curve_q15' 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,exp_curve,'int16_t')
 
 if plotting:
-    plt.figure(5)
+    plt.figure(6)
     plt.plot(exp_curve)
     plt.show()
+
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+'''-------------------------------------------------------------------------------
+ MIDI2FREQ TABLE
+------------------------------------------------------------------------------'''
+bits = 7;
+N = (2**bits);
+midi_table = np.array([])
+
+for midi_num in range(0,N):
+    midi_table = np.append(midi_table,np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000)
+
+print(np.size(midi_table))
+name = ' midi_freq_lut' 
+macro_N = 'MIDI_FREQ_LUT_SIZE'
+table = writeTable(name,macro_N,midi_table,'double')
 
 # Write to output file
 fp.writelines(table)

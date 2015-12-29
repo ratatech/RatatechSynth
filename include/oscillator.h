@@ -62,7 +62,7 @@ class Oscillator {
 		@param Scale table size.
 		*/
 		Oscillator(void){
-			scaled_LUT = (int32_t)(((double)LUT_SIN_8_BIT)*SHIFT_20_BIT);
+			scaled_LUT = (int32_t)(((double)LUT_8_BIT)*SHIFT_20_BIT);
 		}
 
 		/** BLALALALALALAFAFDDFAF
@@ -70,18 +70,11 @@ class Oscillator {
 		*/
 		void setFreqFrac(double freqHz)
 		{
-			ph_inc_frac = (int32_t)((((double)LUT_SIN_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
+			ph_inc_frac = (int32_t)((((double)LUT_10_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
 			k_frac = ph_inc_frac & 0xFFFFF;
 
-
-			if(shape == TRI)
-			{
-				ph_inc_frac = (int32_t)((((double)LUT_TRI_8_BIT/(double)FS)*(freqHz/2))*SHIFT_20_BIT);
-				k_frac = ph_inc_frac & 0xFFFFF;
-
-			}
-
 		}
+
 		/** BLALALALALALAFAFDDFAF
 		@param frequency FADFADFADFDFD
 		*/
@@ -103,7 +96,7 @@ class Oscillator {
 				break;
 
 				case SQU:
-					wavetable = square_lut_q15;
+					wavetable = squ_lut_q15;
 				break;
 			}
 

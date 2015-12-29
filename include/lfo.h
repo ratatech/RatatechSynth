@@ -48,11 +48,11 @@ class LFO {
 		*/
 		void setFreqFrac(double freqHz)
 		{
-			ph_inc_frac = (int32_t)((((double)LUT_SIN_8_BIT/(double)CONTROL_RATE)*freqHz)*1048576);
+			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)CONTROL_RATE)*freqHz)*1048576);
 
 			if(shape == TRI)
 			{
-				ph_inc_frac = (int32_t)((((double)LUT_TRI_8_BIT/(double)CONTROL_RATE)*freqHz)*1048576);
+				ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)CONTROL_RATE)*freqHz)*1048576);
 
 			}
 

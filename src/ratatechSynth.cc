@@ -57,7 +57,7 @@ int32_t randNum;
 uint32_t noteCounter = 0;
 int32_t adc;
 
-uint32_t Q,fc = 0;
+uint32_t Q,fc_adc,fc_env,fc = 0;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
@@ -106,16 +106,16 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SQU;
+	osc_shape_t shape_osc1 = SIN;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(2600);
+	osc1.setFreqFrac(1000);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SIN;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(440);
 
@@ -127,7 +127,7 @@ int main(void)
 	 * 0x4000 Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x7FFF;
+	synth_params.osc_mix = 0x0;
 
 
 	/* *****************************************************************************************
@@ -139,17 +139,17 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.08;
+	adsr_vol.attack  = 0.7;
 	adsr_vol.decay   = 0.01;
 	adsr_vol.sustain = 0.6;
 	adsr_vol.release = 0.1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.07;
-	adsr_fc.decay   = 0.01;
-	adsr_fc.sustain = 0.8;
-	adsr_fc.release = 0.02;
+	adsr_fc.attack  = 0.6;
+	adsr_fc.decay   = 0.1;
+	adsr_fc.sustain = 0.5;
+	adsr_fc.release = 0.2;
 	adsr_fc.calcAdsrSteps();
 
 	//Pre-fill the output buffer
@@ -250,8 +250,8 @@ inline void low_rate_tasks(void){
 
 				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
 				adc = ADC_GetConversionValue(ADC1);
-				fc = exp_curve_q15_12bit[adc];
-				trace_printf("%i\n",exp_curve_q15_12bit[adc]);
+				fc_adc = exp_curve_q15[adc];
+				trace_printf("%i\n",exp_curve_q15[adc]);
 
 				/* Probably overkill */
 				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
@@ -268,7 +268,7 @@ inline void low_rate_tasks(void){
 //			potF2P2.write(fc);
 
 			//fc = 255-(adsr_vol.adsr_amp>>7);
-			//fc = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
+			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			//fc = 13107;
 			//fc = 0;
@@ -276,6 +276,9 @@ inline void low_rate_tasks(void){
 //			fc = PWM_PERIOD;
 //			fc = 16384;
 			//fc = 0x10000>>2;
+			fc = fc_adc+fc_env;
+			if(fc > PWM_PERIOD)
+				fc = PWM_PERIOD;
 			TIM3->CCR2 = fc;
 
 
@@ -285,6 +288,7 @@ inline void low_rate_tasks(void){
 
 			/*Set amplitude to 1, no ADSR*/
 			synth_params.adsr_amp_vol = 0x7FFF;
+			adsr_vol.adsr_amp = 0x7FFF;
 			/*Update LFO*/
 			lfo.update(&synth_params);
 			/*Update FM modulator*/
