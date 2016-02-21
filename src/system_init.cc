@@ -83,10 +83,7 @@ void RCC_Clocks_Init(void)
 
 }
 /**
-  * @brief  Configures LED GPIO.
-  * @param  Led: Specifies the Led to be configured.
-  *   This parameter can be one of following parameters:
-  *     @arg LED2
+  * @brief  Configures GPIO.
   * @retval None
   */
 void GPIO_Conf_Init(void)

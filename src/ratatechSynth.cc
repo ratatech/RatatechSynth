@@ -76,6 +76,7 @@ int main(void)
 	GPIOA->BSRR = GPIO_Pin_12;
 
 	// Configure LFO
+	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP
 	osc_shape_t shape_lfo = SIN;
 	lfo.FM_synth = false;
 	lfo.shape = shape_lfo;
@@ -88,11 +89,11 @@ int main(void)
 	 * lfo.lfo_amo = 0;
 	 *
 	 * */
-	lfo.lfo_amo = 0x0;
-	lfo.setFreqFrac(50);
+	lfo.lfo_amo = 0x7FFF;
+	lfo.setFreqFrac(5);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC1;
+	synth_params.lfo_dest = OSC2;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -101,23 +102,23 @@ int main(void)
 		FM_mod.shape = shape_FM_mod;
 		FM_mod.FM_synth = true;
 		FM_mod.lfo_amo = 0x7FFF;
-		synth_params.I = 7;
-		FM_mod.setFreqFrac(2000);
+		synth_params.I = 3;
+		FM_mod.setFreqFrac(120);
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SIN;
+	osc_shape_t shape_osc1 = SAW;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(1000);
+	osc1.setFreqFrac(2000);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SQU;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(440);
+	osc2.setFreqFrac(2000);
 
 	/* Mix Parameter between osc1 and osc2
 	 *
@@ -127,7 +128,7 @@ int main(void)
 	 * 0x4000 Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x0;
+	synth_params.osc_mix = 0x0 ;
 
 
 	/* *****************************************************************************************
@@ -139,17 +140,24 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.7;
-	adsr_vol.decay   = 0.01;
-	adsr_vol.sustain = 0.6;
-	adsr_vol.release = 0.1;
+	adsr_vol.attack  = 0.2;
+	adsr_vol.decay   = 0.1;
+	adsr_vol.sustain = 0.9;
+	adsr_vol.release = 1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.6;
-	adsr_fc.decay   = 0.1;
-	adsr_fc.sustain = 0.5;
-	adsr_fc.release = 0.2;
+	adsr_fc.attack  = 0.02;
+	adsr_fc.decay   = 0.001;
+	adsr_fc.sustain = 0.9;
+	adsr_fc.release = 1;
+	static bool copyVolumeEnvelope = false;
+	if(copyVolumeEnvelope){
+		adsr_fc.attack  = adsr_vol.attack;
+		adsr_fc.decay   = adsr_vol.decay;
+		adsr_fc.sustain = adsr_vol.sustain;
+		adsr_fc.release = adsr_vol.release;
+	}
 	adsr_fc.calcAdsrSteps();
 
 	//Pre-fill the output buffer
@@ -219,7 +227,8 @@ inline void low_rate_tasks(void){
 			adsr_fc.update();
 			lfo.update(&synth_params);
 			/*Update FM modulator*/
-			FM_mod.update(&synth_params);
+			if(synth_params.FM_synth)
+				FM_mod.update(&synth_params);
 
 			//Trigger notes base on a pseudo-random number generation
 			if(randomSeq){
@@ -277,6 +286,7 @@ inline void low_rate_tasks(void){
 //			fc = 16384;
 			//fc = 0x10000>>2;
 			fc = fc_adc+fc_env;
+
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
 			TIM3->CCR2 = fc;
