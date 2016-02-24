@@ -50,7 +50,7 @@ double env=0;
 bool status = true;
 int a = 0;
 bool low_rate_ISR_flag = false;
-bool useADC = true;
+bool useADC = false;
 bool randomSeq = false;
 
 int32_t randNum;
@@ -77,7 +77,7 @@ int main(void)
 
 	// Configure LFO
 	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP
-	osc_shape_t shape_lfo = SIN;
+	osc_shape_t shape_lfo = SAW;
 	lfo.FM_synth = false;
 	lfo.shape = shape_lfo;
 	/* LFO Amount Parameter
@@ -89,14 +89,14 @@ int main(void)
 	 * lfo.lfo_amo = 0;
 	 *
 	 * */
-	lfo.lfo_amo = 0x7FFF;
+	lfo.lfo_amo = 0x0;
 	lfo.setFreqFrac(5);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC2;
+	synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
-	synth_params.FM_synth = false;
+	synth_params.FM_synth = true;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_FM_mod = SIN;
 		FM_mod.shape = shape_FM_mod;
@@ -107,28 +107,30 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SAW;
+	osc_shape_t shape_osc1 = SIN;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(2000);
+	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SQU;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(2000);
+	osc2.setFreqFrac(134);
 
 	/* Mix Parameter between osc1 and osc2
 	 *
 	 * synth_params.osc_mix = 32768;
 	 * 0x0000 Mix 100% Osc2
-	 * 0x8000 Mix 100% Osc1
-	 * 0x4000 Mix 50%
+	 * 0x7FFF Mix 100% Osc1
+	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x0 ;
+	 //TODO(JoH):Mixing not working!
+	synth_params.osc_mix = 0x3FFF;
+	synth_params.midi_dest = OSC2;
 
 
 	/* *****************************************************************************************
@@ -140,18 +142,18 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.2;
-	adsr_vol.decay   = 0.1;
-	adsr_vol.sustain = 0.9;
-	adsr_vol.release = 1;
+	adsr_vol.attack  = 0.01;
+	adsr_vol.decay   = 0.2;
+	adsr_vol.sustain = 0.7;
+	adsr_vol.release = 0.3;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.02;
-	adsr_fc.decay   = 0.001;
-	adsr_fc.sustain = 0.9;
-	adsr_fc.release = 1;
-	static bool copyVolumeEnvelope = false;
+	adsr_fc.attack  = 0.8;
+	adsr_fc.decay   = 0.2;
+	adsr_fc.sustain = 0.4;
+	adsr_fc.release = 2;
+	static bool copyVolumeEnvelope = true;
 	if(copyVolumeEnvelope){
 		adsr_fc.attack  = adsr_vol.attack;
 		adsr_fc.decay   = adsr_vol.decay;
@@ -211,8 +213,15 @@ inline void low_rate_tasks(void){
 			if(midi.new_event){
 
 				midi.update(&synth_params);
-				osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
-				osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+				switch(synth_params.midi_dest){
+					case OSC1:
+						osc1.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+					break;
+					case OSC2:
+						osc2.setFreqFrac(midi_freq_lut[synth_params.pitch]);
+					break;
+				}
+
 				if(midi.attack_trigger){
 					adsr_vol.initStates();
 					adsr_fc.initStates();
@@ -285,8 +294,9 @@ inline void low_rate_tasks(void){
 //			fc = PWM_PERIOD;
 //			fc = 16384;
 			//fc = 0x10000>>2;
-			fc = fc_adc+fc_env;
-
+			//fc = fc_adc+fc_env;
+			fc = fc_env;
+			//fc = PWM_PERIOD>>4;
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
 			TIM3->CCR2 = fc;
@@ -342,6 +352,14 @@ inline void fill_buffer(void)
 			osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
 		}
 
+		// Modulate signal with the ADSR envelope if a MIDI note is received
+		if(synth_params.midi_dest == OSC1){
+
+			osc1_mix_temp = osc_mix;
+			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
+		}
+
+
 		// Save temporal output
 		osc1_mix_temp = osc_mix;
 
@@ -364,6 +382,13 @@ inline void fill_buffer(void)
 			osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
 		}
 
+		// Modulate signal with the ADSR envelope if a MIDI note is received
+		if(synth_params.midi_dest == OSC2){
+
+			osc2_mix_temp = osc_mix;
+			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
+		}
+
 		/* *****************************************************************************************
 		 * OSC1/OSC2 MIXING
 		 *
@@ -373,9 +398,6 @@ inline void fill_buffer(void)
 
 		// Mix the two oscillators
 		osc_mix += osc1_mix_temp;
-
-		// Modulate signal with the ADSR envelope
-		osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
 
 		// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);

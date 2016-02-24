@@ -18,12 +18,13 @@
 #define PWM_PERIOD (0x10000>>2) - 1
 
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
-enum lfo_dest_e {OSC1,OSC2,VCF} ;
+typedef enum {OSC1,OSC2,VCF} dest_t;
 
 struct synth_params_t{
 	int16_t lfo_amp;
 	int16_t lfo_amo;
-	lfo_dest_e lfo_dest;
+	dest_t lfo_dest;
+	dest_t midi_dest;
 	int16_t adsr_amp_vol;
 	int16_t osc_mix;
 	uint16_t pitch;
