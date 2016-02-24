@@ -128,7 +128,6 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	 //TODO(JoH):Mixing not working!
 	synth_params.osc_mix = 0x3FFF;
 	synth_params.midi_dest = OSC2;
 
