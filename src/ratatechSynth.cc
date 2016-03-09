@@ -64,7 +64,7 @@ uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
 uint16_t octaveCounter = 0;
 
 enum application_e {NORMAL,NO_ADSR};
-application_e app = NORMAL;
+application_e app = NO_ADSR;
 
 
 int main(void)
@@ -96,14 +96,14 @@ int main(void)
 	synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
-	synth_params.FM_synth = false;
+	synth_params.FM_synth = true;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_FM_mod = SIN;
 		FM_mod.shape = shape_FM_mod;
 		FM_mod.FM_synth = true;
 		FM_mod.lfo_amo = 0x7FFF;
-		synth_params.I = 3;
-		FM_mod.setFreqFrac(120);
+		synth_params.I = 7;
+		FM_mod.setFreqFrac(1200);
 	}
 
 	// Configure oscillator 1
@@ -116,9 +116,9 @@ int main(void)
 	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(134);
+	osc2.setFreqFrac(1000);
 
 	/* Mix Parameter between osc1 and osc2
 	 *
@@ -141,17 +141,17 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.03;
-	adsr_vol.decay   = 0.1;
+	adsr_vol.attack  = 0.1;
+	adsr_vol.decay   = 0.3;
 	adsr_vol.sustain = 0.7;
-	adsr_vol.release = 0.1;
+	adsr_vol.release = 2;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
 	adsr_fc.attack  = 0.8;
 	adsr_fc.decay   = 0.2;
-	adsr_fc.sustain = 0.4;
-	adsr_fc.release = 2;
+	adsr_fc.sustain = 0.9;
+	adsr_fc.release = 0.1;
 	static bool copyVolumeEnvelope = true;
 	if(copyVolumeEnvelope){
 		adsr_fc.attack  = adsr_vol.attack;
@@ -279,7 +279,7 @@ inline void low_rate_tasks(void){
 			}
 
 
-			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD)/0x7FFF);
+			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>3)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			fc = fc_adc+fc_env;
 			//fc = fc_adc;
@@ -394,7 +394,7 @@ inline void fill_buffer(void)
 		osc_mix = int16_2_uint16(osc_mix);
 
 		// Shift back to 12 bits required by the DAC
-		osc_mix>>=4;
+		//osc_mix>>=4;
 
 		status = out_buffer.write(osc_mix);
 

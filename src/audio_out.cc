@@ -30,9 +30,13 @@ using namespace std;
 void audio_out_write(uint16_t data)
 {
 
+	//trace_printf("DAC OUT = %i\n",data);
 	// Split 12bit data and store it into 2 8bit
-	dataHigh = 0b00110000 | data>>8;
-	dataLow  = (0x00FF & data);
+	//dataHigh = 0b11110000 | data>>8;
+	//dataLow  = (0x00FF & data);
+
+	dataHigh = data>>8;
+	dataLow  = data;
 
 	// CS High
 	GPIOA->BRR = GPIO_Pin_9;

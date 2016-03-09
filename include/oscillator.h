@@ -69,8 +69,8 @@ class Oscillator {
 		@param frequency FADFADFADFDFD
 		*/
 		void setFreqFrac(double freqHz)
-		{
-			ph_inc_frac = (int32_t)((((double)LUT_10_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
+		{	//TODO(JoH):Define global variable with table length
+			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
 			k_frac = ph_inc_frac & 0xFFFFF;
 
 		}
