@@ -52,7 +52,7 @@ This file is part of XXXXXXX
 # Write file header
 fp.writelines(file_header)
 
-
+AMP = 2**8-1
 
 '''-------------------------------------------------------------------------------
  SINE TABLE
@@ -60,7 +60,7 @@ fp.writelines(file_header)
 bits = 8;
 N = 2**bits;
 t = np.arange(0,N, dtype=np.float)
-wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**bits-1)/2))
+wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(AMP)/2))
 
 name = 'sin_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
@@ -80,7 +80,7 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 bits = 8;
 N = 2**bits;
-t = np.floor(np.arange(-128,128,(256/N), dtype=np.float))
+t = np.floor(np.arange(-(AMP/2),(AMP/2),(float(AMP)/N), dtype=np.float))
 wave = np.int16(t)
 print(np.size(wave))
 name = 'saw_lut_q15' 

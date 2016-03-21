@@ -26,11 +26,11 @@ uint16_t int16_2_uint16(int16_t x){
 
 	if(x<0)
 	{
-		return (uint16_t)((int32_t)x+32768);
+		return (uint16_t)((int32_t)x+0x8000);
 	}
 	else
 	{
-		return (uint16_t)(x)+32768;
+		return (uint16_t)(x)+0x7FFF;
 
 	}
 
