@@ -118,7 +118,7 @@ int main(void)
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(1000);
+	osc2.setFreqFrac(12000);
 
 	/* Mix Parameter between osc1 and osc2
 	 *

@@ -22,7 +22,7 @@
 
 extern const int16_t sin_lut_q15[LUT_8_BIT];
 extern const int16_t tri_lut_q15[LUT_8_BIT];
-extern const int16_t saw_lut_q15[LUT_10_BIT];
+extern const int16_t saw_lut_q15[LUT_8_BIT];
 extern const int16_t squ_lut_q15[LUT_8_BIT];
 extern const int16_t sin_lut_lfo[LUT_5_BIT];
 extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];

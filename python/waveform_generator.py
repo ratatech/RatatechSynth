@@ -60,7 +60,7 @@ fp.writelines(file_header)
 bits = 8;
 N = 2**bits;
 t = np.arange(0,N, dtype=np.float)
-wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**bits-1)/8))
+wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**bits-1)/2))
 
 name = 'sin_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
@@ -78,9 +78,9 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  SAW TABLE
 ------------------------------------------------------------------------------'''
-bits = 10;
+bits = 8;
 N = 2**bits;
-t = np.floor(np.arange(-128,128,0.25, dtype=np.float))
+t = np.floor(np.arange(-128,128,(256/N), dtype=np.float))
 wave = np.int16(t)
 print(np.size(wave))
 name = 'saw_lut_q15' 
