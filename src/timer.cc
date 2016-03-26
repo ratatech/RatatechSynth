@@ -84,8 +84,9 @@ void TIM_Config(void)
 	//	timerInitStructure.TIM_Period    = 32768;
 	//	timerInitStructure.TIM_Prescaler = 2197;
 
-
+	//*************************************************************************************
 	/* PWM Timer3 configuration*/
+	//*************************************************************************************
 
 	/*
 	 * PWM_frequency = timer_tick_frequency / (TIM_Period + 1)
@@ -109,7 +110,8 @@ void TIM_Config(void)
 	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	//timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
     TIM_OC2Init( TIM3, &timeOCInitStructure );
-    TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
+    TIM_OC4Init( TIM3, &timeOCInitStructure );
+    //TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
 
 

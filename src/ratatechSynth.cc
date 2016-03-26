@@ -77,7 +77,7 @@ int main(void)
 
 	// Configure LFO
 	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP
-	osc_shape_t shape_lfo = SAW;
+	osc_shape_t shape_lfo = SIN;
 	lfo.FM_synth = false;
 	lfo.shape = shape_lfo;
 	/* LFO Amount Parameter
@@ -90,7 +90,7 @@ int main(void)
 	 *
 	 * */
 	lfo.lfo_amo = 0x4000;
-	lfo.setFreqFrac(13);
+	lfo.setFreqFrac(1);
 
 	//LFO destination
 	synth_params.lfo_dest = OSC1;
@@ -116,7 +116,7 @@ int main(void)
 	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SQU;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(3000);
 
@@ -128,31 +128,31 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x7FFF;
-	synth_params.midi_dest = OSC1;
+	synth_params.osc_mix = 0x0;
+	synth_params.midi_dest = OSC2;
 
 
 	/* *****************************************************************************************
 	 *
 	 * ADSR
-	 *X
+	 *
 	 * Configure ADSR. Values correspond for duration of the states in seconds except for
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * ******VV***********************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.1;
-	adsr_vol.decay   = 0.3;
-	adsr_vol.sustain = 0.9;
-	adsr_vol.release = 1.5;
+	adsr_vol.attack  = 0.01;
+	adsr_vol.decay   = 0.2;
+	adsr_vol.sustain = 0.5;
+	adsr_vol.release = 0.2 ;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.81;
-	adsr_fc.decay   = 0.01;
-	adsr_fc.sustain = 0.9;
-	adsr_fc.release = 0.01;
-	static bool copyVolumeEnvelope = false;
+	adsr_fc.attack  = 0.2;
+	adsr_fc.decay   = 0.2;
+	adsr_fc.sustain = 0.99;
+	adsr_fc.release = 0.1;
+	static bool copyVolumeEnvelope = true;
 	if(copyVolumeEnvelope){
 		adsr_fc.attack  = adsr_vol.attack;
 		adsr_fc.decay   = adsr_vol.decay;
@@ -282,13 +282,12 @@ inline void low_rate_tasks(void){
 			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>2)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
 			fc = fc_adc+fc_env;
-			//fc = fc_adc;
-			//fc =0;
-			//fc = fc_env;
-			//fc = PWM_PERIOD>>4;
+			fc = fc_adc;
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
-			TIM3->CCR2 = fc;
+			//fc = lfo.lfo_amp;
+			TIM3->CCR2 =  fc;
+			TIM3->CCR4 = 100;
 
 
 		break;
