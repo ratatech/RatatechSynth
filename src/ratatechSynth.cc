@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsr_vol(LOG,EXP,EXP,0.09),adsr_fc(EXP,EXP,EXP,0.9);
+ADSREnv adsr_vol(LOG,EXP,EXP,0.0009),adsr_fc(EXP,EXP,EXP,0.9);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -58,6 +58,7 @@ uint32_t noteCounter = 0;
 int32_t adc;
 
 uint32_t Q,fc_adc,fc_env,fc = 0;
+double lfo_adc;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
@@ -76,7 +77,7 @@ int main(void)
 	GPIOA->BSRR = GPIO_Pin_12;
 
 	// Configure LFO
-	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP
+	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP, ONLY FADES 0-0.5!
 	osc_shape_t shape_lfo = SIN;
 	lfo.FM_synth = false;
 	lfo.shape = shape_lfo;
@@ -93,7 +94,7 @@ int main(void)
 	lfo.setFreqFrac(1);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC1;
+	synth_params.lfo_dest = OSC2;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -116,7 +117,7 @@ int main(void)
 	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SQU;
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(3000);
 
@@ -141,14 +142,14 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * ******VV***********************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.011;
+	adsr_vol.attack  = 0.2;
 	adsr_vol.decay   = 0.1;
-	adsr_vol.sustain = 0.2;
-	adsr_vol.release = 1;
+	adsr_vol.sustain = 0.99;
+	adsr_vol.release = 8;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.2;
+	adsr_fc.attack  = 0.02;
 	adsr_fc.decay   = 0.2;
 	adsr_fc.sustain = 0.99;
 	adsr_fc.release = 0.1;
@@ -231,6 +232,12 @@ void low_rate_tasks(void){
 				midi.new_event = false;
 			}
 
+			if(0){
+				/*Set amplitude to 1, no ADSR*/
+				synth_params.adsr_amp_vol = 0x7FFF;
+				adsr_vol.adsr_amp = 0x7FFF;
+			}
+
 			adsr_vol.update();
 			adsr_fc.update();
 			lfo.update(&synth_params);
@@ -261,36 +268,52 @@ void low_rate_tasks(void){
 				noteCounter++;
 			}
 
-			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
+//			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
+//			{
+//
+//
+//				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
+//				adc = ADC_GetConversionValue(ADC1);
+//				fc_adc = exp_curve_q15[adc];
+//				trace_printf("ADC read = %i\n",adc);
+//				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
+//
+//				/* Probably overkill */
+//				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+//
+//				/* Start ADC1 Software Conversion */
+//				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+//			}
+
+			if (useADC)
 			{
-
-
 				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
-				adc = ADC_GetConversionValue(ADC1);
+				adc = readADC1(1);
+
 				fc_adc = exp_curve_q15[adc];
 				trace_printf("ADC read = %i\n",adc);
 				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
 
-				/* Probably overkill */
-				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+				//Q = (uint32_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
+				lfo_adc = ((double)readADC1(4)*(30)/4095);
 
-				/* Start ADC1 Software Conversion */
-				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 			}
+
 
 
 			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
-			fc = fc_adc+fc_env;
-			//fc = fc_adc;
+			//fc = fc_adc+fc_env;
+			fc = fc_adc;
 			//fc = fc_env;
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
 			//fc = lfo.lfo_amp;
 			TIM3->CCR2 =  fc;
 			//TIM3->CCR2 =PWM_PERIOD>>1;
-			TIM3->CCR3 =0xFF;
-
+			Q = 700;
+			TIM3->CCR3 = Q;
+			lfo.setFreqFrac(lfo_adc);
 
 
 
@@ -303,6 +326,7 @@ void low_rate_tasks(void){
 			synth_params.adsr_amp_vol = 0x7FFF;
 			adsr_vol.adsr_amp = 0x7FFF;
 			/*Update LFO*/
+			lfo.setFreqFrac(lfo_adc);
 			lfo.update(&synth_params);
 			/*Update FM modulator*/
 			FM_mod.update(&synth_params);

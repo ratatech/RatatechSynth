@@ -97,15 +97,15 @@ void GPIO_Conf_Init(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
-	/* Configure PA0 PA1 pins as input floating */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+//	/* Configure PA0 PA1 pins as input floating */
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_4;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
 	/* Configure PA1pins as analog input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -147,12 +147,6 @@ void GPIO_Conf_Init(void)
 
 	GPIO_Init( GPIOC, &GPIO_InitStructure );
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
-
-//	/* TEST LED PORTC*/
-//	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_9;
-//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;            // Alt Function - Push Pull
-//	GPIO_Init( GPIOC, &GPIO_InitStructure );
 
 }
 
@@ -269,7 +263,8 @@ void ADC_Conf_Init(void){
 	  ADC_Init(ADC1, &ADC_InitStructure);
 
 	  /* ADC1 regular channel1 configuration */
-	  ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_55Cycles5);
+	  //ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_55Cycles5);
+
 
 	  /* Enable ADC1 */
 	  ADC_Cmd(ADC1, ENABLE);
