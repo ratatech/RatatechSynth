@@ -184,7 +184,7 @@ int main(void)
 /**
  * Execute all tasks running at CONTROL_RATE
  */
-inline void low_rate_tasks(void){
+void low_rate_tasks(void){
 
 
 	switch(app){
@@ -281,13 +281,23 @@ inline void low_rate_tasks(void){
 
 			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>2)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
-			fc = fc_adc+fc_env;
-			fc = fc_adc;
+			//fc = fc_adc+fc_env;
+			//fc = fc_adc;
+			fc = fc_env;
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
 			//fc = lfo.lfo_amp;
 			TIM3->CCR2 =  fc;
-			TIM3->CCR4 = 100;
+
+
+//			GPIO_SetBits(GPIOC,GPIO_Pin_9);
+//			//GPIO_ResetBits(GPIOC,GPIO_Pin_9);
+			TIM3->CCR1 = PWM_PERIOD;
+			TIM3->CCR3 = PWM_PERIOD;
+			TIM3->CCR4 = PWM_PERIOD;
+			TIM3->CCR2 =  PWM_PERIOD;
+
+
 
 
 		break;

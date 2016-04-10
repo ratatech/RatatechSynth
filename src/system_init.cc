@@ -148,6 +148,12 @@ void GPIO_Conf_Init(void)
 	GPIO_Init( GPIOC, &GPIO_InitStructure );
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
 
+//	/* TEST LED PORTC*/
+//	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_9;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;            // Alt Function - Push Pull
+//	GPIO_Init( GPIOC, &GPIO_InitStructure );
+
 }
 
 void ButtonsInitEXTI(void)
