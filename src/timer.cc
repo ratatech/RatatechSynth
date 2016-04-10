@@ -31,34 +31,23 @@ void TIM_Config(void)
 	TIM_OCInitTypeDef timeOCInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-	/* TIM2 NVIC configuration */
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
-	NVIC_Init(&NVIC_InitStructure);
-
-	/* TIM2 configuration
-	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
-	timerInitStructure.TIM_ClockDivision = 0;
-	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = SystemCoreClock/CONTROL_RATE;
-	timerInitStructure.TIM_Prescaler = 0;
-	timerInitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM2, &timerInitStructure);
-
-	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-	TIM_Cmd(TIM2, ENABLE);
+	//*************************************************************************************
+	/* PWM Timer1 configuration*/
+	//*************************************************************************************
 
 	/* Set audio_on flag to true to have the audio rate interrupt
 	* working. Disabling it helps to speed up debugging */
-	bool audio_on = false;
+	bool audio_on = true;
 	if(audio_on){
 
 		/* TIM1 configuration
 		 * Timer 1 configured to work with an output audio sampling
 		 * frequency of FS */
+
+		/*  Parameters to configure timer at 1hz ie. every 1s
+		*	timerInitStructure.TIM_Period    = 32768;
+		*	timerInitStructure.TIM_Prescaler = 2197; */
+
 		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 		timerInitStructure.TIM_Period = SystemCoreClock/FS;
@@ -80,13 +69,37 @@ void TIM_Config(void)
 	}
 
 
-	// Parameters to configure timer at 1hz ie. every 1s
-	//	timerInitStructure.TIM_Period    = 32768;
-	//	timerInitStructure.TIM_Prescaler = 2197;
+	//*************************************************************************************
+	/* PWM Timer2 configuration*/
+	//*************************************************************************************
+
+	/* TIM2 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* TIM2 configuration
+	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
+	timerInitStructure.TIM_ClockDivision = 0;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = SystemCoreClock/CONTROL_RATE;
+	timerInitStructure.TIM_Prescaler = 0;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM2, ENABLE);
+
 
 	//*************************************************************************************
 	/* PWM Timer3 configuration*/
 	//*************************************************************************************
+
+
+
 
 	/*
 	 * PWM_frequency = timer_tick_frequency / (TIM_Period + 1)
@@ -109,7 +122,9 @@ void TIM_Config(void)
 	timeOCInitStructure.TIM_Pulse = 0;
 	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	//timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+    TIM_OC1Init( TIM3, &timeOCInitStructure );
     TIM_OC2Init( TIM3, &timeOCInitStructure );
+    TIM_OC3Init( TIM3, &timeOCInitStructure );
     TIM_OC4Init( TIM3, &timeOCInitStructure );
     //TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
