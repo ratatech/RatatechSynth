@@ -262,10 +262,6 @@ void ADC_Conf_Init(void){
 	  ADC_InitStructure.ADC_NbrOfChannel = 1;
 	  ADC_Init(ADC1, &ADC_InitStructure);
 
-	  /* ADC1 regular channel1 configuration */
-	  //ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_55Cycles5);
-
-
 	  /* Enable ADC1 */
 	  ADC_Cmd(ADC1, ENABLE);
 

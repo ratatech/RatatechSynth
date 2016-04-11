@@ -94,7 +94,7 @@ int main(void)
 	lfo.setFreqFrac(1);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC2;
+	synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -117,7 +117,7 @@ int main(void)
 	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SIN;
+	osc_shape_t shape_osc2 = SQU;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(3000);
 
@@ -142,10 +142,10 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * ******VV***********************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.2;
-	adsr_vol.decay   = 0.1;
-	adsr_vol.sustain = 0.99;
-	adsr_vol.release = 8;
+	adsr_vol.attack  = 0.01;
+	adsr_vol.decay   = 0.01;
+	adsr_vol.sustain = 0.4;
+	adsr_vol.release = 2;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
@@ -192,23 +192,6 @@ void low_rate_tasks(void){
 
 		case NORMAL:
 
-			//Check note button
-			if (adsr_vol.note_ON)
-			{
-				if (!ButtonRead(GPIOA, GPIO_Pin_0))
-				{
-					adsr_vol.calcAdsrSteps();
-					adsr_vol.adsr_state = RELEASE_STATE;
-					adsr_vol.note_ON = false;
-					adsr_vol.range_rel = adsr_vol.adsr_amp<<16;
-
-					adsr_fc.calcAdsrSteps();
-					adsr_fc.adsr_state = RELEASE_STATE;
-					adsr_fc.note_ON = false;
-					adsr_fc.range_rel = adsr_fc.adsr_amp<<16;
-				}
-			}
-
 			// Update Envelope, LFO and midi objects
 			if(midi.new_event){
 
@@ -245,75 +228,41 @@ void low_rate_tasks(void){
 			if(synth_params.FM_synth)
 				FM_mod.update(&synth_params);
 
-			//Trigger notes base on a pseudo-random number generation
-			if(randomSeq){
-				srand(1);
-				if(noteCounter>=1000 ){
-					randNum = rand();
-					randNum = ((randNum>>21));
-					trace_printf("random num = %i\n",randNum);
-					if(randNum>8000)
-						randNum = 8000;
-					if(randNum<30)
-						randNum = 30;
-					//osc1.setFreqFrac(C4_Octave[octaveCounter]);
-					osc1.setFreqFrac(randNum);
-					//adsr_vol.note_ON = true;
-					adsr_vol.adsr_state = ATTACK_STATE;
-					noteCounter=0;
-					octaveCounter++;
-					if(octaveCounter>=12)
-						octaveCounter = 0;
-				}
-				noteCounter++;
-			}
-
-//			if (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == SET && useADC)
-//			{
-//
-//
-//				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
-//				adc = ADC_GetConversionValue(ADC1);
-//				fc_adc = exp_curve_q15[adc];
-//				trace_printf("ADC read = %i\n",adc);
-//				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
-//
-//				/* Probably overkill */
-//				ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-//
-//				/* Start ADC1 Software Conversion */
-//				ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-//			}
-
 			if (useADC)
 			{
 				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
 				adc = readADC1(1);
 
+				//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
 				fc_adc = exp_curve_q15[adc];
 				trace_printf("ADC read = %i\n",adc);
 				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
 
-				//Q = (uint32_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
-				lfo_adc = ((double)readADC1(4)*(30)/4095);
+				Q = (uint32_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
+				//lfo_adc = ((double)readADC1(4)*(30)/4095);
+//				fc_adc = 1000;
+//				Q = 3000;
 
 			}
 
 
 
-			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD)/0x7FFF);
+			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
 			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
-			//fc = fc_adc+fc_env;
-			fc = fc_adc;
+			fc = fc_adc+fc_env;
+//			if(fc_adc< 200)
+//				fc_adc = 400;
+//			fc = fc_adc;
 			//fc = fc_env;
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
 			//fc = lfo.lfo_amp;
+			//fc = PWM_PERIOD>>1;
 			TIM3->CCR2 =  fc;
-			//TIM3->CCR2 =PWM_PERIOD>>1;
-			Q = 700;
+
+
 			TIM3->CCR3 = Q;
-			lfo.setFreqFrac(lfo_adc);
+			//lfo.setFreqFrac(lfo_adc);
 
 
 
