@@ -55,7 +55,8 @@ bool randomSeq = false;
 
 int32_t randNum;
 uint32_t noteCounter = 0;
-int32_t adc;
+uint16_t adc;
+int16_t control_rate_decimate = 0;
 
 uint32_t Q,fc_adc,fc_env,fc = 0;
 double lfo_adc;
@@ -63,6 +64,8 @@ double lfo_adc;
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
 uint16_t octaveCounter = 0;
+
+BitAction sb;
 
 enum application_e {NORMAL,NO_ADSR};
 application_e app = NORMAL;
@@ -90,11 +93,11 @@ int main(void)
 	 * lfo.lfo_amo = 0;
 	 *
 	 * */
-	lfo.lfo_amo = 0x4000;
-	lfo.setFreqFrac(1);
+	lfo.lfo_amo = 0x7FFF;
+	lfo.setFreqFrac(30);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC1;
+	synth_params.lfo_dest = OSC2;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -117,7 +120,7 @@ int main(void)
 	osc1.setFreqFrac(100);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SQU;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(3000);
 
@@ -142,14 +145,14 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * ******VV***********************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.01;
-	adsr_vol.decay   = 0.01;
+	adsr_vol.attack  = 0.1;
+	adsr_vol.decay   = 0.2;
 	adsr_vol.sustain = 0.4;
 	adsr_vol.release = 2;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.02;
+	adsr_fc.attack  = 0.2;
 	adsr_fc.decay   = 0.2;
 	adsr_fc.sustain = 0.99;
 	adsr_fc.release = 0.1;
@@ -162,6 +165,7 @@ int main(void)
 	}
 	adsr_fc.calcAdsrSteps();
 
+
 	//Pre-fill the output buffer
 	fill_buffer();
 
@@ -173,8 +177,20 @@ int main(void)
 	{
 
 		// Events happening every CONTROL_RATE
-		if(low_rate_ISR_flag)
+		if(low_rate_ISR_flag){
 			low_rate_tasks();
+			control_rate_decimate++;
+
+			if(control_rate_decimate > 500){
+				adsr_fc.calcAdsrSteps();
+				adsr_vol.calcAdsrSteps();
+				control_rate_decimate = 0;
+			}
+
+		}
+
+
+
 
 		// Fill audio buffer with a new sample
 		fill_buffer();
@@ -231,25 +247,100 @@ void low_rate_tasks(void){
 			if (useADC)
 			{
 				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
-				adc = readADC1(1);
+//				adc = readADC1(1);
+//
+//				//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
+//				fc_adc = exp_curve_q15[adc];
+//				trace_printf("ADC read NORMAL = %i\n",adc);
+//				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
 
-				//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
-				fc_adc = exp_curve_q15[adc];
-				trace_printf("ADC read = %i\n",adc);
-				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
+//				Q = (int16_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
+//				lfo_adc = ((double)readADC1(4)*(30)/4095);
+				//lfo_adc = ((double)readADC1(4));
 
-				Q = (uint32_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
-				//lfo_adc = ((double)readADC1(4)*(30)/4095);
 //				fc_adc = 1000;
-//				Q = 3000;
+				//Q = 2300;
+
+
+				for(int s=0;s<8;s++){
+
+
+					((s & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+					GPIO_WriteBit(GPIOB,GPIO_Pin_5,sb);
+
+					(((s>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+					GPIO_WriteBit(GPIOB,GPIO_Pin_6,sb);
+
+					(((s>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+					GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
+
+
+					switch(s){
+						case 0 :
+							Q = (int16_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
+
+							//trace_printf("ADC read MUX y0 = %i\n",adc);
+
+						break;
+
+						case 1 :
+							adc = readADC1(4);
+							//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
+							fc_adc = exp_curve_q15[adc];
+							//trace_printf("ADC read MUX y1 = %i\n",adc);
+						break;
+
+						case 2 :
+							lfo_adc = ((double)readADC1(4)*(30)/4095);
+							//adc = readADC1(4);
+							//trace_printf("ADC read MUX y2 = %i\n",adc);
+						break;
+
+						case 3 :
+							lfo.lfo_amo = ((double)readADC1(4)*(0x7FFF)/4095);
+							//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
+							//fc_adc = exp_curve_q15[adc];
+							//trace_printf("ADC read MUX y3 = %i\n",adc);
+						break;
+
+
+						case 4 :
+							adsr_fc.decay = ((double)readADC1(4)*(1)/4095);
+							adsr_vol.decay = adsr_fc.decay;
+							trace_printf("ADC read MUX y4 = %i\n",(int16_t)(1000*adsr_fc.attack));
+
+						break;
+
+						case 5 :
+							adsr_fc.release = ((double)readADC1(4)*(1)/4095);
+
+							adsr_vol.release = adsr_fc.release;
+
+							trace_printf("ADC read MUX y5 = %i\n",(int16_t)(1000*adsr_fc.decay ));
+						break;
+
+						case 6 :
+							adsr_fc.attack = ((double)readADC1(4)*(1)/4095);
+							adsr_vol.attack = adsr_fc.attack;
+							trace_printf("ADC read MUX y6 = %i\n",(int16_t)(1000*adsr_fc.sustain));
+						break;
+
+						case 7 :
+							adsr_fc.sustain = ((double)readADC1(4)*(0.9)/4095);
+							adsr_vol.sustain = adsr_fc.sustain;
+							trace_printf("ADC read MUX y7 = %i\n",(int16_t)(1000*adsr_fc.release));
+						break;
+					}
+				}
 
 			}
 
 
 
 			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
-			//fc = (int16_t)((double)(lfo.lfo_amp)*(0x10000>>7)/0x7FFF);
+			fc = (int16_t)((double)(lfo.lfo_amp)*(PWM_PERIOD>>2)/0x7FFF);
 			fc = fc_adc+fc_env;
+//			fc = fc_adc;
 //			if(fc_adc< 200)
 //				fc_adc = 400;
 //			fc = fc_adc;
@@ -262,7 +353,7 @@ void low_rate_tasks(void){
 
 
 			TIM3->CCR3 = Q;
-			//lfo.setFreqFrac(lfo_adc);
+			lfo.setFreqFrac(lfo_adc);
 
 
 
@@ -367,11 +458,8 @@ inline void fill_buffer(void)
 
 		osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
 
-		// Convert to unsigned
+				// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);
-
-		// Shift back to 12 bits required by the DAC
-		//osc_mix>>=4;
 
 		status = out_buffer.write(osc_mix);
 
