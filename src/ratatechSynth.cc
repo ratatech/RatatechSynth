@@ -50,8 +50,8 @@ double env=0;
 bool status = true;
 int a = 0;
 bool low_rate_ISR_flag = false;
-bool useADC = true;
-bool randomSeq = false;
+bool useADC = false;
+
 
 int32_t randNum;
 uint32_t noteCounter = 0;
@@ -93,8 +93,8 @@ int main(void)
 	 * lfo.lfo_amo = 0;
 	 *
 	 * */
-	lfo.lfo_amo = 0x7FFF;
-	lfo.setFreqFrac(30);
+	lfo.lfo_amo = 0x0000;
+	lfo.setFreqFrac(2);
 
 	//LFO destination
 	synth_params.lfo_dest = OSC2;
@@ -107,7 +107,7 @@ int main(void)
 		FM_mod.FM_synth = true;
 		FM_mod.lfo_amo = 0x5FFF;
 		synth_params.I = 3;
-		FM_mod.setFreqFrac(100);
+		FM_mod.setFreqFrac(1000);
 	}
 
 	// Configure oscillator 1
@@ -117,12 +117,12 @@ int main(void)
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(100);
+	osc1.setFreqFrac(400);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(3000);
+	osc2.setFreqFrac(200);
 
 	/* Mix Parameter between osc1 and osc2
 	 *
@@ -147,8 +147,8 @@ int main(void)
 	// Volume envelope
 	adsr_vol.attack  = 0.1;
 	adsr_vol.decay   = 0.2;
-	adsr_vol.sustain = 0.4;
-	adsr_vol.release = 2;
+	adsr_vol.sustain = 0.2;
+	adsr_vol.release = 1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
@@ -182,9 +182,9 @@ int main(void)
 			control_rate_decimate++;
 
 			if(control_rate_decimate > 500){
-				adsr_fc.calcAdsrSteps();
-				adsr_vol.calcAdsrSteps();
-				control_rate_decimate = 0;
+//				adsr_fc.calcAdsrSteps();
+//				adsr_vol.calcAdsrSteps();
+//				control_rate_decimate = 0;
 			}
 
 		}
@@ -231,11 +231,6 @@ void low_rate_tasks(void){
 				midi.new_event = false;
 			}
 
-			if(0){
-				/*Set amplitude to 1, no ADSR*/
-				synth_params.adsr_amp_vol = 0x7FFF;
-				adsr_vol.adsr_amp = 0x7FFF;
-			}
 
 			adsr_vol.update();
 			adsr_fc.update();
@@ -353,7 +348,7 @@ void low_rate_tasks(void){
 
 
 			TIM3->CCR3 = Q;
-			lfo.setFreqFrac(lfo_adc);
+			//lfo.setFreqFrac(lfo_adc);
 
 
 
@@ -409,12 +404,12 @@ inline void fill_buffer(void)
 			osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
 		}
 
-//		// Modulate signal with the ADSR envelope if a MIDI note is received
-//		if(synth_params.midi_dest == OSC1){
-//
-//			osc1_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
-//		}
+		// Modulate signal with the ADSR envelope if a MIDI note is received
+		if(synth_params.midi_dest == OSC1){
+
+			osc1_mix_temp = osc_mix;
+			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
+		}
 
 
 		// Save temporal output
@@ -439,17 +434,17 @@ inline void fill_buffer(void)
 			osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
 		}
 
-//		// Modulate signal with the ADSR envelope if a MIDI note is received
-//		if(synth_params.midi_dest == OSC2){
-//
-//			osc2_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
-//		}
+		// Modulate signal with the ADSR envelope if a MIDI note is received
+		if(synth_params.midi_dest == OSC2){
+
+			osc2_mix_temp = osc_mix;
+			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
+		}
 
 		/* *****************************************************************************************
 		 * OSC1/OSC2 MIXING
 		 *
-		 * Mix the the two nex computed samples and apply ADSR Modulation.
+		 * Mix the the two next computed samples and apply ADSR Modulation.
 		 * Finally scale the signal to 12 bits and store it in the output buffer.
 		 * *****************************************************************************************/
 
