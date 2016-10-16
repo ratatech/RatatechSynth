@@ -35,15 +35,33 @@ void audio_out_write(uint16_t data)
 	//dataHigh = 0b11110000 | data>>8;
 	//dataLow  = (0x00FF & data);
 
-	dataHigh = data>>8;
-	dataLow  = data;
+//	dataHigh = data>>8;
+//	dataLow  = data;
+//
+//	// CS High
+//	GPIOA->BRR = GPIO_Pin_9;
+//
+//	// Transmit the two 8bit SPI messages
+//	SPI_send(SPI1,dataHigh);
+//	SPI_send(SPI1,dataLow);
+//
+//
+//	// CS Low
+//	GPIOA->BSRR = GPIO_Pin_9;
 
 	// CS High
 	GPIOA->BRR = GPIO_Pin_9;
 
+	uint32_t MAXcode = data << 6 | 0x400000;
+
+	uint8_t byte1 = (MAXcode & ~(0x00FFFF)) >> 16;  // Extraxt B23-B16
+	uint8_t byte2 = (MAXcode & ~(0xFF00FF)) >> 8;   // Extraxt B15-B8
+	uint8_t byte3 = MAXcode & ~(0xFFFF00);          // Extraxt B7-B1
+
 	// Transmit the two 8bit SPI messages
-	SPI_send(SPI1,dataHigh);
-	SPI_send(SPI1,dataLow);
+	SPI_send(SPI1,byte1);
+	SPI_send(SPI1,byte2);
+	SPI_send(SPI1,byte3);
 
 
 	// CS Low

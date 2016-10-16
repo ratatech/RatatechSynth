@@ -65,6 +65,13 @@ uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
 uint16_t MIDI_Octaves[12] = {8,16,32,65,130,261,523,1046,2093,4186,8372,12543};
 uint16_t octaveCounter = 0;
 
+uint16_t code;
+uint32_t  MAXcode;
+uint8_t byte1;
+uint8_t byte2;
+uint8_t byte3;
+
+
 BitAction sb;
 
 enum application_e {NORMAL,NO_ADSR};
@@ -97,7 +104,7 @@ int main(void)
 	lfo.setFreqFrac(2);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC2;
+	synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -111,16 +118,16 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SIN;
+	osc_shape_t shape_osc1 = SQU;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(400);
+	osc1.setFreqFrac(800);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SIN;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
 	osc2.setFreqFrac(200);
 
@@ -132,8 +139,8 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x0;
-	synth_params.midi_dest = OSC2;
+	synth_params.osc_mix = 0x7FFF;
+	synth_params.midi_dest = OSC1;
 
 
 	/* *****************************************************************************************
@@ -147,8 +154,8 @@ int main(void)
 	// Volume envelope
 	adsr_vol.attack  = 0.1;
 	adsr_vol.decay   = 0.2;
-	adsr_vol.sustain = 0.2;
-	adsr_vol.release = 1;
+	adsr_vol.sustain = 0.01;
+	adsr_vol.release = 0.5;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
@@ -344,13 +351,11 @@ void low_rate_tasks(void){
 				fc = PWM_PERIOD;
 			//fc = lfo.lfo_amp;
 			//fc = PWM_PERIOD>>1;
-			TIM3->CCR2 =  fc;
+			TIM3->CCR2 =  fc_env;
 
 
 			TIM3->CCR3 = Q;
 			//lfo.setFreqFrac(lfo_adc);
-
-
 
 
 		break;
