@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsr_vol(LOG,EXP,EXP,0.0009),adsr_fc(EXP,EXP,EXP,0.9);
+ADSREnv adsr_vol(LOG,EXP,EXP,0.009),adsr_fc(EXP,EXP,EXP,0.9);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -50,7 +50,7 @@ double env=0;
 bool status = true;
 int a = 0;
 bool low_rate_ISR_flag = false;
-bool useADC = false;
+bool useADC = true;
 
 
 int32_t randNum;
@@ -58,7 +58,7 @@ uint32_t noteCounter = 0;
 uint16_t adc;
 int16_t control_rate_decimate = 0;
 
-uint32_t Q,fc_adc,fc_env,fc = 0;
+uint32_t q_adc,fc_adc,fc_env,fc_lfo,fc = 0;
 double lfo_adc;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
@@ -118,18 +118,18 @@ int main(void)
 	}
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SQU;
+	osc_shape_t shape_osc1 = SAW;
 	if(synth_params.FM_synth){
 		osc_shape_t shape_osc1 = SIN;
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(800);
+	osc1.setFreqFrac(1000);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
-	osc2.setFreqFrac(200);
+	osc2.setFreqFrac(1000);
 
 	/* Mix Parameter between osc1 and osc2
 	 *
@@ -142,7 +142,7 @@ int main(void)
 	synth_params.osc_mix = 0x7FFF;
 	synth_params.midi_dest = OSC1;
 
-
+	//TODO(JoH): Review the whole ADSR algo. The behavious seems weird
 	/* *****************************************************************************************
 	 *
 	 * ADSR
@@ -153,16 +153,16 @@ int main(void)
 	 * * ******VV***********************************************************************************/
 	// Volume envelope
 	adsr_vol.attack  = 0.1;
-	adsr_vol.decay   = 0.2;
-	adsr_vol.sustain = 0.01;
-	adsr_vol.release = 0.5;
+	adsr_vol.decay   = 0.5;
+	adsr_vol.sustain = 0.99;
+	adsr_vol.release = 0.1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
 	adsr_fc.attack  = 0.2;
-	adsr_fc.decay   = 0.2;
-	adsr_fc.sustain = 0.99;
-	adsr_fc.release = 0.1;
+	adsr_fc.decay   = 0.1;
+	adsr_fc.sustain = 0.5;
+	adsr_fc.release = 0.0001;
 	static bool copyVolumeEnvelope = true;
 	if(copyVolumeEnvelope){
 		adsr_fc.attack  = adsr_vol.attack;
@@ -234,7 +234,7 @@ void low_rate_tasks(void){
 					midi.attack_trigger = false;
 
 				}
-				//adsr_vol.note_ON = synth_params.note_ON;
+				adsr_vol.note_ON = synth_params.note_ON;
 				midi.new_event = false;
 			}
 
@@ -245,6 +245,12 @@ void low_rate_tasks(void){
 			/*Update FM modulator*/
 			if(synth_params.FM_synth)
 				FM_mod.update(&synth_params);
+
+			// ------------------ DEBUG ----------------------------//
+			/*Set amplitude to 1, no ADSR*/
+			//synth_params.adsr_amp_vol = 0x7FFF>>1;
+			//adsr_vol.adsr_amp = synth_params.adsr_amp_vol ;
+			// ------------------ DEBUG ----------------------------//
 
 			if (useADC)
 			{
@@ -278,70 +284,50 @@ void low_rate_tasks(void){
 
 
 					switch(s){
-						case 0 :
-							Q = (int16_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
-
-							//trace_printf("ADC read MUX y0 = %i\n",adc);
-
-						break;
-
-						case 1 :
-							adc = readADC1(4);
-							//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
-							fc_adc = exp_curve_q15[adc];
-							//trace_printf("ADC read MUX y1 = %i\n",adc);
-						break;
-
+//						case 0 :
+//							trace_printf("ADC read MUX y0 = %i\n",readADC1(4));
+//						break;
+//
+//						case 1 :
+//							trace_printf("ADC read MUX y1 = %i\n",readADC1(4));
+//						break;
+//
 						case 2 :
-							lfo_adc = ((double)readADC1(4)*(30)/4095);
-							//adc = readADC1(4);
-							//trace_printf("ADC read MUX y2 = %i\n",adc);
+							adc = readADC1(4);
+							q_adc = (uint32_t)(adc*PWM_PERIOD)>>12;
+							trace_printf("ADC read MUX y2 = %i\n",readADC1(4));
 						break;
-
-						case 3 :
-							lfo.lfo_amo = ((double)readADC1(4)*(0x7FFF)/4095);
-							//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
-							//fc_adc = exp_curve_q15[adc];
-							//trace_printf("ADC read MUX y3 = %i\n",adc);
-						break;
-
+//
+//						case 3 :
+//							trace_printf("ADC read MUX y3 = %i\n",readADC1(4));
+//						break;
 
 						case 4 :
-							adsr_fc.decay = ((double)readADC1(4)*(1)/4095);
-							adsr_vol.decay = adsr_fc.decay;
-							trace_printf("ADC read MUX y4 = %i\n",(int16_t)(1000*adsr_fc.attack));
+							adc = readADC1(4);
+							fc_adc = (uint32_t)(adc*PWM_PERIOD)>>12;
+							trace_printf("ADC read MUX y4 = %i\n",fc_adc);
 
 						break;
 
-						case 5 :
-							adsr_fc.release = ((double)readADC1(4)*(1)/4095);
-
-							adsr_vol.release = adsr_fc.release;
-
-							trace_printf("ADC read MUX y5 = %i\n",(int16_t)(1000*adsr_fc.decay ));
-						break;
-
-						case 6 :
-							adsr_fc.attack = ((double)readADC1(4)*(1)/4095);
-							adsr_vol.attack = adsr_fc.attack;
-							trace_printf("ADC read MUX y6 = %i\n",(int16_t)(1000*adsr_fc.sustain));
-						break;
-
-						case 7 :
-							adsr_fc.sustain = ((double)readADC1(4)*(0.9)/4095);
-							adsr_vol.sustain = adsr_fc.sustain;
-							trace_printf("ADC read MUX y7 = %i\n",(int16_t)(1000*adsr_fc.release));
-						break;
+//						case 5 :
+//							trace_printf("ADC read MUX y5 = %i\n",readADC1(4));
+//						break;
+//
+//						case 6 :
+//							trace_printf("ADC read MUX y6 = %i\n",readADC1(4));
+//						break;
+//
+//						case 7 :
+//							trace_printf("ADC read MUX y7 = %i\n",readADC1(4));
+//						break;
 					}
 				}
 
 			}
 
-
-
-			fc_env = (int16_t)((double)(adsr_fc.adsr_amp)*(PWM_PERIOD>>1)/0x7FFF);
-			fc = (int16_t)((double)(lfo.lfo_amp)*(PWM_PERIOD>>2)/0x7FFF);
-			fc = fc_adc+fc_env;
+			fc_env = mul_int16(adsr_fc.adsr_amp,PWM_PERIOD);
+			fc_lfo =  mul_int16(lfo.lfo_amp,PWM_PERIOD);
+			//fc = fc_adc+fc_env;
 //			fc = fc_adc;
 //			if(fc_adc< 200)
 //				fc_adc = 400;
@@ -350,11 +336,11 @@ void low_rate_tasks(void){
 			if(fc > PWM_PERIOD)
 				fc = PWM_PERIOD;
 			//fc = lfo.lfo_amp;
-			//fc = PWM_PERIOD>>1;
-			TIM3->CCR2 =  fc_env;
+			//fc_adc = PWM_PERIOD;
+			TIM3->CCR2 = fc_env+fc_adc;
 
 
-			TIM3->CCR3 = Q;
+			TIM3->CCR4 = q_adc;
 			//lfo.setFreqFrac(lfo_adc);
 
 
@@ -457,11 +443,12 @@ inline void fill_buffer(void)
 		osc_mix += osc1_mix_temp;
 
 		osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
+		osc_mix = adsr_vol.adsr_amp;
 
 				// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);
 
-		status = out_buffer.write(osc_mix);
+		status = out_buffer.write(0);
 
 	}
 

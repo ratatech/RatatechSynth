@@ -12,7 +12,7 @@ decayTime = 0.2;
 releaseTime = 0.2;
 sustainLevel = 0.5;
 
-expMin = 0.009; % adjust to change curvature
+expMin = 0.09; % adjust to change curvature
 
 % Init structure
 ADSR_PAR.sustainLevel = sustainLevel;

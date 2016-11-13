@@ -49,3 +49,10 @@ uint16_t int32_2_uint16(int32_t x){
 	}
 
 }
+
+
+uint16_t mul_int16(int16_t x1,int16_t x2){
+
+	return (int16_t)(((int32_t)(x1)*(x2))>>15);
+
+}
