@@ -198,44 +198,6 @@ class ADSREnv {
 			calcAttack(attack,adsr_mode_att);
 			calcDecay(decay,adsr_mode_dec);
 			calcRelease(release,adsr_mode_rel);
-//			calcAttack(attack,EXP);
-//			calcDecay(decay,EXP);
-//			calcRelease(release,EXP);
-
-//			if(adsr_mode == LIN){
-//
-//				/********************************************//**
-//				 *  Linear ADSR Steps
-//				 ***********************************************/
-//				ph_inc_A = (int32_t)((((double)LUT_ENV_5_BIT/(double)(CONTROL_RATE*attack)))*SHIFT_20_BIT);
-//				decay_len = (int64_t)((((double)LUT_ENV_5_BIT*sustain))*SHIFT_20_BIT);
-//				ph_inc_D = (int32_t)((((double)decay_len/(double)(CONTROL_RATE*decay))));
-//				int32_t release_len = (LUT_ENV_5_BIT<<20)-decay_len;
-//				ph_inc_R = (int32_t)((((double)(release_len)/(double)(CONTROL_RATE*release))));
-//
-//			}else{
-//
-//				/********************************************//**
-//				 *  Exponential ADSR coeffs and initial levels
-//				 ***********************************************/
-//				sustain_lvl = (int32_t)(sustain*SHIFT_15_BIT);
-//
-//				double exp_coeff_temp = calcExpCoeff(attack);
-//				attack_coeff = (int32_t)(exp_coeff_temp*SHIFT_31_BIT);
-//				attack_init_val = (int32_t)((1.0 + k) * (1.0 - exp_coeff_temp)*SHIFT_31_BIT);
-//
-//				exp_coeff_temp = calcExpCoeff(decay);
-//				decay_coeff = (int32_t)(exp_coeff_temp*SHIFT_31_BIT);
-//				decay_init_val = (int32_t)((sustain_lvl - k) * (1.0 - exp_coeff_temp)*SHIFT_31_BIT);
-//
-//				exp_coeff_temp = calcExpCoeff(release);
-//				release_coeff = (int32_t)(exp_coeff_temp*SHIFT_31_BIT);
-//				release_init_val = (int32_t)((-k) * (1.0 - exp_coeff_temp)*SHIFT_31_BIT);
-//
-//				sustain_lvl = (int32_t)(sustain*SHIFT_15_BIT);
-//
-//			}
-
 
 		}
 
@@ -260,7 +222,8 @@ class ADSREnv {
 					if (adsr_amp >=(0x7FFF)  || adsr_amp <0)
 					{
 						adsr_amp = 0x7FFF;
-						adsr_state = DECAY_STATE;
+						//adsr_state = DECAY_STATE; // TODO(JoH):Seems to be a bug with the DECAY range calculation
+						adsr_state = RELEASE_STATE;
 						break;
 					}
 					counter++;

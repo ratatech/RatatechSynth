@@ -20,7 +20,7 @@
  along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "ratatechSynth.h"
-
+#include "newlib_stubs.h"
 
 
 
@@ -33,7 +33,7 @@ using namespace std;
 // Object instances
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
-ADSREnv adsr_vol(LOG,EXP,EXP,0.009),adsr_fc(EXP,EXP,EXP,0.9);
+ADSREnv adsr_vol(EXP,EXP,EXP,0.9),adsr_fc(EXP,EXP,EXP,0.009);
 LFO lfo,FM_mod;
 DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
@@ -71,6 +71,7 @@ uint8_t byte1;
 uint8_t byte2;
 uint8_t byte3;
 
+double attack_state = 0;
 
 BitAction sb;
 
@@ -124,7 +125,7 @@ int main(void)
 		osc1.FM_synth = synth_params.FM_synth;
 	}
 	osc1.set_shape(shape_osc1);
-	osc1.setFreqFrac(1000);
+	osc1.setFreqFrac(300);
 
 	// Configure oscillator 2
 	osc_shape_t shape_osc2 = SAW;
@@ -139,8 +140,8 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x7FFF;
-	synth_params.midi_dest = OSC1;
+	synth_params.osc_mix = 0x0;
+	synth_params.midi_dest = OSC2;
 
 	//TODO(JoH): Review the whole ADSR algo. The behavious seems weird
 	/* *****************************************************************************************
@@ -150,19 +151,19 @@ int main(void)
 	 * Configure ADSR. Values correspond for duration of the states in seconds except for
 	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
-	 * * ******VV***********************************************************************************/
+	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.1;
-	adsr_vol.decay   = 0.5;
-	adsr_vol.sustain = 0.99;
+	adsr_vol.attack  = 0.01;
+	adsr_vol.decay   = 0.041;
+	adsr_vol.sustain = 0.8;
 	adsr_vol.release = 0.1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.2;
-	adsr_fc.decay   = 0.1;
-	adsr_fc.sustain = 0.5;
-	adsr_fc.release = 0.0001;
+	adsr_fc.attack  = 0.08;
+	adsr_fc.decay   = 0.01;
+	adsr_fc.sustain = 0.2;
+	adsr_fc.release = 0.1;
 	static bool copyVolumeEnvelope = true;
 	if(copyVolumeEnvelope){
 		adsr_fc.attack  = adsr_vol.attack;
@@ -176,6 +177,8 @@ int main(void)
 	//Pre-fill the output buffer
 	fill_buffer();
 
+	midi.new_event = true;
+
 	/* *****************************************************************************************
 	 * Main Loop
 	 *
@@ -188,9 +191,13 @@ int main(void)
 			low_rate_tasks();
 			control_rate_decimate++;
 
-			if(control_rate_decimate > 500){
+			if(control_rate_decimate > 5000){
 //				adsr_fc.calcAdsrSteps();
 //				adsr_vol.calcAdsrSteps();
+//				adsr_fc.calcAttack(adsr_fc.attack,adsr_fc.adsr_mode_att);
+//				adsr_vol.calcAttack(adsr_vol.attack,adsr_vol.adsr_mode_att);
+//				adsr_fc.calcRelease(adsr_fc.release,adsr_fc.adsr_mode_att);
+//				adsr_vol.calcRelease(adsr_vol.release,adsr_vol.adsr_mode_att);
 //				control_rate_decimate = 0;
 			}
 
@@ -248,26 +255,12 @@ void low_rate_tasks(void){
 
 			// ------------------ DEBUG ----------------------------//
 			/*Set amplitude to 1, no ADSR*/
-			//synth_params.adsr_amp_vol = 0x7FFF>>1;
-			//adsr_vol.adsr_amp = synth_params.adsr_amp_vol ;
+//			synth_params.adsr_amp_vol = 0x7FFF>>1;
+//			adsr_vol.adsr_amp = synth_params.adsr_amp_vol ;
 			// ------------------ DEBUG ----------------------------//
 
 			if (useADC)
 			{
-				//adc = (uint32_t)((double)ADC_GetConversionValue(ADC1)*(PWM_PERIOD>>1)/4095);
-//				adc = readADC1(1);
-//
-//				//TODO(JoH):Check for fc values given by the exp table, at the lowest values seems to distort a lot
-//				fc_adc = exp_curve_q15[adc];
-//				trace_printf("ADC read NORMAL = %i\n",adc);
-//				trace_printf("Exp curve map = %i\n",exp_curve_q15[adc]);
-
-//				Q = (int16_t)((double)readADC1(4)*(PWM_PERIOD)/4095);
-//				lfo_adc = ((double)readADC1(4)*(30)/4095);
-				//lfo_adc = ((double)readADC1(4));
-
-//				fc_adc = 1000;
-				//Q = 2300;
 
 
 				for(int s=0;s<8;s++){
@@ -298,9 +291,12 @@ void low_rate_tasks(void){
 							trace_printf("ADC read MUX y2 = %i\n",readADC1(4));
 						break;
 //
-//						case 3 :
-//							trace_printf("ADC read MUX y3 = %i\n",readADC1(4));
-//						break;
+						case 3 :
+							adc = readADC1(4);
+//							adsr_vol.attack = (double)(((double)adc/4095)*0.1);
+//							adsr_fc.attack = adsr_vol.attack;
+							trace_printf("ADC read MUX y3 = %i\n",readADC1(4));
+						break;
 
 						case 4 :
 							adc = readADC1(4);
@@ -309,9 +305,12 @@ void low_rate_tasks(void){
 
 						break;
 
-//						case 5 :
-//							trace_printf("ADC read MUX y5 = %i\n",readADC1(4));
-//						break;
+						case 5 :
+							adc = readADC1(4);
+//							adsr_vol.release = (double)(((double)adc/4095)*0.8);
+//							adsr_fc.release = adsr_vol.release;
+							trace_printf("ADC read MUX y5 = %i\n",readADC1(4));
+						break;
 //
 //						case 6 :
 //							trace_printf("ADC read MUX y6 = %i\n",readADC1(4));
@@ -325,6 +324,7 @@ void low_rate_tasks(void){
 
 			}
 
+
 			fc_env = mul_int16(adsr_fc.adsr_amp,PWM_PERIOD);
 			fc_lfo =  mul_int16(lfo.lfo_amp,PWM_PERIOD);
 			//fc = fc_adc+fc_env;
@@ -337,10 +337,10 @@ void low_rate_tasks(void){
 				fc = PWM_PERIOD;
 			//fc = lfo.lfo_amp;
 			//fc_adc = PWM_PERIOD;
-			TIM3->CCR2 = fc_env+fc_adc;
+			TIM3->CCR2 = q_adc;
 
 
-			TIM3->CCR4 = q_adc;
+			TIM3->CCR4 = PWM_PERIOD-(fc_env-fc_adc);
 			//lfo.setFreqFrac(lfo_adc);
 
 
@@ -443,12 +443,12 @@ inline void fill_buffer(void)
 		osc_mix += osc1_mix_temp;
 
 		osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
-		osc_mix = adsr_vol.adsr_amp;
+		//osc_mix = adsr_vol.adsr_amp;
 
-				// Convert to unsigned
+		// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);
 
-		status = out_buffer.write(0);
+		status = out_buffer.write(osc_mix);
 
 	}
 
