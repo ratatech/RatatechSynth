@@ -85,8 +85,6 @@ int main(void)
 	// Init system and peripherals
 	ratatech_init();
 
-	GPIOA->BSRR = GPIO_Pin_12;
-
 	// Configure LFO
 	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP, ONLY FADES 0-0.5!
 	osc_shape_t shape_lfo = SIN;
@@ -143,6 +141,13 @@ int main(void)
 	synth_params.osc_mix = 0x0;
 	synth_params.midi_dest = OSC2;
 
+
+	GPIOA->BRR = GPIO_Pin_12;
+	GPIOA->BSRR = GPIO_Pin_11;
+
+
+
+
 	//TODO(JoH): Review the whole ADSR algo. The behavious seems weird
 	/* *****************************************************************************************
 	 *
@@ -153,18 +158,18 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.01;
+	adsr_vol.attack  = 0.1;
 	adsr_vol.decay   = 0.041;
-	adsr_vol.sustain = 0.8;
-	adsr_vol.release = 0.1;
+	adsr_vol.sustain = 0.99;
+	adsr_vol.release = 0.05;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.08;
+	adsr_fc.attack  = 0.1;
 	adsr_fc.decay   = 0.01;
-	adsr_fc.sustain = 0.2;
-	adsr_fc.release = 0.1;
-	static bool copyVolumeEnvelope = true;
+	adsr_fc.sustain = 0.99;
+	adsr_fc.release = 0.01;
+	static bool copyVolumeEnvelope = false;
 	if(copyVolumeEnvelope){
 		adsr_fc.attack  = adsr_vol.attack;
 		adsr_fc.decay   = adsr_vol.decay;
@@ -343,6 +348,20 @@ void low_rate_tasks(void){
 			TIM3->CCR4 = PWM_PERIOD-(fc_env-fc_adc);
 			//lfo.setFreqFrac(lfo_adc);
 
+
+			//****************************** DEBUG SHIFT COUNTER *************************************************************
+			// CS High
+			//GPIOA->BRR = GPIO_Pin_11;
+
+			byte1 = 0x00;
+
+			// Transmit the two 8bit SPI messages
+			SPI_send(SPI2,byte1);
+
+			// CS Low
+			//GPIOA->BSRR = GPIO_Pin_11;
+
+			//****************************** DEBUG SHIFT COUNTER *************************************************************
 
 		break;
 
