@@ -20,7 +20,6 @@
  along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
  */
 #include "ratatechSynth.h"
-#include "newlib_stubs.h"
 
 
 
