@@ -24,7 +24,7 @@ extern "C" {
 #include "unity.h"
 }
 #include "DumbExample.h"
-
+#include <stdio.h>
 
 void test_AverageThreeBytes_should_AverageMidRangeValues(void)
 {
@@ -39,7 +39,7 @@ TEST_ASSERT_EQUAL_HEX8(80, AverageThreeBytes(70, 80, 90));
 TEST_ASSERT_EQUAL_HEX8(127, AverageThreeBytes(127, 127, 127));
 TEST_ASSERT_EQUAL_HEX8(84, AverageThreeBytes(0, 126, 126));
 }
-
+/*
 int main(void)
 {
 UNITY_BEGIN();
@@ -50,4 +50,18 @@ ratatech_init();
 RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
 RUN_TEST(test_AverageThreeBytes_should_AverageHighValues);
 return UNITY_END();
+}
+*/
+
+int main(void)
+{
+    //by default stdin/stdout are on usart2
+    // turn off buffers, so IO occurs immediately
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+    trace_printf("PUTAAAAAA\n");
+
+    iprintf("Greetings Earthlings");
+    while (1) {}
 }

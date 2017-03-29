@@ -19,7 +19,7 @@
 
 
 #ifndef STDOUT_USART
-#define STDOUT_USART 1
+#define STDOUT_USART 2
 #endif
 
 #ifndef STDERR_USART
@@ -221,6 +221,7 @@ int _write(int file, char *ptr, int len) {
             while ((USART1->SR & USART_FLAG_TC) == (uint16_t)RESET) {}
             USART1->DR = (*ptr++ & (uint16_t)0x01FF);
 #elif  STDOUT_USART == 2
+
             while ((USART2->SR & USART_FLAG_TC) == (uint16_t) RESET) {
             }
             USART2->DR = (*ptr++ & (uint16_t) 0x01FF);

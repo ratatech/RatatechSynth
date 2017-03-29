@@ -73,9 +73,11 @@ void RCC_Clocks_Init(void)
 		/* Wait till PLL is used as system clock source */
 		while(RCC_GetSYSCLKSource() != 0x08);
 	}
+
+	/* Enable peripheral clocks */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_SPI1 |
 						  RCC_APB2Periph_TIM1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_AFIO, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_SPI2, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_USART2 | RCC_APB1Periph_SPI2, ENABLE);
 
 
 
@@ -120,11 +122,22 @@ void GPIO_Conf_Init(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
-	/* USART Rx */
+	/* USART1 Rx */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /* Configure USART2 Tx as push-pull */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /* Configure USART2 Rx as input floating */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	/* TIM3 PWM PINS */
 	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
@@ -281,24 +294,25 @@ void ADC_Conf_Init(void){
  */
 void USART_Conf_Init(void){
 
-    /* USART configuration structure for USART1 */
-    USART_InitTypeDef usart1_InitStructure;
+    /* USART configuration structure for USART */
+    USART_InitTypeDef usart_InitStructure;
 
-    /* NVIC configuration structure for USART1 */
+    /* NVIC configuration structure for USART */
     NVIC_InitTypeDef NVIC_InitStructure;
 
+
+	// ---------------------------------------------------------------------------------------//
     /* Enable USART1 */
     USART_Cmd(USART1, ENABLE);
     /* Baud rate 31250, 8-bit data, One stop bit
      * No parity, Do both Rx and Tx, No HW flow control
      */
-    usart1_InitStructure.USART_BaudRate = 31250;
-    usart1_InitStructure.USART_WordLength = USART_WordLength_8b;
-    usart1_InitStructure.USART_StopBits = USART_StopBits_1;
-    usart1_InitStructure.USART_Parity = USART_Parity_No ;
-    usart1_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    usart1_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-
+    usart_InitStructure.USART_BaudRate = 31250;
+    usart_InitStructure.USART_WordLength = USART_WordLength_8b;
+    usart_InitStructure.USART_StopBits = USART_StopBits_1;
+    usart_InitStructure.USART_Parity = USART_Parity_No ;
+    usart_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    usart_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 
 	/* USART1 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
@@ -308,12 +322,38 @@ void USART_Conf_Init(void){
 	NVIC_Init(&NVIC_InitStructure);
 
     /* Configure USART1 */
-    USART_Init(USART1, &usart1_InitStructure);
+    USART_Init(USART1, &usart_InitStructure);
     /* Enable RXNE interrupt */
     USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
     /* Enable USART1 global interrupt */
     NVIC_EnableIRQ(USART1_IRQn);
 
+	// ---------------------------------------------------------------------------------------//
+    /* Enable USART2 */
+    USART_Cmd(USART2, ENABLE);
+    /* Baud rate 115200, 8-bit data, One stop bit
+     * No parity, Do both Rx and Tx, No HW flow control
+     */
+    usart_InitStructure.USART_BaudRate = 115200;
+    usart_InitStructure.USART_WordLength = USART_WordLength_8b;
+    usart_InitStructure.USART_StopBits = USART_StopBits_1;
+    usart_InitStructure.USART_Parity = USART_Parity_No ;
+    usart_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    usart_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+
+	/* USART2 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+    /* Configure USART2 */
+    USART_Init(USART2, &usart_InitStructure);
+    /* Enable RXNE interrupt */
+    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+    /* Enable USART2 global interrupt */
+    NVIC_EnableIRQ(USART2_IRQn);
 
 }
 
