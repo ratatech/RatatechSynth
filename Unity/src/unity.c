@@ -8,6 +8,11 @@
 #include "unity_config.h"
 #include <stddef.h>
 
+#include <stdio.h>
+#define UNITY_OUTPUT_CHAR(a)   (void)print_char(a)
+#define UNITY_OUTPUT_FLUSH()
+#define UNITY_FLUSH_CALL() UNITY_OUTPUT_FLUSH()
+
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
 #ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
 void UNITY_OUTPUT_CHAR(int);
@@ -52,6 +57,14 @@ static const char UnityStrResultsFailures[]        = " Failures ";
 static const char UnityStrResultsIgnored[]         = " Ignored ";
 static const char UnityStrDetail1Name[]            = UNITY_DETAIL1_NAME " ";
 static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
+
+
+void print_char(const char x){
+	const char* pch ;
+	pch = &x;
+	 iprintf(pch);
+
+}
 
 /*-----------------------------------------------
  * Pretty Printers & Test Result Output Handlers
@@ -368,7 +381,7 @@ void UnityConcludeTest(void)
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
     UNITY_PRINT_EOL();
-    UNITY_FLUSH_CALL();
+   // UNITY_FLUSH_CALL();
 }
 
 /*-----------------------------------------------*/

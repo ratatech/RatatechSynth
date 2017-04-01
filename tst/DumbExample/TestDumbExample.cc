@@ -52,7 +52,7 @@ void test_print(void){
 void print_char(const char x){
 	const char* pch ;
 	pch = &x;
-	 iprintf("Greetings Earthlings");
+	 iprintf(pch);
 
 }
 
@@ -73,12 +73,10 @@ int main(void)
 	GPIO_Conf_Init();
 	USART_Conf_Init();
 
-	//test_print();
-	const char* pch = "outputchar\n";
-	//UNITY_OUTPUT_CHAR(*pch);
-	 //print_char(*pch);
-	 iprintf("Greetings Earthlings");
-
+    // turn off buffers, so IO occurs immediately
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
 
 
     UNITY_BEGIN();

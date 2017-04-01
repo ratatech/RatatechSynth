@@ -261,27 +261,27 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 
 
 
-#ifndef UNITY_OUTPUT_FLUSH
-#ifdef UNITY_USE_FLUSH_STDOUT
-/* We want to use the stdout flush utility */
-#include <stdio.h>
-#define UNITY_OUTPUT_FLUSH (void)fflush(stdout)
-#else
-/* We've specified nothing, therefore flush should just be ignored */
-#define UNITY_OUTPUT_FLUSH
-#endif
-#else
-/* We've defined flush as something else, so make sure we declare it here so it's ready for use */
-#ifndef UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
-extern void UNITY_OUTPUT_FLUSH(void);
-#endif
-#endif
-
-#ifndef UNITY_OUTPUT_FLUSH
-#define UNITY_FLUSH_CALL()
-#else
-#define UNITY_FLUSH_CALL() UNITY_OUTPUT_FLUSH
-#endif
+//#ifndef UNITY_OUTPUT_FLUSH
+//#ifdef UNITY_USE_FLUSH_STDOUT
+///* We want to use the stdout flush utility */
+//#include <stdio.h>
+//#define UNITY_OUTPUT_FLUSH (void)fflush(stdout)
+//#else
+///* We've specified nothing, therefore flush should just be ignored */
+//#define UNITY_OUTPUT_FLUSH
+//#endif
+//#else
+///* We've defined flush as something else, so make sure we declare it here so it's ready for use */
+//#ifndef UNITY_OMIT_OUTPUT_FLUSH_HEADER_DECLARATION
+//extern void UNITY_OUTPUT_FLUSH(void);
+//#endif
+//#endif
+//
+//#ifndef UNITY_OUTPUT_FLUSH
+//#define UNITY_FLUSH_CALL()
+//#else
+//#define UNITY_FLUSH_CALL() UNITY_OUTPUT_FLUSH
+//#endif
 
 #ifndef UNITY_PRINT_EOL
 #define UNITY_PRINT_EOL()    UNITY_OUTPUT_CHAR('\n')
