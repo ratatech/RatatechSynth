@@ -14,6 +14,7 @@ extern "C"
 #endif
 
 #include "unity_internals.h"
+#include "unity_config.h"
 
 void setUp(void);
 void tearDown(void);
@@ -331,6 +332,9 @@ void tearDown(void);
 #define TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF_MESSAGE(actual, message)                                 UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF((actual), __LINE__, (message))
 #define TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(actual, message)                                     UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN((actual), __LINE__, (message))
 #define TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE_MESSAGE(actual, message)                             UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE((actual), __LINE__, (message))
+
+
+#define UNITY_OUTPUT_CHAR
 
 /* end of UNITY_FRAMEWORK_H */
 #ifdef __cplusplus

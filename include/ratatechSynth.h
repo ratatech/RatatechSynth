@@ -83,6 +83,7 @@ void EXTI4_IRQHandler(void);
 void EXTI5_IRQHandler(void);
 void EXTI6_IRQHandler(void);
 void USART1_IRQHandler(void);
+void USART2_IRQHandler(void);
 }
 
 

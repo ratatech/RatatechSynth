@@ -28,40 +28,48 @@ extern "C" {
 
 void test_AverageThreeBytes_should_AverageMidRangeValues(void)
 {
-TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(30, 40, 50));
-TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(10, 70, 40));
-TEST_ASSERT_EQUAL_HEX8(33, AverageThreeBytes(33, 33, 33));
+	TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(30, 40, 50));
+	TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(10, 70, 40));
+	TEST_ASSERT_EQUAL_HEX8(33, AverageThreeBytes(33, 33, 33));
 }
 
 void test_AverageThreeBytes_should_AverageHighValues(void)
 {
-TEST_ASSERT_EQUAL_HEX8(80, AverageThreeBytes(70, 80, 90));
-TEST_ASSERT_EQUAL_HEX8(127, AverageThreeBytes(127, 127, 127));
-TEST_ASSERT_EQUAL_HEX8(84, AverageThreeBytes(0, 126, 126));
+	TEST_ASSERT_EQUAL_HEX8(80, AverageThreeBytes(70, 80, 90));
+	TEST_ASSERT_EQUAL_HEX8(127, AverageThreeBytes(127, 127, 127));
+	TEST_ASSERT_EQUAL_HEX8(84, AverageThreeBytes(0, 126, 126));
 }
-/*
-int main(void)
-{
-UNITY_BEGIN();
 
-// Init system and peripherals
-ratatech_init();
-
-RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
-RUN_TEST(test_AverageThreeBytes_should_AverageHighValues);
-return UNITY_END();
-}
-*/
 
 int main(void)
 {
-    //by default stdin/stdout are on usart2
+
+	RCC_ClocksTypeDef RCC_Clocks;
+
+	SystemInit();
+	RCC_Clocks_Init();
+	SystemCoreClockUpdate();
+
+	/* SysTick end of count event each 1ms */
+	RCC_GetClocksFreq(&RCC_Clocks);
+	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
+
+    // COnfigure and init peripherals
+	GPIO_Conf_Init();
+	USART_Conf_Init();
+
+	/*
     // turn off buffers, so IO occurs immediately
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-    trace_printf("PUTAAAAAA\n");
 
     iprintf("Greetings Earthlings");
-    while (1) {}
+    while (1) {}*/
+
+    UNITY_BEGIN();
+
+    RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
+    RUN_TEST(test_AverageThreeBytes_should_AverageHighValues);
+    return UNITY_END();
 }

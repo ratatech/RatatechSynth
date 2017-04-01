@@ -84,6 +84,7 @@ int main(void)
 	// Init system and peripherals
 	ratatech_init();
 
+
 	// Configure LFO
 	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP, ONLY FADES 0-0.5!
 	osc_shape_t shape_lfo = SIN;
@@ -701,7 +702,7 @@ void TIM1_UP_IRQHandler(void)
 ******************************************************************************************************************************/
 
 /**
-* USART interrupt handler
+* USART1 interrupt handler
 */
 void USART1_IRQHandler(void)
 {
@@ -718,4 +719,24 @@ void USART1_IRQHandler(void)
     /* ------------------------------------------------------------ */
     /* Other USART1 interrupts handler can go here ...             */
 }
+
+/*
+* USART2 interrupt handler
+*/
+/*void USART2_IRQHandler(void)
+{
+
+	if(USART_GetITStatus(USART2, USART_IT_TXE) != RESET)
+	{
+		USART_SendData(USART2,counter);
+		USART_ITConfig(USART1,USART_IT_TXE,ENABLE);
+		counter++;
+		counter%=100;
+	}*/
+
+    /* ------------------------------------------------------------ */
+    /* Other USART1 interrupts handler can go here ...             */
+//}
+
+
 // ----------------------------------------------------------------------------

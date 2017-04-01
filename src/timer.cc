@@ -37,7 +37,7 @@ void TIM_Config(void)
 
 	/* Set audio_on flag to true to have the audio rate interrupt
 	* working. Disabling it helps to speed up debugging */
-	bool audio_on = true;
+	bool audio_on = false;
 	if(audio_on){
 
 		/* TIM1 configuration

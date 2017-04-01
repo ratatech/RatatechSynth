@@ -5,6 +5,7 @@
 ============================================================================ */
 
 #include "unity.h"
+#include "unity_config.h"
 #include <stddef.h>
 
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
@@ -59,6 +60,7 @@ static const char UnityStrDetail2Name[]            = " " UNITY_DETAIL2_NAME " ";
 void UnityPrint(const char* string)
 {
     const char* pch = string;
+
 
     if (pch != NULL)
     {

@@ -22,12 +22,7 @@ This file is part of XXXXXXX
 #ifndef TST_DUMBEXAMPLE_DUMBEXAMPLE_H_
 #define TST_DUMBEXAMPLE_DUMBEXAMPLE_H_
 
-#include "stm32f10x_conf.h"
-#include "system_init.h"
-#include "stm32f10x.h"
-#include "timer.h"
-#include "spi.h"
-#include "settings.h"
+#include "ratatechSynth.h"
 
 
 
