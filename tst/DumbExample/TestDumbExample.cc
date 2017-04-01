@@ -20,11 +20,15 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-extern "C" {
+
 #include "unity.h"
-}
+
 #include "DumbExample.h"
 #include <stdio.h>
+
+#include <stdio.h>
+#define UNITY_OUTPUT_CHAR(a)   (void)print_char(a)
+
 
 void test_AverageThreeBytes_should_AverageMidRangeValues(void)
 {
@@ -40,6 +44,17 @@ void test_AverageThreeBytes_should_AverageHighValues(void)
 	TEST_ASSERT_EQUAL_HEX8(84, AverageThreeBytes(0, 126, 126));
 }
 
+void test_print(void){
+    iprintf("Greetings Earthlings");
+    iprintf("\n");
+}
+
+void print_char(const char x){
+	const char* pch ;
+	pch = &x;
+	 iprintf("Greetings Earthlings");
+
+}
 
 int main(void)
 {
@@ -58,14 +73,13 @@ int main(void)
 	GPIO_Conf_Init();
 	USART_Conf_Init();
 
-	/*
-    // turn off buffers, so IO occurs immediately
-    setvbuf(stdin, NULL, _IONBF, 0);
-    setvbuf(stdout, NULL, _IONBF, 0);
-    setvbuf(stderr, NULL, _IONBF, 0);
+	//test_print();
+	const char* pch = "outputchar\n";
+	//UNITY_OUTPUT_CHAR(*pch);
+	 //print_char(*pch);
+	 iprintf("Greetings Earthlings");
 
-    iprintf("Greetings Earthlings");
-    while (1) {}*/
+
 
     UNITY_BEGIN();
 

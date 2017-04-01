@@ -7,6 +7,13 @@
 #ifndef UNITY_INTERNALS_H
 #define UNITY_INTERNALS_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+
+
 #ifdef UNITY_INCLUDE_CONFIG_H
 #include "unity_config.h"
 #endif
@@ -251,7 +258,7 @@ typedef UNITY_FLOAT_TYPE UNITY_FLOAT;
 //extern void UNITY_OUTPUT_CHAR(int);
 //  #endif
 //#endif
-#define UNITY_OUTPUT_CHAR(a)    iprintf(a)
+
 
 
 #ifndef UNITY_OUTPUT_FLUSH
@@ -781,6 +788,10 @@ int UnityTestMatches(void);
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(actual, line, message)                           UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_NEG_INF)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_NAN(actual, line, message)                               UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_NAN)
 #define UNITY_TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(actual, line, message)                       UnityAssertDoubleSpecial((UNITY_DOUBLE)(actual), (message), (UNITY_LINE_TYPE)(line), UNITY_FLOAT_IS_NOT_DET)
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 /* End of UNITY_INTERNALS_H */

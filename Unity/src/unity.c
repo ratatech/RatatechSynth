@@ -61,7 +61,6 @@ void UnityPrint(const char* string)
 {
     const char* pch = string;
 
-
     if (pch != NULL)
     {
         while (*pch)

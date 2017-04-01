@@ -29,5 +29,6 @@ This file is part of XXXXXXX
 #include <stdint.h>
 
 int8_t AverageThreeBytes(int8_t a, int8_t b, int8_t c);
+void test_print(void);
 
 #endif /* TST_DUMBEXAMPLE_DUMBEXAMPLE_H_ */
