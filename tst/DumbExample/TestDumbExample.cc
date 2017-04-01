@@ -26,10 +26,6 @@ This file is part of XXXXXXX
 #include "DumbExample.h"
 #include <stdio.h>
 
-#include <stdio.h>
-#define UNITY_OUTPUT_CHAR(a)   (void)print_char(a)
-
-
 void test_AverageThreeBytes_should_AverageMidRangeValues(void)
 {
 	TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(30, 40, 50));
