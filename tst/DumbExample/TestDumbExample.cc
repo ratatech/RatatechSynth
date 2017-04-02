@@ -50,28 +50,12 @@ void test_compare_file_data(void){
 	int i=0;
 
 	for(i=0; i<10; i++){
-		buff_out[i] = i+1;
-		if(i==5){
-			buff_out[i] = 45;
-		}
+		buff_out[i] = i+3;
 	}
 
 	TEST_ASSERT_EQUAL_INT_ARRAY(buff_ref,buff_out, BUFF_SIZE);
 
 }
-
-void test_print(void){
-    iprintf("Greetings Earthlings");
-    iprintf("\n");
-}
-
-void print_char(const char x){
-	const char* pch ;
-	pch = &x;
-	 iprintf(pch);
-
-}
-
 
 
 int main(void)
