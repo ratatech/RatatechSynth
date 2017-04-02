@@ -368,7 +368,7 @@ static void UnityTestResultsFailBegin(const UNITY_LINE_TYPE line)
 {
     UnityTestResultsBegin(Unity.TestFile, line);
     UnityPrint(UnityStrFail);
-    UNITY_OUTPUT_CHAR(':');
+    UnityPrint(":");
 }
 
 /*-----------------------------------------------*/
@@ -1245,7 +1245,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     UnityPrint(UnityStrFail);
     if (msg != NULL)
     {
-        UNITY_OUTPUT_CHAR(':');
+        UnityPrint(":");
 
 #ifndef UNITY_EXCLUDE_DETAILS
         if (Unity.CurrentDetail1)
@@ -1279,7 +1279,7 @@ void UnityIgnore(const char* msg, const UNITY_LINE_TYPE line)
     UnityPrint(UnityStrIgnore);
     if (msg != NULL)
     {
-        UNITY_OUTPUT_CHAR(':');
+        UnityPrint(":");
         UNITY_OUTPUT_CHAR(' ');
         UnityPrint(msg);
     }
