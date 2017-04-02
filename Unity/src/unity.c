@@ -12,6 +12,7 @@
 #define UNITY_OUTPUT_CHAR(a)   (void)print_char(a)
 #define UNITY_OUTPUT_FLUSH()
 #define UNITY_FLUSH_CALL() UNITY_OUTPUT_FLUSH()
+#define UNITY_PRINT_EOL() print_EOL()
 
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
 #ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
@@ -63,6 +64,11 @@ void print_char(const char x){
 	const char* pch ;
 	pch = &x;
 	 iprintf(pch);
+
+}
+
+void print_EOL(void){
+	 iprintf("\n");
 
 }
 
@@ -181,20 +187,24 @@ void UnityPrintNumber(const UNITY_INT number_to_print)
  * basically do an itoa using as little ram as possible */
 void UnityPrintNumberUnsigned(const UNITY_UINT number)
 {
-    UNITY_UINT divisor = 1;
-
-    /* figure out initial divisor */
-    while (number / divisor > 9)
-    {
-        divisor *= 10;
-    }
-
-    /* now mod and print, then divide divisor */
-    do
-    {
-        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
-        divisor /= 10;
-    } while (divisor > 0);
+//    UNITY_UINT divisor = 1;
+//
+//    /* figure out initial divisor */
+//    while (number / divisor > 9)
+//    {
+//        divisor *= 10;
+//    }
+//
+//    /* now mod and print, then divide divisor */
+//    do
+//    {
+//        UNITY_OUTPUT_CHAR((char)('0' + (number / divisor % 10)));
+//        divisor /= 10;
+//    } while (divisor > 0);
+//
+	char snumber[1];
+    itoa(number, snumber, 10);
+    UnityPrint(snumber);
 }
 
 /*-----------------------------------------------*/
@@ -346,11 +356,11 @@ void UnityPrintFloat(const UNITY_DOUBLE input_number)
 static void UnityTestResultsBegin(const char* file, const UNITY_LINE_TYPE line)
 {
     UnityPrint(file);
-    UNITY_OUTPUT_CHAR(':');
+    UnityPrint(":");
     UnityPrintNumber((UNITY_INT)line);
-    UNITY_OUTPUT_CHAR(':');
+    UnityPrint(":");
     UnityPrint(Unity.CurrentTestName);
-    UNITY_OUTPUT_CHAR(':');
+    UnityPrint(":");
 }
 
 /*-----------------------------------------------*/
@@ -381,7 +391,7 @@ void UnityConcludeTest(void)
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
     UNITY_PRINT_EOL();
-   // UNITY_FLUSH_CALL();
+    UNITY_FLUSH_CALL();
 }
 
 /*-----------------------------------------------*/
@@ -1309,6 +1319,8 @@ void UnityDefaultTestRun(UnityTestFunction Func, const char* FuncName, const int
 /*-----------------------------------------------*/
 void UnityBegin(const char* filename)
 {
+	UNITY_PRINT_EOL();
+	UNITY_PRINT_EOL();
     Unity.TestFile = filename;
     Unity.CurrentTestName = NULL;
     Unity.CurrentTestLineNumber = 0;
