@@ -50,7 +50,7 @@ void test_compare_file_data(void){
 	int i=0;
 
 	for(i=0; i<10; i++){
-		buff_out[i] = i+3;
+		buff_out[i] = i+1;
 	}
 
 	TEST_ASSERT_EQUAL_INT_ARRAY(buff_ref,buff_out, BUFF_SIZE);

@@ -48,16 +48,19 @@ class RatatechSerial(object):
                 time.sleep(0.5)  #give the serial port sometime to receive the data
                 
                 numOfLines = 0
-                
+                usartLines = []
                 while True:
                     response = self.ser.readline()
+                    usartLines.append(response)
                     if len(response)>0:
                         print(response)
-                    
+                                            
                     if(response == 'exit'):
-                        break
+                        self.ser.close()
+                        return usartLines
         
                 self.ser.close()
+                
             except Exception, e1:
                 print "error communicating...: " + str(e1)
         
