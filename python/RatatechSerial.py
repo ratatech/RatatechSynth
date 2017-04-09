@@ -27,18 +27,19 @@ class RatatechSerial(object):
         self.ser.printConsole = False
 
     def open(self):
-        TIMEOUT = 10
+        TIMEOUT = 20
         waitTime = 0.5
         serialWait = 0
         while True:
             if (serialWait/waitTime) >= TIMEOUT:
+                print "Timeout expired!"
                 print "error open serial port: " + str(e)
                 exit()
             try: 
                 self.ser.open()
                 break
             except Exception, e:
-                print "Usart busy, wait..."
+                print "Uart busy, wait..."
                 time.sleep(waitTime)
                 serialWait = serialWait + waitTime
 
@@ -63,7 +64,8 @@ class RatatechSerial(object):
             print "Serial port not open!"
                     
     def read(self):
-        if self.status == "OPEN":                        
+        if self.status == "OPEN":  
+                                
             numOfLines = 0
             usartLines = []
             while True:

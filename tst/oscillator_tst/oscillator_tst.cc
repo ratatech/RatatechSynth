@@ -40,6 +40,9 @@ void wait_usart_ready(void){
 		iprintf("\n");
 	}
 
+	// Ready to start test
+    iprintf("\nTEST:  Oscillator\n-----------------------");
+
 }
 
 #define BUFF_SIZE 256
@@ -93,6 +96,14 @@ void test_sine_out(void){
 
 	TEST_ASSERT_EQUAL_INT_ARRAY(buff_sin_ref,buff_sin_out, BUFF_SIZE);
 
+//	int buff_out [BUFF_SIZE];
+//	int i=0;
+//
+//	for(i=0; i<10; i++){
+//		buff_out[i] = i+1;
+//	}
+//
+//	TEST_ASSERT_EQUAL_INT_ARRAY(buff_out,buff_out, BUFF_SIZE);
 }
 
 
@@ -120,9 +131,11 @@ int main(void)
 
     // Wait usart confirmation to start the test
     wait_usart_ready();
+
     UNITY_BEGIN();
 
     RUN_TEST(test_sine_out);
+
     return UNITY_END();
 }
 

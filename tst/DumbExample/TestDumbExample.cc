@@ -70,6 +70,9 @@ void wait_usart_ready(void){
 		iprintf("\n");
 	}
 
+	// Ready to start test
+    iprintf("\nTEST:  DumbExample\n-----------------------");
+
 }
 
 int main(void)
@@ -97,7 +100,6 @@ int main(void)
     // Wait usart confirmation to start the test
     wait_usart_ready();
 
-    iprintf("\nTEST:  DumbExample\n-----------------------");
     UNITY_BEGIN();
 
     RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
