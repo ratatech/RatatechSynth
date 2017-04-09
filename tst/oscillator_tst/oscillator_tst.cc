@@ -22,40 +22,10 @@ This file is part of XXXXXXX
 
 
 #include "unity.h"
+#include "ratatechSynth.h"
 
-#include "DumbExample.h"
 #include <stdio.h>
 
-#define BUFF_SIZE 10
-int buff_ref[BUFF_SIZE] = {1,2,3,4,5,6,7,8,9,10};
-
-void test_AverageThreeBytes_should_AverageMidRangeValues(void)
-{
-
-	TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(30, 40, 50));
-	TEST_ASSERT_EQUAL_HEX8(40, AverageThreeBytes(10, 70, 40));
-	TEST_ASSERT_EQUAL_HEX8(33, AverageThreeBytes(33, 33, 33));
-}
-
-void test_AverageThreeBytes_should_AverageHighValues(void)
-{
-	TEST_ASSERT_EQUAL_HEX8(80, AverageThreeBytes(70, 80, 90));
-	TEST_ASSERT_EQUAL_HEX8(127, AverageThreeBytes(127, 127, 127));
-	TEST_ASSERT_EQUAL_HEX8(84, AverageThreeBytes(0, 126, 126));
-}
-
-void test_compare_file_data(void){
-
-	int buff_out [BUFF_SIZE];
-	int i=0;
-
-	for(i=0; i<10; i++){
-		buff_out[i] = i+1;
-	}
-
-	TEST_ASSERT_EQUAL_INT_ARRAY(buff_ref,buff_out, BUFF_SIZE);
-
-}
 
 void wait_usart_ready(void){
 
@@ -71,6 +41,60 @@ void wait_usart_ready(void){
 	}
 
 }
+
+#define BUFF_SIZE 256
+int buff_sin_ref[BUFF_SIZE] = {
+		0,3,6,9,12,15,18,21,24,27,30,34,37,39,42,45,48,51,54,57,60,62,65,68,70,73,75,78,80,83,85,87,90,92,94,
+		96,98,100,102,104,106,107,109,110,112,113,115,116,117,118,120,121,122,122,123,124,125,125,126,126,126,
+		127,127,127,127,127,127,127,126,126,126,125,125,124,123,122,122,121,120,118,117,116,115,113,112,110,
+		109,107,106,104,102,100,98,96,94,92,90,87,85,83,80,78,75,73,70,68,65,62,60,57,54,51,48,45,42,39,37,34,
+		30,27,24,21,18,15,12,9,6,3,0,-4,-7,-10,-13,-16,-19,-22,-25,-28,-31,-35,-38,-40,-43,-46,-49,-52,-55,-58,
+		-61,-63,-66,-69,-71,-74,-76,-79,-81,-84,-86,-88,-91,-93,-95,-97,-99,-101,-103,-105,-107,-108,-110,-111,
+		-113,-114,-116,-117,-118,-119,-121,-122,-123,-123,-124,-125,-126,-126,-127,-127,-127,-128,-128,-128,
+		-128,-128,-128,-128,-127,-127,-127,-126,-126,-125,-124,-123,-123,-122,-121,-119,-118,-117,-116,-114,
+		-113,-111,-110,-108,-107,-105,-103,-101,-99,-97,-95,-93,-91,-88,-86,-84,-81,-79,-76,-74,-71,-69,-66,
+		-63,-61,-58,-55,-52,-49,-46,-43,-40,-38,-35,-31,-28,-25,-22,-19,-16,-13,-10,-7,-4};
+
+// Structure instances
+synth_params_t synth_params;
+
+Oscillator osc;
+
+int32_t sample;
+
+
+
+
+int buff_sin_out [BUFF_SIZE];
+
+void test_sine_out(void){
+
+	// Configure oscillator 1
+	osc_shape_t shape_osc1 = SIN;
+	if(synth_params.FM_synth){
+		osc_shape_t shape_osc1 = SIN;
+		osc.FM_synth = synth_params.FM_synth;
+	}
+	osc.set_shape(shape_osc1);
+	osc.setFreqFrac(1000);
+
+	for(int i=0; i<BUFF_SIZE; i++){
+		sample =  osc.compute_osc(&synth_params);
+
+		buff_sin_out[i] = sample;
+	}
+
+	iprintf("buff_sin_out = [");
+	for(int j=0; j<BUFF_SIZE/4;  j++ ){
+		UnityPrintNumber((UNITY_INT)buff_sin_out[j]);
+		iprintf(",");
+	}
+	iprintf("]\n");
+
+	TEST_ASSERT_EQUAL_INT_ARRAY(buff_sin_ref,buff_sin_out, BUFF_SIZE);
+
+}
+
 
 int main(void)
 {
@@ -96,13 +120,9 @@ int main(void)
 
     // Wait usart confirmation to start the test
     wait_usart_ready();
-
-    iprintf("\nTEST:  DumbExample\n-----------------------");
     UNITY_BEGIN();
 
-    RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
-    RUN_TEST(test_AverageThreeBytes_should_AverageHighValues);
-    RUN_TEST(test_compare_file_data);
+    RUN_TEST(test_sine_out);
     return UNITY_END();
 }
 

@@ -1,5 +1,12 @@
-import os
+#!/usr/bin/python
+
+import serial, time
 
 
-cmnd = 'eclipse --launcher.suppressErrors -nosplash -data "/home/rata/Projects/Eclipse Workspace/" -application org.eclipse.cdt.managedbuilder.core.headlessbuild -cleanBuild "RatatechSynth/Release"'
-os.system(cmnd)
+class RatatechBuild(object):
+    def __init__(self):
+    
+    def flash(self):
+    
+    def testUart(self):    
+    

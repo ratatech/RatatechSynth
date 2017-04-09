@@ -24,45 +24,68 @@ class RatatechSerial(object):
         self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout = 2     #timeout for write
+        self.ser.printConsole = False
 
     def open(self):
-        try: 
-            self.ser.open()
-        except Exception, e:
-            print "error open serial port: " + str(e)
-            exit()
+        TIMEOUT = 10
+        waitTime = 0.5
+        serialWait = 0
+        while True:
+            if (serialWait/waitTime) >= TIMEOUT:
+                print "error open serial port: " + str(e)
+                exit()
+            try: 
+                self.ser.open()
+                break
+            except Exception, e:
+                print "Usart busy, wait..."
+                time.sleep(waitTime)
+                serialWait = serialWait + waitTime
 
         if self.ser.isOpen():
         
             try:
                 self.ser.flushInput() #flush input buffer, discarding all its contents
                 self.ser.flushOutput()#flush output buffer, aborting current output 
-                         #and discard all that is in buffer
-        
-                #write data
-                '''
-                self.ser.write("AT+CSQ")
-                print("write data: AT+CSQ")
-                '''
-                
-                time.sleep(0.5)  #give the serial port sometime to receive the data
-                
-                numOfLines = 0
-                usartLines = []
-                while True:
-                    response = self.ser.readline()
-                    usartLines.append(response)
-                    if len(response)>0:
-                        print(response)
-                                            
-                    if(response == 'exit'):
-                        self.ser.close()
-                        return usartLines
-        
-                self.ser.close()
-                
+                self.status = "OPEN"
             except Exception, e1:
                 print "error communicating...: " + str(e1)
-        
         else:
-            print "cannot open serial port "
+            print "cannot open serial port "       
+                
+    def write(self,serial_str):  
+        if self.status == "OPEN":          
+            #write data
+            self.ser.write(serial_str)
+            self.ser.flushInput() #flush input buffer, discarding all its contents
+            self.ser.flushOutput()#flush output buffer, aborting current output 
+        else:
+            print "Serial port not open!"
+                    
+    def read(self):
+        if self.status == "OPEN":                        
+            numOfLines = 0
+            usartLines = []
+            while True:
+                response = self.ser.readline()
+                usartLines.append(response)
+                if len(response)>0:
+                    if self.ser.printConsole:
+                        print(response)
+                                        
+                if(response == 'exit'):
+                    self.status = "CLOSED"
+                    self.ser.close()
+                    return usartLines
+        else:
+            print "Serial port not open!"
+                    
+    
+    def close(self):
+        self.ser.flushInput() #flush input buffer, discarding all its contents
+        self.ser.flushOutput()#flush output buffer, aborting current output      
+        self.status = "CLOSED"
+        self.ser.close()
+                
+
+        
