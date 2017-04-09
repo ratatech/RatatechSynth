@@ -6,17 +6,12 @@ sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
 
 class RatatechBuild(object):
-    def __init__(self):
+    def __init__(self,prjName):
         
         # ST-link dir
         self.stlink = '/usr/local/bin/st-flash '
-        
-        # Get project name from the directory name. Note that the test project directory name
-        # should coincide with the build directory. BE careful, the index for the string split 
-        # is hardcoded since this this script should stay in the same directory. If it has to be
-        # moved, modify index accordingly
-        print  os.path.dirname(__file__)
-        self.prjName = os.path.dirname(__file__).split('/')[-4]
+
+        self.prjName = prjName
     
     def flash(self):
 

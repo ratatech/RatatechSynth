@@ -45,6 +45,12 @@ void wait_usart_ready(void){
 
 }
 
+void intNum2CharStr(int num){
+	static char string[11];
+	sprintf(string, "%d", num);
+	iprintf((const char*)string);
+}
+
 #define BUFF_SIZE 256
 int buff_sin_ref[BUFF_SIZE] = {
 		0,3,6,9,12,15,18,21,24,27,30,34,37,39,42,45,48,51,54,57,60,62,65,68,70,73,75,78,80,83,85,87,90,92,94,
@@ -88,22 +94,15 @@ void test_sine_out(void){
 	}
 
 	iprintf("buff_sin_out = [");
-	for(int j=0; j<BUFF_SIZE/4;  j++ ){
-		UnityPrintNumber((UNITY_INT)buff_sin_out[j]);
+	for(int j=0; j<BUFF_SIZE;  j++ ){
+		intNum2CharStr(buff_sin_out[j]);
 		iprintf(",");
 	}
 	iprintf("]\n");
 
-	TEST_ASSERT_EQUAL_INT_ARRAY(buff_sin_ref,buff_sin_out, BUFF_SIZE);
 
-//	int buff_out [BUFF_SIZE];
-//	int i=0;
-//
-//	for(i=0; i<10; i++){
-//		buff_out[i] = i+1;
-//	}
-//
-//	TEST_ASSERT_EQUAL_INT_ARRAY(buff_out,buff_out, BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT_ARRAY(buff_sin_ref,buff_sin_out,BUFF_SIZE);
+
 }
 
 
