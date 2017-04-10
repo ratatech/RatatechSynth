@@ -24,19 +24,24 @@ if status == 'CONNECTED':
 
     # Start uart communication and get test results
     uartOutLines = ratatechBuild.testUart() 
-    
+          
+    # Discard first lines possibly remaining in usart buffer from old tests       
     firstLine = [idx for idx, s in enumerate(uartOutLines) if 'TEST' in s][0]
     uartOutLines = uartOutLines[firstLine:-1]
     
+    # Print the usart output    
     for line in uartOutLines:
         print line  
-        
+            
     # Check second last output for the test result
     if 'FAIL' in uartOutLines[-2]:
         testResult = 'FAIL'
         raise ValueError('Test Failed!')
-    
-    # Parse the output buffer
-    sub = 'buff_sin_out'
-    buff_out = [s for s in uartOutLines if sub in s]
-
+        
+    # Parse the output buffer and create wav audio files for each of the generated signals.
+    # Each of the corresponding substrings should match the name of the output buffers used in
+    # oscillator_tst.cc otherwise the parsing won't work.
+    ratatechUtil.rawUsart2wav('buff_sin_out',uartOutLines)
+    ratatechUtil.rawUsart2wav('buff_squ_out',uartOutLines)
+    ratatechUtil.rawUsart2wav('buff_saw_out',uartOutLines)
+        

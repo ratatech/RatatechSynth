@@ -65,10 +65,9 @@ class RatatechSerial(object):
                     
     def read(self):
         if self.status == "OPEN":  
-                                
             numOfLines = 0
             usartLines = []
-            while True:
+            while True:          
                 response = self.ser.readline()
                 usartLines.append(response)
                 if len(response)>0:
@@ -81,7 +80,25 @@ class RatatechSerial(object):
                     return usartLines
         else:
             print "Serial port not open!"
-                    
+            
+    def readLines(self,confStr):
+        if self.status == "OPEN":  
+            self.ser.write("1")
+            numOfLines = 0
+            usartLines = []
+            while True:          
+                response = self.ser.readline()
+                usartLines.append(response)
+                if len(response)>0:
+                    if self.ser.printConsole:
+                        print(response)
+                                        
+                if(response == 'exit'):
+                    self.status = "CLOSED"
+                    self.ser.close()
+                    return usartLines
+        else:
+            print "Serial port not open!"                    
     
     def close(self):
         self.ser.flushInput() #flush input buffer, discarding all its contents

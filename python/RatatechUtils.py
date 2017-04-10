@@ -1,5 +1,8 @@
 import os
 from subprocess import PIPE, Popen
+import scipy.io.wavfile
+import math
+import numpy as np
 
 
 class RatatechUtils(object):
@@ -40,4 +43,11 @@ class RatatechUtils(object):
             status = 'CONNECTED' 
             
         return status
+    
+    def rawUsart2wav(self,sub,lines):
+        buff_out = [s for s in lines if sub in s]
+        raw_audio = buff_out[0].split(sub)[1].split('[')[1].split(']')[0]
+        raw_audio = np.fromstring(raw_audio, dtype=np.int32, sep=',')
+        raw_audio = np.asarray(raw_audio, dtype=np.int16)
+        scipy.io.wavfile.write(sub.replace('buff','test')+'.wav',96000,raw_audio)
             

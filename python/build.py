@@ -38,9 +38,11 @@ class RatatechBuild(object):
         ratatech_serial.open()
        
         # Send uart confirmation
-        ratatech_serial.write("1")
+        #ratatech_serial.write("1")
+            
+        time.sleep(0.1)    
         
         # Start reading uart
-        usartOutLines = ratatech_serial.read()
-        
+        usartOutLines = ratatech_serial.readLines("1")
+                
         return usartOutLines
