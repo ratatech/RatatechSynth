@@ -44,5 +44,4 @@ if status == 'CONNECTED':
     ratatechUtil.rawUsart2wav('buff_sin_out',uartOutLines)
     ratatechUtil.rawUsart2wav('buff_squ_out',uartOutLines)
     ratatechUtil.rawUsart2wav('buff_saw_out',uartOutLines)
-    ratatechUtil.rawUsart2wav('buff_tri_out',uartOutLines)
         

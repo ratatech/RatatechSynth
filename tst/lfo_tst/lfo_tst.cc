@@ -1,7 +1,7 @@
 /*
-@file fileName.cc
+@file lfo_tst.cc
 
-@brief Oscillator unit test
+@brief LFO unit test
 
 @ Created by Jordi Hidalgo, Ratatech, Mar 29, 2017
 This file is part of XXXXXXX
@@ -31,9 +31,9 @@ This file is part of XXXXXXX
 #define BUFF_SIZE 256
 
 /**
- * Sine unit test reference buffer
+ * LFO sine unit test reference buffer
  */
-int32_t buff_sin_ref[BUFF_SIZE] = {
+int32_t buff_lfo_sin_ref[BUFF_SIZE] = {
 		1792,3840,5888,8192,9984,12032,14080,15872,17664,19456,21248,22784,24320,25600,26880,27904,28928,29696,30720,31232,31744,32000,32256,
 		32256,32256,32000,31744,31232,30720,29696,28928,27904,26880,25600,24320,22784,21248,19456,17920,16128,14336,12288,10240,8192,6144,4096,
 		2048,0,-2304,-4352,-6400,-8704,-10496,-12544,-14592,-16384,-18176,-19968,-21760,-23296,-24832,-26112,-27392,-28416,-29440,-30208,-31232,-31744,
@@ -49,9 +49,9 @@ int32_t buff_sin_ref[BUFF_SIZE] = {
 };
 
 /**
- * Square unit test reference buffer
+ * LFO square unit test reference buffer
  */
-int32_t buff_squ_ref[BUFF_SIZE] = {
+int32_t buff_lfo_squ_ref[BUFF_SIZE] = {
 		32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,32256,
 		32256,32256,32256,32256,32256,32256,32256,32512,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 		-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
@@ -67,9 +67,9 @@ int32_t buff_squ_ref[BUFF_SIZE] = {
 };
 
 /**
- * Saw unit test reference buffer
+ * LFO saw unit test reference buffer
  */
-int32_t buff_saw_ref[BUFF_SIZE] = {
+int32_t buff_lfo_saw_ref[BUFF_SIZE] = {
 		-10496,-9728,-8960,-8448,-7680,-6912,-6400,-5632,-4864,-4352,-3584,-2816,-2304,-1536,-768,-256,512,1280,1792,2560,3328,3840,4608,5376,5888,6656,
 		7424,7936,8704,9472,9984,10752,11520,12032,12800,13568,14080,14848,15616,16128,16896,17664,18176,18944,19712,20224,20992,21760,22272,23040,
 		23808,24320,25088,25856,26368,27136,27904,28416,29184,29952,30464,31232,32000,0,-32256,-31488,-30976,-30208,-29440,-28928,-28160,-27392,-26880,
@@ -84,23 +84,21 @@ int32_t buff_saw_ref[BUFF_SIZE] = {
 };
 
 /**
- * Triangle  unit test reference buffer
+ * LFO triangle unit test reference buffer
  */
-int32_t buff_tri_ref[BUFF_SIZE] = {
-	-31488,-30208,-28928,-27392,-26112,-24832,-23296,-22016,-20736,-19200,-17920,-16640,-15104,-13824,-12544,-11008,-9728,-8448,-6912,-5632,-4352,-2816,-1536,-256,
-	1280,2560,3840,5376,6656,7936,9472,10752,12032,13568,14848,16128,17664,18944,20224,21760,23040,24320,25856,27136,28416,29952,31232,32256,30976,29696,
-	28416,26880,25600,24320,22784,21504,20224,18688,17408,16128,14592,13312,12032,10496,9216,7936,6400,5120,3840,2304,1024,-256,-1792,-3072,-4352,-5888,-7168,
-	-8448,-9984,-11264,-12544,-14080,-15360,-16640,-18176,-19456,-20736,-22272,-23552,-24832,-26368,-27648,-28928,-30464,-31744,-32512,-31488,-30208,-28928,-27392,
-	-26112,-24832,-23296,-22016,-20736,-19200,-17920,-16640,-15104,-13824,-12544,-11008,-9728,-8448,-6912,-5632,-4352,-2816,-1536,-256,1280,2560,3840,5376,6656,7936,
-	9472,10752,12032,13568,14848,16128,17664,18944,20224,21760,23040,24320,25856,27136,28416,29952,31232,32256,30976,29696,28416,26880,25600,24320,22784,
-	21504,20224,18688,17408,16128,14592,13312,12032,10496,9216,7936,6400,5120,3840,2304,1024,-256,-1792,-3072,-4352,-5888,-7168,-8448,-9984,-11264,-12544,-14080,
-	-15360,-16640,-18176,-19456,-20736,-22272,-23552,-24832,-26368,-27648,-28928,-30464,-31744,-32512,-31488,-30208,-28928,-27392,-26112,-24832,-23296,-22016,-20736,
-	-19200,-17920,-16640,-15104,-13824,-12544,-11008,-9728,-8448,-6912,-5632,-4352,-2816,-1536,-256,1280,2560,3840,5376,6656,7936,9472,10752,12032,13568,14848,
-	16128,17664,18944,20224,21760,23040,24320,25856,27136,28416,29952,31232,32256,30976,29696,28416,26880,25600,24320,22784,21504,20224,18688,17408,16128,
-	14592,13312,12032,10496,
+int32_t buff_lfo_tri_ref[BUFF_SIZE] = {
+		-10496,-9728,-8960,-8448,-7680,-6912,-6400,-5632,-4864,-4352,-3584,-2816,-2304,-1536,-768,-256,512,1280,1792,2560,3328,3840,4608,5376,5888,6656,
+		7424,7936,8704,9472,9984,10752,11520,12032,12800,13568,14080,14848,15616,16128,16896,17664,18176,18944,19712,20224,20992,21760,22272,23040,
+		23808,24320,25088,25856,26368,27136,27904,28416,29184,29952,30464,31232,32000,0,-32256,-31488,-30976,-30208,-29440,-28928,-28160,-27392,-26880,
+		-26112,-25344,-24832,-24064,-23296,-22784,-22016,-21248,-20736,-19968,-19200,-18688,-17920,-17152,-16640,-15872,-15104,-14592,-13824,-13056,-12544,
+		-11776,-11008,-10496,-9728,-8960,-8448,-7680,-6912,-6400,-5632,-4864,-4352,-3584,-2816,-2304,-1536,-768,-256,512,1280,1792,2560,3328,3840,4608,5376,
+		5888,6656,7424,7936,8704,9472,9984,10752,11520,12032,12800,13568,14080,14848,15616,16128,16896,17664,18176,18944,19712,20224,20992,21760,22272,
+		23040,23808,24320,25088,25856,26368,27136,27904,28416,29184,29952,30464,31232,32000,0,-32256,-31488,-30976,-30208,-29440,-28928,-28160,-27392,-26880,
+		-26112,-25344,-24832,-24064,-23296,-22784,-22016,-21248,-20736,-19968,-19200,-18688,-17920,-17152,-16640,-15872,-15104,-14592,-13824,-13056,-12544,-11776,
+		-11008,-10496,-9728,-8960,-8448,-7680,-6912,-6400,-5632,-4864,-4352,-3584,-2816,-2304,-1536,-768,-256,512,1280,1792,2560,3328,3840,4608,5376,5888,6656,7424,
+		7936,8704,9472,9984,10752,11520,12032,12800,13568,14080,14848,15616,16128,16896,17664,18176,18944,19712,20224,20992,21760,22272,23040,23808,24320,
+		25088,25856,26368,27136,27904,28416,29184,29952,30464,31232,32000,0,
 };
-
-
 
 /**
  * Structure holding the main synth parameters
@@ -108,9 +106,9 @@ int32_t buff_tri_ref[BUFF_SIZE] = {
 synth_params_t synth_params;
 
 /**
- * Oscillator class instance
+ * LFO class instance
  */
-Oscillator osc;
+LFO lfo;
 
 /**
  * Unit test output buffer
@@ -118,110 +116,114 @@ Oscillator osc;
 int32_t buff_out [BUFF_SIZE];
 
 /**
- * Sine oscillator unit test
+ * LFO sine oscillator unit test
  */
-void test_sine_out(void){
+void test_lfo_sine_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1 */
-	osc_shape_t shape_osc1 = SIN;
-	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	/** Configure lfo */
+	osc_shape_t shape_lfo = SIN;
+	lfo.FM_synth = false;
+	lfo.shape = shape_lfo;
+	lfo.setFreqFrac(2);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  lfo.update(&synth_params);
 
 		buff_out[i] = sample;
 	}
 
 	/** Print output buffer */
-	printOutBuff("buff_sin_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_lfo_sin_out", &buff_out[0], BUFF_SIZE);
 
 	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_sin_ref,buff_out,BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_lfo_sin_ref,buff_out,BUFF_SIZE);
 
 }
 
 /**
- * Square oscillator unit test
+ * LFO square oscillator unit test
  */
-void test_square_out(void){
+void test_lfo_square_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = SQU;
-	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	/** Configure lfo */
+	osc_shape_t shape_lfo = SQU;
+	lfo.FM_synth = false;
+	lfo.shape = shape_lfo;
+	lfo.setFreqFrac(2);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  lfo.update(&synth_params);
 
 		buff_out[i] = sample;
 	}
 
 	/** Print output buffer */
-	printOutBuff("buff_squ_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_lfo_squ_out", &buff_out[0], BUFF_SIZE);
 
 	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_squ_ref,buff_out,BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_lfo_squ_ref,buff_out,BUFF_SIZE);
 
 }
 
 /**
- * Saw oscillator unit test
+ * LFO saw oscillator unit test
  */
-void test_saw_out(void){
+void test_lfo_saw_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = SAW;
-	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	/** Configure lfo */
+	osc_shape_t shape_lfo = SAW;
+	lfo.FM_synth = false;
+	lfo.shape = shape_lfo;
+	lfo.setFreqFrac(2);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  lfo.update(&synth_params);
 
 		buff_out[i] = sample;
 	}
 
 	/** Print output buffer */
-	printOutBuff("buff_saw_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_lfo_saw_out", &buff_out[0], BUFF_SIZE);
 
 	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_saw_ref,buff_out,BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_lfo_saw_ref,buff_out,BUFF_SIZE);
 
 }
 
 /**
- * Triangle oscillator unit test
+ * LFO triangle oscillator unit test
  */
-void test_triangle_out(void){
+void test_lfo_tri_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = TRI;
-	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	/** Configure lfo */
+	osc_shape_t shape_lfo = TRI;
+	lfo.FM_synth = false;
+	lfo.shape = shape_lfo;
+	lfo.setFreqFrac(2);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  lfo.update(&synth_params);
 
 		buff_out[i] = sample;
 	}
 
 	/** Print output buffer */
-	printOutBuff("buff_tri_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_lfo_tri_out", &buff_out[0], BUFF_SIZE);
 
 	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_tri_ref,buff_out,BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_lfo_tri_ref,buff_out,BUFF_SIZE);
 
 }
 
@@ -252,10 +254,10 @@ int main(void)
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
-    RUN_TEST(test_sine_out);
-    RUN_TEST(test_square_out);
-    RUN_TEST(test_saw_out);
-    RUN_TEST(test_triangle_out);
+    RUN_TEST(test_lfo_sine_out);
+    RUN_TEST(test_lfo_square_out);
+    RUN_TEST(test_lfo_saw_out);
+    RUN_TEST(test_lfo_tri_out);
 
     /** FInish unity */
     return UNITY_END();

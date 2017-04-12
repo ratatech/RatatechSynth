@@ -8,3 +8,10 @@ matlab/octave-workspace
 /oscillator/
 /DumbExample/
 /oscillator_tst/
+
+*.py~
+*.pyc
+*.gitignore~
+*.gitignore~~
+*.sh~
+*.m~~
