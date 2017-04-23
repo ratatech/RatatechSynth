@@ -24,17 +24,29 @@ This file is part of XXXXXXX
 
 using namespace std;
 
-int32_t LFO::compute_lfo(void)
+/**
+ * Compute a new lfo sample
+ * @return lfo_amp The computed lfo sample
+ */
+int32_t LFO::get_sample(void)
 {
 	uint32_t int_ind;
+
+	/** Increase phase index*/
 	ph_ind_frac += ph_inc_frac;
+
+	/** Wrap around */
 	if (ph_ind_frac >=(LUT_8_20_BIT))
 		ph_ind_frac -= (LUT_8_20_BIT);
 
+	/** Discard fractional part*/
 	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
 
+	/** Get the sample from the wavetable scaled to 16bits */
 	lfo_amp = wavetable[int_ind]<<8;
-	lfo_amp = (lfo_amp>>1)+ 16384;
+
+	/** Scale the waveform and add offset to have only positive numbers*/
+	lfo_amp = (lfo_amp>>1)+ LFO_DC_OFF;
 
 	return lfo_amp;
 }

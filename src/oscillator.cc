@@ -26,8 +26,12 @@
 
 using namespace std;
 
-
-int32_t Oscillator::compute_osc(synth_params_t *synth_params)
+/**
+ * Compute a new oscillator sample
+ * @param synth_params Synth global structure
+ * @return interp_lut The computed oscillator sample
+ */
+int32_t Oscillator::get_sample(synth_params_t *synth_params)
 {
 	int32_t interp_lut,interp_lut_temp,frac,mod;
 	int64_t ph_mod_index = 0;

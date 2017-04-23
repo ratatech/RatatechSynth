@@ -11,20 +11,13 @@
 #include "ratatechSynth.h"
 #include "arm_math.h"
 #include "tables.h"
-
 #include <math.h>
 
 
+
 /**
-BABLALBALBALBL
-ABABABA
-BABAB
-BABABA
-@todo BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-@note BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-@section BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-BBJBJALDJBJBJBLBLBLBLABLBLBLABLAB
-*/
+ * Oscillator class
+ */
 class Oscillator {
 
 	public:
@@ -69,7 +62,7 @@ class Oscillator {
 		 * Set oscillator fractional frequency
 		@param frequency Fractional frequency in Hz
 		*/
-		void setFreqFrac(double freqHz)
+		void set_freq_frac(double freqHz)
 		{	//TODO(JoH):Define global variable with table length
 			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
 			k_frac = ph_inc_frac & 0xFFFFF;
@@ -105,8 +98,12 @@ class Oscillator {
 
 		}
 
-		// Function prototypes
-		int32_t compute_osc(synth_params_t *synth_params);
+		/**
+		 * Compute a new oscillator sample
+		 * @param synth_params Synth global structure
+		 * @return interp_lut The computed oscillator sample
+		 */
+		int32_t get_sample(synth_params_t *synth_params);
 
 
 };

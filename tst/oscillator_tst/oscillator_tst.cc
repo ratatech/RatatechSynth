@@ -127,11 +127,11 @@ void test_sine_out(void){
 	/** Configure oscillator 1 */
 	osc_shape_t shape_osc1 = SIN;
 	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	osc.set_freq_frac(1000);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  osc.get_sample(&synth_params);
 
 		buff_out[i] = sample;
 	}
@@ -154,11 +154,11 @@ void test_square_out(void){
 	/** Configure oscillator 1  */
 	osc_shape_t shape_osc1 = SQU;
 	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	osc.set_freq_frac(1000);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  osc.get_sample(&synth_params);
 
 		buff_out[i] = sample;
 	}
@@ -181,11 +181,11 @@ void test_saw_out(void){
 	/** Configure oscillator 1  */
 	osc_shape_t shape_osc1 = SAW;
 	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	osc.set_freq_frac(1000);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  osc.get_sample(&synth_params);
 
 		buff_out[i] = sample;
 	}
@@ -208,11 +208,11 @@ void test_triangle_out(void){
 	/** Configure oscillator 1  */
 	osc_shape_t shape_osc1 = TRI;
 	osc.set_shape(shape_osc1);
-	osc.setFreqFrac(1000);
+	osc.set_freq_frac(1000);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.compute_osc(&synth_params);
+		sample =  osc.get_sample(&synth_params);
 
 		buff_out[i] = sample;
 	}

@@ -107,13 +107,12 @@ void test_lfo_sine_out(void){
 	/** Configure lfo */
 	osc_shape_t shape_lfo = SIN;
 	lfo.FM_synth = false;
-	lfo.shape = shape_lfo;
 	lfo.set_shape(shape_lfo);
-	lfo.setFreqFrac(100);
+	lfo.set_freq_frac(100);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		buff_out[i] = lfo.compute_lfo();
+		buff_out[i] = lfo.get_sample();
 	}
 
 	/** Print output buffer */
@@ -135,13 +134,12 @@ void test_lfo_saw_out(void){
 	/** Configure lfo */
 	osc_shape_t shape_lfo = SAW;
 	lfo.FM_synth = false;
-	lfo.shape = shape_lfo;
 	lfo.set_shape(shape_lfo);
-	lfo.setFreqFrac(100);
+	lfo.set_freq_frac(100);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		buff_out[i] = lfo.compute_lfo();
+		buff_out[i] = lfo.get_sample();
 	}
 
 	/** Print output buffer */
@@ -162,13 +160,12 @@ void test_lfo_tri_out(void){
 	/** Configure lfo */
 	osc_shape_t shape_lfo = TRI;
 	lfo.FM_synth = false;
-	lfo.shape = shape_lfo;
 	lfo.set_shape(shape_lfo);
-	lfo.setFreqFrac(100);
+	lfo.set_freq_frac(100);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		buff_out[i] = lfo.compute_lfo();
+		buff_out[i] = lfo.get_sample();
 	}
 
 	/** Print output buffer */

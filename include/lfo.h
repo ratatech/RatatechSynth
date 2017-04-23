@@ -14,6 +14,9 @@
 
 #include <math.h>
 
+#define LFO_DC_OFF 0x4000
+#define LFO_DC_OFF 0x4000
+
 /**
 BABLALBALBALBL
 ABABABA
@@ -44,19 +47,13 @@ class LFO {
 		bool FM_synth;
 
 
-		/** BLALALALALALAFAFDDFAF
-		@param frequency FADFADFADFDFD
+		/**
+		 * Set lfo  frequency
+		@param freqHz Frequency in Hz
 		*/
-		void setFreqFrac(double freqHz)
+		void set_freq_frac(double freqHz)
 		{
-			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)CONTROL_RATE)*freqHz)*1048576);
-
-			if(shape == TRI)
-			{
-				ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)CONTROL_RATE)*freqHz)*1048576);
-
-			}
-
+			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)CONTROL_RATE)*freqHz)*SHIFT_20_BIT);
 		}
 
 		/**
@@ -85,7 +82,11 @@ class LFO {
 
 		// Function prototypes
 		void update(synth_params_t*);
-		int32_t compute_lfo(void);
+		/**
+		 * Compute a new lfo sample
+		 * @return lfo_amp The computed lfo sample
+		 */
+		int32_t get_sample(void);
 
 };
 
