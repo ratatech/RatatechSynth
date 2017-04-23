@@ -37,9 +37,6 @@ void wait_usart_ready(void) {
 		iprintf("\n");
 	}
 
-	/** Ready to start test  */
-    iprintf("\nTEST:  Oscillator\n-----------------------");
-
 }
 
 /**

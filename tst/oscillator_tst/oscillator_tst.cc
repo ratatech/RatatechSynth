@@ -249,6 +249,8 @@ int main(void)
 
     /** Wait usart confirmation to start the test  */
     wait_usart_ready();
+	/** Ready to start test  */
+    iprintf("\nTEST:  Oscillator\n-----------------------");
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();

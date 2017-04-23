@@ -41,7 +41,8 @@ if status == 'CONNECTED':
     # Parse the output buffer and create wav audio files for each of the generated signals.
     # Each of the corresponding substrings should match the name of the output buffers used in
     # oscillator_tst.cc otherwise the parsing won't work.
-    ratatechUtil.rawUsart2wav('buff_sin_out',uartOutLines)
-    ratatechUtil.rawUsart2wav('buff_squ_out',uartOutLines)
-    ratatechUtil.rawUsart2wav('buff_saw_out',uartOutLines)
+    FS = 4000
+    ratatechUtil.rawUsart2wav('buff_lfo_sin_out',uartOutLines,FS)
+    ratatechUtil.rawUsart2wav('buff_lfo_tri_out',uartOutLines,FS)
+    ratatechUtil.rawUsart2wav('buff_lfo_saw_out',uartOutLines,FS)
         

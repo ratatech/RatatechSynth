@@ -24,40 +24,7 @@ This file is part of XXXXXXX
 
 using namespace std;
 
-
-
-void LFO::compute_lfo_Sine(void)
-{
-	uint32_t int_ind;
-	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac >=(LUT_8_20_BIT))
-		ph_ind_frac -= (LUT_8_20_BIT);
-
-	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
-	lfo_amp = sin_lut_q15[int_ind]<<8;
-	lfo_amp = (lfo_amp>>1)+ 16384;
-	lfo_amp = ((int32_t)(lfo_amp)*(lfo_amo)>>15);
-
-}
-
-void LFO::compute_lfo_Triangle(void)
-{
-
-	uint32_t int_ind;
-	ph_ind_frac += ph_inc_frac;
-	if (ph_ind_frac>=(LUT_8_20_BIT<<1))
-		ph_ind_frac -= (LUT_8_20_BIT<<1);
-
-	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
-	lfo_amp = tri_lut_q15[int_ind]<<8;
-	lfo_amp = (lfo_amp>>1)+ 16384;
-	lfo_amp = ((int32_t)(lfo_amp)*(lfo_amo)>>15);
-
-}
-
-
-
-void LFO::compute_lfo_Saw(void)
+int32_t LFO::compute_lfo(void)
 {
 	uint32_t int_ind;
 	ph_ind_frac += ph_inc_frac;
@@ -66,31 +33,15 @@ void LFO::compute_lfo_Saw(void)
 
 	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
 
-	lfo_amp = saw_lut_q15[int_ind]<<8;
+	lfo_amp = wavetable[int_ind]<<8;
 	lfo_amp = (lfo_amp>>1)+ 16384;
-	lfo_amp = ((int32_t)(lfo_amp)*(lfo_amo)>>15);
+
+	return lfo_amp;
 }
 
 
 void LFO::update(synth_params_t *synth_params)
 {
-
-	// Get a new oscillator sample
-	switch (shape)
-	{
-		case SIN:
-			LFO::compute_lfo_Sine();
-			break;
-
-		case SAW:
-			LFO::compute_lfo_Saw();
-			break;
-
-		case TRI:
-			LFO::compute_lfo_Triangle();
-			break;
-
-	}
 
 	if(FM_synth){
 		synth_params->FM_mod_amp = lfo_amp;

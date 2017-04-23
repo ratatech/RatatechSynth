@@ -38,6 +38,7 @@ class LFO {
 		int32_t k_frac;
 		int32_t lfo_amp = 0;
 		int32_t lfo_amo = 0;
+		const int16_t *wavetable;
 
 		bool top;
 		bool FM_synth;
@@ -58,14 +59,33 @@ class LFO {
 
 		}
 
+		/**
+		 * Set lfo shape
+		 * @param _shape The selected shape of the oscillator to be chosen between {SIN,SAW,TRI}
+		 */
+		void set_shape(osc_shape_t _shape)
+		{
+			shape = _shape;
+			switch(_shape)
+			{
+				case SIN:
+					wavetable = sin_lut_q15;
+				break;
+
+				case TRI:
+					wavetable = tri_lut_q15;
+				break;
+
+				case SAW:
+					wavetable = saw_lut_q15;
+				break;
+
+			}
+		}
 
 		// Function prototypes
 		void update(synth_params_t*);
-		void compute_lfo_Sine(void);
-		void compute_lfo_Square(void);
-		void compute_lfo_Triangle(void);
-		void compute_lfo_Saw(void);
-
+		int32_t compute_lfo(void);
 
 };
 

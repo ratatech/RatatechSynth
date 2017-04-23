@@ -65,8 +65,9 @@ class Oscillator {
 			scaled_LUT = (int32_t)(((double)LUT_8_BIT)*SHIFT_20_BIT);
 		}
 
-		/** BLALALALALALAFAFDDFAF
-		@param frequency FADFADFADFDFD
+		/**
+		 * Set oscillator fractional frequency
+		@param frequency Fractional frequency in Hz
 		*/
 		void setFreqFrac(double freqHz)
 		{	//TODO(JoH):Define global variable with table length
@@ -75,9 +76,10 @@ class Oscillator {
 
 		}
 
-		/** BLALALALALALAFAFDDFAF
-		@param frequency FADFADFADFDFD
-		*/
+		/**
+		 * Set oscillator shape
+		 * @param _shape The selected shape of the oscillator to be chosen between {SIN,SQU,SAW,TRI}
+		 */
 		void set_shape(osc_shape_t _shape)
 		{
 			shape = _shape;
