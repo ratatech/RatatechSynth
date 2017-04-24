@@ -37,36 +37,33 @@ void TIM_Config(void)
 
 	/* Set audio_on flag to true to have the audio rate interrupt
 	* working. Disabling it helps to speed up debugging */
-	bool audio_on = false;
-	if(audio_on){
 
-		/* TIM1 configuration
-		 * Timer 1 configured to work with an output audio sampling
-		 * frequency of FS */
+	/* TIM1 configuration
+	 * Timer 1 configured to work with an output audio sampling
+	 * frequency of FS */
 
-		/*  Parameters to configure timer at 1hz ie. every 1s
-		*	timerInitStructure.TIM_Period    = 32768;
-		*	timerInitStructure.TIM_Prescaler = 2197; */
+	/*  Parameters to configure timer at 1hz ie. every 1s
+	*	timerInitStructure.TIM_Period    = 32768;
+	*	timerInitStructure.TIM_Prescaler = 2197; */
 
-		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-		timerInitStructure.TIM_Period = SystemCoreClock/FS;
-		timerInitStructure.TIM_Prescaler = 0;
-		timerInitStructure.TIM_RepetitionCounter = 0;
-		TIM_TimeBaseInit(TIM1, &timerInitStructure);
-		TIM_Cmd(TIM1, ENABLE);
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = SystemCoreClock/FS;
+	timerInitStructure.TIM_Prescaler = 0;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM1, &timerInitStructure);
+	TIM_Cmd(TIM1, ENABLE);
 
-		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  // 2.2 priority split.
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  // 2.2 priority split.
 
-		/* TIM1 NVIC configuration */
-		NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
+	/* TIM1 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
-		TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
-	}
+	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
 
 
 	//*************************************************************************************

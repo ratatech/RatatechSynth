@@ -42,11 +42,8 @@ if status == 'CONNECTED':
     # Each of the corresponding substrings should match the name of the output buffers used in
     # oscillator_tst.cc otherwise the parsing won't work.
     FS = 96000
-    debug = False
-    ratatechUtil.rawUsart2wav('buff_sin_out',uartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_squ_out',uartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_saw_out',uartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_tri_out',uartOutLines,FS,debug)
-    if debug:
-        raw_input("Press the <ENTER> to close plots and stop debugging...")
+    ratatechUtil.rawUsart2wav('buff_sin_tim_out',uartOutLines,FS)
+    ratatechUtil.rawUsart2wav('buff_squ_tim_out',uartOutLines,FS)
+    ratatechUtil.rawUsart2wav('buff_saw_tim_out',uartOutLines,FS)
+    ratatechUtil.rawUsart2wav('buff_tri_tim_out',uartOutLines,FS)
         

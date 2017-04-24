@@ -16,3 +16,7 @@ matlab/octave-workspace
 *.sh~
 *.m~~
 /lfo_tst/
+/osc_timer_tst/
+/adsr_tst/
+/mixer_tst/
+/tst/**/*.wav

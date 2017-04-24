@@ -1,9 +1,9 @@
 /*
-@file oscillator_tst.cc
+@file osc_timer_tst.cc
 
-@brief Oscillator unit test
+@brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Mar 29, 2017
+@ Created by Jordi Hidalgo, Ratatech, Apr 23, 2017
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@ This file is part of XXXXXXX
 #include "unity.h"
 #include "ratatechSynth.h"
 #include "tst_utils.h"
+#include "timer.h"
 
 /**
  * Size of reference and output buffers
@@ -117,6 +118,39 @@ Oscillator osc;
  */
 int32_t buff_out [BUFF_SIZE];
 
+/** Output buffer write index shared by all the tests */
+int16_t tim_ind;
+
+/** Circular buffer where the samples are writen*/
+CircularBuffer out_buffer;
+
+/** Sample to be read in the ouput buffer*/
+uint16_t out_sample;
+
+/**
+  * @brief  This function handles Timer 1 Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM1_UP_IRQHandler(void)
+{
+
+	//trace_printf("READ\n");
+	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
+	{
+
+		out_buffer.read(&out_sample);
+		buff_out[tim_ind] = out_sample;
+		tim_ind++;
+
+		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+
+	}
+
+
+}
+
+
 /**
  * Sine oscillator unit test
  */
@@ -124,106 +158,37 @@ void test_sine_out(void){
 
 	int32_t sample;
 
+	/** Reset timer index used as a counter*/
+	tim_ind = 0;
+
 	/** Configure oscillator 1 */
 	osc_shape_t shape_osc1 = SIN;
 	osc.set_shape(shape_osc1);
 	osc.set_freq_frac(1000);
 
-	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.get_sample(&synth_params);
+//	/** Get oscillator samples */
+//	for(int i=0; i<BUFF_SIZE; i++){
+//		sample =  osc.get_sample(&synth_params);
+//
+//		buff_out[i] = sample;
+//	}
 
-		buff_out[i] = sample;
-	}
+	/** Temporary enable timer */
+	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
+
+	while(tim_ind<BUFF_SIZE){};
+
+	/** Temporary disable timer */
+	TIM_ITConfig(TIM1, TIM_IT_Update, DISABLE);
 
 	/** Print output buffer */
-	printOutBuff("buff_sin_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_sin_tim_out", &buff_out[0], BUFF_SIZE);
 
 	/** Compare output vs reference */
 	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_sin_ref,buff_out,BUFF_SIZE);
 
 }
 
-/**
- * Square oscillator unit test
- */
-void test_square_out(void){
-
-	int32_t sample;
-
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = SQU;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
-
-	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.get_sample(&synth_params);
-
-		buff_out[i] = sample;
-	}
-
-	/** Print output buffer */
-	printOutBuff("buff_squ_out", &buff_out[0], BUFF_SIZE);
-
-	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_squ_ref,buff_out,BUFF_SIZE);
-
-}
-
-/**
- * Saw oscillator unit test
- */
-void test_saw_out(void){
-
-	int32_t sample;
-
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = SAW;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
-
-	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.get_sample(&synth_params);
-
-		buff_out[i] = sample;
-	}
-
-	/** Print output buffer */
-	printOutBuff("buff_saw_out", &buff_out[0], BUFF_SIZE);
-
-	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_saw_ref,buff_out,BUFF_SIZE);
-
-}
-
-/**
- * Triangle oscillator unit test
- */
-void test_triangle_out(void){
-
-	int32_t sample;
-
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = TRI;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
-
-	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.get_sample(&synth_params);
-
-		buff_out[i] = sample;
-	}
-
-	/** Print output buffer */
-	printOutBuff("buff_tri_out", &buff_out[0], BUFF_SIZE);
-
-	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_tri_ref,buff_out,BUFF_SIZE);
-
-}
 
 int main(void)
 {
@@ -241,6 +206,10 @@ int main(void)
     /** Configure and init peripherals  */
 	GPIO_Conf_Init();
 	USART_Conf_Init();
+	TIM_Config();
+
+	/** Temporary disable timer */
+	TIM_ITConfig(TIM1, TIM_IT_Update, DISABLE);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
@@ -255,11 +224,7 @@ int main(void)
     /** Start unity and trigger tests */
     UNITY_BEGIN();
     RUN_TEST(test_sine_out);
-    RUN_TEST(test_square_out);
-    RUN_TEST(test_saw_out);
-    RUN_TEST(test_triangle_out);
 
     /** FInish unity */
     return UNITY_END();
 }
-

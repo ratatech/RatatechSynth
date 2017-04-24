@@ -3,6 +3,7 @@ from subprocess import PIPE, Popen
 import scipy.io.wavfile
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class RatatechUtils(object):
@@ -44,10 +45,16 @@ class RatatechUtils(object):
             
         return status
 
-    def rawUsart2wav(self,sub,lines,fs):
+    def rawUsart2wav(self,sub,lines,fs,debug):
         buff_out = [s for s in lines if sub in s]
         raw_audio = buff_out[0].split(sub)[1].split('[')[1].split(']')[0]
         raw_audio = np.fromstring(raw_audio, dtype=np.int32, sep=',')
         raw_audio = np.asarray(raw_audio, dtype=np.int16)
         scipy.io.wavfile.write(sub.replace('buff','test')+'.wav',fs,raw_audio)
+        if debug:
+            plt.figure()
+            plt.plot(raw_audio)
+            plt.show(block=False)
+            #plt.close()
+            
             

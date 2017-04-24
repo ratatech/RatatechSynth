@@ -22,8 +22,6 @@
 
 #include "oscillator.h"
 
-
-
 using namespace std;
 
 /**

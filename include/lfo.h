@@ -82,11 +82,12 @@ class LFO {
 
 		// Function prototypes
 		void update(synth_params_t*);
+
 		/**
 		 * Compute a new lfo sample
 		 * @return lfo_amp The computed lfo sample
 		 */
-		int32_t get_sample(void);
+		int32_t get_sample(synth_params_t* synth_params);
 
 };
 

@@ -43,10 +43,9 @@ if status == 'CONNECTED':
     # oscillator_tst.cc otherwise the parsing won't work.
     FS = 96000
     debug = False
-    ratatechUtil.rawUsart2wav('buff_sin_out',uartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_squ_out',uartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_saw_out',uartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_tri_out',uartOutLines,FS,debug)
+    ratatechUtil.rawUsart2wav('buff_adsr_out',uartOutLines,FS,debug)
+    ratatechUtil.rawUsart2wav('buff_adsr_osc_out',uartOutLines,FS,debug)
     if debug:
         raw_input("Press the <ENTER> to close plots and stop debugging...")
+    
         

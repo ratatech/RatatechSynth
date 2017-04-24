@@ -1,9 +1,9 @@
 /*
-@file fileName.cc
+@file mixer.h
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Aug 8, 2015
+@ Created by Jordi Hidalgo, Ratatech, Apr 25, 2017
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -19,51 +19,43 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
+#ifndef INCLUDE_MIXER_H_
+#define INCLUDE_MIXER_H_
 
-#include "lfo.h"
+#include "ratatechSynth.h"
+#include "arm_math.h"
+#include "tables.h"
+#include <math.h>
 
-using namespace std;
+
 
 /**
- * Compute a new lfo sample
- * @return lfo_amp The computed lfo sample
+ * Oscillator class
  */
-int32_t LFO::get_sample(synth_params_t *synth_params)
-{
-	uint32_t int_ind;
+class Mixer {
 
-	/** Increase phase index*/
-	ph_ind_frac += ph_inc_frac;
+	public:
+		int32_t osc_mix,osc1_mix_temp,osc2_mix_temp;
 
-	/** Wrap around */
-	if (ph_ind_frac >=(LUT_8_20_BIT))
-		ph_ind_frac -= (LUT_8_20_BIT);
-
-	/** Discard fractional part*/
-	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
-
-	/** Get the sample from the wavetable scaled to 16bits */
-	lfo_amp = wavetable[int_ind]<<8;
-
-	/** Scale the waveform and add offset to have only positive numbers*/
-	lfo_amp = (lfo_amp>>1)+ LFO_DC_OFF;
-
-	/** Store sample in global struct */
-	synth_params->lfo_amp = lfo_amp;
-
-	return lfo_amp;
-}
-
-
-void LFO::update(synth_params_t *synth_params)
-{
-
-	if(FM_synth){
-		synth_params->FM_mod_amp = lfo_amp;
-	}else{
-		synth_params->lfo_amp = lfo_amp;
-		synth_params->lfo_amo = lfo_amo;
+	/** Constructor.
+	*/
+	Mixer(void){
+		osc_mix = 0;
+		osc1_mix_temp = 0;
+		osc2_mix_temp = 0;
 	}
 
+	 /**
+	  *  Mix samples
+	  * @param sample_osc1 Oscillator 1 sample
+	  * @param sample_osc2 Oscillator 2 sample
+	  * @param synth_params Synth global structure
+	  * @return mix_out The mixed output sample
+	  */
+	int32_t mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth_params);
 
-}
+};
+
+
+
+#endif /* INCLUDE_MIXER_H_ */

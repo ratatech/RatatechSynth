@@ -103,7 +103,7 @@ int main(void)
 	lfo.setFreqFrac(2);
 
 	//LFO destination
-	synth_params.lfo_dest = OSC1;
+		synth_params.lfo_dest = OSC1;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -197,13 +197,6 @@ int main(void)
 			control_rate_decimate++;
 
 			if(control_rate_decimate > 5000){
-//				adsr_fc.calcAdsrSteps();
-//				adsr_vol.calcAdsrSteps();
-//				adsr_fc.calcAttack(adsr_fc.attack,adsr_fc.adsr_mode_att);
-//				adsr_vol.calcAttack(adsr_vol.attack,adsr_vol.adsr_mode_att);
-//				adsr_fc.calcRelease(adsr_fc.release,adsr_fc.adsr_mode_att);
-//				adsr_vol.calcRelease(adsr_vol.release,adsr_vol.adsr_mode_att);
-//				control_rate_decimate = 0;
 			}
 
 		}
@@ -466,7 +459,6 @@ inline void fill_buffer(void)
 
 		// Convert to unsigned
 		osc_mix = int16_2_uint16(osc_mix);
-
 		status = out_buffer.write(osc_mix);
 
 	}

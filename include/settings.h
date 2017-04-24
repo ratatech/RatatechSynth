@@ -17,6 +17,8 @@
 #define SHIFT_15_BIT 0x7FFF
 #define PWM_PERIOD   0x3FFF
 
+#define MAX_AMP 0x7FFF
+
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 typedef enum {OSC1,OSC2,VCF} dest_t;
 

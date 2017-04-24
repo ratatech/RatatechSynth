@@ -58,6 +58,7 @@
 #include "digital_pot.h"
 #include "midi.h"
 #include "adc.h"
+#include "mixer.h"
 
 #include <stdint.h>
 #include <stdio.h>
