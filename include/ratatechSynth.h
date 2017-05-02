@@ -58,6 +58,7 @@
 #include "midi.h"
 #include "adc.h"
 #include "mixer.h"
+#include "svf.h"
 
 #include <stdint.h>
 #include <stdio.h>

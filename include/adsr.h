@@ -222,8 +222,8 @@ class ADSREnv {
 					if (adsr_amp >=(0x7FFF)  || adsr_amp <0)
 					{
 						adsr_amp = 0x7FFF;
-						adsr_state = DECAY_STATE; // TODO(JoH):Seems to be a bug with the DECAY range calculation
-						//adsr_state = RELEASE_STATE;
+						//adsr_state = DECAY_STATE; // TODO(JoH):Seems to be a bug with the DECAY range calculation
+						adsr_state = RELEASE_STATE;
 						break;
 					}
 					counter++;

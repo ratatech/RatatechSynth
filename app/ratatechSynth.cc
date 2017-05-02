@@ -21,10 +21,6 @@
  */
 #include "ratatechSynth.h"
 
-
-
-
-
 using namespace std;
 
 #define DEBUG_AMP 32767
@@ -38,6 +34,9 @@ MIDI midi;
 
 /** ADSR object instance*/
 Mixer mixer;
+
+/** SVF object instance*/
+Svf svf;
 
 // Structure instances
 synth_params_t synth_params;
@@ -60,7 +59,7 @@ uint32_t noteCounter = 0;
 uint16_t adc;
 int16_t control_rate_decimate = 0;
 
-uint32_t q_adc,fc_adc,fc_env,fc_lfo,fc = 0;
+uint32_t q_adc,fc_adc,f_lfo_adc,fc_env,fc_lfo,fc = 0;
 double lfo_adc;
 
 uint16_t C4_Octave[12] = {261,277,293,311,329,349,369,392,415,440,466,493};
@@ -132,7 +131,7 @@ int main(void)
 
 	// Configure LFO
 	//TODO(JoH):Check wavetables for LFO. SOUNDS CRAP, ONLY FADES 0-0.5!
-	osc_shape_t shape_lfo = SIN;
+	osc_shape_t shape_lfo = SAW;
 	lfo.FM_synth = false;
 	lfo.shape = shape_lfo;
 	/* LFO Amount Parameter
@@ -144,11 +143,11 @@ int main(void)
 	 * lfo.lfo_amo = 0;
 	 *
 	 * */
-	lfo.lfo_amo = 0x0000;
-	lfo.set_freq_frac(10);
+	lfo.lfo_amo =  0x0000;
+	//lfo.set_freq_frac(10);//TODO:FUCKING LFO SOUNDS LIKE CRAP!
 
 	//LFO destination
-	synth_params.lfo_dest = OSC1;
+	synth_params.lfo_dest = OSC2;
 
 	// Configure FM modulator oscillator
 	synth_params.FM_synth = false;
@@ -183,7 +182,7 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x3FFF;
+	synth_params.osc_mix = 0x0000;
 	synth_params.midi_dest = OSC2;
 
 
@@ -205,7 +204,7 @@ int main(void)
 	// Volume envelope
 	adsr_vol.attack  = 0.01;
 	adsr_vol.decay   = 0.041;
-	adsr_vol.sustain = 0.8;
+	adsr_vol.sustain = 0.85;
 	adsr_vol.release = 3;
 	adsr_vol.calcAdsrSteps();
 
@@ -246,9 +245,6 @@ int main(void)
 
 		}
 
-
-
-
 		// Fill audio buffer with a new sample
 		fill_buffer();
 	}
@@ -259,8 +255,6 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
-
-
 
 
 	// Update Envelope, LFO and midi objects
@@ -285,11 +279,12 @@ void low_rate_tasks(void){
 		}
 		adsr_vol.note_ON = synth_params.note_ON;
 		midi.new_event = false;
+		//lfo.set_freq_frac(1);
 	}
-
 
 	adsr_vol.update();
 	adsr_fc.update();
+	lfo.get_sample(&synth_params);
 	lfo.update(&synth_params);
 	/*Update FM modulator*/
 	if(synth_params.FM_synth)
@@ -298,20 +293,15 @@ void low_rate_tasks(void){
 	mux_adc_read(&mux_adc);
 	q_adc = (uint32_t)(mux_adc.mux_x2*PWM_PERIOD)>>12;
 	fc_adc = (uint32_t)(mux_adc.mux_x4*PWM_PERIOD)>>12;
+	//f_lfo_adc = (uint32_t)(mux_adc.mux_x7*100)>>12;
+
 
 	fc_env = mul_int16(adsr_fc.adsr_amp,PWM_PERIOD);
 	fc_lfo =  mul_int16(lfo.lfo_amp,PWM_PERIOD);
 
-	if(fc > PWM_PERIOD)
-		fc = PWM_PERIOD;
-	//fc = lfo.lfo_amp;
-	//fc_adc = PWM_PERIOD;
-	TIM3->CCR2 = q_adc;
-
-
-	TIM3->CCR4 = (PWM_PERIOD-(fc_env-fc_adc));
-	//lfo.set_freq_frac(lfo_adc);
-
+	// Update filter params
+	svf.set_q(q_adc);
+	svf.set_fc((PWM_PERIOD-(fc_adc)));
 
 
 	// Put low rate interrupt flag down
