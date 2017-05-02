@@ -34,7 +34,6 @@ Oscillator osc1,osc2;
 CircularBuffer out_buffer;
 ADSREnv adsr_vol(LOG,EXP,EXP,0.009),adsr_fc(LOG,EXP,EXP,0.009);
 LFO lfo,FM_mod;
-DIGI_POT potF2P1(GPIO_Pin_11),potF2P2(GPIO_Pin_10),potF1P1(GPIO_Pin_12),potF1P2(GPIO_Pin_8);
 MIDI midi;
 
 /** ADSR object instance*/
@@ -42,6 +41,7 @@ Mixer mixer;
 
 // Structure instances
 synth_params_t synth_params;
+mux_adc_t mux_adc;
 
 int16_t data;
 int32_t data_acc;
@@ -78,8 +78,6 @@ uint8_t SVF_SC_EN_msk;
 
 double attack_state = 0;
 uint8_t SVF_MODE;
-
-BitAction sb;
 
 enum application_e {NORMAL,NO_ADSR};
 application_e app = NORMAL;
@@ -205,10 +203,10 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.1;
+	adsr_vol.attack  = 0.01;
 	adsr_vol.decay   = 0.041;
-	adsr_vol.sustain = 0.99;
-	adsr_vol.release = 0.05;
+	adsr_vol.sustain = 0.8;
+	adsr_vol.release = 3;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
@@ -263,162 +261,58 @@ int main(void)
 void low_rate_tasks(void){
 
 
-	switch(app){
-
-		case NORMAL:
-
-			// Update Envelope, LFO and midi objects
-			if(midi.new_event){
-
-				midi.update(&synth_params);
-				switch(synth_params.midi_dest){
-					case OSC1:
-						osc1.set_freq_frac(midi_freq_lut[synth_params.pitch]);
-					break;
-					case OSC2:
-						osc2.set_freq_frac(midi_freq_lut[synth_params.pitch]);
-						osc1.set_freq_frac(midi_freq_lut[synth_params.pitch+4]);
-					break;
-				}
-
-				if(midi.attack_trigger){
-					adsr_vol.initStates();
-					adsr_fc.initStates();
-					midi.attack_trigger = false;
-
-				}
-				adsr_vol.note_ON = synth_params.note_ON;
-				midi.new_event = false;
-			}
 
 
-			adsr_vol.update();
-			adsr_fc.update();
-			lfo.update(&synth_params);
-			/*Update FM modulator*/
-			if(synth_params.FM_synth)
-				FM_mod.update(&synth_params);
+	// Update Envelope, LFO and midi objects
+	if(midi.new_event){
 
-			// ------------------ DEBUG ----------------------------//
-			/*Set amplitude to 1, no ADSR*/
-//			synth_params.adsr_amp_vol = 0x7FFF>>1;
-//			adsr_vol.adsr_amp = synth_params.adsr_amp_vol ;
-			// ------------------ DEBUG ----------------------------//
+		midi.update(&synth_params);
+		switch(synth_params.midi_dest){
+			case OSC1:
+				osc1.set_freq_frac(midi_freq_lut[synth_params.pitch]);
+			break;
+			case OSC2:
+				osc2.set_freq_frac(midi_freq_lut[synth_params.pitch]);
+				osc1.set_freq_frac(midi_freq_lut[synth_params.pitch+4]);
+			break;
+		}
 
-			if (useADC)
-			{
+		if(midi.attack_trigger){
+			adsr_vol.initStates();
+			adsr_fc.initStates();
+			midi.attack_trigger = false;
 
-
-				for(int s=0;s<8;s++){
-
-
-					((s & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-					GPIO_WriteBit(GPIOB,GPIO_Pin_5,sb);
-
-					(((s>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-					GPIO_WriteBit(GPIOB,GPIO_Pin_6,sb);
-
-					(((s>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-					GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
-
-
-					switch(s){
-//						case 0 :
-//							trace_printf("ADC read MUX y0 = %i\n",readADC1(4));
-//						break;
-//
-//						case 1 :
-//							trace_printf("ADC read MUX y1 = %i\n",readADC1(4));
-//						break;
-//
-						case 2 :
-							adc = readADC1(4);
-							q_adc = (uint32_t)(adc*PWM_PERIOD)>>12;
-							trace_printf("ADC read MUX y2 = %i\n",readADC1(4));
-						break;
-//
-						case 3 :
-							adc = readADC1(4);
-//							adsr_vol.attack = (double)(((double)adc/4095)*0.1);
-//							adsr_fc.attack = adsr_vol.attack;
-							trace_printf("ADC read MUX y3 = %i\n",readADC1(4));
-						break;
-
-						case 4 :
-							adc = readADC1(4);
-							fc_adc = (uint32_t)(adc*PWM_PERIOD)>>12;
-							trace_printf("ADC read MUX y4 = %i\n",fc_adc);
-
-						break;
-
-						case 5 :
-							adc = readADC1(4);
-//							adsr_vol.release = (double)(((double)adc/4095)*0.8);
-//							adsr_fc.release = adsr_vol.release;
-							trace_printf("ADC read MUX y5 = %i\n",readADC1(4));
-						break;
-//
-//						case 6 :
-//							trace_printf("ADC read MUX y6 = %i\n",readADC1(4));
-//						break;
-//
-//						case 7 :
-//							trace_printf("ADC read MUX y7 = %i\n",readADC1(4));
-//						break;
-					}
-				}
-
-			}
-
-
-			fc_env = mul_int16(adsr_fc.adsr_amp,PWM_PERIOD);
-			fc_lfo =  mul_int16(lfo.lfo_amp,PWM_PERIOD);
-			//fc = fc_adc+fc_env;
-//			fc = fc_adc;
-//			if(fc_adc< 200)
-//				fc_adc = 400;
-//			fc = fc_adc;
-			//fc = fc_env;
-			if(fc > PWM_PERIOD)
-				fc = PWM_PERIOD;
-			//fc = lfo.lfo_amp;
-			//fc_adc = PWM_PERIOD;
-			TIM3->CCR2 = q_adc;
-
-
-			TIM3->CCR4 = (fc_env-fc_adc);
-			//lfo.set_freq_frac(lfo_adc);
-
-
-			//****************************** DEBUG SHIFT COUNTER *************************************************************
-			// CS High
-			//GPIOA->BRR = GPIO_Pin_11;
-
-			byte1 = 0x00;
-
-			// Transmit the two 8bit SPI messages
-			SPI_send(SPI2,byte1);
-
-			// CS Low
-			//GPIOA->BSRR = GPIO_Pin_11;
-
-			//****************************** DEBUG SHIFT COUNTER *************************************************************
-
-		break;
-
-		case NO_ADSR:
-
-			/*Set amplitude to 1, no ADSR*/
-			synth_params.adsr_amp_vol = 0x7FFF;
-			adsr_vol.adsr_amp = 0x7FFF;
-			/*Update LFO*/
-			lfo.set_freq_frac(lfo_adc);
-			lfo.update(&synth_params);
-			/*Update FM modulator*/
-			FM_mod.update(&synth_params);
-
-		break;
+		}
+		adsr_vol.note_ON = synth_params.note_ON;
+		midi.new_event = false;
 	}
+
+
+	adsr_vol.update();
+	adsr_fc.update();
+	lfo.update(&synth_params);
+	/*Update FM modulator*/
+	if(synth_params.FM_synth)
+		FM_mod.update(&synth_params);
+
+	mux_adc_read(&mux_adc);
+	q_adc = (uint32_t)(mux_adc.mux_x2*PWM_PERIOD)>>12;
+	fc_adc = (uint32_t)(mux_adc.mux_x4*PWM_PERIOD)>>12;
+
+	fc_env = mul_int16(adsr_fc.adsr_amp,PWM_PERIOD);
+	fc_lfo =  mul_int16(lfo.lfo_amp,PWM_PERIOD);
+
+	if(fc > PWM_PERIOD)
+		fc = PWM_PERIOD;
+	//fc = lfo.lfo_amp;
+	//fc_adc = PWM_PERIOD;
+	TIM3->CCR2 = q_adc;
+
+
+	TIM3->CCR4 = (PWM_PERIOD-(fc_env-fc_adc));
+	//lfo.set_freq_frac(lfo_adc);
+
+
 
 	// Put low rate interrupt flag down
 	low_rate_ISR_flag = false;
@@ -435,78 +329,6 @@ inline void fill_buffer(void)
 {
 	int32_t sample_osc1, sample_osc2, osc_mix;
 
-//	while(out_buffer.check_status()){
-//
-//		/* *****************************************************************************************
-//		 * OSCILLATOR 1
-//		 *
-//		 * Compute a new oscillator1 sample and apply modulations
-//		 * *****************************************************************************************/
-//
-//		osc_mix = osc1.compute_osc(&synth_params);
-//		osc_mix = ((int32_t)(osc_mix)*(synth_params.osc_mix)>>15);
-//
-//		// Modulate signal with the LFO
-//		if(synth_params.lfo_dest == OSC1){
-//
-//			osc1_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
-//
-//			// Mix LFO with amount parameter
-//			osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
-//		}
-//
-//		// Modulate signal with the ADSR envelope if a MIDI note is received
-//		if(synth_params.midi_dest == OSC1){
-//
-//			osc1_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
-//		}
-//
-//
-//		// Save temporal output
-//		osc1_mix_temp = osc_mix;
-//
-//		/* *****************************************************************************************
-//		 * OSCILLATOR 2
-//		 *
-//		 * Compute a new oscillator2 sample and apply modulations
-//		 * *****************************************************************************************/
-//
-//		osc_mix = osc2.compute_osc(&synth_params);
-//		osc_mix = ((int32_t)(osc_mix)*(0x7FFF-synth_params.osc_mix)>>15);
-//
-//		// Modulate signal with the LFO
-//		if(synth_params.lfo_dest == OSC2){
-//
-//			osc2_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(synth_params.lfo_amp)>>15);
-//
-//			// Mix LFO with amount parameter
-//			osc_mix = osc_mix + ((int32_t)(osc2_mix_temp)*(0x7FFF - synth_params.lfo_amo)>>15);
-//		}
-//
-//		// Modulate signal with the ADSR envelope if a MIDI note is received
-//		if(synth_params.midi_dest == OSC2){
-//
-//			osc2_mix_temp = osc_mix;
-//			osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
-//		}
-//
-//		/* *****************************************************************************************
-//		 * OSC1/OSC2 MIXING
-//		 *
-//		 * Mix the the two next computed samples and apply ADSR Modulation.
-//		 * Finally scale the signal to 12 bits and store it in the output buffer.
-//		 * *****************************************************************************************/
-//
-//		// Mix the two oscillators
-//		osc_mix += osc1_mix_temp;
-//
-//		osc_mix = ((int32_t)(osc_mix)*(adsr_vol.adsr_amp)>>15);
-//		//osc_mix = adsr_vol.adsr_amp;
-
-
 	/* *****************************************************************************************
 	 * AUDIO CHAIN START
 	 *
@@ -517,7 +339,6 @@ inline void fill_buffer(void)
 
 		/** 2 - Oscillator 2 */
 		sample_osc2 =  osc2.get_sample(&synth_params);
-
 
 		/** 3- Mix samples */
 		osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);

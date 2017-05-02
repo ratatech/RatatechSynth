@@ -24,6 +24,18 @@ This file is part of XXXXXXX
 
 #include "ratatechSynth.h"
 
+struct mux_adc_t{
+	uint16_t mux_x0;
+	uint16_t mux_x1;
+	uint16_t mux_x2;
+	uint16_t mux_x3;
+	uint16_t mux_x4;
+	uint16_t mux_x5;
+	uint16_t mux_x6;
+	uint16_t mux_x7;
+};
+
+
 /**
  * Read the selected channel on the ADC1
  * @param channel
@@ -31,5 +43,10 @@ This file is part of XXXXXXX
  */
 uint16_t readADC1(uint8_t channel);
 
+/**
+ * Read multiplexed adc values
+ * @param mux_adc A structure conatinging the read mux values
+ */
+void mux_adc_read(mux_adc_t* mux_adc);
 
 #endif /* INCLUDE_ADC_H_ */

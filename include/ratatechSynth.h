@@ -55,7 +55,6 @@
 #include "utils.h"
 #include "lfo.h"
 #include "diag/Trace.h"
-#include "digital_pot.h"
 #include "midi.h"
 #include "adc.h"
 #include "mixer.h"
