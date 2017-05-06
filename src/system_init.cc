@@ -143,21 +143,21 @@ void GPIO_Conf_Init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /* Configure USART3 Rx as input floating */
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-	//GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
 
-//	/* TIM3 PWM PINS */
-//	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
-//
-//	GPIO_Init( GPIOC, &GPIO_InitStructure );
-//	GPIO_PinRemapConfig(GPIO_PartialRemap_TIM3, ENABLE);
+	/* TIM3 PWM PINS */
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
+
+	GPIO_Init( GPIOC, &GPIO_InitStructure );
+	GPIO_PinRemapConfig(GPIO_PartialRemap_TIM3, ENABLE);
 
 
 	/* Configure PB5/6/9 as OUTPUT for multiplexing */
@@ -367,8 +367,8 @@ void USART_Conf_Init(void){
     /* Configure USART2 */
     USART_Init(USART2, &usart_InitStructure);
     /* Enable RXNE interrupt */
-//    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-//    USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
+    //USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+    //USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
     /* Enable USART2 global interrupt */
     NVIC_EnableIRQ(USART2_IRQn);
 

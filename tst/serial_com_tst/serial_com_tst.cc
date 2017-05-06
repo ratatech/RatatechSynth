@@ -128,18 +128,15 @@ void delay(int cnt) {
 }
 
 /**
- * LFO osc modulation test
+ * Serial communication test
  */
 int test_serial_com(void){
 
 	uint16_t counter = 0;
-	//USART_puts(USART3, send_string); // just send a message to indicate that it works
 	int count = 0;
 	char snumber[1];
-//	send_string[0] = "a";
 	while(1){
 	    itoa(count, snumber, 10);
-//	    strncpy(snumber, "aaa", 3);
 		USART_puts(USART3,(const char*)snumber); // just send a message to indicate that it works
 		USART_puts(USART3,"\n"); // just send a message to indicate that it works
 		delay(500000);
