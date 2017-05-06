@@ -99,7 +99,7 @@ int main(void)
 	 * 12 = 0x10
 	 * 24 = 0x08
 	 */
-	SVF_order_msk = 0x10;
+	SVF_order_msk = 0x08;
 
 	// Add ordker to select filter order
 	SVF_MODE += SVF_order_msk;
@@ -170,7 +170,7 @@ int main(void)
 	osc1.set_freq_frac(300);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SQU;
+	osc_shape_t shape_osc2 = SAW;
 	osc2.set_shape(shape_osc2);
 	osc2.set_freq_frac(1000);
 
@@ -202,14 +202,14 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.01;
+	adsr_vol.attack  = 0.8;
 	adsr_vol.decay   = 0.041;
-	adsr_vol.sustain = 0.85;
-	adsr_vol.release = 3;
+	adsr_vol.sustain = 0.1;
+	adsr_vol.release = 1;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
-	adsr_fc.attack  = 0.1;
+	adsr_fc.attack  = 0.01;
 	adsr_fc.decay   = 0.01;
 	adsr_fc.sustain = 0.99;
 	adsr_fc.release = 0.01;

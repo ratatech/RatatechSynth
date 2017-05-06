@@ -27,12 +27,14 @@ This file is part of XXXXXXX
 #include "ratatechSynth.h"
 #include "tst_utils.h"
 
+
+
 /**
  * Size of reference and output buffers
  */
 #define BUFF_SIZE 256
 
-#define USART_TST USART3
+
 /**
  * Serial comm ref buffer
  */
@@ -62,16 +64,13 @@ int32_t buff_out [BUFF_SIZE];
  */
 void test_serial_com(void){
 
-	uint16_t counter = 0;
-	int count = 0;
-	char snumber[1];
-	while(count<10){
-	    itoa(count, snumber, 10);
-		USART_puts(USART_TST,(const char*)snumber); // just send a message to indicate that it works
-		USART_puts(USART_TST,"\n");
-		delay_nops(500000);
-		count++;
+
+	/** Just copy paste sampeles */
+	for(int i=0; i<BUFF_SIZE; i++){
+		buff_out[i] = buff_serial_com_ref[i];
 	}
+	/** Print output buffer */
+	printOutBuff("buff_serial_com_out", &buff_out[0], BUFF_SIZE);
 
 }
 
@@ -100,14 +99,14 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
     /** Wait usart confirmation to start the test  */
-    //wait_usart_ready();
+    wait_usart_ready();
+
 	/** Ready to start test  */
-    USART_puts(USART_TST,"\nTEST:  SERIAL COM\n-----------------------");
+    iprintf("\nTEST:    SERIAL COM\n-----------------------");
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
     RUN_TEST(test_serial_com);
-    USART_puts(USART_TST,"exit");
 
     /** FInish unity */
     return UNITY_END();

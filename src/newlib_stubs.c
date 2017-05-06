@@ -16,6 +16,8 @@
 #include <sys/times.h>
 #include <sys/unistd.h>
 #include "stm32f10x_usart.h"
+//#include "tst_utils.h"
+#include "tst_settings.h"
 
 
 #ifndef STDOUT_USART

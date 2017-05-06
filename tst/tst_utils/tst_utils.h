@@ -22,10 +22,11 @@ This file is part of XXXXXXX
 #ifndef TST_TST_UTILS_TST_UTILS_H_
 #define TST_TST_UTILS_TST_UTILS_H_
 
-#include<string>
+#include <string.h>
 #include <stdio.h>
 #include "unity.h"
 #include "ratatechSynth.h"
+#include "tst_settings.h"
 
 
 /**

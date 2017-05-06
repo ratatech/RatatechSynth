@@ -36,13 +36,13 @@ class RatatechBuild(object):
         # Open serial port to read test output
         ratatech_serial = RatatechSerial()
         ratatech_serial.open()
-       
+        
         # Send uart confirmation
         #ratatech_serial.write("1")
-            
+        
         time.sleep(0.1)    
         
         # Start reading uart
         usartOutLines = ratatech_serial.readLines("1")
-                
+
         return usartOutLines

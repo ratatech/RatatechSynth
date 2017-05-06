@@ -27,12 +27,12 @@ This file is part of XXXXXXX
 void wait_usart_ready(void) {
 
 	/** Wait for value 1( ASCII 49) as uart confirmation  */
-	while( USART_ReceiveData(USART2) != 49)
+	while( USART_ReceiveData(USART_TST) != 49)
 
 	/** Debug usart confirmation  */
 	if(0){
 		iprintf("Received data = ");
-		uint16_t uart_in = USART_ReceiveData(USART2);
+		uint16_t uart_in = USART_ReceiveData(USART_TST);
 		UnityPrintNumber((UNITY_INT)uart_in);
 		iprintf("\n");
 	}

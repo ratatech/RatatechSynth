@@ -68,6 +68,7 @@ class RatatechSerial(object):
             numOfLines = 0
             usartLines = []
             while True:          
+                
                 response = self.ser.readline()
                 usartLines.append(response)
                 if len(response)>0:
@@ -86,8 +87,9 @@ class RatatechSerial(object):
             self.ser.write("1")
             numOfLines = 0
             usartLines = []
-            while True:          
+            while True:    
                 response = self.ser.readline()
+
                 usartLines.append(response)
                 if len(response)>0:
                     if self.ser.printConsole:

@@ -24,8 +24,7 @@ if status == 'CONNECTED':
 
     # Start uart communication and get test results
     uartOutLines = ratatechBuild.testUart() 
-  
-           
+       
     # Discard first lines possibly remaining in usart buffer from old tests       
     firstLine = [idx for idx, s in enumerate(uartOutLines) if 'TEST' in s][0]
     uartOutLines = uartOutLines[firstLine:-1]
@@ -33,22 +32,5 @@ if status == 'CONNECTED':
     # Print the usart output    
     for line in uartOutLines:
         print line  
-#             
-#     # Check second last output for the test result
-#     if 'FAIL' in uartOutLines[-2]:
-#         testResult = 'FAIL'
-#         raise ValueError('Test Failed!')
-#         
-#     # Parse the output buffer and create wav audio files for each of the generated signals.
-#     # Each of the corresponding substrings should match the name of the output buffers used in
-#     # oscillator_tst.cc otherwise the parsing won't work.
-#     FS = 4000
-#     debug = False
-#     ratatechUtil.rawUsart2wav('buff_lfo_sin_out',uartOutLines,FS,debug)
-#     ratatechUtil.rawUsart2wav('buff_lfo_tri_out',uartOutLines,FS,debug)
-#     ratatechUtil.rawUsart2wav('buff_lfo_saw_out',uartOutLines,FS,debug)
-#     ratatechUtil.rawUsart2wav('buff_lfo_osc_mod_out',uartOutLines,FS,debug)
-#     if debug:
-#         raw_input("Press the <ENTER> to close plots and stop debugging...")
-#     
+
         
