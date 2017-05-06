@@ -339,8 +339,6 @@ inline void fill_buffer(void)
 		/** 5- Fill output buffer */
 		status = out_buffer.write( int16_2_uint16(osc_mix));
 
-
-
 }
 
 /** Read if a buton is active or not
@@ -434,7 +432,7 @@ void EXTI2_IRQHandler(void)
     EXTI_ClearITPendingBit(EXTI_Line2);
 }
 
-/**
+/**wait_usart_ready
   * @brief  This function handles External Interrupt 3 Handler.
   * @param  None
   * @retval None

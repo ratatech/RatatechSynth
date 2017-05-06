@@ -5,7 +5,7 @@ import serial, time
 
 class RatatechSerial(object):
 
-    def __init__(self):
+    def __init__(self,port="ttyUSB0"):
         #initialization and open the port
 
         #possible timeout values:
@@ -14,7 +14,7 @@ class RatatechSerial(object):
         #    3. x, x is bigger than 0, float allowed, timeout block call
         
         self.ser = serial.Serial()
-        self.ser.port = "/dev/ttyACM0"
+        self.ser.port = "/dev/"+port
         self.ser.baudrate = 115200
         self.ser.bytesize = serial.EIGHTBITS #number of bits per bytes
         self.ser.parity = serial.PARITY_NONE #set parity check: no parity
@@ -24,7 +24,7 @@ class RatatechSerial(object):
         self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout = 2     #timeout for write
-        self.ser.printConsole = False
+        self.ser.printConsole = True
 
     def open(self):
         TIMEOUT = 20

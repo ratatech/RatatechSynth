@@ -45,7 +45,7 @@ class RatatechUtils(object):
             
         return status
 
-    def rawUsart2wav(self,sub,lines,fs,debug):
+    def rawUsart2wav(self,sub,lines,fs,debug=False):
         buff_out = [s for s in lines if sub in s]
         raw_audio = buff_out[0].split(sub)[1].split('[')[1].split(']')[0]
         raw_audio = np.fromstring(raw_audio, dtype=np.int32, sep=',')
