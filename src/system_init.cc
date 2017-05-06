@@ -157,7 +157,7 @@ void GPIO_Conf_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
 
 	GPIO_Init( GPIOC, &GPIO_InitStructure );
-	GPIO_PinRemapConfig(GPIO_PartialRemap_TIM3, ENABLE);
+	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
 
 
 	/* Configure PB5/6/9 as OUTPUT for multiplexing */

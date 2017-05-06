@@ -99,7 +99,7 @@ int main(void)
 	 * 12 = 0x10
 	 * 24 = 0x08
 	 */
-	SVF_order_msk = 0x08;
+	SVF_order_msk = 0x10;
 
 	// Add ordker to select filter order
 	SVF_MODE += SVF_order_msk;
@@ -170,7 +170,7 @@ int main(void)
 	osc1.set_freq_frac(300);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SQU;
 	osc2.set_shape(shape_osc2);
 	osc2.set_freq_frac(1000);
 
@@ -301,7 +301,7 @@ void low_rate_tasks(void){
 
 	// Update filter params
 	svf.set_q(q_adc);
-	svf.set_fc((PWM_PERIOD-(fc_adc)));
+	svf.set_fc((PWM_PERIOD-(fc_env-fc_adc)));
 
 
 	// Put low rate interrupt flag down

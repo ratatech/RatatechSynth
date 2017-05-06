@@ -50,7 +50,7 @@ void intNum2CharStr(int32_t num){
 }
 
 /**
- * Print output buffer
+ * Print output buffer to serial output
  * @param buff_name The name of the buffer to be printed
  * @param p_out_buff Pointer to the output buffer
  * @param buff_size Buffer size
@@ -66,4 +66,62 @@ void printOutBuff(const char * buff_name, int32_t* p_out_buff, uint16_t buff_siz
 	}
 	iprintf("]\n");
 
+}
+
+/** This function is used to transmit a string of characters via
+ * the USART specified in USARTx.
+ *
+ * It takes two arguments: USARTx --> can be any of the USARTs e.g. USART1, USART2 etc.
+ * 						   (volatile) char *s is the string you want to send
+ *
+ * Note: The string has to be passed to the function as a pointer because
+ * 		 the compiler doesn't know the 'string' data type. In standard
+ * 		 C a string is just an array of characters
+ *
+ * Note 2: At the moment it takes a volatile char because the received_string variable
+ * 		   declared as volatile char --> otherwise the compiler will spit out warnings
+ *
+ * @param USARTx Usart instance
+ * @param s Pointer to the string to be sent through USART
+ */
+void USART_puts(USART_TypeDef* USARTx, const char *s){
+
+	while(*s){
+		// wait until data register is empty
+		while( !(USARTx->SR & 0x00000040) );
+		USART_SendData(USARTx, *s);
+		*s++;
+	}
+}
+
+/**
+ * Print output buffer to specified usart port
+ * @param USARTx Usart instance
+ * @param buff_name The name of the buffer to be printed
+ * @param p_out_buff Pointer to the output buffer
+ * @param buff_size Buffer size
+ */
+void printUSARTOutBuff(USART_TypeDef* USARTx, const char * buff_name, int32_t* p_out_buff, uint16_t buff_size){
+
+	iprintf("\n");
+	iprintf(buff_name);
+	iprintf("= [");
+	for(int j=0; j<buff_size;  j++ ){
+		intNum2CharStr(*p_out_buff++);
+		iprintf(",");
+	}
+	iprintf("]\n");
+
+}
+
+
+/**
+ * Delay for "cnt" NOPs.
+ *
+ * @param[in]	cnt	number of NOPs to delay
+ */
+void delay_nops(int cnt) {
+    while (cnt-- > 0) {
+        asm("nop");
+    }
 }

@@ -32,10 +32,11 @@ This file is part of XXXXXXX
  */
 #define BUFF_SIZE 256
 
+#define USART_TST USART3
 /**
- * LFO osc modulation ref buffer
+ * Serial comm ref buffer
  */
-int32_t buff_lfo_osc_mod_ref[BUFF_SIZE] = {
+int32_t buff_serial_com_ref[BUFF_SIZE] = {
 		26250,29116,5796,-23023,-32004,-12446,17595,32130,17595,-12495,-32004,-23114,5819,29232,26250,0,-26536,-29028,-6100,21449,29760,11139,-16685,-29696,
 		-16188,10622,27528,19580,-5375,-24898,-22256,0,21105,22736,4370,-17108,-22932,-8771,11937,21042,11385,-7742,-19530,-13559,3289,16240,14070,0,-13268,-
 		13924,-2875,9701,13144,4700,-6603,-11520,-6035,3854,9424,6230,-1675,-7316,-6313,0,5145,5452,966,-3640,-4410,-1519,2001,3150,1587,-980,-2142,-1365,276,
@@ -50,101 +51,28 @@ int32_t buff_lfo_osc_mod_ref[BUFF_SIZE] = {
 
 
 };
-
-/**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
-
-/**
- * LFO class instance
- */
-LFO lfo;
-
-/**
- * Oscillator class instance
- */
-Oscillator osc;
-
 /**
  * Unit test output buffer
  */
 int32_t buff_out [BUFF_SIZE];
 
-#define MAX_STRLEN 12 // this is the maximum string length of our string in characters
-const char received_string[MAX_STRLEN+1] = "hello world"; // this will hold the recieved string
-
-/**
-  * @brief  USART handle Structure definition
-  */
-typedef struct
-{
-  USART_TypeDef *Instance;        /*!< USART registers base address        */
-
-}USART_HandleTypeDef;
-
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* UART handler declaration */
-USART_HandleTypeDef UartHandle;
-
-/* This function is used to transmit a string of characters via
- * the USART specified in USARTx.
- *
- * It takes two arguments: USARTx --> can be any of the USARTs e.g. USART1, USART2 etc.
- * 						   (volatile) char *s is the string you want to send
- *
- * Note: The string has to be passed to the function as a pointer because
- * 		 the compiler doesn't know the 'string' data type. In standard
- * 		 C a string is just an array of characters
- *
- * Note 2: At the moment it takes a volatile char because the received_string variable
- * 		   declared as volatile char --> otherwise the compiler will spit out warnings
- * */
-void USART_puts(USART_TypeDef* USARTx, const char *s){
-
-	while(*s){
-		// wait until data register is empty
-		while( !(USARTx->SR & 0x00000040) );
-		USART_SendData(USARTx, *s);
-		*s++;
-	}
-}
-
-
-const char send_string[MAX_STRLEN+1] = {"aef5uhkg\n"}; // this will hold the recieved string
-
-/**
- * Delay for "cnt" NOPs.
- *
- * @param[in]	cnt	number of NOPs to delay
- */
-void delay(int cnt) {
-    while (cnt-- > 0) {
-        asm("nop");
-    }
-}
 
 /**
  * Serial communication test
  */
-int test_serial_com(void){
+void test_serial_com(void){
 
 	uint16_t counter = 0;
 	int count = 0;
 	char snumber[1];
-	while(1){
+	while(count<10){
 	    itoa(count, snumber, 10);
-		USART_puts(USART3,(const char*)snumber); // just send a message to indicate that it works
-		USART_puts(USART3,"\n"); // just send a message to indicate that it works
-		delay(500000);
+		USART_puts(USART_TST,(const char*)snumber); // just send a message to indicate that it works
+		USART_puts(USART_TST,"\n");
+		delay_nops(500000);
 		count++;
-		count%=100;
 	}
 
-	return 0;
 }
 
 int main(void)
@@ -166,22 +94,22 @@ int main(void)
 
 	test_serial_com();
 
-//    /** Turn off buffers, so IO occurs immediately  */
-//    setvbuf(stdin, NULL, _IONBF, 0);
-//    setvbuf(stdout, NULL, _IONBF, 0);
-//    setvbuf(stderr, NULL, _IONBF, 0);
-//
-//    /** Wait usart confirmation to start the test  */
-//    wait_usart_ready();
-//	/** Ready to start test  */
-//    iprintf("\nTEST:  SERIAL COM\n-----------------------");
-//
-//    /** Start unity and trigger tests */
-//    UNITY_BEGIN();
-//    RUN_TEST(test_serial_com);
-//
-//
-//    /** FInish unity */
-//    return UNITY_END();
+    /** Turn off buffers, so IO occurs immediately  */
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
+    /** Wait usart confirmation to start the test  */
+    //wait_usart_ready();
+	/** Ready to start test  */
+    USART_puts(USART_TST,"\nTEST:  SERIAL COM\n-----------------------");
+
+    /** Start unity and trigger tests */
+    UNITY_BEGIN();
+    RUN_TEST(test_serial_com);
+    USART_puts(USART_TST,"exit");
+
+    /** FInish unity */
+    return UNITY_END();
 }
 
