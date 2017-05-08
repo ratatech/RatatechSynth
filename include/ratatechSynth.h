@@ -60,6 +60,9 @@
 #include "mixer.h"
 #include "svf.h"
 
+// Add debugging tools
+#include "tst_utils.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

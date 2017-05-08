@@ -74,7 +74,12 @@ void MIDI::parseMsg(uint16_t byte){
 
 	// Trigger a new event just after reading the three bytes
 	if(midi_msg_type == DATA_VEL){
-		new_event = true;
+		if(midi_buffer[2]>0){
+			new_event = true;
+		}
+
+
+
 	}
 
 

@@ -99,7 +99,7 @@ int main(void)
 	 * 12 = 0x10
 	 * 24 = 0x08
 	 */
-	SVF_order_msk = 0x08;
+	SVF_order_msk = 0x10;
 
 	// Add ordker to select filter order
 	SVF_MODE += SVF_order_msk;
@@ -154,7 +154,7 @@ int main(void)
 	if(synth_params.FM_synth){
 		osc_shape_t shape_FM_mod = SIN;
 		FM_mod.shape = shape_FM_mod;
-		FM_mod.FM_synth = true;
+		FM_mod.FM_synth = false;
 		FM_mod.lfo_amo = 0x5FFF;
 		synth_params.I = 3;
 		FM_mod.set_freq_frac(1000);
@@ -170,7 +170,7 @@ int main(void)
 	osc1.set_freq_frac(300);
 
 	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
 	osc2.set_freq_frac(1000);
 
@@ -182,14 +182,8 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x0000;
+	synth_params.osc_mix = 0x7FFF;
 	synth_params.midi_dest = OSC2;
-
-
-	GPIOA->BRR = GPIO_Pin_12;
-	GPIOA->BSRR = GPIO_Pin_11;
-
-
 
 
 	//TODO(JoH): Review the whole ADSR algo. The behavious seems weird
@@ -202,10 +196,10 @@ int main(void)
 	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
 	 * * *****************************************************************************************/
 	// Volume envelope
-	adsr_vol.attack  = 0.8;
-	adsr_vol.decay   = 0.041;
-	adsr_vol.sustain = 0.1;
-	adsr_vol.release = 1;
+	adsr_vol.attack  = 0.01;
+	adsr_vol.decay   = 1;
+	adsr_vol.sustain = 0.9;
+	adsr_vol.release = 3;
 	adsr_vol.calcAdsrSteps();
 
 	// VCF envelope
@@ -238,11 +232,6 @@ int main(void)
 		// Events happening every CONTROL_RATE
 		if(low_rate_ISR_flag){
 			low_rate_tasks();
-			control_rate_decimate++;
-
-			if(control_rate_decimate > 5000){
-			}
-
 		}
 
 		// Fill audio buffer with a new sample
@@ -260,14 +249,16 @@ void low_rate_tasks(void){
 	// Update Envelope, LFO and midi objects
 	if(midi.new_event){
 
+
 		midi.update(&synth_params);
 		switch(synth_params.midi_dest){
 			case OSC1:
-				osc1.set_freq_frac(midi_freq_lut[synth_params.pitch]);
+				//osc1.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 			break;
 			case OSC2:
-				osc2.set_freq_frac(midi_freq_lut[synth_params.pitch]);
-				osc1.set_freq_frac(midi_freq_lut[synth_params.pitch+4]);
+				//osc2.set_freq_frac(midi_freq_lut[synth_params.pitch]);
+				//osc1.set_freq_frac(midi_freq_lut[synth_params.pitch+4]);
+
 			break;
 		}
 
@@ -277,10 +268,23 @@ void low_rate_tasks(void){
 			midi.attack_trigger = false;
 
 		}
-		adsr_vol.note_ON = synth_params.note_ON;
+
 		midi.new_event = false;
 		//lfo.set_freq_frac(1);
 	}
+
+	midi.update(&synth_params);
+	adsr_vol.note_ON = synth_params.note_ON;
+	adsr_fc.note_ON = synth_params.note_ON;
+
+//	iprintf("midi msg = [ ");
+//	intNum2CharStr((int32_t)midi.midi_buffer[0]);
+//	iprintf(", ");
+//	intNum2CharStr((int32_t)midi.midi_buffer[1]);
+//	iprintf(", ");
+//	intNum2CharStr((int32_t)midi.midi_buffer[2]);
+//	iprintf("]");
+//	iprintf("\n");
 
 	adsr_vol.update();
 	adsr_fc.update();
@@ -289,6 +293,12 @@ void low_rate_tasks(void){
 	/*Update FM modulator*/
 	if(synth_params.FM_synth)
 		FM_mod.update(&synth_params);
+
+	// ------------------ DEBUG ----------------------------//
+	/*Set amplitude to 1, no ADSR*/
+	synth_params.adsr_amp_vol = 0x7FFF>>1;
+	adsr_vol.adsr_amp = synth_params.adsr_amp_vol ;
+	// ------------------ DEBUG ----------------------------//
 
 	mux_adc_read(&mux_adc);
 	q_adc = (uint32_t)(mux_adc.mux_x2*PWM_PERIOD)>>12;
@@ -299,10 +309,11 @@ void low_rate_tasks(void){
 	fc_env = mul_int16(adsr_fc.adsr_amp,PWM_PERIOD);
 	fc_lfo =  mul_int16(lfo.lfo_amp,PWM_PERIOD);
 
+
 	// Update filter params
 	svf.set_q(q_adc);
-	svf.set_fc((PWM_PERIOD-(fc_env-fc_adc)));
-
+	uint16_t final_fc = (PWM_PERIOD-(fc_env-fc_adc));
+	svf.set_fc(final_fc);
 
 	// Put low rate interrupt flag down
 	low_rate_ISR_flag = false;

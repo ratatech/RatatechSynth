@@ -11,6 +11,9 @@
 #include "ratatechSynth.h"
 #include "tables.h"
 #include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define ENV_LUT_LENGTH 256
 enum adsr_state_e {ATTACK_STATE,DECAY_STATE ,SUSTAIN_STATE,RELEASE_STATE,IDLE_STATE};
@@ -221,8 +224,9 @@ class ADSREnv {
 					adsr_amp = temp>>16;
 					if (adsr_amp >=(0x7FFF)  || adsr_amp <0)
 					{
+						//iprintf("ATTACK END\n");
 						adsr_amp = 0x7FFF;
-						//adsr_state = DECAY_STATE; // TODO(JoH):Seems to be a bug with the DECAY range calculation
+						adsr_state = DECAY_STATE; // TODO(JoH):Seems to be a bug with the DECAY range calculation
 						adsr_state = RELEASE_STATE;
 						break;
 					}
@@ -240,8 +244,11 @@ class ADSREnv {
 						adsr_amp = sustain_lvl>>16;
 						if (note_ON)
 						{
+							//iprintf("midi msg = DECAY NOTE ON\n");
 							adsr_state = SUSTAIN_STATE;
+							range_rel = adsr_amp<<16;
 						}else{
+							//iprintf("midi msg = DECAY NOTE OFF\n");
 							adsr_state = RELEASE_STATE;
 							range_rel = adsr_amp<<16;
 						}
@@ -252,19 +259,25 @@ class ADSREnv {
 
 				case SUSTAIN_STATE:
 					//do nothing, wait the key to be released and jump to the next state
-					//trace_printf("SUSTAINEDDD!\n");
+					if (note_ON)
+					{
+						//iprintf("SUSTAINEDDD!\n");
+					}else{
+						adsr_state = RELEASE_STATE;
+					}
+
 					//adsr_amp = (int16_t) arm_linear_interp_q15((int16_t*)env_up_lut_q15,ph_ind,LUT_ENV_5_BIT);
 				break;
 
 				case RELEASE_STATE:
-
+					//iprintf("RELEASE!\n");
 					temp = (b_rel*state_rel);
 					state_rel = temp>>env_bits;
 					temp = (peak_rel+sgn_rel*(((state_rel - k_int) * range_rel)>>env_bits) + offs_rel);
 					adsr_amp = temp>>16;
-//					//trace_printf("%i\n",adsr_amp);
 					if (adsr_amp <= 0)
 					{
+						//iprintf("END RELEASE!\n");
 						adsr_amp = 0;
 						adsr_state = IDLE_STATE;
 						break;
