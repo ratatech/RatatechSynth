@@ -139,17 +139,17 @@ void GPIO_Conf_Init(void)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    /* Configure USART3 Tx as push-pull */
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-    /* Configure USART3 Rx as input floating */
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-	GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+//    /* Configure USART3 Tx as push-pull */
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//    GPIO_Init(GPIOC, &GPIO_InitStructure);
+//
+//    /* Configure USART3 Rx as input floating */
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+//    GPIO_Init(GPIOC, &GPIO_InitStructure);
+//	GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
 
 	/* TIM3 PWM PINS */
 	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
@@ -372,35 +372,35 @@ void USART_Conf_Init(void){
     /* Enable USART2 global interrupt */
     NVIC_EnableIRQ(USART2_IRQn);
 
-	// ---------------------------------------------------------------------------------------//
-	//		USART3
-    // ---------------------------------------------------------------------------------------//
-    USART_Cmd(USART3, ENABLE);
-    /* Baud rate 115200, 8-bit data, One stop bit
-     * No parity, Do both Rx and Tx, No HW flow control
-     */
-    usart_InitStructure.USART_BaudRate = 115200;
-    usart_InitStructure.USART_WordLength = USART_WordLength_8b;
-    usart_InitStructure.USART_StopBits = USART_StopBits_1;
-    usart_InitStructure.USART_Parity = USART_Parity_No ;
-    usart_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    usart_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-
-
-	/* USART3 NVIC configuration */
-	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-    /* Configure USART3 */
-    USART_Init(USART3, &usart_InitStructure);
-    /* Enable USART3 Receive and Transmit interrupts */
-    //USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
-    //USART_ITConfig(USART3, USART_IT_TXE, ENABLE);
-    /* Enable USART3 global interrupt */
-    NVIC_EnableIRQ(USART3_IRQn);
+//	// ---------------------------------------------------------------------------------------//
+//	//		USART3
+//    // ---------------------------------------------------------------------------------------//
+//    USART_Cmd(USART3, ENABLE);
+//    /* Baud rate 115200, 8-bit data, One stop bit
+//     * No parity, Do both Rx and Tx, No HW flow control
+//     */
+//    usart_InitStructure.USART_BaudRate = 115200;
+//    usart_InitStructure.USART_WordLength = USART_WordLength_8b;
+//    usart_InitStructure.USART_StopBits = USART_StopBits_1;
+//    usart_InitStructure.USART_Parity = USART_Parity_No ;
+//    usart_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+//    usart_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+//
+//
+//	/* USART3 NVIC configuration */
+//	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//	NVIC_Init(&NVIC_InitStructure);
+//
+//    /* Configure USART3 */
+//    USART_Init(USART3, &usart_InitStructure);
+//    /* Enable USART3 Receive and Transmit interrupts */
+//    //USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+//    //USART_ITConfig(USART3, USART_IT_TXE, ENABLE);
+//    /* Enable USART3 global interrupt */
+//    NVIC_EnableIRQ(USART3_IRQn);
 
 }
 
