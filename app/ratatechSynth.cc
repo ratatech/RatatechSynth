@@ -28,10 +28,14 @@ using namespace std;
 Oscillator osc1,osc2;
 CircularBuffer out_buffer;
 
+/** ADSR object instance*/
+Mixer mixer;
+
 // Structure instances
 synth_params_t synth_params;
 uint16_t u_data;
 uint16_t out_sample;
+bool status = true;
 bool low_rate_ISR_flag = false;
 
 
@@ -45,10 +49,24 @@ int main(void)
 	ratatech_init();
 
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SIN;
+	osc_shape_t shape_osc1 = SQU;
 	osc1.set_shape(shape_osc1);
 	osc1.set_freq_frac(1000);
 
+	// Configure oscillator 2
+	osc_shape_t shape_osc2 = SAW;
+	osc2.set_shape(shape_osc2);
+	osc2.set_freq_frac(1000);
+
+	/* Mix Parameter between osc1 and osc2
+	 *
+	 * synth_params.osc_mix = 32768;
+	 * 0x0000 Mix 100% Osc2
+	 * 0x7FFF Mix 100% Osc1
+	 * 0x3FFF Mix 50%
+	 *
+	 * */
+	synth_params.osc_mix = 0x2FFF;
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -60,10 +78,10 @@ int main(void)
 	while(1)
 	{
 
-//		// Events happening every CONTROL_RATE
-//		if(low_rate_ISR_flag){
-//			low_rate_tasks();
-//		}
+		// Events happening every CONTROL_RATE
+		if(low_rate_ISR_flag){
+			low_rate_tasks();
+		}
 
 		// Fill audio buffer with a new sample
 		fill_buffer();
@@ -87,7 +105,7 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 	int32_t sample_osc1, sample_osc2, osc_mix;
-
+	while(out_buffer.check_status()){
 	/* *****************************************************************************************
 	 * AUDIO CHAIN START
 	 *
@@ -96,8 +114,18 @@ inline void fill_buffer(void)
 		/** 1 - Oscillator 1 */
 		sample_osc1 =  osc1.get_sample(&synth_params);
 
-		/** Fill output buffer */
-		out_buffer.write(int16_2_uint16(sample_osc1));
+		/** 2 - Oscillator 2 */
+		sample_osc2 =  osc2.get_sample(&synth_params);
+
+		/** 3- Mix samples */
+		osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
+
+		/** 4-  Mini VCA */
+		//osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
+
+		/** 5- Fill output buffer */
+		status = out_buffer.write( int16_2_uint16(osc_mix));
+	}
 
 }
 

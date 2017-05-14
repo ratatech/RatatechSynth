@@ -43,12 +43,11 @@ int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth
 
 //	// Modulate signal with the LFO
 //	if(synth_params->lfo_dest == OSC1){
-//
-//		osc1_mix_temp = osc_mix;
-//		osc_mix =  mul_int16(osc_mix,synth_params->lfo_amp);
-//
-//		// Mix LFO with amount parameter
-//		osc_mix = osc_mix + ((int32_t)(osc1_mix_temp)*(MAX_AMP - synth_params->lfo_amo)>>15);
+	//		osc1_mix_temp = mul_int16(osc_mix,(MAX_AMP));
+	//		osc_mix = mul_int16(osc_mix,synth_params->lfo_amp);
+	//		osc_mix = mul_int16(osc_mix,synth_params->lfo_amo);
+	//		osc_mix += osc1_mix_temp;
+	//		osc_mix = osc1_mix_temp;
 //	}
 
 	// Save temporal output
@@ -63,16 +62,15 @@ int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth
 	osc_mix = sample_osc2;
 	osc_mix = mul_int16(osc_mix,(MAX_AMP-synth_params->osc_mix));
 
-//	// Modulate signal with the LFO
-//	if(synth_params->lfo_dest == OSC2){
-//
-//		osc2_mix_temp = osc_mix;
-//		osc_mix =mul_int16(osc_mix,synth_params->lfo_amp);
-//
-//		// Mix LFO with amount parameter
-//
-//		osc_mix = osc_mix + mul_int16(osc2_mix_temp,(MAX_AMP-synth_params->lfo_amo));
-//	}
+	// Modulate signal with the LFO
+	if(synth_params->lfo_dest == OSC2){
+
+//		osc2_mix_temp = mul_int16(osc_mix,(MAX_AMP));
+//		osc_mix = mul_int16(osc_mix,synth_params->lfo_amp);
+//		osc_mix = mul_int16(osc_mix,synth_params->lfo_amo);
+//		osc_mix += osc2_mix_temp;
+//		osc_mix = osc2_mix_temp;
+	}
 
 	/* *****************************************************************************************
 	 * OSC1/OSC2 MIXING
