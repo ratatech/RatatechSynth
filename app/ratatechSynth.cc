@@ -26,7 +26,7 @@ using namespace std;
 
 // Object instances
 Oscillator osc1,osc2;
-CircularBuffer out_buffer;
+interrupt_vars_t interrupt_vars;
 
 /** ADSR object instance*/
 Mixer mixer;
@@ -34,12 +34,8 @@ Mixer mixer;
 // Structure instances
 synth_params_t synth_params;
 uint16_t u_data;
-uint16_t out_sample;
+
 bool status = true;
-bool low_rate_ISR_flag = false;
-
-
-
 
 
 int main(void)
@@ -47,6 +43,8 @@ int main(void)
 
 	// Init system and peripherals
 	ratatech_init();
+
+	set_interrupt_vars(&interrupt_vars);
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SQU;
@@ -79,7 +77,7 @@ int main(void)
 	{
 
 		// Events happening every CONTROL_RATE
-		if(low_rate_ISR_flag){
+		if(interrupt_vars.low_rate_ISR_flag){
 			low_rate_tasks();
 		}
 
@@ -105,7 +103,7 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 	int32_t sample_osc1, sample_osc2, osc_mix;
-	while(out_buffer.check_status()){
+	while(interrupt_vars.out_buffer.check_status()){
 	/* *****************************************************************************************
 	 * AUDIO CHAIN START
 	 *
@@ -124,73 +122,8 @@ inline void fill_buffer(void)
 		//osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
 
 		/** 5- Fill output buffer */
-		status = out_buffer.write( int16_2_uint16(osc_mix));
+		status = interrupt_vars.out_buffer.write( int16_2_uint16(osc_mix));
 	}
 
 }
-
-/** Read if a buton is active or not
- *
- * @param Buttton_port Selected port
- * @param Buttton  Button number
- * @return void
- */
-uint32_t ButtonRead(GPIO_TypeDef* Button_Port, uint16_t Button)
-{
-  return !GPIO_ReadInputDataBit(Button_Port, Button);
-}
-
-extern "C" {
-
-/*****************************************************************************************************************************
-******************* TIMER INTERRUPTS *****************************************************************************************
-******************************************************************************************************************************/
-
-/**
-  * @brief  This function handles Timer 2 Handler.
-  * @param  None
-  * @retval None
-  */
-void TIM2_IRQHandler(void)
-{
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
-	{
-
-		low_rate_ISR_flag = true;
-		//Do something here
-
-		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-	}
-
-
-}
-
-/**
-  * @brief  This function handles Timer 1 Handler.
-  * @param  None
-  * @retval None
-  */
-void TIM1_UP_IRQHandler(void)
-{
-
-	//trace_printf("READ\n");
-	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
-	{
-
-		out_buffer.read(&out_sample);
-		audio_out_write(out_sample);
-
-		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-
-	}
-
-
-}
-
-}
-
-/*****************************************************************************************************************************
-******************* USART INTERRUPTS *****************************************************************************************
-******************************************************************************************************************************/
-
 

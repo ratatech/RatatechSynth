@@ -59,6 +59,7 @@
 #include "adc.h"
 #include "mixer.h"
 #include "svf.h"
+#include "interrupts.h"
 
 // Add debugging tools
 #include "tst_utils.h"
