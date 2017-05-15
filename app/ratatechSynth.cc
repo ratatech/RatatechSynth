@@ -76,7 +76,6 @@ int main(void)
 	 * *****************************************************************************************/
 	while(1)
 	{
-		//iprintf("MAINLOOP\n");
 
 		// Events happening every CONTROL_RATE
 		if(*interrupt_vars.low_rate_ISR_flag){
