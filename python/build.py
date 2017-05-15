@@ -31,10 +31,10 @@ class RatatechBuild(object):
         # Execute command
         os.system(cmd)
         
-    def testUart(self):    
+    def testUart(self,port="ttyUSB0"):    
         
         # Open serial port to read test output
-        ratatech_serial = RatatechSerial()
+        ratatech_serial = RatatechSerial(port)
         ratatech_serial.open()
         
         # Send uart confirmation

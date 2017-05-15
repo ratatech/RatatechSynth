@@ -22,11 +22,12 @@ This file is part of XXXXXXX
 #ifndef TST_TST_UTILS_TST_SETTINGS_H_
 #define TST_TST_UTILS_TST_SETTINGS_H_
 
-#define USART_TST USART3
+#define USART_TST USART2
 
-#define STDOUT_USART 3
-#define STDERR_USART 3
-#define STDIN_USART 3
+#define USART_X 2
+#define STDOUT_USART USART_X
+#define STDERR_USART USART_X
+#define STDIN_USART USART_X
 
 
 #endif /* TST_TST_UTILS_TST_SETTINGS_H_ */

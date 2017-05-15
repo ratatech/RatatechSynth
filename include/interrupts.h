@@ -25,8 +25,8 @@ This file is part of XXXXXXX
 #include "ratatechSynth.h"
 
 struct interrupt_vars_t{
-	CircularBuffer out_buffer;
-	bool low_rate_ISR_flag;
+	CircularBuffer* 	out_buffer;
+	bool* 				low_rate_ISR_flag;
 };
 
 void set_interrupt_vars(interrupt_vars_t *interrupt_vars);

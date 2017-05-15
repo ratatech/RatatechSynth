@@ -424,7 +424,7 @@ void ratatech_init(void){
 	SPI_Config();
 	TIM_Config();
 	ButtonsInitEXTI();
-	ADC_Conf_Init();
+	//ADC_Conf_Init();
 	USART_Conf_Init();
 
 }

@@ -38,8 +38,9 @@ uint16_t u_data;
 bool status = true;
 
 
+
 int main(void)
-	{
+{
 
 	// Init system and peripherals
 	ratatech_init();
@@ -51,8 +52,8 @@ int main(void)
 	osc1.set_shape(shape_osc1);
 	osc1.set_freq_frac(1000);
 
-	// Configure oscillator 2
-	osc_shape_t shape_osc2 = SAW;
+	// Configure oscillator 	2
+	osc_shape_t shape_osc2 = SIN;
 	osc2.set_shape(shape_osc2);
 	osc2.set_freq_frac(1000);
 
@@ -64,7 +65,7 @@ int main(void)
 	 * 0x3FFF Mix 50%
 	 *
 	 * */
-	synth_params.osc_mix = 0x2FFF;
+	synth_params.osc_mix = 0x0;
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -75,14 +76,16 @@ int main(void)
 	 * *****************************************************************************************/
 	while(1)
 	{
+		//iprintf("MAINLOOP\n");
 
 		// Events happening every CONTROL_RATE
-		if(interrupt_vars.low_rate_ISR_flag){
+		if(*interrupt_vars.low_rate_ISR_flag){
 			low_rate_tasks();
 		}
 
 		// Fill audio buffer with a new sample
 		fill_buffer();
+
 	}
 
 }
@@ -91,6 +94,8 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
+	// Put low rate interrupt flag down
+	*interrupt_vars.low_rate_ISR_flag = false;
 
 }
 
@@ -103,7 +108,8 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 	int32_t sample_osc1, sample_osc2, osc_mix;
-	while(interrupt_vars.out_buffer.check_status()){
+
+	while(interrupt_vars.out_buffer->check_status()){
 	/* *****************************************************************************************
 	 * AUDIO CHAIN START
 	 *
@@ -122,7 +128,7 @@ inline void fill_buffer(void)
 		//osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
 
 		/** 5- Fill output buffer */
-		status = interrupt_vars.out_buffer.write( int16_2_uint16(osc_mix));
+		status = interrupt_vars.out_buffer->write( int16_2_uint16(osc_mix));
 	}
 
 }
