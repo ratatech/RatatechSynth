@@ -14,6 +14,7 @@
 #include <math.h>
 
 
+typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 
 /**
  * Oscillator class
@@ -21,6 +22,11 @@
 class Oscillator {
 
 	public:
+		osc_shape_t shape_osc;
+		int16_t osc_mix;
+		double freq_frac;
+
+	private:
 		double phaseInd;
 		double phaseIncFrac;
 		uint16_t phaseInc;
@@ -34,39 +40,47 @@ class Oscillator {
 		uint16_t sampleDebugInt;
 		unsigned char debugChar;
 		int32_t sampleRef;
-		uint16_t triangleTop;
+		uint16_t trianfgleTop;
 		uint16_t triangleMax;
 		uint16_t sawTop;
 		uint16_t squareTop;
 		osc_shape_t shape;
-
-
 		int32_t ph_inc_frac;
 		int32_t ph_ind_frac;
 		int32_t k_frac;
 		int32_t triangle_out;
 		int32_t triangle_ref;
 		int32_t square_out;
-
 		bool top,FM_synth;
 		int32_t scaled_LUT;
 
+
 		/** Constructor.
-		@param Scale table size.
-		*/
+		 *
+		 * @param osc_param Structure holding init parameters
+		 */
 		Oscillator(void){
-			scaled_LUT = (int32_t)(((double)LUT_8_BIT)*SHIFT_20_BIT);
+
+		}
+
+		/** Init oscillator.
+		 *
+		 * @param osc_param Structure holding init parameters
+		 */
+		void init(osc_params_t* osc_param){
+			set_shape(osc_param->shape_osc);
+			set_freq_frac(osc_param->freq_frac);
 		}
 
 		/**
 		 * Set oscillator fractional frequency
-		@param frequency Fractional frequency in Hz
+		@param freq Fractional frequency in Hz
 		*/
-		void set_freq_frac(double freqHz)
+		void set_freq_frac(double freq)
 		{	//TODO(JoH):Define global variable with table length
-			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
+			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freq)*SHIFT_20_BIT);
 			k_frac = ph_inc_frac & 0xFFFFF;
-
+			freq_frac = freq;
 		}
 
 		/**

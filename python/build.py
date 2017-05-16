@@ -30,19 +30,37 @@ class RatatechBuild(object):
         
         # Execute command
         os.system(cmd)
-        
-    def testUart(self,port="ttyUSB0"):    
+    
+    def parseUsart(self,usartOutLines):
+        # Print the usart output    
+        test_result = True
+        for line in usartOutLines:
+            print line 
+            if 'FAIL' in line:
+                test_result = False
+                
+        # Throw error in case of fail
+        if not test_result:
+            raise ValueError('Test Failed!')
+               
+    def testUsart(self,port="ttyUSB0"):    
         
         # Open serial port to read test output
         ratatech_serial = RatatechSerial(port)
         ratatech_serial.open()
         
-        # Send uart confirmation
-        #ratatech_serial.write("1")
+        # Send usart confirmation
+        ratatech_serial.write("1")
         
         time.sleep(0.1)    
         
-        # Start reading uart
+        # Start reading usart
         usartOutLines = ratatech_serial.readLines("1")
+        
+        # Parse lines and check for fails
+        self.parseUsart(usartOutLines)
 
         return usartOutLines
+    
+        
+        

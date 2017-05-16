@@ -124,17 +124,18 @@ void test_sine_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1 */
-	osc_shape_t shape_osc1 = SIN;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
+	osc.init(&synth_params.osc_params);
+//	/** Configure oscillator 1 */
+//	osc_shape_t shape_osc1 = SIN;
+//	osc.set_shape(shape_osc1);
+//	osc.set_freq_frac(1000);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
 		sample =  osc.get_sample(&synth_params);
 
 		buff_out[i] = sample;
-	}
+	};
 
 	/** Print output buffer */
 	printOutBuff("buff_sin_out", &buff_out[0], BUFF_SIZE);

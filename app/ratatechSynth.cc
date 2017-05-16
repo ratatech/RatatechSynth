@@ -45,7 +45,11 @@ int main(void)
 	// Init system and peripherals
 	ratatech_init();
 
+	// Map interrupt vars to local app instances
 	set_interrupt_vars(&interrupt_vars);
+
+	// Init system and peripherals
+	ratatech_init();
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SQU;
