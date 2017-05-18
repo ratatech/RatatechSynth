@@ -124,11 +124,8 @@ void test_sine_out(void){
 
 	int32_t sample;
 
+	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
-//	/** Configure oscillator 1 */
-//	osc_shape_t shape_osc1 = SIN;
-//	osc.set_shape(shape_osc1);
-//	osc.set_freq_frac(1000);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
@@ -152,10 +149,11 @@ void test_square_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = SQU;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
+	/** Init oscillator with default settings */
+	osc.init(&synth_params.osc_params);
+
+	/** Set shape */
+	osc.set_shape(SQU);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
@@ -179,10 +177,11 @@ void test_saw_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = SAW;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
+	/** Init oscillator with default settings */
+	osc.init(&synth_params.osc_params);
+
+	/** Set shape */
+	osc.set_shape(SAW);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
@@ -206,10 +205,11 @@ void test_triangle_out(void){
 
 	int32_t sample;
 
-	/** Configure oscillator 1  */
-	osc_shape_t shape_osc1 = TRI;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(1000);
+	/** Init oscillator with default settings */
+	osc.init(&synth_params.osc_params);
+
+	/** Set shape */
+	osc.set_shape(TRI);
 
 	/** Get oscillator samples */
 	for(int i=0; i<BUFF_SIZE; i++){
@@ -229,19 +229,11 @@ void test_triangle_out(void){
 int main(void)
 {
 
-	/** System init */
-	RCC_ClocksTypeDef RCC_Clocks;
-	SystemInit();
-	RCC_Clocks_Init();
-	SystemCoreClockUpdate();
+	/** Init system and peripherals */
+	ratatech_init();
 
-	/** SysTick end of count event each 1ms */
-	RCC_GetClocksFreq(&RCC_Clocks);
-	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
-
-    /** Configure and init peripherals  */
-	GPIO_Conf_Init();
-	USART_Conf_Init();
+	/** Load initial default settings */
+	init_settings(&synth_params);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

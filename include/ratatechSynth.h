@@ -60,6 +60,7 @@
 #include "mixer.h"
 #include "svf.h"
 #include "interrupts.h"
+#include "types.h"
 
 // Add debugging tools
 #include "tst_utils.h"
@@ -68,7 +69,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
 
 
 void fill_buffer(void);

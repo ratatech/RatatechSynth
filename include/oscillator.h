@@ -12,9 +12,8 @@
 #include "arm_math.h"
 #include "tables.h"
 #include <math.h>
+#include "types.h"
 
-
-typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 
 /**
  * Oscillator class
@@ -25,8 +24,6 @@ class Oscillator {
 		osc_shape_t shape_osc;
 		int16_t osc_mix;
 		double freq_frac;
-
-	private:
 		double phaseInd;
 		double phaseIncFrac;
 		uint16_t phaseInc;
@@ -67,21 +64,13 @@ class Oscillator {
 		 *
 		 * @param osc_param Structure holding init parameters
 		 */
-		void init(osc_params_t* osc_param){
-			set_shape(osc_param->shape_osc);
-			set_freq_frac(osc_param->freq_frac);
-		}
+		void init(osc_params_t* osc_param);
 
 		/**
 		 * Set oscillator fractional frequency
 		@param freq Fractional frequency in Hz
 		*/
-		void set_freq_frac(double freq)
-		{	//TODO(JoH):Define global variable with table length
-			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freq)*SHIFT_20_BIT);
-			k_frac = ph_inc_frac & 0xFFFFF;
-			freq_frac = freq;
-		}
+		void set_freq_frac(double freq);
 
 		/**
 		 * Set oscillator shape

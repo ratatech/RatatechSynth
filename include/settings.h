@@ -9,8 +9,9 @@
 #ifndef INCLUDE_SETTINGS_H_
 #define INCLUDE_SETTINGS_H_
 
-#include "ratatechSynth.h"
-#include "oscillator.h"
+
+//#include "ratatechSynth.h"
+#include "types.h"
 
 
 #define FS 96000
@@ -25,31 +26,6 @@
 #define MAX_AMP 0x7FFF
 
 
-typedef enum {OSC1,OSC2,VCF} dest_t;
-
-
-
-struct osc_params_t{
-	osc_shape_t shape_osc;
-	int16_t osc_mix;
-	double freq_frac;
-};
-
-struct synth_params_t{
-	osc_params_t osc_params;
-	int16_t lfo_amp;
-	int16_t lfo_amo;
-	dest_t lfo_dest;
-	dest_t midi_dest;
-	int16_t adsr_amp_vol;
-
-	uint16_t pitch;
-	uint16_t vel;
-	bool note_ON;
-	int16_t FM_mod_amp;
-	uint8_t I;
-	bool FM_synth;
-};
 
 void init_settings(synth_params_t* synth_params);
 

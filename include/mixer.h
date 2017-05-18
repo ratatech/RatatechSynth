@@ -23,6 +23,7 @@ This file is part of XXXXXXX
 #define INCLUDE_MIXER_H_
 
 #include "ratatechSynth.h"
+#include "types.h"
 #include "arm_math.h"
 #include "tables.h"
 #include <math.h>

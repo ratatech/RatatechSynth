@@ -79,3 +79,23 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 
 
 }
+
+/** Init oscillator.
+ *
+ * @param osc_param Structure holding init parameters
+ */
+void Oscillator::init(osc_params_t* osc_param){
+	set_shape(osc_param->shape_osc);
+	set_freq_frac(osc_param->freq_frac);
+}
+
+/**
+ * Set oscillator fractional frequency
+@param freq Fractional frequency in Hz
+*/
+void Oscillator::set_freq_frac(double freq)
+{
+	ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freq)*SHIFT_20_BIT);
+	k_frac = ph_inc_frac & 0xFFFFF;
+	freq_frac = freq;
+}
