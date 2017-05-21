@@ -23,7 +23,7 @@ if status == 'CONNECTED':
     ratatechBuild.flash()
 
     # Start uart communication and get test results
-    uartOutLines = ratatechBuild.testUart() 
+    uartOutLines = ratatechBuild.testUsart(port="ttyACM0") 
        
     # Discard first lines possibly remaining in usart buffer from old tests       
     firstLine = [idx for idx, s in enumerate(uartOutLines) if 'TEST' in s][0]

@@ -11,10 +11,8 @@
 #include "ratatechSynth.h"
 #include "arm_math.h"
 #include "tables.h"
+#include "types.h"
 #include <math.h>
-
-
-typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 
 /**
  * Oscillator class

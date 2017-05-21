@@ -1,9 +1,9 @@
 /*
-@file tst_settings.h
+@file types.h
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, May 7, 2017
+@ Created by Jordi Hidalgo, Ratatech, May 21, 2017
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -19,15 +19,37 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef TST_TST_UTILS_TST_SETTINGS_H_
-#define TST_TST_UTILS_TST_SETTINGS_H_
-
-#define USART_TST USART2
-
-#define USART_X 2
-#define STDOUT_USART USART_X
-#define STDERR_USART USART_X
-#define STDIN_USART USART_X
+#ifndef INCLUDE_TYPES_H_
+#define INCLUDE_TYPES_H_
 
 
-#endif /* TST_TST_UTILS_TST_SETTINGS_H_ */
+
+typedef enum {OSC1,OSC2,VCF} dest_t;
+typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
+
+
+
+struct osc_params_t{
+	osc_shape_t shape_osc;
+	int16_t osc_mix;
+	double freq_frac;
+};
+
+struct synth_params_t{
+	osc_params_t osc_params;
+	int16_t lfo_amp;
+	int16_t lfo_amo;
+	dest_t lfo_dest;
+	dest_t midi_dest;
+	int16_t adsr_amp_vol;
+
+	uint16_t pitch;
+	uint16_t vel;
+	bool note_ON;
+	int16_t FM_mod_amp;
+	uint8_t I;
+	bool FM_synth;
+};
+
+
+#endif /* INCLUDE_TYPES_H_ */
