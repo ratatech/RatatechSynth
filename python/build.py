@@ -53,7 +53,7 @@ class RatatechBuild(object):
         ratatech_serial.write("1")
         
         time.sleep(0.1)    
-        
+       
         # Start reading usart
         usartOutLines = ratatech_serial.readLines("1")
         

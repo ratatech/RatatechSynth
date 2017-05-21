@@ -24,7 +24,7 @@ class RatatechSerial(object):
         self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout = 2     #timeout for write
-        self.ser.printConsole = False
+        self.ser.printConsole = True
 
     def open(self):
         TIMEOUT = 20
@@ -83,13 +83,13 @@ class RatatechSerial(object):
             print "Serial port not open!"
             
     def readLines(self,confStr):
-        if self.status == "OPEN":  
+        if self.status == "OPEN":
+              
             self.ser.write("1")
             numOfLines = 0
             usartLines = []
             while True:    
                 response = self.ser.readline()
-
                 usartLines.append(response)
                 if len(response)>0:
                     if self.ser.printConsole:

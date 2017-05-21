@@ -24,27 +24,22 @@
 using namespace std;
 
 
-// Object instances
+/** Object instances */
 Oscillator osc1,osc2;
-interrupt_vars_t interrupt_vars;
-
-/** ADSR object instance*/
+LFO lfo;
 Mixer mixer;
 
-// Structure instances
+/** Parameter structures */
+interrupt_vars_t interrupt_vars;
 synth_params_t synth_params;
+
 uint16_t u_data;
 
 bool status = true;
 
 
-
-
 int main(void)
 {
-
-	// Init system and peripherals
-	ratatech_init();
 
 	// Map interrupt vars to local app instances
 	set_interrupt_vars(&interrupt_vars);
@@ -52,25 +47,22 @@ int main(void)
 	// Init system and peripherals
 	ratatech_init();
 
+	/** Load initial default settings */
+	init_settings(&synth_params);
+
 	// Configure oscillator 1
-	osc_shape_t shape_osc1 = SQU;
-	osc1.set_shape(shape_osc1);
-	osc1.set_freq_frac(1000);
+	osc1.init(&synth_params.osc_params);
+	osc1.set_shape(SQU);
 
-	// Configure oscillator 	2
-	osc_shape_t shape_osc2 = SIN;
-	osc2.set_shape(shape_osc2);
-	osc2.set_freq_frac(1000);
+	// Configure oscillator 2
+	osc2.init(&synth_params.osc_params);
+	osc2.set_shape(SAW);
 
-	/* Mix Parameter between osc1 and osc2
-	 *
-	 * synth_params.osc_mix = 32768;
-	 * 0x0000 Mix 100% Osc2
-	 * 0x7FFF Mix 100% Osc1
-	 * 0x3FFF Mix 50%
-	 *
-	 * */
-	synth_params.osc_mix = 0x0;
+	/** Configure lfo */
+	osc_shape_t shape_lfo = SIN;
+	lfo.FM_synth = false;
+	lfo.set_shape(shape_lfo);
+	lfo.set_freq_frac(0.1);
 
 	//Pre-fill the output buffer
 	fill_buffer();
@@ -98,6 +90,8 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
+	lfo.get_sample(&synth_params);
+	iprintf("fadfadfasdfsd");
 	// Put low rate interrupt flag down
 	*interrupt_vars.low_rate_ISR_flag = false;
 
@@ -132,7 +126,7 @@ inline void fill_buffer(void)
 		//osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
 
 		/** 5- Fill output buffer */
-		status = interrupt_vars.out_buffer->write( int16_2_uint16(osc_mix));
+		status = interrupt_vars.out_buffer->write(int16_2_uint16(osc_mix));
 	}
 
 }

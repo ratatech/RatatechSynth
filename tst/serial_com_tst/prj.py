@@ -23,5 +23,5 @@ if status == 'CONNECTED':
     ratatechBuild.flash()
 
     # Start usart communication and get test results
-    uartOutLines = ratatechBuild.testUsart() 
+    uartOutLines = ratatechBuild.testUsart(port="ttyACM0") 
         

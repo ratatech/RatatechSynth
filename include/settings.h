@@ -26,7 +26,6 @@
 #define MAX_AMP 0x7FFF
 
 
-
 void init_settings(synth_params_t* synth_params);
 
 #endif /* INCLUDE_SETTINGS_H_ */

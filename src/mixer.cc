@@ -33,6 +33,11 @@ using namespace std;
  */
 int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth_params){
 
+
+	int16_t lfo_amo = synth_params->lfo_amo;
+	  q15_t  pSrcA[3];
+	  q15_t  pSrcB[3];
+	  q15_t  pDst[3];
 	/* *****************************************************************************************
 	 * OSCILLATOR 1
 	 *
@@ -60,17 +65,20 @@ int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth
 	 * *****************************************************************************************/
 
 	osc_mix = sample_osc2;
-	osc_mix = mul_int16(osc_mix,(MAX_AMP-synth_params->osc_params.osc_mix));
 
 	// Modulate signal with the LFO
 	if(synth_params->lfo_dest == OSC2){
-
-//		osc2_mix_temp = mul_int16(osc_mix,(MAX_AMP));
+////		//osc_mix = mul_int16(osc_mix,synth_params->lfo_amp);
+//		osc2_mix_temp = mul_int16(osc_mix,(MAX_AMP - lfo_amo));
+////		osc2_mix_temp = ((int32_t)((MAX_AMP)*(MAX_AMP - lfo_amo))>>15);
+		arm_mult_q15(pSrcA, pSrcB, pDst,1);
 //		osc_mix = mul_int16(osc_mix,synth_params->lfo_amp);
 //		osc_mix = mul_int16(osc_mix,synth_params->lfo_amo);
 //		osc_mix += osc2_mix_temp;
-//		osc_mix = osc2_mix_temp;
 	}
+	osc_mix = mul_int16(osc_mix,(MAX_AMP-synth_params->osc_params.osc_mix));
+
+
 
 	/* *****************************************************************************************
 	 * OSC1/OSC2 MIXING

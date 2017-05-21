@@ -34,6 +34,7 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 	int32_t interp_lut,interp_lut_temp,frac,mod;
 	int64_t ph_mod_index = 0;
 
+
 	/*
 	 * FM Synthesis
 	 *
