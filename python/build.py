@@ -49,11 +49,14 @@ class RatatechBuild(object):
         ratatech_serial = RatatechSerial(port)
         ratatech_serial.open()
         
+        print 'Serial port open success!'
         # Send usart confirmation
         ratatech_serial.write("1")
+        print 'USART confirmation sent!'
         
         time.sleep(0.1)    
         
+        print 'Wait usart and read'
         # Start reading usart
         usartOutLines = ratatech_serial.readLines("1")
         

@@ -23,7 +23,9 @@ if status == 'CONNECTED':
     ratatechBuild.flash()
 
     # Start usart communication and get test results
-    uartOutLines = ratatechBuild.testUsart() 
+    #port="ttyACM0"
+    port="ttyUSB0"
+    uartOutLines = ratatechBuild.testUsart(port) 
   
     # Parse the output buffer and create wav audio files for each of the generated signals.
     # Each of the corresponding substrings should match the name of the output buffers used in
