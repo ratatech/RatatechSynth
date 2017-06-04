@@ -30,7 +30,7 @@ void wait_usart_ready(void) {
 	while( USART_ReceiveData(USART_TST) != 49)
 
 	/** Debug usart confirmation  */
-	if(1){
+	if(0){
 		iprintf("Received data = ");
 		uint16_t uart_in = USART_ReceiveData(USART_TST);
 		UnityPrintNumber((UNITY_INT)uart_in);

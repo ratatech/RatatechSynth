@@ -24,7 +24,7 @@ class RatatechSerial(object):
         self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout = 2     #timeout for write
-        self.ser.printConsole = True
+        self.ser.printConsole = False
 
     def open(self):
         TIMEOUT = 20
