@@ -38,10 +38,7 @@ class RatatechBuild(object):
             print line 
             if 'FAIL' in line:
                 test_result = False
-                
-        # Throw error in case of fail
-        if not test_result:
-            raise ValueError('Test Failed!')
+        return test_result
                
     def testUsart(self,port="ttyUSB0"):    
         
@@ -57,9 +54,9 @@ class RatatechBuild(object):
         usartOutLines = ratatech_serial.readLines("1")
         
         # Parse lines and check for fails
-        self.parseUsart(usartOutLines)
+        test_result = self.parseUsart(usartOutLines)
 
-        return usartOutLines
+        return usartOutLines, test_result
     
         
         

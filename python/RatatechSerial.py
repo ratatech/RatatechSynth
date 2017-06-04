@@ -34,6 +34,7 @@ class RatatechSerial(object):
             if (serialWait/waitTime) >= TIMEOUT:
                 print "Timeout expired!"
                 print "error open serial port: " + str(e)
+                raise ValueError('Test Failed!')
                 exit()
             try: 
                 self.ser.open()

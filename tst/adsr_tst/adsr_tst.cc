@@ -198,19 +198,11 @@ void test_adsr_osc_out(void){
 int main(void)
 {
 
-	/** System init */
-	RCC_ClocksTypeDef RCC_Clocks;
-	SystemInit();
-	RCC_Clocks_Init();
-	SystemCoreClockUpdate();
+	/** Init system and peripherals */
+	ratatech_init();
 
-	/** SysTick end of count event each 1ms */
-	RCC_GetClocksFreq(&RCC_Clocks);
-	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
-
-    /** Configure and init peripherals  */
-	GPIO_Conf_Init();
-	USART_Conf_Init();
+	/** Load initial default settings */
+	init_settings(&synth_params);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
@@ -219,6 +211,7 @@ int main(void)
 
     /** Wait usart confirmation to start the test  */
     wait_usart_ready();
+
 	/** Ready to start test  */
     iprintf("\nTEST:  ADSR\n-----------------------");
 
