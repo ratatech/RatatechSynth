@@ -11,9 +11,9 @@
 #include "ratatechSynth.h"
 #include "arm_math.h"
 #include "tables.h"
+#include "types.h"
 #include <math.h>
 #include "types.h"
-
 
 /**
  * Oscillator class

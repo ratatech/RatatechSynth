@@ -18,10 +18,19 @@ ratatechBuild = RatatechBuild(prjName)
 status = ratatechUtil.checkStm32()
 
 if status == 'CONNECTED':
-    
     # Program stm32
     ratatechBuild.flash()
+    
+    print 'Executing usart test'
+    # Start uart communication and get test results
+    uartOutLines = ratatechBuild.testUsart(port="ttyUSB0") 
+       
+    # Discard first lines possibly remaining in usart buffer from old tests       
+    firstLine = [idx for idx, s in enumerate(uartOutLines) if 'TEST' in s][0]
+    uartOutLines = uartOutLines[firstLine:-1]
 
-    # Start usart communication and get test results
-    uartOutLines = ratatechBuild.testUsart(port="ttyACM0") 
+    # Print the usart output    
+    for line in uartOutLines:
+        print line  
+
         

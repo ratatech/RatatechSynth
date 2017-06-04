@@ -9,8 +9,6 @@
 #ifndef INCLUDE_SETTINGS_H_
 #define INCLUDE_SETTINGS_H_
 
-
-//#include "ratatechSynth.h"
 #include "types.h"
 
 
@@ -24,7 +22,6 @@
 #define PWM_PERIOD   0x3FFF
 
 #define MAX_AMP 0x7FFF
-
 
 void init_settings(synth_params_t* synth_params);
 

@@ -44,7 +44,8 @@ int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth
 	 * Compute oscillator1 modulations
 	 * *****************************************************************************************/
 	osc_mix = sample_osc1;
-	osc_mix = mul_int16(osc_mix,synth_params->osc_params.osc_mix);
+	//osc_mix = mul_int16(osc_mix,synth_params->osc_mix);
+
 
 //	// Modulate signal with the LFO
 //	if(synth_params->lfo_dest == OSC1){
@@ -65,6 +66,8 @@ int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth
 	 * *****************************************************************************************/
 
 	osc_mix = sample_osc2;
+	//osc_mix = mul_int16(osc_mix,(MAX_AMP-synth_params->osc_mix));
+
 
 	// Modulate signal with the LFO
 	if(synth_params->lfo_dest == OSC2){
