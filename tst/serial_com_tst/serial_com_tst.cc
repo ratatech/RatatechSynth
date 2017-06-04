@@ -77,23 +77,8 @@ void test_serial_com(void){
 int main(void)
 {
 
-//	/** System init */
-//	RCC_ClocksTypeDef RCC_Clocks;
-//	SystemInit();
-//	RCC_Clocks_Init();
-//	SystemCoreClockUpdate();
-//
-//	/** SysTick end of count event each 1ms */
-//	RCC_GetClocksFreq(&RCC_Clocks);
-//	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
-//
-//    /** Configure and init peripherals  */
-//	GPIO_Conf_Init();
-//	USART_Conf_Init();
+	/** System init */
 	ratatech_init();
-
-	/** Ready to start test  */
-    iprintf("\nadfadfasd");
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

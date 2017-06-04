@@ -47,13 +47,9 @@ class RatatechBuild(object):
         
         # Open serial port to read test output
         ratatech_serial = RatatechSerial(port)
-        ratatech_serial.open()
-        
+        ratatech_serial.open()  
         print 'Serial port open success!'
-        # Send usart confirmation
-        ratatech_serial.write("1")
-        print 'USART confirmation sent!'
-        
+     
         time.sleep(0.1)    
         print 'Wait usart and read'
 

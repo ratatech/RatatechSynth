@@ -86,6 +86,11 @@ class RatatechSerial(object):
             
     def readLines(self,confStr):
         print 'Port ' + self.ser.port + ' is '+ self.status
+        if self.status == "OPEN": 
+            
+            # Send usart confirmation and then start reading 
+            self.ser.write(confStr)
+            
             numOfLines = 0
             usartLines = []
             while True:    
@@ -94,13 +99,14 @@ class RatatechSerial(object):
                 
                 # Store received line
                 usartLines.append(response)
-                
+
                 if self.ser.printConsole:
                     if len(response)>0:
                         print(response)
                     else:
                         print('Shit, no response!')
-                                        
+                
+                # When line "exit" is received, close the serial communication and return the received lines
                 if(response == 'exit'):
                     self.status = "CLOSED"
                     self.ser.close()
