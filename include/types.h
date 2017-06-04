@@ -22,6 +22,8 @@ This file is part of XXXXXXX
 #ifndef INCLUDE_TYPES_H_
 #define INCLUDE_TYPES_H_
 
+#include <stdint.h>
+
 
 
 typedef enum {OSC1,OSC2,VCF} dest_t;
