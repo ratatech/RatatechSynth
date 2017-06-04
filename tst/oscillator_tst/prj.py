@@ -23,7 +23,7 @@ if status == 'CONNECTED':
     ratatechBuild.flash()
 
     # Start usart communication and get test results
-    #port="ttyACM0"
+    # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, ttyACM0 used for synth pcb debugging and testing
     port="ttyUSB0"
     uartOutLines = ratatechBuild.testUsart(port) 
   
