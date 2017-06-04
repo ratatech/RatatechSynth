@@ -48,7 +48,6 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		iprintf("fadfadfasdfsd");
 		_low_rate_ISR_flag = true;
 		//Do something here
 

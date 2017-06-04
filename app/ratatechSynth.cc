@@ -91,7 +91,6 @@ int main(void)
  */
 void low_rate_tasks(void){
 	lfo.get_sample(&synth_params);
-	iprintf("fadfadfasdfsd");
 	// Put low rate interrupt flag down
 	*interrupt_vars.low_rate_ISR_flag = false;
 

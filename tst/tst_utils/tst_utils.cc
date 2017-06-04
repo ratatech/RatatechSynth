@@ -25,7 +25,7 @@ This file is part of XXXXXXX
  * Wait usart interface until is ready
  */
 void wait_usart_ready(void) {
-	iprintf("SHIIIIITTT");
+
 	/** Wait for value 1( ASCII 49) as uart confirmation  */
 	while( USART_ReceiveData(USART_TST) != 49)
 
