@@ -46,7 +46,7 @@ void intNum2CharStr(int32_t num);
  * @param p_out_buff Pointer to the output buffer
  * @param buff_size Buffer size
  */
-void printOutBuff(const char * buff_name, int32_t* p_out_buff, uint16_t buff_size);
+void printOutBuff(const char * buff_name, q15_t* p_out_buff, uint16_t buff_size);
 
 /** This function is used to transmit a string of characters via
  * the USART specified in USARTx.

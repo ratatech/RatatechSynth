@@ -26,6 +26,7 @@ This file is part of XXXXXXX
 #include "unity.h"
 #include "ratatechSynth.h"
 #include "tst_utils.h"
+#include "arm_math.h"
 
 
 
@@ -65,12 +66,27 @@ int32_t buff_out [BUFF_SIZE];
 void test_serial_com(void){
 
 
-	/** Just copy paste sampeles */
+//	/** Just copy paste samples */
+//	for(int i=0; i<BUFF_SIZE; i++){
+//		buff_out[i] = buff_serial_com_ref[i];
+//	}
+//	/** Print output buffer */
+//	printOutBuff("buff_serial_com_out", &buff_out[0], BUFF_SIZE);
+
+	q15_t pOscOut[BUFF_SIZE];
+	q15_t tempOscOut[BUFF_SIZE];
+
+	/** Init oscillator with default settings */
+	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+
+	/** Just copy paste samples */
 	for(int i=0; i<BUFF_SIZE; i++){
-		buff_out[i] = buff_serial_com_ref[i];
+		pOscOut[i] = buff_serial_com_ref[i];
 	}
+
 	/** Print output buffer */
-	printOutBuff("buff_serial_com_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_serial_com_out", &pOscOut[0], BUFF_SIZE);
+	//printOutBuff("buff_serial_com_out", &pOscOut[0], BUFF_SIZE);
 
 }
 

@@ -20,7 +20,7 @@
 #define SHIFT_31_BIT 0x7FFFFFFF
 #define SHIFT_15_BIT 0x7FFF
 #define PWM_PERIOD   0x3FFF
-
+#define FRAME_SIZE 32
 #define MAX_AMP 0x7FFF
 
 void init_settings(synth_params_t* synth_params);

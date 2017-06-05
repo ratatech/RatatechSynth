@@ -108,7 +108,13 @@ class Oscillator {
 		 */
 		int32_t get_sample(synth_params_t *synth_params);
 
-
+		/**
+		 * Compute a new oscillator frame
+		 * @param synth_params Synth global structure
+		 * @param pOsc Pointer to store the oscillator samples
+		 *
+		 */
+		void get_frame(synth_params_t *synth_params, q15_t* pOsc);
 };
 
 

@@ -81,6 +81,23 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 
 }
 
+/**
+ * Compute a new oscillator frame
+ * @param synth_params Synth global structure
+ * @param pOsc Pointer to store the oscillator samples
+ *
+ */
+void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc)
+{
+	 q15_t *pOut = pOsc;	/* output pointer */
+
+	 // Generate samples and store it in the output buffer
+	 for(int i=0;i<FRAME_SIZE;i++){
+		 *pOut++ = get_sample(synth_params);
+	 }
+
+}
+
 /** Init oscillator.
  *
  * @param osc_param Structure holding init parameters

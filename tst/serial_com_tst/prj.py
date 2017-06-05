@@ -20,9 +20,11 @@ status = ratatechUtil.checkStm32()
 if status == 'CONNECTED':
     # Program stm32
     ratatechBuild.flash()
-
+    
     # Start usart communication and get test results
     #port="ttyACM0"
     port="ttyUSB0"
     uartOutLines = ratatechBuild.testUsart(port) 
+    
+    
 

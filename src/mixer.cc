@@ -35,9 +35,10 @@ int32_t Mixer::mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth
 
 
 	int16_t lfo_amo = synth_params->lfo_amo;
-	  q15_t  pSrcA[3];
-	  q15_t  pSrcB[3];
-	  q15_t  pDst[3];
+	q15_t  pSrcA[3];
+	q15_t  pSrcB[3];
+	q15_t  pDst[3];
+
 	/* *****************************************************************************************
 	 * OSCILLATOR 1
 	 *

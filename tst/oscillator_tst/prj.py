@@ -21,12 +21,12 @@ if status == 'CONNECTED':
     
     # Program stm32
     ratatechBuild.flash()
-
+ 
     # Start usart communication and get test results
     # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, ttyACM0 used for synth pcb debugging and testing
     port="ttyUSB0"
     usartOutLines, test_result = ratatechBuild.testUsart(port) 
-  
+    
     # Parse the output buffer and create wav audio files for each of the generated signals.
     # Each of the corresponding substrings should match the name of the output buffers used in
     # oscillator_tst.cc otherwise the parsing won't work.
@@ -38,7 +38,7 @@ if status == 'CONNECTED':
     ratatechUtil.rawUsart2wav('buff_tri_out',usartOutLines,FS,debug)
     if debug:
         raw_input("Press the <ENTER> to close plots and stop debugging...")
-    
+      
     # Throw error in case of fail
     if not test_result:
         raise ValueError('Test Failed!')    

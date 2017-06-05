@@ -119,13 +119,13 @@ inline void fill_buffer(void)
 		sample_osc2 =  osc2.get_sample(&synth_params);
 
 		/** 3- Mix samples */
-		osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
+		//osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
 
 		/** 4-  Mini VCA */
 		//osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
 
 		/** 5- Fill output buffer */
-		status = interrupt_vars.out_buffer->write(int16_2_uint16(osc_mix));
+		status = interrupt_vars.out_buffer->write(int16_2_uint16(sample_osc2));
 	}
 
 }
