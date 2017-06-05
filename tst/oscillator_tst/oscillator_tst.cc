@@ -259,7 +259,7 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
     /** Wait usart confirmation to start the test  */
-    //wait_usart_ready();
+    wait_usart_ready();
 
 	/** Ready to start test  */
     iprintf("\nTEST:  Oscillator\n-----------------------");
