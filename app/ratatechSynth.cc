@@ -47,6 +47,10 @@ int main(void)
 	// Init system and peripherals
 	ratatech_init();
 
+    while(1){
+    	iprintf("\nTEST:    SERIAL COM\n-----------------------");
+    }
+
 	/** Load initial default settings */
 	init_settings(&synth_params);
 

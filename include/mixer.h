@@ -46,14 +46,15 @@ class Mixer {
 		osc2_mix_temp = 0;
 	}
 
-	 /**
-	  *  Mix samples
-	  * @param sample_osc1 Oscillator 1 sample
-	  * @param sample_osc2 Oscillator 2 sample
-	  * @param synth_params Synth global structure
-	  * @return mix_out The mixed output sample
-	  */
-	int32_t mix(int32_t sample_osc1,int32_t sample_osc2,synth_params_t *synth_params);
+	/**
+	 * Mix two frames with a given mix parameter
+	 * @param synth_params 	Synth global structure
+	 * @param pFrame_a		Frame A to mix
+	 * @param pFrame_b 		Frame B to mix
+	 * @param pFrame_mix 	Destination mix frame
+	 * @param mix_par 		Mix parameter
+	 */
+	void mix(synth_params_t *synth_params,q15_t* pFrame_a, q15_t* pFrame_b, q15_t* pFrame_mix , q15_t mix_par);
 
 };
 

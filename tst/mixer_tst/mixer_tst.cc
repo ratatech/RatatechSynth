@@ -70,7 +70,7 @@ LFO lfo;
 /**
  * Unit test output buffer
  */
-int32_t buff_out [BUFF_SIZE];
+q15_t pMixOut[BUFF_SIZE];
 
 /** ADSR object instance*/
 ADSREnv adsr_vol(LOG,EXP,EXP,0.009);
@@ -83,93 +83,129 @@ Mixer mixer;
  */
 void test_mix_out(void){
 
-	/* *****************************************************************************************
-	 *
-	 * ADSR
-	 *
-	 * Configure ADSR. Values correspond for duration of the states in seconds except for
-	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
-	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
-	 * * *****************************************************************************************/
-	// Volume envelope
-	adsr_vol.attack  = 0.01;
-	adsr_vol.decay   = 0.01;
-	adsr_vol.sustain = 0.8;
-	adsr_vol.release = 0.03;
-	adsr_vol.calcAdsrSteps();
-	adsr_vol.initStates();
+	/** Load initial default settings */
+	init_settings(&synth_params);
 
-
-	int32_t sample_osc1,sample_osc2,sample_lfo;
-
+//
+//	/* *****************************************************************************************
+//	 *
+//	 * ADSR
+//	 *
+//	 * Configure ADSR. Values correspond for duration of the states in seconds except for
+//	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
+//	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
+//	 * * *****************************************************************************************/
+//	// Volume envelope
+//	adsr_vol.attack  = 0.01;
+//	adsr_vol.decay   = 0.01;
+//	adsr_vol.sustain = 0.8;
+//	adsr_vol.release = 0.03;
+//	adsr_vol.calcAdsrSteps();
+//	adsr_vol.initStates();
+//
+//
+//	int32_t sample_osc1,sample_osc2,sample_lfo;
+//
 	/** Configure oscillator 1 */
 	osc_shape_t shape_osc1 = SIN;
 	osc1.set_shape(shape_osc1);
-	osc1.set_freq_frac(100);
+	osc1.set_freq_frac(13000);
 
 	/** Configure oscillator 2 */
 	osc_shape_t shape_osc2 = SQU;
 	osc2.set_shape(shape_osc2);
-	osc2.set_freq_frac(15000);
+	osc2.set_freq_frac(12000);
+//
+//	/** Mix Parameter between osc1 and osc2
+//	 *
+//	 * synth_params.osc_mix = 32768;
+//	 * 0x0000 Mix 100% Osc2
+//	 * 0x Mix 100% Osc1
+//	 * 0x3FFF Mix 50%
+//	 *
+//	 * */
+//	synth_params.osc_params.osc_mix = 0x0;
+//
+//	/** Configure lfo */
+//	osc_shape_t shape_lfo = SIN;
+//	lfo.FM_synth = false;
+//	lfo.set_shape(shape_lfo);
+//	lfo.set_freq_frac(50);
+//	lfo.lfo_amo = 0x3FFF;
+//	synth_params.lfo_dest = OSC2;
+//
+//	/** Trigger note from the start to go on ATTACK state */
+//	adsr_vol.note_ON = true;
+//
+//	/** Define number of samples to stay on sustain state*/
+//	uint8_t sustain_tmo = 1000;
+//
+//	/** Mixer variables */
+//	int32_t osc_mix,osc1_mix_temp,osc2_mix_temp;
+//
+//	/** Get oscillator samples */
+//	for(int i=0; i<BUFF_SIZE; i++){
+//
+//
+//		if(adsr_vol.adsr_state == SUSTAIN_STATE){
+//			sustain_tmo--;
+//		}
+//		if(sustain_tmo<=0){
+//			adsr_vol.adsr_state = RELEASE_STATE;
+//		}
+//
+//		/** Update ADSR,OSCs and LFO */
+//		sample_osc1 =  osc1.get_sample(&synth_params);
+//		sample_osc2 =  osc2.get_sample(&synth_params);
+//		sample_lfo =  lfo.get_sample(&synth_params);
+//		adsr_vol.update();
+//
+//		/** Mix samples */
+//		osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
+//
+//		/** Mini VCA */
+//		osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
+//
+//		buff_out[i] = osc_mix;
+//	}
+//
+//	/** Print output buffer */
+//	printOutBuff("buff_mix_out", &buff_out[0], BUFF_SIZE);
+//
+//	/** Compare output vs reference */
+//	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_mix_ref,buff_out,BUFF_SIZE);
 
-	/** Mix Parameter between osc1 and osc2
-	 *
-	 * synth_params.osc_mix = 32768;
-	 * 0x0000 Mix 100% Osc2
-	 * 0x Mix 100% Osc1
-	 * 0x3FFF Mix 50%
-	 *
-	 * */
-	synth_params.osc_params.osc_mix = 0x0;
 
-	/** Configure lfo */
-	osc_shape_t shape_lfo = SIN;
-	lfo.FM_synth = false;
-	lfo.set_shape(shape_lfo);
-	lfo.set_freq_frac(50);
-	lfo.lfo_amo = 0x3FFF;
-	synth_params.lfo_dest = OSC2;
 
-	/** Trigger note from the start to go on ATTACK state */
-	adsr_vol.note_ON = true;
 
-	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_tmo = 1000;
+	/** Frame pointers  **/
+	q15_t pOsc1[FRAME_SIZE];
+	q15_t pOsc2[FRAME_SIZE];
+	q15_t pMix[FRAME_SIZE];
 
-	/** Mixer variables */
-	int32_t osc_mix,osc1_mix_temp,osc2_mix_temp;
+	q15_t mix_par = (q15_t)(synth_params.osc_params.osc_mix);
+
+	/** Init oscillators with default settings */
+	osc1.init(&synth_params.osc_params);
+	osc2.init(&synth_params.osc_params);
+
+	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
+	for(int i=0; i< NFRAMES; i++){
 
+		osc1.get_frame(&synth_params,pOsc1);
+		osc2.get_frame(&synth_params,pOsc2);
+		//mixer.mix(&synth_params,pOsc1,pOsc2,pMix,mix_par);
+		arm_copy_q15(pOsc1,&pMixOut[i*FRAME_SIZE],FRAME_SIZE);
 
-		if(adsr_vol.adsr_state == SUSTAIN_STATE){
-			sustain_tmo--;
-		}
-		if(sustain_tmo<=0){
-			adsr_vol.adsr_state = RELEASE_STATE;
-		}
-
-		/** Update ADSR,OSCs and LFO */
-		sample_osc1 =  osc1.get_sample(&synth_params);
-		sample_osc2 =  osc2.get_sample(&synth_params);
-		sample_lfo =  lfo.get_sample(&synth_params);
-		adsr_vol.update();
-
-		/** Mix samples */
-		osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
-
-		/** Mini VCA */
-		osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
-
-		buff_out[i] = osc_mix;
-	}
+	};
 
 	/** Print output buffer */
-	printOutBuff("buff_mix_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_mix_out", pMixOut, BUFF_SIZE);
 
 	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_mix_ref,buff_out,BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT16_ARRAY(buff_mix_ref,pMixOut,BUFF_SIZE);
 
 }
 
@@ -189,8 +225,9 @@ int main(void)
 
     /** Wait usart confirmation to start the test  */
     wait_usart_ready();
+
 	/** Ready to start test  */
-    iprintf("\nTEST:  ADSR\n-----------------------");
+    iprintf("\nTEST:  MIXER\n-----------------------");
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();

@@ -92,6 +92,7 @@ int main(void)
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
+
     /** Wait usart confirmation to start the test  */
     wait_usart_ready();
 
