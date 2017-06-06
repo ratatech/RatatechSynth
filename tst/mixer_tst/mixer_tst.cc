@@ -34,20 +34,18 @@ This file is part of XXXXXXX
 /**
  * MIxer unit test reference buffer
  */
-int32_t buff_mix_ref[BUFF_SIZE] = {
-		1710,2986,3888,60793,60371,60431,4574,4339,4056,61207,61825,62248,2127,1671,1286,63901,64089,64287,64382,117,119,239,64093,63842,63349,1848,2353,
-		2986,60844,60085,58953,6688,7592,8624,9785,53361,52212,51061,14832,16000,17268,46816,46097,45259,20269,21371,22015,42321,41787,41241,40468,25049,
-		25427,25817,38980,38579,27035,26736,26753,38757,26291,26331,26481,26026,25570,25016,24570,41057,41691,42320,21801,20964,20231,45617,46536,47756,
-		16297,15369,14442,51409,52719,53626,54533,9319,8499,7271,58364,59170,59876,4199,3277,2663,62597,63101,63504,717,512,307,205,64613,64613,64512,410,
-		615,1024,63202,62799,62295,3072,3687,4608,59372,58666,57860,56952,9114,10035,10957,53021,52114,50804,15053,15974,16998,47175,45965,45159,20685,
-		21402,22118,23040,41429,40925,40421,25088,25600,25805,26003,25902,25802,39322,26112,25907,39413,39817,40321,40724,23859,23245,22630,43345,44151,
-		44857,19354,18432,17203,48687,49594,50501,13517,12186,11264,10343,55541,56348,57557,6451,5632,4915,60581,61488,62093,2151,1639,1229,64008,64210,
-		64412,64512,103,103,205,64311,64109,63706,1536,1946,2458,61690,61085,60178,5427,6144,6963,7885,55743,54836,53928,11879,12800,14131,49897,48989,47981,
-		17818,19046,19866,44353,43647,42941,42034,23654,24166,24678,40018,39514,26205,26010,26112,39322,25802,25902,26104,25702,25293,24781,24371,41228,
-		41833,42437,21709,20890,20173,45663,46570,47780,16282,15360,14438,51409,52719,53626,54533,9319,8499,7271,58364,59170,59876,4199,3277,2663,62597,
-	    63101,63504,717,
-
-
+q15_t buff_mix_ref[BUFF_SIZE] = {
+		-15487,-14463,-13439,-12287,-11391,-10367,-9343,-8447,-7551,-6655,-5759,-4991,-4223,-3583,-2943,-2431,-1919,-1535,-1023,-767,-511,
+		-383,-255,-255,-255,-383,-511,-767,-1023,-1535,-1919,-2431,-2943,-3583,-4223,-4991,-5759,-6655,-7423,-8319,-9215,-10239,-11263,-12287,
+		-13311,-14335,-15359,16127,14975,13951,12927,11775,10879,9855,8831,7935,7039,6143,5247,4479,3711,3071,2431,1919,1407,1023,511,255,-1,
+		-129,-257,-257,-257,-129,-1,255,511,1023,1407,1919,2431,3071,3711,4351,5247,6015,6911,7807,8703,9727,10751,11775,12799,13823,14847,
+		15743,-15487,-14463,-13439,-12287,-11391,-10367,-9343,-8447,-7551,-6655,-5759,-4991,-4223,-3583,-2943,-2431,-1919,-1535,-1023,-767,
+		-511,-383,-255,-255,-255,-383,-511,-767,-1023,-1535,-1919,-2431,-2943,-3583,-4223,-4863,-5759,-6527,-7423,-8319,-9215,-10239,-11263,
+		-12287,-13311,-14335,-15359,16127,14975,13951,12927,11775,10879,9855,8831,7935,7039,6143,5247,4479,3711,3071,2431,1919,1407,1023,511,
+		255,-1,-129,-257,-257,-257,-129,-1,255,511,1023,1407,1919,2303,3071,3711,4351,5247,6015,6911,7807,8703,9727,10751,11775,12799,13823,
+		14847,15743,-15487,-14463,-13439,-12287,-11391,-10367,-9343,-8447,-7551,-6655,-5759,-4991,-4223,-3583,-2943,-2431,-1919,-1535,-1023,
+		-767,-511,-383,-255,-255,-255,-383,-511,-767,-1023,-1407,-1919,-2431,-2815,-3583,-4223,-4863,-5759,-6527,-7423,-8319,-9215,-10239,
+		-11263,-12287,-13311,-14335,-15359,16127,14975,13951,12927,11775,10879,9855,8831,7935,7039,6143,5247,4479,3711,3071,2431,1919,
 };
 
 
@@ -106,76 +104,16 @@ void test_mix_out(void){
 //
 //	int32_t sample_osc1,sample_osc2,sample_lfo;
 //
-	/** Configure oscillator 1 */
-	osc_shape_t shape_osc1 = SIN;
-	osc1.set_shape(shape_osc1);
-	osc1.set_freq_frac(13000);
+	/** Init oscillator with default settings */
+	osc1.init(&synth_params.osc_params);
+	/** Set shape */
+	osc1.set_shape(SIN);
 
-	/** Configure oscillator 2 */
-	osc_shape_t shape_osc2 = SQU;
-	osc2.set_shape(shape_osc2);
-	osc2.set_freq_frac(12000);
-//
-//	/** Mix Parameter between osc1 and osc2
-//	 *
-//	 * synth_params.osc_mix = 32768;
-//	 * 0x0000 Mix 100% Osc2
-//	 * 0x Mix 100% Osc1
-//	 * 0x3FFF Mix 50%
-//	 *
-//	 * */
-//	synth_params.osc_params.osc_mix = 0x0;
-//
-//	/** Configure lfo */
-//	osc_shape_t shape_lfo = SIN;
-//	lfo.FM_synth = false;
-//	lfo.set_shape(shape_lfo);
-//	lfo.set_freq_frac(50);
-//	lfo.lfo_amo = 0x3FFF;
-//	synth_params.lfo_dest = OSC2;
-//
-//	/** Trigger note from the start to go on ATTACK state */
-//	adsr_vol.note_ON = true;
-//
-//	/** Define number of samples to stay on sustain state*/
-//	uint8_t sustain_tmo = 1000;
-//
-//	/** Mixer variables */
-//	int32_t osc_mix,osc1_mix_temp,osc2_mix_temp;
-//
-//	/** Get oscillator samples */
-//	for(int i=0; i<BUFF_SIZE; i++){
-//
-//
-//		if(adsr_vol.adsr_state == SUSTAIN_STATE){
-//			sustain_tmo--;
-//		}
-//		if(sustain_tmo<=0){
-//			adsr_vol.adsr_state = RELEASE_STATE;
-//		}
-//
-//		/** Update ADSR,OSCs and LFO */
-//		sample_osc1 =  osc1.get_sample(&synth_params);
-//		sample_osc2 =  osc2.get_sample(&synth_params);
-//		sample_lfo =  lfo.get_sample(&synth_params);
-//		adsr_vol.update();
-//
-//		/** Mix samples */
-//		osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
-//
-//		/** Mini VCA */
-//		osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
-//
-//		buff_out[i] = osc_mix;
-//	}
-//
-//	/** Print output buffer */
-//	printOutBuff("buff_mix_out", &buff_out[0], BUFF_SIZE);
-//
-//	/** Compare output vs reference */
-//	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_mix_ref,buff_out,BUFF_SIZE);
+	/** Init oscillator with default settings */
+	osc2.init(&synth_params.osc_params);
 
-
+	/** Set shape */
+	osc2.set_shape(SQU);
 
 
 	/** Frame pointers  **/
@@ -183,21 +121,24 @@ void test_mix_out(void){
 	q15_t pOsc2[FRAME_SIZE];
 	q15_t pMix[FRAME_SIZE];
 
-	q15_t mix_par = (q15_t)(synth_params.osc_params.osc_mix);
+	/** Mix parameter */
+	q15_t mix_par = MAX_AMP>>1;
 
-	/** Init oscillators with default settings */
-	osc1.init(&synth_params.osc_params);
-	osc2.init(&synth_params.osc_params);
-
+	/** Number of frames */
 	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
 	for(int i=0; i< NFRAMES; i++){
 
+		/** Get oscillator frames */
 		osc1.get_frame(&synth_params,pOsc1);
 		osc2.get_frame(&synth_params,pOsc2);
-		//mixer.mix(&synth_params,pOsc1,pOsc2,pMix,mix_par);
-		arm_copy_q15(pOsc1,&pMixOut[i*FRAME_SIZE],FRAME_SIZE);
+
+		/** Mix frames */
+		mixer.mix(&synth_params,pOsc1,pOsc2,pMix,mix_par);
+
+		/** Store frames in outuput buffer */
+		arm_copy_q15(pMix,&pMixOut[i*FRAME_SIZE],FRAME_SIZE);
 
 	};
 
@@ -206,6 +147,7 @@ void test_mix_out(void){
 
 	/** Compare output vs reference */
 	TEST_ASSERT_EQUAL_INT16_ARRAY(buff_mix_ref,pMixOut,BUFF_SIZE);
+
 
 }
 

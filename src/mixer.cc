@@ -35,14 +35,14 @@ using namespace std;
 void Mixer::mix(synth_params_t *synth_params,q15_t* pFrame_a, q15_t* pFrame_b, q15_t* pFrame_mix , q15_t mix_par){
 
 
-	q15_t *_pFrame_a = pFrame_a;		/* Frame A */
-	q15_t *_pFrame_b = pFrame_b;		/* Frame B */
-	q15_t *_pFrame_mix = pFrame_mix;	/* Mixed frame */
-	q15_t *_pFrame_mix_temp;			/* Intermediate calculation frame */
+	q15_t *_pFrame_a = pFrame_a;			/* Frame A */
+	q15_t *_pFrame_b = pFrame_b;			/* Frame B */
+	q15_t *_pFrame_mix = pFrame_mix;		/* Mixed frame */
+	q15_t _pFrame_mix_temp[FRAME_SIZE];		/* Intermediate calculation frame */
 
-	arm_scale_q15(_pFrame_a,(1-mix_par),0,_pFrame_mix,FRAME_SIZE);
+	arm_scale_q15(_pFrame_a,(MAX_AMP-mix_par),0,_pFrame_mix,FRAME_SIZE);
 	arm_scale_q15(_pFrame_b,(mix_par),0,_pFrame_mix_temp,FRAME_SIZE);
-	arm_add_q15(_pFrame_mix,_pFrame_mix_temp,_pFrame_mix,FRAME_SIZE);
+	arm_add_q15(_pFrame_mix, _pFrame_mix_temp ,_pFrame_mix,FRAME_SIZE);
 
 
 
