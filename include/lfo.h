@@ -40,7 +40,7 @@ class LFO {
 		int32_t ph_ind;
 		int32_t k_frac;
 		int32_t lfo_amp = 0;
-		int32_t lfo_amo = 0;
+		q15_t lfo_amo = 0;
 		const int16_t *wavetable;
 
 		bool top;
@@ -81,13 +81,26 @@ class LFO {
 		}
 
 		// Function prototypes
-		void update(synth_params_t*);
+
+		/** Init lfo.
+		 *
+		 * @param lfo_param Structure holding init parameters
+		 */
+		void init(lfo_params_t* lfo_param);
 
 		/**
 		 * Compute a new lfo sample
 		 * @return lfo_amp The computed lfo sample
 		 */
 		int32_t get_sample(synth_params_t* synth_params);
+
+		/**
+		 * Compute a new lfo frame
+		 * @param synth_params Synth global structure
+		 * @param pLfo Pointer to store the oscillator samples
+		 *
+		 */
+		void get_frame(synth_params_t *synth_params, q15_t* pLfo);
 
 };
 

@@ -48,22 +48,36 @@ int32_t LFO::get_sample(synth_params_t *synth_params)
 	/** Scale the waveform and add offset to have only positive numbers*/
 	lfo_amp = (lfo_amp>>1)+ LFO_DC_OFF;
 
-	/** Store sample in global struct */
-	synth_params->lfo_amp = lfo_amp;
-
 	return lfo_amp;
 }
 
 
-void LFO::update(synth_params_t *synth_params)
+/**
+ * Compute a new lfo frame
+ * @param synth_params Synth global structure
+ * @param pLfo Pointer to store the oscillator samples
+ *
+ */
+void LFO::get_frame(synth_params_t *synth_params, q15_t* pLfo)
 {
+	 q15_t *pOut = pLfo;	/* output pointer */
 
-	if(FM_synth){
-		synth_params->FM_mod_amp = lfo_amp;
-	}else{
-		synth_params->lfo_amp = lfo_amp;
-		synth_params->lfo_amo = lfo_amo;
-	}
-
+	 // Generate samples and store it in the output buffer
+	 for(int i=0;i<FRAME_SIZE;i++){
+		 *pOut++ = get_sample(synth_params);
+	 }
 
 }
+
+/** Init lfo.
+ *
+ * @param lfo_param Structure holding init parameters
+ */
+void LFO::init(lfo_params_t* lfo_param){
+	set_shape(lfo_param->shape_osc);
+	set_freq_frac(lfo_param->freq_frac);
+	lfo_amo = lfo_param->lfo_amo;
+
+}
+
+

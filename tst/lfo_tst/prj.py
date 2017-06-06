@@ -35,7 +35,7 @@ if status == 'CONNECTED':
     ratatechUtil.rawUsart2wav('buff_lfo_sin_out',usartOutLines,FS,debug)
     ratatechUtil.rawUsart2wav('buff_lfo_tri_out',usartOutLines,FS,debug)
     ratatechUtil.rawUsart2wav('buff_lfo_saw_out',usartOutLines,FS,debug)
-    ratatechUtil.rawUsart2wav('buff_lfo_osc_mod_out',usartOutLines,FS,debug)
+
     if debug:
         raw_input("Press the <ENTER> to close plots and stop debugging...")
     

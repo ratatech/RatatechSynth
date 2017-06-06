@@ -30,15 +30,22 @@ typedef enum {OSC1,OSC2,VCF} dest_t;
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 
 
-
 struct osc_params_t{
 	osc_shape_t shape_osc;
 	int16_t osc_mix;
 	double freq_frac;
 };
 
+struct lfo_params_t{
+	osc_shape_t shape_osc;
+	int16_t lfo_amo;
+	double freq_frac;
+};
+
+
 struct synth_params_t{
 	osc_params_t osc_params;
+	lfo_params_t lfo_params;
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	dest_t lfo_dest;

@@ -24,13 +24,17 @@ This file is part of XXXXXXX
 
 void init_settings(synth_params_t* synth_params){
 
+		/** Oscillator settings */
 		synth_params->osc_params.shape_osc = SIN;
 		synth_params->osc_params.osc_mix = 0;
 		synth_params->osc_params.freq_frac = 1000;
 
-		synth_params->lfo_amp = 0;
-		synth_params->lfo_amo = 0;
-		synth_params->lfo_dest = OSC1;
+		/** LFO settings */
+		synth_params->lfo_params.shape_osc = SIN;
+		synth_params->lfo_params.lfo_amo = 0;
+		synth_params->lfo_params.freq_frac = 100;
+
+
 		synth_params->midi_dest = OSC1;
 		synth_params->adsr_amp_vol = 0;
 

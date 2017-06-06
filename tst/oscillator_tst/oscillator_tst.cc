@@ -128,6 +128,8 @@ void test_sine_out(void){
 
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
+
+	/** Store frames in outuput buffer */
 	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
@@ -164,7 +166,7 @@ void test_square_out(void){
 	/** Set shape */
 	osc.set_shape(SQU);
 
-
+	/** Store frames in outuput buffer */
 	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
@@ -200,6 +202,7 @@ void test_saw_out(void){
 	/** Set shape */
 	osc.set_shape(SAW);
 
+	/** Store frames in outuput buffer */
 	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
