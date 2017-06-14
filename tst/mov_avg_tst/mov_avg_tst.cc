@@ -83,19 +83,19 @@ q15_t pMovAvgOut[BUFF_SIZE];
  */
 void test_mov_avg_out(void){
 
-	/** Pointer to oscillator frame  **/
+	/** Pointer to moving average filter frame  **/
 	q15_t pMovAvg[FRAME_SIZE];
 
-	/** Init oscillator with default settings */
+	/** Init moving average filter with default settings */
 	mov_avg.init(&synth_params.mov_avg_params);
 
-	/** Store frames in outuput buffer */
+	/** Specify the total number of frames */
 	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Specifically set beta coefficient for the test */
 	mov_avg.beta = 2065214841; // tau = 0.1, fs=256hz
 
-	/** Get oscillator samples */
+	/** Get moving average frames */
 	for(int i=0; i< NFRAMES; i++){
 
 		mov_avg.process_frame(&synth_params,pIn,pMovAvg);

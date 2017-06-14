@@ -78,32 +78,19 @@ Oscillator osc;
 /**
  * Unit test output buffer
  */
-int32_t buff_out [BUFF_SIZE];
+q15_t pAdsr_out [BUFF_SIZE];
+
 
 /** ADSR object instance*/
-ADSREnv adsr_vol(LOG,EXP,EXP,0.009);
+ADSR adsr;
 
 /**
  * ADSR test
  */
 void test_adsr_out(void){
 
-	/* *****************************************************************************************
-	 *
-	 * ADSR
-	 *
-	 * Configure ADSR. Values correspond for duration of the states in seconds except for
-	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
-	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
-	 * * *****************************************************************************************/
-	// Volume envelope
-	adsr_vol.attack  = 0.01;
-	adsr_vol.decay   = 0.01;
-	adsr_vol.sustain = 0.8;
-	adsr_vol.release = 0.03;
-	adsr_vol.calcAdsrSteps();
-	adsr_vol.initStates();
-
+	/** Pointer to ADSR envelope frame  **/
+	q15_t pAdsr[FRAME_SIZE];
 
 	int32_t sample;
 
@@ -112,88 +99,105 @@ void test_adsr_out(void){
 	osc.set_shape(shape_osc1);
 	osc.set_freq_frac(1000);
 
-	adsr_vol.note_ON = true;
-
 	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_tmo = 50;
+	uint8_t sustain_timeout = 50;
 
-	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
-		if(adsr_vol.adsr_state == SUSTAIN_STATE){
-			sustain_tmo--;
-		}
-		if(sustain_tmo<=0){
-			adsr_vol.adsr_state = RELEASE_STATE;
-		}
-		adsr_vol.update();
-		sample =  adsr_vol.adsr_amp;
-		buff_out[i] = sample;
-	}
+	/** Init adsr */
+	adsr.init(&synth_params);
+
+	//adsr.target_level = 0x7fff;
+
+	//beta = 2065214841; // tau = 0.1, fs=256hz
+
+//	/** Get oscillator samples */
+//	for(int i=0; i<BUFF_SIZE; i++){
+//		if(adsr.adsr_state == SUSTAIN_STATE){
+//			sustain_timeout--;
+//		}
+//		if(sustain_timeout<=0){
+//			adsr.adsr_state = RELEASE_STATE;
+//		}
+//		adsr.update_states(&synth_params);
+//		adsr_out[i] = sample;
+//	}
+//
+	/** Specify the total number of frames */
+	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+
+	/** Get ADSR envelope frames */
+	for(int i=0; i< NFRAMES; i++){
+
+		adsr.get_frame(&synth_params,pAdsr);
+
+		/** Store frames in outuput buffer */
+		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE],FRAME_SIZE);
+
+	};
 
 	/** Print output buffer */
-	printOutBuff("buff_adsr_out", &buff_out[0], BUFF_SIZE);
+	printOutBuff("buff_adsr_out", &pAdsr_out[0], BUFF_SIZE);
 
 	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_adsr_ref,buff_out,BUFF_SIZE);
+	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_adsr_ref,pAdsr_out,BUFF_SIZE);
 
 }
 
-/**
- * ADSR + osc test
- */
-void test_adsr_osc_out(void){
-
-	/* *****************************************************************************************
-	 *
-	 * ADSR
-	 *
-	 * Configure ADSR. Values correspond for duration of the states in seconds except for
-	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
-	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
-	 * * *****************************************************************************************/
-	// Volume envelope
-	adsr_vol.attack  = 0.01;
-	adsr_vol.decay   = 0.01;
-	adsr_vol.sustain = 0.8;
-	adsr_vol.release = 0.03;
-	adsr_vol.calcAdsrSteps();
-	adsr_vol.initStates();
-
-
-	int32_t sample;
-
-	/** Configure oscillator 1 */
-	osc_shape_t shape_osc1 = SIN;
-	osc.set_shape(shape_osc1);
-	osc.set_freq_frac(15000);
-
-	adsr_vol.note_ON = true;
-
-	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_tmo = 50;
-
-	/** Get oscillator samples */
-	for(int i=0; i<BUFF_SIZE; i++){
-		sample =  osc.get_sample(&synth_params);
-
-		if(adsr_vol.adsr_state == SUSTAIN_STATE){
-			sustain_tmo--;
-		}
-		if(sustain_tmo<=0){
-			adsr_vol.adsr_state = RELEASE_STATE;
-		}
-		adsr_vol.update();
-		sample = ((int32_t)(sample)*(adsr_vol.adsr_amp)>>15);
-		buff_out[i] = sample;
-	}
-
-	/** Print output buffer */
-	printOutBuff("buff_adsr_osc_out", &buff_out[0], BUFF_SIZE);
-
-	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_adsr_osc_ref,buff_out,BUFF_SIZE);
-
-}
+///**
+// * ADSR + osc test
+// */
+//void test_adsr_osc_out(void){
+//
+//	/* *****************************************************************************************
+//	 *
+//	 * ADSR
+//	 *
+//	 * Configure ADSR. Values correspond for duration of the states in seconds except for
+//	 * the sustain which is the amplitude (substracted from 1, -1 corresponds to 1). Duration
+//	 * of the Decay and release states is calculated based on the amplitude of the sustain value.
+//	 * * *****************************************************************************************/
+//	// Volume envelope
+//	adsr_vol.attack  = 0.01;
+//	adsr_vol.decay   = 0.01;
+//	adsr_vol.sustain = 0.8;
+//	adsr_vol.release = 0.03;
+//	adsr_vol.calcAdsrSteps();
+//	adsr_vol.initStates();
+//
+//
+//	int32_t sample;
+//
+//	/** Configure oscillator 1 */
+//	osc_shape_t shape_osc1 = SIN;
+//	osc.set_shape(shape_osc1);
+//	osc.set_freq_frac(15000);
+//
+//	adsr_vol.note_ON = true;
+//
+//	/** Define number of samples to stay on sustain state*/
+//	uint8_t sustain_tmo = 50;
+//
+//	/** Get oscillator samples */
+//	for(int i=0; i<BUFF_SIZE; i++){
+//		sample =  osc.get_sample(&synth_params);
+//
+//		if(adsr_vol.adsr_state == SUSTAIN_STATE){
+//			sustain_tmo--;
+//		}
+//		if(sustain_tmo<=0){
+//			adsr_vol.adsr_state = RELEASE_STATE;
+//		}
+//		adsr_vol.update();
+//		sample = ((int32_t)(sample)*(adsr_vol.adsr_amp)>>15);
+//		buff_out[i] = sample;
+//	}
+//
+//	/** Print output buffer */
+//	printOutBuff("buff_adsr_osc_out", &buff_out[0], BUFF_SIZE);
+//
+//	/** Compare output vs reference */
+//	TEST_ASSERT_EQUAL_INT32_ARRAY(buff_adsr_osc_ref,buff_out,BUFF_SIZE);
+//
+//}
 
 int main(void)
 {
@@ -218,7 +222,7 @@ int main(void)
     /** Start unity and trigger tests */
     UNITY_BEGIN();
     RUN_TEST(test_adsr_out);
-    RUN_TEST(test_adsr_osc_out);
+    //RUN_TEST(test_adsr_osc_out);
 
     /** FInish unity */
     return UNITY_END();

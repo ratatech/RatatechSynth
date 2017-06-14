@@ -49,11 +49,17 @@ struct mov_avg_params_t{
 	q31_t init_state;
 };
 
+struct adsr_params_t{
+	q31_t beta_att;
+	q31_t beta_dec;
+	q31_t beta_rel;
+};
 
 struct synth_params_t{
 	osc_params_t osc_params;
 	lfo_params_t lfo_params;
 	mov_avg_params_t mov_avg_params;
+	adsr_params_t adsr_params;
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	dest_t lfo_dest;

@@ -1,9 +1,9 @@
 /*
-@file mov_avg.cc
+@file adsr.cc
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, Jun 13, 2017
+@ Created by Jordi Hidalgo, Ratatech, Jun 14, 2017
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -20,46 +20,39 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include "mov_avg.h"
-
+#include "adsr.h"
 
 using namespace std;
 
 /**
- * Update moving average filter
- * @param x New value
- * @return New filtered sample
- */
-q15_t MovAvg::update(q15_t x)
-{
-	/** Temp vars */
-	q31_t 	 _x32,x32;
-	int64_t x64;
-
-	_x32 = (q31_t)(x<<16); 						// Shift input data(q15) 16 bit to match the state type(q31)
-    x32 = state - _x32; 						// x32 = s0.31 - s0.31 = s0.31
-    x64 = ((int64_t)x32) * ((int64_t)beta);	// x64 = s0.31 * s0.31 = s0.62
-    x32 = x64>>31;								// x32 = s0.31 >> 31   = s0.31
-    state = _x32 + x32;							// x32 = s0.31 + s0.31 = s0.31
-    return((q15_t)(state>>16));				// 	 y = s0.31 >> 16   = s0.15
-
-}
-
-/**
- * Process an input data frame through the moving average filter
+ * Get a new adsr envelope frame
  * @param synth_params Synth global structure
- * @param pMovAvg Pointer to store the filtered samples
+ * @param pAdsr ADSR envelope output buffer
  */
-void MovAvg::process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut)
+void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr)
 {
+	q15_t * pOut = pAdsr;	/* output pointer */
 
-	q15_t *_pIn = pIn;		/* input pointer */
-	q15_t *_pOut = pOut;	/* output pointer */
-
-	// Generate samples and store it in the output buffer
 	for(int i=0;i<FRAME_SIZE;i++){
-		*_pOut++ =  update(*_pIn++);
+		*pOut++ = update(0x7fff);
 	}
 
 }
 
+///**
+// * Process an input data frame through the moving average filter
+// * @param synth_params Synth global structure
+// * @param pMovAvg Pointer to store the filtered samples
+// */
+//void MovAvg::process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut)
+//{
+//
+//	q15_t *_pIn = pIn;		/* input pointer */
+//	q15_t *_pOut = pOut;	/* output pointer */
+//
+//	 // Generate samples and store it in the output buffer
+//	 for(int i=0;i<FRAME_SIZE;i++){
+//		 *pOut++ =  update(*pIn++);
+//	 }
+//
+//}

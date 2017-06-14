@@ -22,12 +22,11 @@ This file is part of XXXXXXX
 #ifndef INCLUDE_MOV_AVG_H_
 #define INCLUDE_MOV_AVG_H_
 
-#include "ratatechSynth.h"
 #include "arm_math.h"
 #include "tables.h"
 #include "types.h"
 #include <math.h>
-#include "types.h"
+#include "settings.h"
 
 /**
  * Moving average filter class
