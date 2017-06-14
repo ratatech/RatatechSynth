@@ -21,3 +21,4 @@ matlab/octave-workspace
 /mixer_tst/
 /tst/**/*.wav
 /serial_com_tst/
+/mov_avg_tst/

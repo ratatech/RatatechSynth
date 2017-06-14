@@ -34,6 +34,10 @@ void init_settings(synth_params_t* synth_params){
 		synth_params->lfo_params.lfo_amo = 0;
 		synth_params->lfo_params.freq_frac = 100;
 
+		synth_params->mov_avg_params.beta = 0;
+		synth_params->mov_avg_params.state = 0 ;
+		synth_params->mov_avg_params.init_state = 0;
+
 
 		synth_params->midi_dest = OSC1;
 		synth_params->adsr_amp_vol = 0;

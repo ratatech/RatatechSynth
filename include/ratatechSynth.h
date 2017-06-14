@@ -61,6 +61,7 @@
 #include "svf.h"
 #include "interrupts.h"
 #include "types.h"
+#include "mov_avg.h"
 
 // Add debugging tools
 #include "tst_utils.h"

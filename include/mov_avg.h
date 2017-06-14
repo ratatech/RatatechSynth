@@ -1,9 +1,9 @@
 /*
-@file types.h
+@file mov_avg.h
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, May 21, 2017
+@ Created by Jordi Hidalgo, Ratatech, Jun 13, 2017
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -19,54 +19,63 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef INCLUDE_TYPES_H_
-#define INCLUDE_TYPES_H_
+#ifndef INCLUDE_MOV_AVG_H_
+#define INCLUDE_MOV_AVG_H_
 
-#include <stdint.h>
+#include "ratatechSynth.h"
 #include "arm_math.h"
+#include "tables.h"
+#include "types.h"
+#include <math.h>
+#include "types.h"
+
+/**
+ * Moving average filter class
+ */
+class MovAvg {
+
+	public:
+		q31_t beta;
+		q31_t state;
+		q15_t y;
+
+
+		/** Constructor.
+		 *
+		 * @param osc_param Structure holding init parameters
+		 */
+		MovAvg(void){
+		}
+
+		/** Init moving average filter
+		 *
+		 * @param mov_avg_param Structure holding init parameters
+		 */
+		void init(mov_avg_params_t* mov_avg_param){
+            y     = 0;
+            state = mov_avg_param->init_state;
+            beta  = mov_avg_param->beta;
+		}
+
+		/**
+		 * Update moving average filter
+		 * @param x New value
+		 * @return New filtered sample
+		 */
+		q15_t update(q15_t x);
+
+		/**
+		 * Process an input data frame through the moving average filter
+		 * @param synth_params Synth global structure
+		 * @param pMovAvg Pointer to store the filtered samples
+		 */
+		void process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut);
 
 
 
-typedef enum {OSC1,OSC2,VCF} dest_t;
-typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
-
-
-struct osc_params_t{
-	osc_shape_t shape_osc;
-	int16_t osc_mix;
-	double freq_frac;
 };
 
-struct lfo_params_t{
-	osc_shape_t shape_osc;
-	int16_t lfo_amo;
-	double freq_frac;
-};
-
-struct mov_avg_params_t{
-	q31_t beta;
-	q31_t state;
-	q31_t init_state;
-};
 
 
-struct synth_params_t{
-	osc_params_t osc_params;
-	lfo_params_t lfo_params;
-	mov_avg_params_t mov_avg_params;
-	int16_t lfo_amp;
-	int16_t lfo_amo;
-	dest_t lfo_dest;
-	dest_t midi_dest;
-	int16_t adsr_amp_vol;
 
-	uint16_t pitch;
-	uint16_t vel;
-	bool note_ON;
-	int16_t FM_mod_amp;
-	uint8_t I;
-	bool FM_synth;
-};
-
-
-#endif /* INCLUDE_TYPES_H_ */
+#endif /* INCLUDE_MOV_AVG_H_ */

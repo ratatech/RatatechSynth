@@ -1,9 +1,9 @@
 /*
-@file types.h
+@file mov_avg.cc
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
-@ Created by Jordi Hidalgo, Ratatech, May 21, 2017
+@ Created by Jordi Hidalgo, Ratatech, Jun 13, 2017
 This file is part of XXXXXXX
 
     XXXXXXX is free software: you can redistribute it and/or modify
@@ -19,54 +19,46 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef INCLUDE_TYPES_H_
-#define INCLUDE_TYPES_H_
 
-#include <stdint.h>
-#include "arm_math.h"
+#include "mov_avg.h"
 
+using namespace std;
 
+/**
+ * Update moving average filter
+ * @param x New value
+ * @return New filtered sample
+ */
+q15_t MovAvg::update(q15_t x)
+{
+	/** Temp vars */
+	q31_t 	 _x32,x32;
+	int64_t x64;
 
-typedef enum {OSC1,OSC2,VCF} dest_t;
-typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
+	_x32 = (q31_t)(x<<16); 						// Shift input data(q15) 16 bit to match the state type(q31)
+    x32 = state - _x32; 						// x32 = s0.31 - s0.31 = s0.31
+    x64 = ((int64_t)x32) * ((int64_t)beta);	// x64 = s0.31 * s0.31 = s0.62
+    x32 = x64>>31;								// x32 = s0.31 >> 31   = s0.31
+    state = _x32 + x32;							// x32 = s0.31 + s0.31 = s0.31
+    return((q15_t)(state>>16));				// 	 y = s0.31 >> 16   = s0.15
 
+}
 
-struct osc_params_t{
-	osc_shape_t shape_osc;
-	int16_t osc_mix;
-	double freq_frac;
-};
+/**
+ * Process an input data frame through the moving average filter
+ * @param synth_params Synth global structure
+ * @param pMovAvg Pointer to store the filtered samples
+ */
+void MovAvg::process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut)
+{
 
-struct lfo_params_t{
-	osc_shape_t shape_osc;
-	int16_t lfo_amo;
-	double freq_frac;
-};
+	q15_t *_pIn = pIn;		/* input pointer */
+	q15_t *_pOut = pOut;	/* output pointer */
 
-struct mov_avg_params_t{
-	q31_t beta;
-	q31_t state;
-	q31_t init_state;
-};
+	 // Generate samples and store it in the output buffer
+	 for(int i=0;i<FRAME_SIZE;i++){
+		 *pOut++ =  update(*pIn++);
+	 }
 
+}
 
-struct synth_params_t{
-	osc_params_t osc_params;
-	lfo_params_t lfo_params;
-	mov_avg_params_t mov_avg_params;
-	int16_t lfo_amp;
-	int16_t lfo_amo;
-	dest_t lfo_dest;
-	dest_t midi_dest;
-	int16_t adsr_amp_vol;
-
-	uint16_t pitch;
-	uint16_t vel;
-	bool note_ON;
-	int16_t FM_mod_amp;
-	uint8_t I;
-	bool FM_synth;
-};
-
-
-#endif /* INCLUDE_TYPES_H_ */
