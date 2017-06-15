@@ -40,9 +40,9 @@ void init_settings(synth_params_t* synth_params){
 		synth_params->mov_avg_params.init_state = 0;
 
 		/** ADSR settings */
-		synth_params->adsr_params.beta_att = 2065214841;
-		synth_params->adsr_params.beta_dec = 2065214841;
-		synth_params->adsr_params.beta_rel = 2065214841;
+		synth_params->adsr_params.beta_att = 0;
+		synth_params->adsr_params.beta_dec = 0;
+		synth_params->adsr_params.beta_rel = 0;
 
 
 		synth_params->midi_dest = OSC1;

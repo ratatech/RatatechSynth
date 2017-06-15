@@ -21,6 +21,7 @@ This file is part of XXXXXXX
 */
 
 #include "adsr.h"
+#include "tst_utils.h"
 
 using namespace std;
 
@@ -31,28 +32,64 @@ using namespace std;
  */
 void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr)
 {
-	q15_t * pOut = pAdsr;	/* output pointer */
-	target_level = MAX_AMP;
-	for(int i=0;i<FRAME_SIZE;i++){
-		*pOut++ = update(target_level);
+
+	q15_t * pOut = pAdsr;	/** Output pointer */
+	q15_t adsr_sample;		/** Temp var */
+
+	/** Whenever not in sustain or idle state, process frame */
+	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
+
+		for(int i=0;i<FRAME_SIZE;i++){
+			adsr_sample = update(target_level);
+			*pOut++ = adsr_sample;
+		}
 	}
+
+	/** Update states */
+	switch(adsr_state){
+
+		case ATTACK_STATE:
+
+			if (adsr_sample >= MAX_AMP-1){
+				target_level = sustain_level;
+				beta = beta_dec;
+				adsr_state = DECAY_STATE;
+
+			}
+
+		break;
+
+		case DECAY_STATE:
+
+			if (adsr_sample <= sustain_level){
+				target_level = 0;
+				beta = beta_rel;
+				adsr_state = SUSTAIN_STATE;
+			}
+
+		break;
+
+		case SUSTAIN_STATE:
+
+			arm_fill_q15(sustain_level,pOut,FRAME_SIZE);
+			if (note_ON == false){
+				adsr_state = RELEASE_STATE;
+			}
+
+		break;
+
+		case RELEASE_STATE:
+
+			if (adsr_sample <= 1){
+				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
+				target_level = MAX_AMP;
+				beta = beta_att;
+				adsr_state = IDLE_STATE;
+			}
+
+		break;
+	}
+
 
 }
 
-///**
-// * Process an input data frame through the moving average filter
-// * @param synth_params Synth global structure
-// * @param pMovAvg Pointer to store the filtered samples
-// */
-//void MovAvg::process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut)
-//{
-//
-//	q15_t *_pIn = pIn;		/* input pointer */
-//	q15_t *_pOut = pOut;	/* output pointer */
-//
-//	 // Generate samples and store it in the output buffer
-//	 for(int i=0;i<FRAME_SIZE;i++){
-//		 *pOut++ =  update(*pIn++);
-//	 }
-//
-//}
