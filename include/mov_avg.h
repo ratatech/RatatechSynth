@@ -36,7 +36,6 @@ class MovAvg {
 	public:
 		q31_t beta;
 		q31_t state;
-		q15_t y;
 
 
 		/** Constructor.
@@ -51,7 +50,6 @@ class MovAvg {
 		 * @param mov_avg_param Structure holding init parameters
 		 */
 		void init(mov_avg_params_t* mov_avg_param){
-            y     = 0;
             state = mov_avg_param->init_state;
             beta  = mov_avg_param->beta;
 		}

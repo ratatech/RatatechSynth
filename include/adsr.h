@@ -53,6 +53,10 @@ class ADSR: MovAvg{
 			beta_att = synth_params->adsr_params.beta_att;
 			beta_dec = synth_params->adsr_params.beta_dec;
 			beta_rel = synth_params->adsr_params.beta_rel;
+            state = synth_params->mov_avg_params.init_state;
+            beta  = synth_params->mov_avg_params.beta;
+
+
 
 			beta = beta_att;
 		}

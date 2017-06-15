@@ -32,9 +32,9 @@ using namespace std;
 void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr)
 {
 	q15_t * pOut = pAdsr;	/* output pointer */
-
+	target_level = MAX_AMP;
 	for(int i=0;i<FRAME_SIZE;i++){
-		*pOut++ = update(0x7fff);
+		*pOut++ = update(target_level);
 	}
 
 }
