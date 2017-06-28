@@ -25,13 +25,15 @@ using namespace std;
 
 
 /** Object instances */
-Oscillator osc1,osc2;
+Oscillator osc;
 LFO lfo;
 Mixer mixer;
+MIDI midi;
+CircularBuffer 	out_buffer;
 
 /** Parameter structures */
-interrupt_vars_t interrupt_vars;
 synth_params_t synth_params;
+
 
 uint16_t u_data;
 
@@ -41,26 +43,22 @@ bool status = true;
 int main(void)
 {
 
-	// Map interrupt vars to local app instances
-	set_interrupt_vars(&interrupt_vars);
-
-	// Init system and peripherals
+	/** Init system and peripherals */
 	ratatech_init();
-
-    while(1){
-    	iprintf("\nTEST:    SERIAL COM\n-----------------------");
-    }
 
 	/** Load initial default settings */
 	init_settings(&synth_params);
 
-	// Configure oscillator 1
-	osc1.init(&synth_params.osc_params);
-	osc1.set_shape(SQU);
+	/** Init oscillator with default settings */
+	osc.init(&synth_params.osc_params);
+
+	/** Configure oscillator*/
+	osc.set_freq_frac(1000);
+	osc.set_shape(SIN);
 
 	// Configure oscillator 2
-	osc2.init(&synth_params.osc_params);
-	osc2.set_shape(SAW);
+//	osc2.init(&synth_params.osc_params);
+//	osc2.set_shape(SAW);
 
 	/** Configure lfo */
 	osc_shape_t shape_lfo = SIN;
@@ -77,15 +75,8 @@ int main(void)
 	 * *****************************************************************************************/
 	while(1)
 	{
-
-		// Events happening every CONTROL_RATE
-		if(*interrupt_vars.low_rate_ISR_flag){
-			low_rate_tasks();
-		}
-
 		// Fill audio buffer with a new sample
 		fill_buffer();
-
 	}
 
 }
@@ -95,8 +86,12 @@ int main(void)
  */
 void low_rate_tasks(void){
 	lfo.get_sample(&synth_params);
-	// Put low rate interrupt flag down
-	*interrupt_vars.low_rate_ISR_flag = false;
+
+	if(midi.attack_trigger){
+		iprintf("MIDI IN!!!\n");
+		midi.attack_trigger = false;
+
+	}
 
 }
 
@@ -109,28 +104,51 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 	int32_t sample_osc1, sample_osc2, osc_mix;
+	/** Pointer to oscillator frame  **/
+	q15_t pOsc[FRAME_SIZE];
 
-	while(interrupt_vars.out_buffer->check_status()){
+	while(out_buffer.check_status()){
 	/* *****************************************************************************************
 	 * AUDIO CHAIN START
 	 *
 	 * *****************************************************************************************/
 
 		/** 1 - Oscillator 1 */
-		sample_osc1 =  osc1.get_sample(&synth_params);
+		/** Get oscillator frames */
+		osc.get_frame(&synth_params,pOsc);
 
-		/** 2 - Oscillator 2 */
-		sample_osc2 =  osc2.get_sample(&synth_params);
-
-		/** 3- Mix samples */
-		//osc_mix = mixer.mix(sample_osc1,sample_osc2,&synth_params);
-
-		/** 4-  Mini VCA */
-		//osc_mix = mul_int16(osc_mix,adsr_vol.adsr_amp);
-
-		/** 5- Fill output buffer */
-		status = interrupt_vars.out_buffer->write(int16_2_uint16(sample_osc2));
+		status = out_buffer.write_frame(pOsc);
 	}
 
 }
 
+void audio_gen(void){
+
+	uint16_t out_sample;
+	out_buffer.read(&out_sample);
+//	iprintf("Audio sample out =");
+//	intNum2CharStr(out_sample);
+//	iprintf("\n");
+	audio_out_write(out_sample);
+
+}
+
+
+/**
+* USART1 interrupt handler
+*/
+void USART1_IRQHandler(void)
+{
+
+	//trace_printf("MIDI Rx\n");
+    /* RXNE handler */
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+    	uint16_t midi_in = USART_ReceiveData(USART1);
+    	midi.parseMsg(midi_in);
+
+    }
+
+    /* ------------------------------------------------------------ */
+    /* Other USART1 interrupts handler can go here ...             */
+}

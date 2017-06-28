@@ -8,6 +8,8 @@
 #ifndef INCLUDE_CIRCULAR_BUFFER_H_
 #define INCLUDE_CIRCULAR_BUFFER_H_
 
+#include "utils.h"
+
 #define BUFFER_SIZE 128
 
 class CircularBuffer
@@ -27,38 +29,34 @@ public:
 	uint8_t end;
 	uint16_t buffer[BUFFER_SIZE];
 
-	bool check_status(void)
-	{
-		if ( ( end + 1 == start ) || ( start == 0 && end + 1 == BUFFER_SIZE ) )
-					 return false;
-		return true;
+	/**
+	 * Check buffer status
+	 * @return Return status
+	 */
+	bool check_status(void);
 
-	}
-	bool write(uint16_t sample)
-	{
-		if ( ( end + 1 == start ) || ( start == 0 && end + 1 == BUFFER_SIZE ) )
-			 return false;
+	/**
+	 * Write a sample to the circular buffer
+	 * @param sample Audio sample
+	 * @return Return status
+	 */
+	bool write(uint16_t sample);
+
+	/**
+	 * Read a sample from the circular buffer
+	 * @param sample Pointer to the audio sample to be read
+	 * @return Return status
+	 */
+	bool read(uint16_t *sample);
 
 
-		buffer[end] = sample;
-		end++;
-		if (end >= BUFFER_SIZE)
-		    end = 0;
-		return true;
+	/**
+	 * Write a frame to the circular buffer
+	 * @param pFrame Audio frame
+	 * @return Return status
+	 */
+	bool write_frame(q15_t* pFrame);
 
-	}
-	bool read(uint16_t *sample)
-	{
-		if ((start == end) || (start + 1 == end))
-			return false;
-
-		*sample = buffer[start];
-		start++;
-		if (start >= BUFFER_SIZE)
-		    start = 0;
-
-		return true;
-	}
 };
 
 

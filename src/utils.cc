@@ -22,7 +22,7 @@ This file is part of XXXXXXX
 
 #include "utils.h"
 
-uint16_t int16_2_uint16(int16_t x){
+uint16_t int16_2_uint16(q15_t x){
 
 	if(x<0)
 	{

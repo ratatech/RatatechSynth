@@ -27,11 +27,11 @@ uint16_t out_sample;
 bool _low_rate_ISR_flag = false;
 
 
-void set_interrupt_vars(interrupt_vars_t *interrupt_vars){
-
-	interrupt_vars->out_buffer 			= &_out_buffer;
-	interrupt_vars->low_rate_ISR_flag 	= &_low_rate_ISR_flag;
-}
+//void set_interrupt_vars(interrupt_vars_t *interrupt_vars){
+//
+//	interrupt_vars->out_buffer 			= &_out_buffer;
+//	interrupt_vars->low_rate_ISR_flag 	= &_low_rate_ISR_flag;
+//}
 
 extern "C" {
 
@@ -48,7 +48,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		_low_rate_ISR_flag = true;
+		//low_rate_tasks();
 		//Do something here
 
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -68,8 +68,7 @@ void TIM1_UP_IRQHandler(void)
 	//trace_printf("READ\n");
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
-		_out_buffer.read(&out_sample);
-		audio_out_write(out_sample);
+		//audio_gen();
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
 

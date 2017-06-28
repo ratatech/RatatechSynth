@@ -22,3 +22,4 @@ matlab/octave-workspace
 /tst/**/*.wav
 /serial_com_tst/
 /mov_avg_tst/
+/dma_spi_tst/
