@@ -23,6 +23,6 @@
 #define FRAME_SIZE 32
 #define MAX_AMP 0x7FFF
 
-void init_settings(synth_params_t* synth_params);
+void init_settings(synth_params_t* synth_params, object_pool_t object_pool);
 
 #endif /* INCLUDE_SETTINGS_H_ */

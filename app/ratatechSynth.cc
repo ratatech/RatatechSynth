@@ -37,6 +37,8 @@ CircularBuffer	out_buffer;
 MIDI 			midi;
 SoundGenerator snd_gen;
 
+/** Pointer to main output frame buffer  **/
+q15_t pOut[FRAME_SIZE];
 
 bool status = true;
 
@@ -47,13 +49,15 @@ int main(void)
 	/** Init system and peripherals */
 	ratatech_init();
 
-	/** Load initial default settings */
-	init_settings(&synth_params);
-
 	object_pool.osc = &osc;
 	object_pool.lfo = &lfo;
 	object_pool.out_buffer = &out_buffer;
 	object_pool.midi = &midi;
+
+	/** Load initial default settings */
+	init_settings(&synth_params,object_pool);
+
+
 
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
@@ -109,23 +113,13 @@ void low_rate_tasks(void){
  */
 inline void fill_buffer(void)
 {
-	int32_t sample_osc1, sample_osc2, osc_mix;
-	/** Pointer to oscillator frame  **/
-	q15_t pOsc[FRAME_SIZE];
 
-	while(out_buffer.check_status()){
-	/* *****************************************************************************************
-	 * AUDIO CHAIN START
-	 *
-	 * *****************************************************************************************/
+		/** Sound generation */
+		snd_gen.gen_voice(&synth_params, pOut);
 
-		/** 1 - Oscillator 1 */
-		/** Get oscillator frames */
+		/** Fill the output buffer with fresh frames*/
+		status = out_buffer.write_frame(pOut);
 
-		snd_gen.gen_voice(&synth_params, object_pool,pOsc);
-		status = out_buffer.write_frame(pOsc);
-
-	}
 
 }
 

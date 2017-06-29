@@ -65,6 +65,8 @@ struct synth_params_t{
 	lfo_params_t lfo_params;
 	mov_avg_params_t mov_avg_params;
 	adsr_params_t adsr_params;
+	object_pool_t object_pool;
+
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	dest_t lfo_dest;

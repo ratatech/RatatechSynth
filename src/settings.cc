@@ -22,7 +22,7 @@ This file is part of XXXXXXX
 
 #include "settings.h"
 
-void init_settings(synth_params_t* synth_params){
+void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 
 		/** Oscillator settings */
 		synth_params->osc_params.shape_osc = SIN;
@@ -44,6 +44,7 @@ void init_settings(synth_params_t* synth_params){
 		synth_params->adsr_params.beta_dec = 0;
 		synth_params->adsr_params.beta_rel = 0;
 
+		synth_params->object_pool = object_pool;
 
 		synth_params->midi_dest = OSC1;
 		synth_params->adsr_amp_vol = 0;

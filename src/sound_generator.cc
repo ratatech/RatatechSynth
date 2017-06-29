@@ -22,10 +22,10 @@ This file is part of XXXXXXX
 
 #include "sound_generator.h"
 
-void SoundGenerator::gen_voice(synth_params_t *synth_params, object_pool_t object_pool, q15_t* pSndGen){
+void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 
-	Oscillator* osc = (Oscillator*)object_pool.osc;
+	Oscillator* osc = (Oscillator*)synth_params->object_pool.osc;
 
 	osc->get_frame(synth_params,pSndGen);
 

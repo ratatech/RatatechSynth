@@ -40,7 +40,7 @@ class SoundGenerator {
 
 		}
 
-		void gen_voice(synth_params_t *synth_params, object_pool_t object_pool, q15_t* pSndGen);
+		void gen_voice(synth_params_t *synth_params, q15_t* pSndGen);
 
 };
 
