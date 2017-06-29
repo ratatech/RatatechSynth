@@ -25,11 +25,16 @@ This file is part of XXXXXXX
 #include <stdint.h>
 #include "arm_math.h"
 
-
+struct object_pool_t
+{
+	void* 	osc;
+	void* 	lfo;
+	void*	out_buffer;
+	void*	midi;
+};
 
 typedef enum {OSC1,OSC2,VCF} dest_t;
 typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
-
 
 struct osc_params_t{
 	osc_shape_t shape_osc;

@@ -23,17 +23,7 @@
 
 #include "ratatechSynth.h"
 
-
 using namespace std;
-
-struct object_pool_t
-{
-	Oscillator 	osc;
-	LFO 			lfo;
-	CircularBuffer	out_buffer;
-	MIDI 			midi;
-};
-
 
 /** Parameter structures */
 synth_params_t synth_params;
@@ -41,11 +31,12 @@ object_pool_t object_pool;
 
 
 /** Make a local copy of the object instances */
-Oscillator 	osc 		= object_pool.osc;
-LFO 			lfo 		= object_pool.lfo;
-CircularBuffer	out_buffer 	= object_pool.out_buffer;
-MIDI 			midi 		= object_pool.midi;
+Oscillator 	osc;
+LFO 			lfo;
+CircularBuffer	out_buffer;
+MIDI 			midi;
 SoundGenerator snd_gen;
+
 
 bool status = true;
 
@@ -58,6 +49,11 @@ int main(void)
 
 	/** Load initial default settings */
 	init_settings(&synth_params);
+
+	object_pool.osc = &osc;
+	object_pool.lfo = &lfo;
+	object_pool.out_buffer = &out_buffer;
+	object_pool.midi = &midi;
 
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
@@ -125,8 +121,8 @@ inline void fill_buffer(void)
 
 		/** 1 - Oscillator 1 */
 		/** Get oscillator frames */
-		//osc.get_frame(&synth_params,pOsc);
-		snd_gen.gen_voice(&synth_params, pOsc);
+
+		snd_gen.gen_voice(&synth_params, object_pool,pOsc);
 		status = out_buffer.write_frame(pOsc);
 
 	}

@@ -72,7 +72,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-
 void fill_buffer(void);
 void low_rate_tasks(void);
 void audio_gen(void);

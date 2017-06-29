@@ -23,7 +23,8 @@ This file is part of XXXXXXX
 #define INCLUDE_SOUND_GENERATOR_H_
 
 
-#include "types.h"
+
+#include "ratatechSynth.h"
 
 /**
  * Sound generator class
@@ -39,7 +40,7 @@ class SoundGenerator {
 
 		}
 
-		void gen_voice(synth_params_t *synth_params, q15_t* pSndGen);
+		void gen_voice(synth_params_t *synth_params, object_pool_t object_pool, q15_t* pSndGen);
 
 };
 
