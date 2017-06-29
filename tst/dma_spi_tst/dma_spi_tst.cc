@@ -1,5 +1,5 @@
 /*
-@file adsr_tst.cc
+@file dma_spi_tst.cc
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
@@ -33,7 +33,7 @@ This file is part of XXXXXXX
 /**
  * ADSR unit test reference buffer
  */
-q15_t buff_adsr_ref[BUFF_SIZE] = {
+q15_t buff_dma_spi_ref[BUFF_SIZE] = {
 		25599,31231,12031,-16384,-32512,-23296,3839,27903,29695,8191,-19968,-32767,-19968,8191,29695,27903,3839,-23296,-32512,-16384,12031,31231,25599,
 		0,-26112,-31744,-12544,15871,31999,22783,-4352,-28416,-28022,-7536,15814,24759,14181,-6056,-20162,-18278,-2869,13779,18867,9152,-7095,-17652,
 		-14308,-554,13697,16551,6459,-8551,-16866,-12022,1972,14279,15145,4166,-10131,-16589,-10091,4133,14964,14044,2059,-11705,-16324,-8350,6033,15656,
@@ -63,78 +63,92 @@ Oscillator osc;
 /**
  * Unit test output buffer
  */
-q15_t pAdsr_out [BUFF_SIZE];
+q15_t pdma_spi_out [BUFF_SIZE];
+
+#define BufferSize         32
+#define SPI_MASTER                   SPI1
+#define SPI_MASTER_CLK               RCC_APB2Periph_SPI1
+#define SPI_MASTER_GPIO              GPIOA
+#define SPI_MASTER_GPIO_CLK          RCC_APB2Periph_GPIOA
+#define SPI_MASTER_PIN_SCK           GPIO_Pin_5
+#define SPI_MASTER_PIN_MISO          GPIO_Pin_6
+#define SPI_MASTER_PIN_MOSI          GPIO_Pin_7
+#define SPI_MASTER_DMA               DMA1
+#define SPI_MASTER_DMA_CLK           RCC_AHBPeriph_DMA1
+#define SPI_MASTER_Rx_DMA_Channel    DMA1_Channel2
+#define SPI_MASTER_Rx_DMA_FLAG       DMA1_FLAG_TC2
+#define SPI_MASTER_Tx_DMA_Channel    DMA1_Channel3
+#define SPI_MASTER_Tx_DMA_FLAG       DMA1_FLAG_TC3
+#define SPI_MASTER_DR_Base           0x4001300C
 
 
-/** ADSR object instance*/
-ADSR adsr;
+/* Private typedef -----------------------------------------------------------*/
+typedef enum { FAILED = 0, PASSED = !FAILED} TestStatus;
+
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+DMA_InitTypeDef    DMA_InitStructure;
+uint8_t SPI_MASTER_Buffer_Rx[BufferSize], SPI_SLAVE_Buffer_Rx[BufferSize];
+volatile uint8_t SPI_MASTERCRCValue = 0, SPI_SLAVECRCValue = 0;
+volatile TestStatus TransferStatus1 = FAILED, TransferStatus2 = FAILED;
+
+uint16_t SPI_MASTER_Buffer_Tx[BufferSize] = {0x0100,0x0200,0x0300,0x0400,0x0500,0x0600,0x0700,0x0800,0x0900,0x0A00,0x0B00,0x0C00,0x0D00,0x0E00,0x0F00,0x1000,
+											0x1100,0x1200,0x1300,0x1400,0x1500,0x1600,0x1700,0x1800,0x1900,0x1A00,0x1B00,0x1C00,0x1D00,0x1E00,0x1F00,0x2000};
 
 /**
- * ADSR test
+ * 	DMA SPI test
  */
-void test_adsr_out(void){
-
-	/** Pointer to ADSR envelope frame  **/
-	q15_t pAdsr[FRAME_SIZE];
-
-	/** Pointer to oscillator frame  **/
-	q15_t pOsc[FRAME_SIZE];
-
-	int32_t sample;
-
-	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
-
-	/** Configure oscillator*/
-	osc.set_freq_frac(14000);
-
-	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 1;
-
-	/** Init adsr */
-	adsr.init(&synth_params);
-
-	/** ADSR time params*/
-	adsr.beta_att = 1453060120; /** tau = 0.01,  fs = 256Hz */
-	adsr.beta_dec = 1836840104; /** tau = 0.025, fs = 256Hz */
-	adsr.beta_rel = 2065214841; /** tau = 0.1,   fs = 256Hz */
-
-	//adsr.target_level = 0x7fff;
-
-	//beta = 2065214841; // tau = 0.1, fs=256hz
+void test_dma_spi_out(void){
 
 
-	/** Specify the total number of frames */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+//    DMA_DeInit(SPI_MASTER_Tx_DMA_Channel);
+//    DMA_StructInit(&DMA_InitStructure);
+//
+//
+//    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR;
+//    DMA_InitStructure.DMA_MemoryBaseAddr     = (uint32_t)SPI_MASTER_Buffer_Tx;
+//    DMA_InitStructure.DMA_DIR                = DMA_DIR_PeripheralDST;
+//    DMA_InitStructure.DMA_BufferSize         = BufferSize;
+//    DMA_InitStructure.DMA_PeripheralInc      = DMA_PeripheralInc_Disable;
+//    DMA_InitStructure.DMA_MemoryInc          = DMA_MemoryInc_Disable;
+//    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+//    DMA_InitStructure.DMA_MemoryDataSize     = DMA_MemoryDataSize_HalfWord;
+//    DMA_InitStructure.DMA_Mode               = DMA_Mode_Normal;
+//    DMA_InitStructure.DMA_Priority           = DMA_Priority_High;
+//
+//
+//    DMA_Init(SPI_MASTER_Tx_DMA_Channel, &DMA_InitStructure);
+//    DMA_Cmd(SPI_MASTER_Tx_DMA_Channel, ENABLE);
+//
+//
+////	/* SPI_MASTER_Tx_DMA_Channel configuration ---------------------------------*/
+////	DMA_DeInit(SPI_MASTER_Tx_DMA_Channel);
+////	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR;
+////	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)SPI_MASTER_Buffer_Tx;
+////	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+////	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+////	DMA_Init(SPI_MASTER_Tx_DMA_Channel, &DMA_InitStructure);
+//
+//	/* Enable SPI_MASTER DMA Tx request */
+//	SPI_I2S_DMACmd(SPI_MASTER, SPI_I2S_DMAReq_Tx, ENABLE);
 
-	/** Get ADSR envelope frames */
-	for(int i=0; i< NFRAMES; i++){
+	int i=0;
+	while (1)
+	{
+//		/* Transfer complete */
+//		while(!DMA_GetFlagStatus(SPI_MASTER_Tx_DMA_FLAG));
+//
+//		/* Wait for SPI_MASTER data reception: CRC transmitted by SPI_SLAVE */
+//		while(SPI_I2S_GetFlagStatus(SPI_MASTER, SPI_I2S_FLAG_RXNE) == RESET);
+		audio_out_write(i<<1);
 
-		if(adsr.adsr_state == SUSTAIN_STATE){
-			sustain_timeout--;
-		}
-		if(sustain_timeout<=0){
-			adsr.note_ON = false;
-		}
-		/** Get ADSR envelope frames */
-		adsr.get_frame(&synth_params,pAdsr);
+//		iprintf("i = ");
+//		intNum2CharStr(i);
+//		iprintf("\n");
+		i++;
+		i%=0x2000;
 
-		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
-
-		arm_mult_q15(pAdsr,pOsc,pAdsr,FRAME_SIZE);
-
-		/** Store frames in outuput buffer */
-		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE],FRAME_SIZE);
-
-	};
-
-	/** Print output buffer */
-	printOutBuff("buff_adsr_out", &pAdsr_out[0], BUFF_SIZE);
-
-	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT16_ARRAY(buff_adsr_ref,pAdsr_out,BUFF_SIZE);
-
+	}
 }
 
 
@@ -144,6 +158,7 @@ int main(void)
 	/** Init system and peripherals */
 	ratatech_init();
 
+
 	/** Load initial default settings */
 	init_settings(&synth_params);
 
@@ -152,15 +167,12 @@ int main(void)
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
-    /** Wait usart confirmation to start the test  */
-    wait_usart_ready();
-
 	/** Ready to start test  */
-    iprintf("\nTEST:  ADSR\n-----------------------");
+    iprintf("\nTEST:  DMA SPI \n-----------------------");
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
-    RUN_TEST(test_adsr_out);
+    RUN_TEST(test_dma_spi_out);
 
     /** FInish unity */
     return UNITY_END();
