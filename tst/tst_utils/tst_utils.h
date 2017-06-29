@@ -27,6 +27,7 @@ This file is part of XXXXXXX
 #include "unity.h"
 #include "ratatechSynth.h"
 #include "tst_settings.h"
+#include <math.h>
 
 
 /**

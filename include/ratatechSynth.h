@@ -62,6 +62,7 @@
 #include "interrupts.h"
 #include "types.h"
 #include "mov_avg.h"
+#include "sound_generator.h"
 
 // Add debugging tools
 #include "tst_utils.h"

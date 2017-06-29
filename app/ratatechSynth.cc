@@ -1,6 +1,7 @@
 /*
  @file ratatechSynth.cc
 
+
  @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
  @ Created by Jordi Hidalgo, Ratatech, Jun 21, 2015
@@ -19,23 +20,32 @@
  You should have received a copy of the GNU General Public License
  along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
  */
+
 #include "ratatechSynth.h"
+
 
 using namespace std;
 
+struct object_pool_t
+{
+	Oscillator 	osc;
+	LFO 			lfo;
+	CircularBuffer	out_buffer;
+	MIDI 			midi;
+};
 
-/** Object instances */
-Oscillator osc;
-LFO lfo;
-Mixer mixer;
-MIDI midi;
-CircularBuffer 	out_buffer;
 
 /** Parameter structures */
 synth_params_t synth_params;
+object_pool_t object_pool;
 
 
-uint16_t u_data;
+/** Make a local copy of the object instances */
+Oscillator 	osc 		= object_pool.osc;
+LFO 			lfo 		= object_pool.lfo;
+CircularBuffer	out_buffer 	= object_pool.out_buffer;
+MIDI 			midi 		= object_pool.midi;
+SoundGenerator snd_gen;
 
 bool status = true;
 
@@ -54,7 +64,7 @@ int main(void)
 
 	/** Configure oscillator*/
 	osc.set_freq_frac(1000);
-	osc.set_shape(SIN);
+	osc.set_shape(TRI);
 
 	// Configure oscillator 2
 //	osc2.init(&synth_params.osc_params);
@@ -115,7 +125,8 @@ inline void fill_buffer(void)
 
 		/** 1 - Oscillator 1 */
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
+		//osc.get_frame(&synth_params,pOsc);
+		snd_gen.gen_voice(&synth_params, pOsc);
 		status = out_buffer.write_frame(pOsc);
 
 	}
@@ -126,9 +137,6 @@ void audio_gen(void){
 
 	uint16_t out_sample;
 	out_buffer.read(&out_sample);
-//	iprintf("Audio sample out =");
-//	intNum2CharStr(out_sample);
-//	iprintf("\n");
 	audio_out_write(out_sample);
 
 }

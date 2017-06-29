@@ -96,6 +96,10 @@ void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc)
 		 *pOut++ = get_sample(synth_params);
 	 }
 
+	 /** Shift/Saturate to get a square wave */
+	 if(shape==SQU)
+		 arm_shift_q15(pOsc,16,pOsc,FRAME_SIZE);
+
 }
 
 /** Init oscillator.

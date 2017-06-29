@@ -15,13 +15,14 @@
 #include <math.h>
 #include "types.h"
 
+
 /**
  * Oscillator class
  */
 class Oscillator {
 
 	public:
-		osc_shape_t shape_osc;
+		osc_shape_t _shape_osc;
 		int16_t osc_mix;
 		double freq_frac;
 		double phaseInd;
@@ -94,7 +95,8 @@ class Oscillator {
 				break;
 
 				case SQU:
-					wavetable = squ_lut_q15;
+					/** Just use the sine wave table and perform shift/saturate */
+					wavetable = sin_lut_q15;
 				break;
 			}
 
