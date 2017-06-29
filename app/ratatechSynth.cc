@@ -116,8 +116,8 @@ inline void fill_buffer(void)
 		/** 1 - Oscillator 1 */
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc);
-
 		status = out_buffer.write_frame(pOsc);
+
 	}
 
 }

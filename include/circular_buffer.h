@@ -11,7 +11,6 @@
 #include "utils.h"
 
 #define BUFFER_SIZE 128
-
 class CircularBuffer
 {
 

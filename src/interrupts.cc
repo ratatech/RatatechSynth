@@ -48,7 +48,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		//low_rate_tasks();
+		low_rate_tasks();
 		//Do something here
 
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -68,7 +68,7 @@ void TIM1_UP_IRQHandler(void)
 	//trace_printf("READ\n");
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
-		//audio_gen();
+		audio_gen();
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
 

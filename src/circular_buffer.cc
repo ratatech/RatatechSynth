@@ -83,11 +83,14 @@ bool CircularBuffer::write_frame(q15_t* pFrame)
 	q15_t * pOut = pFrame;	/** Output pointer */
 	uint16_t sample;
 	int i=0;
-	while(i<FRAME_SIZE & status)
+	while(i<FRAME_SIZE)
 	{
-		sample = int16_2_uint16(*pOut++);
-		status = write(sample);
-		i++;
+		if(check_status())
+		{
+			sample = int16_2_uint16(*pOut++);
+			status = write(sample);
+			i++;
+		}
 	}
 
 	return status;
