@@ -137,7 +137,7 @@ void test_sine_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
+		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -174,7 +174,7 @@ void test_square_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
+		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -210,7 +210,7 @@ void test_saw_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
+		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -246,7 +246,7 @@ void test_triangle_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
+		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);

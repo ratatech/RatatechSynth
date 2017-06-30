@@ -25,6 +25,9 @@
 
 using namespace std;
 
+#define USE_AUDIO_TIMER
+#define USE_LOW_RATE_TIMER
+
 /** Parameter structures */
 synth_params_t synth_params;
 object_pool_t object_pool;

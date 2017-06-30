@@ -112,11 +112,11 @@ class Oscillator {
 
 		/**
 		 * Compute a new oscillator frame
-		 * @param synth_params Synth global structure
-		 * @param pOsc Pointer to store the oscillator samples
-		 *
+		 * @param synth_params 	Synth global structure
+		 * @param pOsc 			Pointer to store the oscillator samples
+		 * @param blockSize 	Number of samples in the vector
 		 */
-		void get_frame(synth_params_t *synth_params, q15_t* pOsc);
+		void get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t block_size);
 };
 
 

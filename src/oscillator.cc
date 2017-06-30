@@ -83,22 +83,22 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 
 /**
  * Compute a new oscillator frame
- * @param synth_params Synth global structure
- * @param pOsc Pointer to store the oscillator samples
- *
+ * @param synth_params 	Synth global structure
+ * @param pOsc 			Pointer to store the oscillator samples
+ * @param blockSize 	Number of samples in the vector
  */
-void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc)
+void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t block_size)
 {
 	 q15_t *pOut = pOsc;	/* output pointer */
 
 	 // Generate samples and store it in the output buffer
-	 for(int i=0;i<FRAME_SIZE;i++){
+	 for(int i=0;i<block_size;i++){
 		 *pOut++ = get_sample(synth_params);
 	 }
 
 	 /** Shift/Saturate to get a square wave */
 	 if(shape==SQU)
-		 arm_shift_q15(pOsc,16,pOsc,FRAME_SIZE);
+		 arm_shift_q15(pOsc,16,pOsc,block_size);
 
 }
 
