@@ -27,7 +27,7 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 	Oscillator* osc = (Oscillator*)synth_params->object_pool.osc;
 
-	osc->get_frame(synth_params,pSndGen);
+	//osc->get_frame(synth_params,pSndGen,FRAME_SIZE);
 
 
 }
