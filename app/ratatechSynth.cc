@@ -106,7 +106,7 @@ void low_rate_tasks(void){
 	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
 
 	if(midi.attack_trigger){
-		iprintf("MIDI IN!!!\n");
+		adsr.reset();
 		midi.attack_trigger = false;
 
 	}
@@ -189,7 +189,6 @@ void USART1_IRQHandler(void)
     {
     	uint16_t midi_in = USART_ReceiveData(USART1);
     	midi.parseMsg(midi_in);
-
     }
 
     /* ------------------------------------------------------------ */

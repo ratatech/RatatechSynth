@@ -85,12 +85,22 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
 				target_level = MAX_AMP;
 				beta = beta_att;
-				adsr_state = ATTACK_STATE;
+				adsr_state = IDLE_STATE;
+
 			}
 
 		break;
 	}
 
 
+}
+
+
+void ADSR::reset(void)
+{
+	target_level = MAX_AMP;
+	adsr_state = ATTACK_STATE;
+	note_ON = true;
+	beta = beta_att;
 }
 

@@ -74,6 +74,8 @@ class ADSR: MovAvg{
 		 */
 		void get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_size);
 
+		void reset(void);
+
 };
 
 
