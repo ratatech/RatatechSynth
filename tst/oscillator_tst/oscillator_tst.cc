@@ -107,6 +107,10 @@ q15_t buff_tri_ref[BUFF_SIZE] = {
  * Structure holding the main synth parameters
  */
 synth_params_t synth_params;
+
+/**
+ * Dummy object pool
+ */
 object_pool_t object_pool;
 
 /**
@@ -162,7 +166,6 @@ void test_square_out(void){
 
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
-
 
 	/** Set shape */
 	osc.set_shape(SQU);

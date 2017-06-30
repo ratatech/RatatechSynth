@@ -56,6 +56,11 @@ q15_t buff_adsr_ref[BUFF_SIZE] = {
 synth_params_t synth_params;
 
 /**
+ * Dummy object pool
+ */
+object_pool_t object_pool;
+
+/**
  * Oscillator class instance
  */
 Oscillator osc;
@@ -117,10 +122,10 @@ void test_adsr_out(void){
 			adsr.note_ON = false;
 		}
 		/** Get ADSR envelope frames */
-		adsr.get_frame(&synth_params,pAdsr);
+		adsr.get_frame(&synth_params,pAdsr,FRAME_SIZE);
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc);
+		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
 		arm_mult_q15(pAdsr,pOsc,pAdsr,FRAME_SIZE);
 
@@ -145,7 +150,7 @@ int main(void)
 	ratatech_init();
 
 	/** Load initial default settings */
-	init_settings(&synth_params);
+	init_settings(&synth_params,object_pool);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

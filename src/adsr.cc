@@ -27,10 +27,11 @@ using namespace std;
 
 /**
  * Get a new adsr envelope frame
- * @param synth_params Synth global structure
- * @param pAdsr ADSR envelope output buffer
+ * @param synth_params 	Synth global structure
+ * @param pAdsr 		ADSR envelope output buffer
+ * @param block_size 	Number of samples in the vector
  */
-void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr)
+void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_size)
 {
 
 	q15_t * pOut = pAdsr;	/** Output pointer */
@@ -39,7 +40,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr)
 	/** Whenever not in sustain or idle state, process frame */
 	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
 
-		for(int i=0;i<FRAME_SIZE;i++){
+		for(uint i=0;i<block_size;i++){
 			adsr_sample = update(target_level);
 			*pOut++ = adsr_sample;
 		}
@@ -71,7 +72,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr)
 
 		case SUSTAIN_STATE:
 
-			arm_fill_q15(sustain_level,pOut,FRAME_SIZE);
+			arm_fill_q15(sustain_level,pOut,block_size);
 			if (note_ON == false){
 				adsr_state = RELEASE_STATE;
 			}
