@@ -98,9 +98,9 @@ class LFO {
 		 * Compute a new lfo frame
 		 * @param synth_params Synth global structure
 		 * @param pLfo Pointer to store the oscillator samples
-		 *
+		 * @param block_size 	Number of samples in the vector
 		 */
-		void get_frame(synth_params_t *synth_params, q15_t* pLfo);
+		void get_frame(synth_params_t *synth_params, q15_t* pLfo, uint32_t block_size);
 
 };
 

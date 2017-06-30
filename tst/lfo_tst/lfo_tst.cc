@@ -109,6 +109,11 @@ q15_t buff_lfo_osc_mod_ref[BUFF_SIZE] = {
 synth_params_t synth_params;
 
 /**
+ * Dummy object pool
+ */
+object_pool_t object_pool;
+
+/**
  * LFO class instance
  */
 LFO lfo;
@@ -141,7 +146,7 @@ void test_lfo_sine_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		lfo.get_frame(&synth_params,pLfo);
+		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pLfo,&pLfoOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -178,7 +183,7 @@ void test_lfo_saw_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		lfo.get_frame(&synth_params,pLfo);
+		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pLfo,&pLfoOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -215,7 +220,7 @@ void test_lfo_tri_out(void){
 	for(int i=0; i< NFRAMES; i++){
 
 		/** Get oscillator frames */
-		lfo.get_frame(&synth_params,pLfo);
+		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pLfo,&pLfoOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -238,7 +243,7 @@ int main(void)
 	ratatech_init();
 
 	/** Load initial default settings */
-	init_settings(&synth_params);
+	init_settings(&synth_params,object_pool);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

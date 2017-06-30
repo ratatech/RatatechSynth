@@ -56,14 +56,14 @@ int32_t LFO::get_sample(synth_params_t *synth_params)
  * Compute a new lfo frame
  * @param synth_params Synth global structure
  * @param pLfo Pointer to store the oscillator samples
- *
+ * @param block_size 	Number of samples in the vector
  */
-void LFO::get_frame(synth_params_t *synth_params, q15_t* pLfo)
+void LFO::get_frame(synth_params_t *synth_params, q15_t* pLfo, uint32_t block_size)
 {
 	 q15_t *pOut = pLfo;	/* output pointer */
 
 	 // Generate samples and store it in the output buffer
-	 for(int i=0;i<FRAME_SIZE;i++){
+	 for(uint i=0;i<block_size;i++){
 		 *pOut++ = get_sample(synth_params);
 	 }
 
