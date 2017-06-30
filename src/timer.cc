@@ -78,26 +78,36 @@ void TIM_Config(void)
 	/* PWM Timer2 configuration*/
 	//*************************************************************************************
 
-	/* TIM2 NVIC configuration */
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 
-	NVIC_Init(&NVIC_InitStructure);
+ 	/* Set audio_on flag to true to have the audio rate interrupt
+ 	* working. Disabling it helps to speed up debugging */
+ 	bool low_rate_tasks_on = false;
 
-	/* TIM2 configuration
-	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
-	timerInitStructure.TIM_ClockDivision = 0;
-	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = SystemCoreClock/CONTROL_RATE;
-	timerInitStructure.TIM_Prescaler = 0;
-	timerInitStructure.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+#ifdef USE_AUDIO_TIMER
+ 	low_rate_tasks_on = true;
+#endif
+ 	if(low_rate_tasks_on){
+		/* TIM2 NVIC configuration */
+		NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 
-	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-	TIM_Cmd(TIM2, ENABLE);
+		NVIC_Init(&NVIC_InitStructure);
 
+		/* TIM2 configuration
+		 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
+		timerInitStructure.TIM_ClockDivision = 0;
+		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+		timerInitStructure.TIM_Period = SystemCoreClock/CONTROL_RATE;
+		timerInitStructure.TIM_Prescaler = 0;
+		timerInitStructure.TIM_RepetitionCounter = 0;
+		TIM_TimeBaseInit(TIM2, &timerInitStructure);
+
+		TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+		TIM_Cmd(TIM2, ENABLE);
+
+ 	}
 
 	//*************************************************************************************
 	/* PWM Timer3 configuration*/
