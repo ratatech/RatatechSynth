@@ -31,6 +31,7 @@ struct object_pool_t
 	void* 	lfo;
 	void*	out_buffer;
 	void*	midi;
+	void*	adsr;
 };
 
 typedef enum {OSC1,OSC2,VCF} dest_t;
@@ -61,17 +62,23 @@ struct adsr_params_t{
 };
 
 struct synth_params_t{
+
+	/** Structs holding fixed or semi-fixed initial parameters */
 	osc_params_t osc_params;
 	lfo_params_t lfo_params;
 	mov_avg_params_t mov_avg_params;
 	adsr_params_t adsr_params;
 	object_pool_t object_pool;
 
+	/** LFO amplitude*/
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	dest_t lfo_dest;
+
+	/** ADSR amplitude */
+	q15_t adsr_vol_amp;
+
 	dest_t midi_dest;
-	int16_t adsr_amp_vol;
 
 	uint16_t pitch;
 	uint16_t vel;

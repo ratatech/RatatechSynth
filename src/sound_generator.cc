@@ -26,8 +26,12 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 
 	Oscillator* osc = (Oscillator*)synth_params->object_pool.osc;
+	q15_t adsr_vol_amp = synth_params->adsr_vol_amp;
 
-	//osc->get_frame(synth_params,pSndGen,FRAME_SIZE);
+	/** Get oscillator frame */
+	osc->get_frame(synth_params,pSndGen,FRAME_SIZE);
 
+	/** Apply ADSR envelope */
+	//arm_scale_q15(pSndGen,MAX_AMP,0,pSndGen,FRAME_SIZE);
 
 }

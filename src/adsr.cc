@@ -71,8 +71,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 		break;
 
 		case SUSTAIN_STATE:
-
-			arm_fill_q15(sustain_level,pOut,block_size);
+			arm_fill_q15(sustain_level,pOut,FRAME_SIZE);
 			if (note_ON == false){
 				adsr_state = RELEASE_STATE;
 			}

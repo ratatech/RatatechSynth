@@ -40,14 +40,14 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->mov_avg_params.init_state = 0;
 
 		/** ADSR settings */
-		synth_params->adsr_params.beta_att = 0;
-		synth_params->adsr_params.beta_dec = 0;
-		synth_params->adsr_params.beta_rel = 0;
+		synth_params->adsr_params.beta_att = 1453060120;
+		synth_params->adsr_params.beta_dec = 1836840104;
+		synth_params->adsr_params.beta_rel = 2065214841;
 
 		synth_params->object_pool = object_pool;
 
 		synth_params->midi_dest = OSC1;
-		synth_params->adsr_amp_vol = 0;
+		synth_params->adsr_vol_amp = 0;
 
 		synth_params->pitch = 0;
 		synth_params->vel = 0;

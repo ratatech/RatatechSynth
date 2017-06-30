@@ -25,23 +25,23 @@
 
 using namespace std;
 
-#define USE_AUDIO_TIMER
-#define USE_LOW_RATE_TIMER
-
 /** Parameter structures */
 synth_params_t synth_params;
 object_pool_t object_pool;
 
 
 /** Make a local copy of the object instances */
-Oscillator 	osc;
-LFO 			lfo;
-CircularBuffer	out_buffer;
-MIDI 			midi;
-SoundGenerator snd_gen;
+Oscillator 		osc;
+LFO 				lfo;
+CircularBuffer		out_buffer;
+MIDI 				midi;
+SoundGenerator 	snd_gen;
+ADSR				adsr;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
+
+q15_t* pAdsr;
 
 bool status = true;
 
@@ -52,15 +52,16 @@ int main(void)
 	/** Init system and peripherals */
 	ratatech_init();
 
-	object_pool.osc = &osc;
-	object_pool.lfo = &lfo;
-	object_pool.out_buffer = &out_buffer;
-	object_pool.midi = &midi;
+	object_pool.osc = 			&osc;
+	object_pool.lfo = 			&lfo;
+	object_pool.out_buffer = 	&out_buffer;
+	object_pool.midi = 			&midi;
+	object_pool.adsr = 			&adsr;
+
+	pAdsr = &synth_params.adsr_vol_amp;
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
-
-
 
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
@@ -99,6 +100,7 @@ int main(void)
  */
 void low_rate_tasks(void){
 	lfo.get_sample(&synth_params);
+	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
 
 	if(midi.attack_trigger){
 		iprintf("MIDI IN!!!\n");
@@ -117,13 +119,11 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 
-		/** Sound generation */
-		snd_gen.gen_voice(&synth_params, pOut);
+	/** Sound generation */
+	snd_gen.gen_voice(&synth_params, pOut);
 
-		/** Fill the output buffer with fresh frames*/
-		status = out_buffer.write_frame(pOut);
-
-
+	/** Fill the output buffer with fresh frames*/
+	status = out_buffer.write_frame(pOut);
 }
 
 void audio_gen(void){
@@ -131,7 +131,6 @@ void audio_gen(void){
 	uint16_t out_sample;
 	out_buffer.read(&out_sample);
 	audio_out_write(out_sample);
-
 }
 
 /*****************************************************************************************************************************
@@ -171,12 +170,9 @@ void TIM2_IRQHandler(void)
 }
 
 
-
-
 /*****************************************************************************************************************************
 ******************* USART INTERRUPTS *****************************************************************************************
 ******************************************************************************************************************************/
-
 
 /**
 * USART1 interrupt handler

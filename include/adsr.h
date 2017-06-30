@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 #define ENV_LUT_LENGTH 256
 enum adsr_state_e {ATTACK_STATE,DECAY_STATE ,SUSTAIN_STATE,RELEASE_STATE,IDLE_STATE};
 enum adsr_mode_e {LIN,EXP,LOG};
