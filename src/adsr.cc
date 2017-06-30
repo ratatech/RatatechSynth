@@ -51,7 +51,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 
 		case ATTACK_STATE:
 
-			if (adsr_sample >= MAX_AMP-1){
+			if (adsr_sample >= MAX_AMP-10){
 				target_level = sustain_level;
 				beta = beta_dec;
 				adsr_state = DECAY_STATE;
@@ -75,6 +75,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 			if (note_ON == false){
 				adsr_state = RELEASE_STATE;
 			}
+			adsr_state = RELEASE_STATE;
 
 		break;
 
@@ -84,7 +85,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
 				target_level = MAX_AMP;
 				beta = beta_att;
-				adsr_state = IDLE_STATE;
+				adsr_state = ATTACK_STATE;
 			}
 
 		break;

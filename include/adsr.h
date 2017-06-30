@@ -58,7 +58,7 @@ class ADSR: MovAvg{
             beta  = synth_params->mov_avg_params.beta;
             target_level = MAX_AMP;
             adsr_state = ATTACK_STATE;
-            sustain_level = MAX_AMP>>1;
+            sustain_level = MAX_AMP;
             note_ON = true;
 
 

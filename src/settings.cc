@@ -40,9 +40,9 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->mov_avg_params.init_state = 0;
 
 		/** ADSR settings */
-		synth_params->adsr_params.beta_att = 1453060120;
-		synth_params->adsr_params.beta_dec = 1836840104;
-		synth_params->adsr_params.beta_rel = 2065214841;
+		synth_params->adsr_params.beta_att = 2142121644;
+		synth_params->adsr_params.beta_dec = 2142121644;
+		synth_params->adsr_params.beta_rel = 2145694824;
 
 		synth_params->object_pool = object_pool;
 

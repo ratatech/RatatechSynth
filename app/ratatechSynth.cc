@@ -70,6 +70,9 @@ int main(void)
 	osc.set_freq_frac(1000);
 	osc.set_shape(TRI);
 
+	/** Init adsr */
+	adsr.init(&synth_params);
+
 	// Configure oscillator 2
 //	osc2.init(&synth_params.osc_params);
 //	osc2.set_shape(SAW);
