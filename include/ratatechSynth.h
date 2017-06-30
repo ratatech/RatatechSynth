@@ -59,7 +59,6 @@
 #include "adc.h"
 #include "mixer.h"
 #include "svf.h"
-#include "interrupts.h"
 #include "types.h"
 #include "mov_avg.h"
 #include "sound_generator.h"
