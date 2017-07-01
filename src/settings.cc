@@ -21,6 +21,7 @@ This file is part of XXXXXXX
 */
 
 #include "settings.h"
+#include "tables.h"
 
 void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 
@@ -40,9 +41,9 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->mov_avg_params.init_state = 0;
 
 		/** ADSR settings */
-		synth_params->adsr_params.beta_att = 1672461947;
-		synth_params->adsr_params.beta_dec = 2142121644;
-		synth_params->adsr_params.beta_rel = 2145694824;
+		synth_params->adsr_params.beta_att = adsr_beta_exp_curve_q31[110];
+		synth_params->adsr_params.beta_dec = adsr_beta_exp_curve_q31[110];
+		synth_params->adsr_params.beta_rel = adsr_beta_exp_curve_q31[110];
 
 		synth_params->object_pool = object_pool;
 

@@ -64,7 +64,7 @@ wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(AMP)/2))
 
 name = 'sin_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,wave,'int16_t')
+table = writeTable(name,macro_N,wave,'q15_t')
 
 if plotting:
     plt.figure(1)
@@ -82,10 +82,9 @@ bits = 8;
 N = 2**bits;
 t = np.floor(np.arange(-(AMP/2),(AMP/2),(float(AMP)/N), dtype=np.float))
 wave = np.int16(t)
-print(np.size(wave))
 name = 'saw_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,wave,'int16_t')
+table = writeTable(name,macro_N,wave,'q15_t')
 
 if plotting:
     plt.figure(2)
@@ -107,7 +106,7 @@ t = np.append(a,b)
 wave = np.int16(t)
 name = 'tri_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,wave,'int16_t')
+table = writeTable(name,macro_N,wave,'q15_t')
 
 if plotting:
     plt.figure(3)
@@ -130,7 +129,7 @@ ones_pos = np.ones(N/2)*((N/2)-1);
 wave = np.int16(np.concatenate((ones_neg,ones_pos), axis=1))
 name = 'squ_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,wave,'int16_t')
+table = writeTable(name,macro_N,wave,'q15_t')
 
 if plotting:
     plt.figure(4)
@@ -152,7 +151,7 @@ wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(2**8-1)/2))
 
 name = 'sin_lfo_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,wave,'int16_t')
+table = writeTable(name,macro_N,wave,'q15_t')
 
 if plotting:
     plt.figure(5)
@@ -166,20 +165,39 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  POT EXP TABLE
 ------------------------------------------------------------------------------'''
-bits = 12;
+
+# N = 256;
+# beta_table = [];
+# time_table = logspace(log10(0.001),log10(10),256);
+# for i = 1:N
+#     tau = time_table(i);
+#     beta = int32((2^31)*exp(-(1/(tau*fs))));
+#     beta_table = [beta_table,beta];
+# end
+
+
+bits = 8;
 N = (2**bits);
 t = np.arange(0,N, dtype=np.float)
 c = 100;
 b = np.power((2**14/c),(np.divide(1.0, N-1)))
 exp_curve = np.int16(np.round(np.power(b, t)*c))
 
-name = 'exp_curve_q15' 
+fs = 4000
+beta_table = [];
+time_table = np.logspace(np.log10(0.001),np.log10(10),N);
+for i in range(0,N-1):
+    tau = time_table[i];
+    beta = np.int32((2**31)*np.exp(-(1/(tau*fs))));
+    beta_table.append(beta)
+
+name = 'adsr_beta_exp_curve_q31' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,exp_curve,'int16_t')
+table = writeTable(name,macro_N,beta_table,'q31_t')
 
 if plotting:
     plt.figure(6)
-    plt.plot(exp_curve)
+    plt.plot(time_table)
     plt.show()
 
 # Write to output file
@@ -196,7 +214,6 @@ midi_table = np.array([])
 for midi_num in range(0,N):
     midi_table = np.append(midi_table,np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000)
 
-print(np.size(midi_table))
 name = ' midi_freq_lut' 
 macro_N = 'MIDI_FREQ_LUT_SIZE'
 table = writeTable(name,macro_N,midi_table,'double')

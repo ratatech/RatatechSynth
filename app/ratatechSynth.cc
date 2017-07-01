@@ -102,8 +102,8 @@ void low_rate_tasks(void){
 
 	midi.update(&synth_params);
 	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
-	//iprintf("NOTE ON = %i\n",adsr.note_ON);
 
+	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
 		adsr.reset();
 		midi.attack_trigger = false;
