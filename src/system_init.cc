@@ -269,34 +269,33 @@ void ButtonsInitEXTI(void)
  */
 void ADC_Conf_Init(void){
 
+	ADC_DeInit(ADC1);
+
 	ADC_InitTypeDef ADC_InitStructure;
 
-	  /* ADC1 configuration ------------------------------------------------------*/
-	  ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
-	  ADC_InitStructure.ADC_ScanConvMode = DISABLE; // Single Channel
-	  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE; // Scan on Demand
-	  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
-	  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	  ADC_InitStructure.ADC_NbrOfChannel = 1;
-	  ADC_Init(ADC1, &ADC_InitStructure);
+	/* ADC1 configuration ------------------------------------------------------*/
+	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+	ADC_InitStructure.ADC_ScanConvMode = DISABLE; // Single Channel
+	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE; // Scan on Demand
+	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+	ADC_InitStructure.ADC_NbrOfChannel = 1;
+	ADC_Init(ADC1, &ADC_InitStructure);
 
-	  /* Enable ADC1 */
-	  ADC_Cmd(ADC1, ENABLE);
+	/* Enable ADC1 */
+	ADC_Cmd(ADC1, ENABLE);
 
-	  /* Enable ADC1 reset calibaration register */
-	  ADC_ResetCalibration(ADC1);
+	/* Enable ADC1 reset calibaration register */
+	ADC_ResetCalibration(ADC1);
 
-	  /* Check the end of ADC1 reset calibration register */
-	  while(ADC_GetResetCalibrationStatus(ADC1));
+	/* Check the end of ADC1 reset calibration register */
+	while(ADC_GetResetCalibrationStatus(ADC1));
 
-	  /* Start ADC1 calibaration */
-	  ADC_StartCalibration(ADC1);
+	/* Start ADC1 calibaration */
+	ADC_StartCalibration(ADC1);
 
-	  /* Check the end of ADC1 calibration */
-	  while(ADC_GetCalibrationStatus(ADC1));
-
-	  /* Start ADC1 Software Conversion */
-	  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+	/* Check the end of ADC1 calibration */
+	while(ADC_GetCalibrationStatus(ADC1));
 
 
 }

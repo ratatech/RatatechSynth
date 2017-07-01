@@ -118,7 +118,7 @@ void low_rate_tasks(void){
 	midi.update(&synth_params);
 
 	/** Read inputs */
-	//mux.update(&synth_params,synth_params.pMux);
+	mux.update(&synth_params,synth_params.pMux);
 
 	/** Compute a new LFO envelope frame/sample */
 	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
@@ -138,8 +138,8 @@ void low_rate_tasks(void){
 		/** Set OSC freq from the MIDI table */
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
-
-	//iprintf("MUX: x0=%i",synth_params.pMux[0]);
+	iprintf("putaaaaa");
+	//iprintf("x0=%i\n",synth_params.pMux[0]);
 }
 
 /**

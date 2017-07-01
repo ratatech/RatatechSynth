@@ -66,7 +66,7 @@ uint16_t Mux::readADC1(uint8_t channel)
   // Start the conversion
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
   // Wait until conversion completion
-  while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+  //while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
   // Get the conversion value
   return ADC_GetConversionValue(ADC1);
 }
