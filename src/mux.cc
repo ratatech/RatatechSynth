@@ -62,11 +62,21 @@ void Mux::update(synth_params_t* synth_params_t, uint16_t* pMux)
  */
 uint16_t Mux::readADC1(uint8_t channel)
 {
-  ADC_RegularChannelConfig(ADC1, channel, 1, ADC_SampleTime_1Cycles5);
-  // Start the conversion
-  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-  // Wait until conversion completion
-  //while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-  // Get the conversion value
-  return ADC_GetConversionValue(ADC1);
+//  ADC_RegularChannelConfig(ADC1, channel, 1, ADC_SampleTime_1Cycles5);
+//  // Start the conversion
+//  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+//  // Wait until conversion completion
+//  //while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+//  // Get the conversion value
+//  return ADC_GetConversionValue(ADC1);
+
+  uint16_t data_adc;
+//  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+//  while(ADC_GetSoftwareStartConvStatus(ADC1));
+//  while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+//  data_adc = ADC_GetConversionValue(ADC1);
+//  ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+  return(data_adc);
+
+
 }

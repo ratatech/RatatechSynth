@@ -59,10 +59,6 @@ bool status = true;
 
 int main(void)
 {
-
-	/** Init system and peripherals */
-	ratatech_init();
-
 	/** Put objects in the pool */
 	object_pool.osc = 			&osc;
 	object_pool.lfo = 			&lfo;
@@ -77,6 +73,9 @@ int main(void)
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
+
+	/** Init system and peripherals */
+	ratatech_init(&synth_params);
 
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
@@ -138,7 +137,7 @@ void low_rate_tasks(void){
 		/** Set OSC freq from the MIDI table */
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
-	//iprintf("x0=%i\n",synth_params.pMux[0]);
+	//iprintf("dfasdfasdfs");
 }
 
 /**

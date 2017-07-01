@@ -24,6 +24,10 @@ This file is part of XXXXXXX
 #include "ratatechSynth.h"
 
 
+#define ADC1_DR_Address    ((uint32_t)0x4001244C)
+
+uint16_t adc_read_test;
+
 void RCC_Clocks_Init(void)
 {
 
@@ -79,6 +83,11 @@ void RCC_Clocks_Init(void)
 						RCC_APB2Periph_TIM1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_USART2 | RCC_APB1Periph_USART3 |
 						RCC_APB1Periph_SPI2, ENABLE);
+
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+
+	/* ADCCLK = PCLK2/4 */
+	RCC_ADCCLKConfig(RCC_PCLK2_Div4);
 
 
 
@@ -301,6 +310,32 @@ void ADC_Conf_Init(void){
 }
 
 /**
+ * Configure and initialize DMA Peripheral
+ */
+void DMA_Conf_Init(uint16_t ADCConvertedValue){
+
+	DMA_InitTypeDef DMA_InitStructure;
+
+	/* DMA1 channel1 configuration ----------------------------------------------*/
+	DMA_DeInit(DMA1_Channel1);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&adc_read_test;
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+	DMA_InitStructure.DMA_BufferSize = 1;
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+
+	/* Enable DMA1 channel1 */
+	DMA_Cmd(DMA1_Channel1, ENABLE);
+}
+
+/**
  * Configure and initialize USART Peripheral
  */
 void USART_Conf_Init(void){
@@ -406,7 +441,7 @@ void USART_Conf_Init(void){
 /**
  * Init system related routines(STM32F1) and all prefipherals needed for the synthesizer
  */
-void ratatech_init(void){
+void ratatech_init(synth_params_t* synth_params){
 
 	RCC_ClocksTypeDef RCC_Clocks;
 
@@ -414,17 +449,18 @@ void ratatech_init(void){
 	RCC_Clocks_Init();
 	SystemCoreClockUpdate();
 
-	/* SysTick end of count event each 1ms */
+	/** SysTick end of count event each 1ms */
 	RCC_GetClocksFreq(&RCC_Clocks);
 	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
 
-    // COnfigure and init peripherals
+    /** Configure and init peripherals */
 	GPIO_Conf_Init();
 	SPI_Config();
 	TIM_Config();
 	ButtonsInitEXTI();
 	ADC_Conf_Init();
 	USART_Conf_Init();
+	DMA_Conf_Init(synth_params->adc_read);
 
 }
 

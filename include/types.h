@@ -99,6 +99,7 @@ struct synth_params_t{
 
 	/** MUX */
 	uint16_t pMux[MUX_BITS];
+	uint16_t adc_read;
 
 	int16_t FM_mod_amp;
 	uint8_t I;
