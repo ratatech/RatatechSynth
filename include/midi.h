@@ -45,7 +45,8 @@ class MIDI {
 
 		uint16_t midi_buffer[3];
 		midi_msg_type_e midi_msg_type;
-		bool note_ON,attack_trigger,new_event;
+		bool attack_trigger,new_event;
+		bool note_ON;
 
 		/** Constructor.
 		@param pin The pin number used for the SPI chip select.

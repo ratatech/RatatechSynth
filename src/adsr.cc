@@ -37,6 +37,9 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 	q15_t * pOut = pAdsr;	/** Output pointer */
 	q15_t adsr_sample;		/** Temp var */
 
+	/** Update note on status*/
+	note_ON = synth_params->note_ON;
+
 	/** Whenever not in sustain or idle state, process frame */
 	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
 
@@ -51,7 +54,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 
 		case ATTACK_STATE:
 
-			if (adsr_sample >= MAX_AMP-10){
+			if (adsr_sample >= MAX_AMP-1){
 				target_level = sustain_level;
 				beta = beta_dec;
 				adsr_state = DECAY_STATE;
@@ -72,10 +75,9 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 
 		case SUSTAIN_STATE:
 			arm_fill_q15(sustain_level,pOut,FRAME_SIZE);
-			if (*note_ON == false){
+			if (note_ON == false){
 				adsr_state = RELEASE_STATE;
 			}
-			adsr_state = RELEASE_STATE;
 
 		break;
 
@@ -100,7 +102,7 @@ void ADSR::reset(void)
 {
 	target_level = MAX_AMP;
 	adsr_state = ATTACK_STATE;
-	*note_ON = true;
+	note_ON = true;
 	beta = beta_att;
 }
 
