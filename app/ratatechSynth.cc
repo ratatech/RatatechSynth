@@ -138,7 +138,6 @@ void low_rate_tasks(void){
 		/** Set OSC freq from the MIDI table */
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
-	iprintf("putaaaaa");
 	//iprintf("x0=%i\n",synth_params.pMux[0]);
 }
 

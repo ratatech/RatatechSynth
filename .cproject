@@ -153,7 +153,7 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.createlisting.wide.922877125" name="Wide lines (--wide|-w)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.createlisting.wide" value="true" valueType="boolean"/>
 							</tool>
 							<tool id="ilg.gnuarmeclipse.managedbuild.cross.tool.printsize.2117130748" name="Cross ARM GNU Print Size" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.printsize">
-								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.format.1358845534" name="Size format" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.format" value="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.format.sysv" valueType="enumerated"/>
+								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.format.1358845534" name="Size format" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.format" value="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.format.berkeley" valueType="enumerated"/>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.totals.1739833703" name="Show totals" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.printsize.totals" value="true" valueType="boolean"/>
 							</tool>
 						</toolChain>
