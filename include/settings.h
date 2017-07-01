@@ -22,6 +22,7 @@
 #define PWM_PERIOD   0x3FFF
 #define FRAME_SIZE 32
 #define	 ADSR_BLOCK_SIZE 1
+#define	 LFO_BLOCK_SIZE 1
 #define MAX_AMP 0x7FFF
 
 void init_settings(synth_params_t* synth_params, object_pool_t object_pool);

@@ -26,8 +26,8 @@ using namespace std;
 
 /**
  * Compute a new oscillator sample
- * @param synth_params Synth global structure
- * @return interp_lut The computed oscillator sample
+ * @param synth_params	Synth global structure
+ * @return interp_lut	The computed oscillator sample
  */
 int32_t Oscillator::get_sample(synth_params_t *synth_params)
 {

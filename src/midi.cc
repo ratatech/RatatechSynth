@@ -23,10 +23,13 @@ This file is part of XXXXXXX
 #include "midi.h"
 #include "ratatechSynth.h"
 
-
+/**
+ * Parse incomming MIDI message
+ * @param byte Incomming MIDI byte
+ */
 void MIDI::parseMsg(uint16_t byte){
 
-	// Check if message is status or data type
+	/** Check if message is status or data type */
 	if(byte > 0x7F){
 		switch(byte){
 
@@ -52,7 +55,8 @@ void MIDI::parseMsg(uint16_t byte){
 
 
 	}else{
-		// If not Status, classify between note or velocity data
+
+		/** If not Status, classify between note or velocity data */
 		switch(midi_msg_type){
 
 					case STATUS:
@@ -72,13 +76,11 @@ void MIDI::parseMsg(uint16_t byte){
 
 	}
 
-	// Trigger a new event just after reading the three bytes
+	/** Trigger a new event just after reading the three bytes */
 	if(midi_msg_type == DATA_VEL){
 		if(midi_buffer[2]>0){
 			new_event = true;
 		}
-
-
 
 	}
 

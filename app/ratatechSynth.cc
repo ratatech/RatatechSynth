@@ -41,9 +41,18 @@ ADSR				adsr;
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
 
+/** ADSR out pointer*/
 q15_t* pAdsr;
 
+/** LFO out pointer*/
+q15_t* pLfo;
+
+/** Sample to be written in the DAC */
+uint16_t out_sample;
+
+/** Output buffer status */
 bool status = true;
+
 
 
 int main(void)
@@ -52,13 +61,16 @@ int main(void)
 	/** Init system and peripherals */
 	ratatech_init();
 
+	/** Put objects in the pool */
 	object_pool.osc = 			&osc;
 	object_pool.lfo = 			&lfo;
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
 	object_pool.adsr = 			&adsr;
 
+	/** Link ADSR and LFO pointers to the global structure */
 	pAdsr = &synth_params.adsr_vol_amp;
+	pLfo  = &synth_params.lfo_amp;
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
@@ -77,9 +89,9 @@ int main(void)
 	osc_shape_t shape_lfo = SIN;
 	lfo.FM_synth = false;
 	lfo.set_shape(shape_lfo);
-	lfo.set_freq_frac(0.1);
+	lfo.set_freq_frac(50);
 
-	//Pre-fill the output buffer
+	/** Pre-fill the output buffer */
 	fill_buffer();
 
 	/* *****************************************************************************************
@@ -88,7 +100,7 @@ int main(void)
 	 * *****************************************************************************************/
 	while(1)
 	{
-		// Fill audio buffer with a new sample
+		/** Fill audio buffer with a new sample */
 		fill_buffer();
 	}
 
@@ -98,18 +110,29 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
-	lfo.get_sample(&synth_params);
 
+	/** Update midi information */
 	midi.update(&synth_params);
+
+	/** Compute a new LFO envelope frame/sample */
+	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
+
+	/** Compute a new ADSR envelope frame/sample */
 	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
 
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
-		adsr.reset();
-		midi.attack_trigger = false;
-		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 
+		/** If a new note is received reset ADSR */
+		adsr.reset();
+
+		/** Remove attack setting flag */
+		midi.attack_trigger = false;
+
+		/** Set OSC freq from the MIDI table */
+		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
+
 }
 
 /**
@@ -128,9 +151,11 @@ inline void fill_buffer(void)
 	status = out_buffer.write_frame(pOut);
 }
 
+/**
+ * Read a sample of the output buffer and write it to the DAC @AUDIO FS
+ */
 void audio_gen(void){
 
-	uint16_t out_sample;
 	out_buffer.read(&out_sample);
 	audio_out_write(out_sample);
 }
