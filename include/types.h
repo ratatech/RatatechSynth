@@ -25,6 +25,18 @@ This file is part of XXXXXXX
 #include <stdint.h>
 #include "arm_math.h"
 
+#define FS 96000
+#define CONTROL_RATE 4000
+#define SHIFT_20_BIT 0x100000
+#define SHIFT_31_BIT 0x7FFFFFFF
+#define SHIFT_15_BIT 0x7FFF
+#define PWM_PERIOD   0x3FFF
+#define FRAME_SIZE 32
+#define	 ADSR_BLOCK_SIZE 1
+#define	 LFO_BLOCK_SIZE 1
+#define MAX_AMP 0x7FFF
+#define MUX_BITS 8
+
 struct object_pool_t
 {
 	void* 	osc;
@@ -32,6 +44,7 @@ struct object_pool_t
 	void*	out_buffer;
 	void*	midi;
 	void*	adsr;
+	void*	mux;
 };
 
 typedef enum {OSC1,OSC2,VCF} dest_t;
@@ -70,19 +83,23 @@ struct synth_params_t{
 	adsr_params_t adsr_params;
 	object_pool_t object_pool;
 
-	/** LFO amplitude*/
+	/** LFO */
 	int16_t lfo_amp;
 	int16_t lfo_amo;
 	dest_t lfo_dest;
 
-	/** ADSR amplitude */
+	/** ADSR  */
 	q15_t adsr_vol_amp;
 
+	/** MIDI */
 	dest_t midi_dest;
-
 	uint16_t pitch;
 	uint16_t vel;
 	bool note_ON;
+
+	/** MUX */
+	uint16_t pMux[MUX_BITS];
+
 	int16_t FM_mod_amp;
 	uint8_t I;
 	bool FM_synth;

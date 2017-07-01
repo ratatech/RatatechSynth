@@ -56,12 +56,12 @@
 #include "lfo.h"
 #include "diag/Trace.h"
 #include "midi.h"
-#include "adc.h"
 #include "mixer.h"
 #include "svf.h"
 #include "types.h"
 #include "mov_avg.h"
 #include "sound_generator.h"
+#include "mux.h"
 
 
 // Add debugging tools

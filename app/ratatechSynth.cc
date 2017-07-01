@@ -37,6 +37,7 @@ CircularBuffer		out_buffer;
 MIDI 				midi;
 SoundGenerator 	snd_gen;
 ADSR				adsr;
+Mux					mux;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
@@ -46,6 +47,7 @@ q15_t* pAdsr;
 
 /** LFO out pointer*/
 q15_t* pLfo;
+
 
 /** Sample to be written in the DAC */
 uint16_t out_sample;
@@ -67,6 +69,7 @@ int main(void)
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
 	object_pool.adsr = 			&adsr;
+	object_pool.mux = 			&mux;
 
 	/** Link ADSR and LFO pointers to the global structure */
 	pAdsr = &synth_params.adsr_vol_amp;
@@ -94,7 +97,7 @@ int main(void)
 	/** Pre-fill the output buffer */
 	fill_buffer();
 
-	/* *****************************************************************************************
+	/*******************************************************************************************
 	 * Main Loop
 	 *
 	 * *****************************************************************************************/
@@ -113,6 +116,9 @@ void low_rate_tasks(void){
 
 	/** Update midi information */
 	midi.update(&synth_params);
+
+	/** Read inputs */
+	//mux.update(&synth_params,synth_params.pMux);
 
 	/** Compute a new LFO envelope frame/sample */
 	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
@@ -133,6 +139,7 @@ void low_rate_tasks(void){
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
 
+	//iprintf("MUX: x0=%i",synth_params.pMux[0]);
 }
 
 /**
@@ -207,14 +214,12 @@ void TIM2_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
 
-	//trace_printf("MIDI Rx\n");
-    /* RXNE handler */
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
     	uint16_t midi_in = USART_ReceiveData(USART1);
     	midi.parseMsg(midi_in);
     }
 
-    /* ------------------------------------------------------------ */
-    /* Other USART1 interrupts handler can go here ...             */
+    /** ------------------------------------------------------------ */
+    /** Other USART1 interrupts handler can go here ...             */
 }

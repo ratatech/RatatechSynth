@@ -35,7 +35,7 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 	int64_t ph_mod_index = 0;
 
 
-	/*
+	/**
 	 * FM Synthesis
 	 *
 	 * Use a modulation wave to modify the instantaneous frequency of the
@@ -57,23 +57,23 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 	 * */
 	if(FM_synth){
 
-		// Get modulator increment scaled by the modulation index I
+		/** Get modulator increment scaled by the modulation index I */
 		ph_mod_index =((synth_params->I*synth_params->FM_mod_amp>>15));
 
-		// Shift 20 bits as the fractional index of the carrier wave
+		/** Shift 20 bits as the fractional index of the carrier wave */
 		ph_mod_index <<= 20;
 
 	}
 
-	/* If FM Synthesis is not enabled, the wavetable is read as usual with the calculated
-	 * fractional increment
+	/** If FM Synthesis is not enabled, the wavetable is read as usual with the calculated
+	 * 	fractional increment
 	 * */
 	ph_ind_frac += (ph_inc_frac + ph_mod_index);
 	if(ph_ind_frac >= LUT_8_BIT<<20){
 		ph_ind_frac -= LUT_8_BIT<<20;
 	}
 
-	// Interpolate LUT
+	/** Interpolate LUT */
 	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT)<<8;
 
 	return interp_lut;
@@ -91,7 +91,7 @@ void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t b
 {
 	 q15_t *pOut = pOsc;	/* output pointer */
 
-	 // Generate samples and store it in the output buffer
+	 /** Generate samples and store it in the output buffer */
 	 for(uint i=0;i<block_size;i++){
 		 *pOut++ = get_sample(synth_params);
 	 }

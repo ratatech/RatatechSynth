@@ -44,15 +44,17 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->adsr_params.beta_att = adsr_beta_exp_curve_q31[110];
 		synth_params->adsr_params.beta_dec = adsr_beta_exp_curve_q31[110];
 		synth_params->adsr_params.beta_rel = adsr_beta_exp_curve_q31[110];
-
-		synth_params->object_pool = object_pool;
-
-		synth_params->midi_dest = OSC1;
 		synth_params->adsr_vol_amp = 0;
 
+		/** Object pool */
+		synth_params->object_pool = object_pool;
+
+		/** MIDI */
+		synth_params->midi_dest = OSC1;
 		synth_params->pitch = 0;
 		synth_params->vel = 0;
 		synth_params->note_ON = 0;
+
 		synth_params->FM_mod_amp = 0;
 		synth_params->I = 0;
 		synth_params->FM_synth = 0;
