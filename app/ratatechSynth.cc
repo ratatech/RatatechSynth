@@ -59,6 +59,7 @@ int main(void)
 	object_pool.adsr = 			&adsr;
 
 	pAdsr = &synth_params.adsr_vol_amp;
+	//adsr.note_ON = &midi.note_ON;
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
@@ -72,10 +73,6 @@ int main(void)
 
 	/** Init adsr */
 	adsr.init(&synth_params);
-
-	// Configure oscillator 2
-//	osc2.init(&synth_params.osc_params);
-//	osc2.set_shape(SAW);
 
 	/** Configure lfo */
 	osc_shape_t shape_lfo = SIN;
@@ -104,6 +101,7 @@ int main(void)
 void low_rate_tasks(void){
 	lfo.get_sample(&synth_params);
 	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
+	iprintf("NOTE ON = %i\n",midi.note_ON);
 
 	if(midi.attack_trigger){
 		adsr.reset();

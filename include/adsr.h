@@ -38,7 +38,7 @@ class ADSR: MovAvg{
 		q31_t beta_att,beta_dec,beta_rel;
 		q15_t target_level,sustain_level;
 		adsr_state_e adsr_state;
-		bool note_ON;
+		bool note_ON[1];
 
 
 
@@ -59,7 +59,7 @@ class ADSR: MovAvg{
             target_level = MAX_AMP;
             adsr_state = ATTACK_STATE;
             sustain_level = MAX_AMP;
-            note_ON = true;
+            *note_ON = true;
 
 
 

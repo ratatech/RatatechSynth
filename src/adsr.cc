@@ -72,7 +72,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 
 		case SUSTAIN_STATE:
 			arm_fill_q15(sustain_level,pOut,FRAME_SIZE);
-			if (note_ON == false){
+			if (*note_ON == false){
 				adsr_state = RELEASE_STATE;
 			}
 			adsr_state = RELEASE_STATE;
@@ -100,7 +100,7 @@ void ADSR::reset(void)
 {
 	target_level = MAX_AMP;
 	adsr_state = ATTACK_STATE;
-	note_ON = true;
+	*note_ON = true;
 	beta = beta_att;
 }
 
