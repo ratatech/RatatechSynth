@@ -47,8 +47,13 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 		(((s>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 		GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
 
-		/** Store each multiplexed input into the buffer */
-		//pMux[s] = synth_params->adc_read;
+		/** Add small delay to allow the DAC finish the conversion
+		250 cycles delay seems to work well for "ADC_SampleTime_239Cycles5"
+		Just observed behaviour, to be checked if this is the right value
+		*/
+		for(uint d=0;d<250;d++){
+			__asm__("nop");
+		}
 
 	   /** Read adc corresponding to each selected bit */
 		switch(s){
