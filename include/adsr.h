@@ -64,7 +64,13 @@ class ADSR: MovAvg{
 		 */
 		void get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_size);
 
+		/**
+		 * Reset internal variables and go back to attack state
+		 */
 		void reset(void);
+
+		/** Get the newly read values from the ADC and set the coefficients */
+		void set_params(synth_params_t *synth_params);
 
 };
 

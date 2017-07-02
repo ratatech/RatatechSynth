@@ -88,6 +88,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 				target_level = MAX_AMP;
 				beta = beta_att;
 				adsr_state = IDLE_STATE;
+				*pAdsr = 0;
 
 			}
 
@@ -97,7 +98,9 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 
 }
 
-
+/**
+ * Reset internal variables and go back to attack state
+ */
 void ADSR::reset(void)
 {
 	target_level = MAX_AMP;
@@ -106,3 +109,17 @@ void ADSR::reset(void)
 	beta = beta_att;
 }
 
+/** Get the newly read values from the ADC and set the coefficients */
+void ADSR::set_params(synth_params_t *synth_params){
+
+	beta_att = adsr_beta_exp_curve_q31[synth_params->pMux[0]];
+	beta_dec = adsr_beta_exp_curve_q31[synth_params->pMux[1]];
+	beta_rel = adsr_beta_exp_curve_q31[synth_params->pMux[2]];
+
+//	beta_att = adsr_beta_exp_curve_q31[255];
+//	beta_dec = adsr_beta_exp_curve_q31[15];
+//	beta_rel = adsr_beta_exp_curve_q31[0];
+
+//	iprintf("beta att = %i\r",(synth_params->pMux[0]*LUT_8_BIT)>>12);
+
+}

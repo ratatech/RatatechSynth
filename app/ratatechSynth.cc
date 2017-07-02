@@ -38,6 +38,7 @@ MIDI 				midi;
 SoundGenerator 	snd_gen;
 ADSR				adsr;
 Mux					mux;
+Svf 				svf;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
@@ -68,6 +69,7 @@ int main(void)
 	object_pool.midi = 			&midi;
 	object_pool.adsr = 			&adsr;
 	object_pool.mux = 			&mux;
+	object_pool.svf =			&svf;
 
 	/** Link ADSR and LFO pointers to the global structure */
 	pAdsr = &synth_params.adsr_vol_amp;
@@ -86,7 +88,7 @@ int main(void)
 
 	/** Configure oscillator*/
 	osc.set_freq_frac(1000);
-	osc.set_shape(TRI);
+	osc.set_shape(SAW);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -96,6 +98,12 @@ int main(void)
 	lfo.FM_synth = false;
 	lfo.set_shape(shape_lfo);
 	lfo.set_freq_frac(50);
+
+	/** Init SVF filter params*/
+	svf.init(&synth_params);
+
+
+
 
 	/** Pre-fill the output buffer */
 	fill_buffer();
@@ -130,6 +138,11 @@ void low_rate_tasks(void){
 	/** Compute a new ADSR envelope frame/sample */
 	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
 
+	svf.set_fc(&synth_params);
+	svf.set_q(&synth_params);
+	adsr.set_params(&synth_params);
+
+
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
 
@@ -142,7 +155,7 @@ void low_rate_tasks(void){
 		/** Set OSC freq from the MIDI table */
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
-
+	//iprintf("ADSR STATE = %i\r",adsr.adsr_state);
 //	iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
 //			synth_params.pMux[0],synth_params.pMux[1],synth_params.pMux[2],synth_params.pMux[3],
 //			synth_params.pMux[4],synth_params.pMux[5],synth_params.pMux[6],synth_params.pMux[7]);

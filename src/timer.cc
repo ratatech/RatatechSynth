@@ -90,7 +90,7 @@ void TIM_Config(void)
 	{
 		/* TIM2 NVIC configuration */
 		NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 

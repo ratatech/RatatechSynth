@@ -26,6 +26,6 @@ extern const q15_t saw_lut_q15[LUT_8_BIT];
 extern const q15_t squ_lut_q15[LUT_8_BIT];
 extern const q15_t sin_lut_lfo[LUT_5_BIT];
 extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];
-extern const q31_t adsr_beta_exp_curve_q31[LUT_8_BIT];
+extern const q31_t adsr_beta_exp_curve_q31[LUT_12_BIT];
 
 #endif /* TABLES_H_ */

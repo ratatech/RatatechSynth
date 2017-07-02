@@ -23,6 +23,7 @@ This file is part of XXXXXXX
 #define INCLUDE_SVF_H_
 
 #include "ratatechSynth.h"
+#include "spi.h"
 
 /**
  * State variable filter class
@@ -41,11 +42,62 @@ class Svf {
 		fc = 0;
 	}
 
+	void init(synth_params_t* synth_params){
+		configure(synth_params);
+	}
+
+	void configure(synth_params_t* synth_params){
+
+		uint8_t sreg_byte = 0;
+		uint8_t SVF_order_msk,SVF_SC_EN_msk;
+
+		/* Filter modes
+		 * LP = 0x06
+		 * BP = 0x05
+		 * HP = 0x03
+		 */
+		sreg_byte = 0x03;
+
+		/* Filter order 12/24 dB/Oct
+		 * 12 = 0x10
+		 * 24 = 0x08
+		 */
+		SVF_order_msk = 0x08;
+
+		// Add order to select filter order
+		sreg_byte += SVF_order_msk;
+
+		/* Enable/Disable SC
+		 * ON  = 0x00
+		 * OFF = 0x20
+		 */
+		SVF_SC_EN_msk = 0x20;
+
+		// Add soft clipping enabler
+		sreg_byte += SVF_SC_EN_msk;
+
+		for(int w=0;w<SHIFT_REGISTER_BITS;w++){
+			// LATCH Low
+			GPIOA->BRR = GPIO_Pin_11;
+
+			// Transmit the two 8bit SPI messages
+			SPI_send(SPI2,sreg_byte);
+
+			// CS High
+			GPIOA->BSRR = GPIO_Pin_11;
+			// LATCH Low
+			GPIOA->BRR = GPIO_Pin_11;
+
+		}
+
+	}
+
 	/**
 	 * Set filter resonance
 	 * @param q Filter resonance [0..PWM_PERIOD]
 	 */
-	void set_q(uint16_t q){
+	void set_q(synth_params_t* synth_params){
+		uint32_t q = (uint32_t)(synth_params->pMux[6]*PWM_PERIOD)>>12;
 		TIM3->CCR2 = q;
 	}
 
@@ -53,9 +105,12 @@ class Svf {
 	 * Set filter cutoff frequency
 	 * @param fc Cutoff frequency  [0..PWM_PERIOD]
 	 */
-	void set_fc(uint16_t fc){
+	void set_fc(synth_params_t* synth_params){
+		uint32_t fc = (uint32_t)(synth_params->pMux[7]*PWM_PERIOD)>>12;
 		TIM3->CCR4 = fc;
+
 	}
+
 };
 
 

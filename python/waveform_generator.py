@@ -163,20 +163,10 @@ fp.writelines(table)
 fp.writelines('\n\n')
 
 '''-------------------------------------------------------------------------------
- POT EXP TABLE
+ ADSR BETA EXP TABLE
 ------------------------------------------------------------------------------'''
 
-# N = 256;
-# beta_table = [];
-# time_table = logspace(log10(0.001),log10(10),256);
-# for i = 1:N
-#     tau = time_table(i);
-#     beta = int32((2^31)*exp(-(1/(tau*fs))));
-#     beta_table = [beta_table,beta];
-# end
-
-
-bits = 8;
+bits = 12;
 N = (2**bits);
 t = np.arange(0,N, dtype=np.float)
 c = 100;

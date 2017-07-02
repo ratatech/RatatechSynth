@@ -179,87 +179,87 @@ void GPIO_Conf_Init(void)
 
 void ButtonsInitEXTI(void)
 {
-    //enable AFIO clock
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,  ENABLE);
-    EXTI_InitTypeDef EXTI_InitStructure;
-    //NVIC structure to set up NVIC controller
-    NVIC_InitTypeDef NVIC_InitStructure;
-    //GPIO structure used to initialize Button pins
-    //Connect EXTI Lines to Button Pins
-//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
-//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
-//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource2);
-//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
-//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
-
-
-
-    //select EXTI line0
-    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
-    //select interrupt mode
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-    //generate interrupt on rising edge
-    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-    //enable EXTI line
-    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-    //send values to registers
-    EXTI_Init(&EXTI_InitStructure);
-
-    //select EXTI line1
-    EXTI_InitStructure.EXTI_Line = EXTI_Line1;
-    EXTI_Init(&EXTI_InitStructure);
-
-    //select EXTI line2
-    EXTI_InitStructure.EXTI_Line = EXTI_Line2;
-    EXTI_Init(&EXTI_InitStructure);
-
-    //select EXTI line3
-    EXTI_InitStructure.EXTI_Line = EXTI_Line3;
-    EXTI_Init(&EXTI_InitStructure);
-
-    //select EXTI line4
-    EXTI_InitStructure.EXTI_Line = EXTI_Line4;
-    EXTI_Init(&EXTI_InitStructure);
-
-//    //select EXTI line5
-//    EXTI_InitStructure.EXTI_Line = EXTI_Line5;
+//    //enable AFIO clock
+//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,  ENABLE);
+//    EXTI_InitTypeDef EXTI_InitStructure;
+//    //NVIC structure to set up NVIC controller
+//    NVIC_InitTypeDef NVIC_InitStructure;
+//    //GPIO structure used to initialize Button pins
+//    //Connect EXTI Lines to Button Pins
+////    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
+////    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
+////    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource2);
+////    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
+////    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
+//
+//
+//
+//    //select EXTI line0
+//    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+//    //select interrupt mode
+//    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+//    //generate interrupt on rising edge
+//    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+//    //enable EXTI line
+//    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+//    //send values to registers
 //    EXTI_Init(&EXTI_InitStructure);
 //
-//    //select EXTI line6
-//    EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+//    //select EXTI line1
+//    EXTI_InitStructure.EXTI_Line = EXTI_Line1;
 //    EXTI_Init(&EXTI_InitStructure);
-
-    //configure NVIC
-    //select NVIC channel 0 to configure
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-    //set priority to lowest
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-    //set subpriority to lowest
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-    //enable IRQ channel
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    //update NVIC registers
-    NVIC_Init(&NVIC_InitStructure);
-
-    //select NVIC channel 1 to configure
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
-    //update NVIC registers
-    NVIC_Init(&NVIC_InitStructure);
-
-    //select NVIC channel 2 to configure
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-    //update NVIC registers
-    NVIC_Init(&NVIC_InitStructure);
-
-    //select NVIC channel 3 to configure
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI3_IRQn;
-    //update NVIC registers
-    NVIC_Init(&NVIC_InitStructure);
-
-    //select NVIC channel 4 to configure
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
-    //update NVIC registers
-    NVIC_Init(&NVIC_InitStructure);
+//
+//    //select EXTI line2
+//    EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+//    EXTI_Init(&EXTI_InitStructure);
+//
+//    //select EXTI line3
+//    EXTI_InitStructure.EXTI_Line = EXTI_Line3;
+//    EXTI_Init(&EXTI_InitStructure);
+//
+//    //select EXTI line4
+//    EXTI_InitStructure.EXTI_Line = EXTI_Line4;
+//    EXTI_Init(&EXTI_InitStructure);
+//
+////    //select EXTI line5
+////    EXTI_InitStructure.EXTI_Line = EXTI_Line5;
+////    EXTI_Init(&EXTI_InitStructure);
+////
+////    //select EXTI line6
+////    EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+////    EXTI_Init(&EXTI_InitStructure);
+//
+//    //configure NVIC
+//    //select NVIC channel 0 to configure
+//    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+//    //set priority to lowest
+//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+//    //set subpriority to lowest
+//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+//    //enable IRQ channel
+//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//    //update NVIC registers
+//    NVIC_Init(&NVIC_InitStructure);
+//
+//    //select NVIC channel 1 to configure
+//    NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
+//    //update NVIC registers
+//    NVIC_Init(&NVIC_InitStructure);
+//
+//    //select NVIC channel 2 to configure
+//    NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
+//    //update NVIC registers
+//    NVIC_Init(&NVIC_InitStructure);
+//
+//    //select NVIC channel 3 to configure
+//    NVIC_InitStructure.NVIC_IRQChannel = EXTI3_IRQn;
+//    //update NVIC registers
+//    NVIC_Init(&NVIC_InitStructure);
+//
+//    //select NVIC channel 4 to configure
+//    NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
+//    //update NVIC registers
+//    NVIC_Init(&NVIC_InitStructure);
 
 //    //select NVIC channel 5 to configure
 //    NVIC_InitStructure.NVIC_IRQChannel = EXTI5_IRQn;
@@ -371,7 +371,7 @@ void USART_Conf_Init(void){
 
 	/* USART1 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -399,7 +399,7 @@ void USART_Conf_Init(void){
 
 	/* USART2 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -429,7 +429,7 @@ void USART_Conf_Init(void){
 
 	/* USART3 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -450,7 +450,6 @@ void USART_Conf_Init(void){
 void ratatech_init(synth_params_t* synth_params){
 
 	RCC_ClocksTypeDef RCC_Clocks;
-	uint16_t* temp;
 	SystemInit();
 	RCC_Clocks_Init();
 	SystemCoreClockUpdate();
@@ -458,6 +457,9 @@ void ratatech_init(synth_params_t* synth_params){
 	/** SysTick end of count event each 1ms */
 	RCC_GetClocksFreq(&RCC_Clocks);
 	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
+
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);    //4 bits for preemp priority 0 bit for sub priority
 
     /** Configure and init peripherals */
 	GPIO_Conf_Init();

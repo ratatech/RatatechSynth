@@ -48,7 +48,7 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 		GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
 
 		/** Add small delay to allow the DAC finish the conversion
-		250 cycles delay seems to work well for "ADC_SampleTime_239Cycles5"
+		30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
 		Just observed behaviour, to be checked if this is the right value
 		*/
 		for(uint d=0;d<30;d++){

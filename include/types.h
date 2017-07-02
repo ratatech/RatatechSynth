@@ -36,6 +36,7 @@ This file is part of XXXXXXX
 #define	 LFO_BLOCK_SIZE 1
 #define MAX_AMP 0x7FFF
 #define MUX_BITS 8
+#define	 SHIFT_REGISTER_BITS 8
 
 struct object_pool_t
 {
@@ -45,6 +46,7 @@ struct object_pool_t
 	void*	midi;
 	void*	adsr;
 	void*	mux;
+	void*	svf;
 };
 
 typedef enum {OSC1,OSC2,VCF} dest_t;
