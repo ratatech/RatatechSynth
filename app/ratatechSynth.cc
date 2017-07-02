@@ -22,6 +22,7 @@
  */
 
 #include "ratatechSynth.h"
+#define TRACE
 
 using namespace std;
 
@@ -55,6 +56,8 @@ uint16_t out_sample;
 /** Output buffer status */
 bool status = true;
 
+uint16_t* pAdc;
+
 
 
 int main(void)
@@ -70,6 +73,8 @@ int main(void)
 	/** Link ADSR and LFO pointers to the global structure */
 	pAdsr = &synth_params.adsr_vol_amp;
 	pLfo  = &synth_params.lfo_amp;
+	pAdc  = &synth_params.adc_read;
+
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
@@ -104,6 +109,7 @@ int main(void)
 	{
 		/** Fill audio buffer with a new sample */
 		fill_buffer();
+
 	}
 
 }
@@ -137,7 +143,13 @@ void low_rate_tasks(void){
 		/** Set OSC freq from the MIDI table */
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
-	//iprintf("dfasdfasdfs");
+
+	iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
+			synth_params.pMux[0],synth_params.pMux[1],synth_params.pMux[2],synth_params.pMux[3],
+			synth_params.pMux[4],synth_params.pMux[5],synth_params.pMux[6],synth_params.pMux[7]);
+
+
+
 }
 
 /**

@@ -17,7 +17,7 @@ void GPIO_Conf_Init(void);
 void ButtonsInitEXTI(void);
 void ADC_Conf_Init(void);
 void USART_Conf_Init(void);
-void DMA_Conf_Init(uint16_t ADCConvertedValue);
+void DMA_Conf_Init(uint16_t* ADCConvertedValue);
 void ratatech_init(synth_params_t* synth_params);
 
 #endif /* INCLUDE_SYSTEM_INIT_H_ */

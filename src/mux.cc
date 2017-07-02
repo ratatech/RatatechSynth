@@ -27,7 +27,7 @@ This file is part of XXXXXXX
  * @param synth_params_t	Synth global structure
  * @param pMux				Output buffer containing the mux read values
  */
-void Mux::update(synth_params_t* synth_params_t, uint16_t* pMux)
+void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 {
 	BitAction sb;
 
@@ -47,8 +47,12 @@ void Mux::update(synth_params_t* synth_params_t, uint16_t* pMux)
 		(((s>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 		GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
 
+		for(int i=0;i<1000;i++){
+
+		}
+
 		/** Store each multiplexed input into the buffer */
-		*pMux++ = readADC1(4);
+		pMux[s] = synth_params->adc_read;
 
 	}
 

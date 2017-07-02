@@ -282,29 +282,35 @@ void ADC_Conf_Init(void){
 
 	ADC_InitTypeDef ADC_InitStructure;
 
-	/* ADC1 configuration ------------------------------------------------------*/
 	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
-	ADC_InitStructure.ADC_ScanConvMode = DISABLE; // Single Channel
-	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE; // Scan on Demand
+	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 	ADC_InitStructure.ADC_NbrOfChannel = 1;
 	ADC_Init(ADC1, &ADC_InitStructure);
 
+	/* ADC1 regular channel14 configuration */
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_55Cycles5);
+
+	/* Enable ADC1 DMA */
+	ADC_DMACmd(ADC1, ENABLE);
+
 	/* Enable ADC1 */
 	ADC_Cmd(ADC1, ENABLE);
 
-	/* Enable ADC1 reset calibaration register */
+	/* Enable ADC1 reset calibration register */
 	ADC_ResetCalibration(ADC1);
-
 	/* Check the end of ADC1 reset calibration register */
 	while(ADC_GetResetCalibrationStatus(ADC1));
 
-	/* Start ADC1 calibaration */
+	/* Start ADC1 calibration */
 	ADC_StartCalibration(ADC1);
-
 	/* Check the end of ADC1 calibration */
 	while(ADC_GetCalibrationStatus(ADC1));
+
+	/* Start ADC1 Software Conversion */
+	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
 
 }
@@ -312,14 +318,16 @@ void ADC_Conf_Init(void){
 /**
  * Configure and initialize DMA Peripheral
  */
-void DMA_Conf_Init(uint16_t ADCConvertedValue){
+void DMA_Conf_Init(uint16_t* ADCConvertedValue){
 
 	DMA_InitTypeDef DMA_InitStructure;
+
+	//*ADCConvertedValue = 587;
 
 	/* DMA1 channel1 configuration ----------------------------------------------*/
 	DMA_DeInit(DMA1_Channel1);
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&adc_read_test;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)ADCConvertedValue;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
 	DMA_InitStructure.DMA_BufferSize = 1;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -444,7 +452,7 @@ void USART_Conf_Init(void){
 void ratatech_init(synth_params_t* synth_params){
 
 	RCC_ClocksTypeDef RCC_Clocks;
-
+	uint16_t* temp;
 	SystemInit();
 	RCC_Clocks_Init();
 	SystemCoreClockUpdate();
@@ -460,7 +468,9 @@ void ratatech_init(synth_params_t* synth_params){
 	ButtonsInitEXTI();
 	ADC_Conf_Init();
 	USART_Conf_Init();
-	DMA_Conf_Init(synth_params->adc_read);
+	DMA_Conf_Init(&synth_params->adc_read);
+
+
 
 }
 

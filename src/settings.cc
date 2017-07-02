@@ -55,7 +55,7 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->vel = 0;
 		synth_params->note_ON = 0;
 
-		synth_params->adc_read = 0;
+		//synth_params->adc_read[0] = 960;
 		synth_params->FM_mod_amp = 0;
 		synth_params->I = 0;
 		synth_params->FM_synth = 0;
