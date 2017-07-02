@@ -31,6 +31,8 @@ void TIM_Config(void)
 	TIM_OCInitTypeDef timeOCInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);    //4 bits for preemp priority 0 bit for sub priority
+
 	//*************************************************************************************
 	/* PWM Timer1 configuration*/
 	//*************************************************************************************
@@ -56,7 +58,6 @@ void TIM_Config(void)
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
-		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  // 2.2 priority split.
 
 		/*  Parameters to configure timer at 1hz ie. every 1s
 		*	timerInitStructure.TIM_Period    = 32768;
@@ -89,7 +90,7 @@ void TIM_Config(void)
 	{
 		/* TIM2 NVIC configuration */
 		NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 

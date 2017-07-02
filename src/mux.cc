@@ -51,88 +51,13 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 		250 cycles delay seems to work well for "ADC_SampleTime_239Cycles5"
 		Just observed behaviour, to be checked if this is the right value
 		*/
-		for(uint d=0;d<250;d++){
+		for(uint d=0;d<30;d++){
 			__asm__("nop");
 		}
 
-	   /** Read adc corresponding to each selected bit */
-		switch(s){
-			/** MUX x0 */
-			case 0 :
-				mux_x0 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x1 */
-			case 1 :
-				mux_x1 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x2 */
-			case 2 :
-				mux_x2 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x3 */
-			case 3 :
-				mux_x3 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x4 */
-			case 4 :
-				mux_x4 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x5 */
-			case 5 :
-				mux_x5 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x6 */
-			case 6 :
-				mux_x6 = synth_params->adc_read;
-
-			break;
-
-			/** MUX x7 */
-			case 7 :
-				mux_x7 = synth_params->adc_read;
-
-			break;
-		}
-
+		/** Read adc value corresponding to each mux selected bit */
+		pMux[s] = synth_params->adc_read;
 	}
 
-
 }
 
-/**
- * Read the selected channel on the ADC1
- * @param channel
- * @return ADC covnerted value
- */
-uint16_t Mux::readADC1(uint8_t channel)
-{
-//  ADC_RegularChannelConfig(ADC1, channel, 1, ADC_SampleTime_1Cycles5);
-//  // Start the conversion
-//  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-//  // Wait until conversion completion
-//  //while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
-//  // Get the conversion value
-//  return ADC_GetConversionValue(ADC1);
-
-  uint16_t data_adc;
-//  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-//  while(ADC_GetSoftwareStartConvStatus(ADC1));
-//  while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
-//  data_adc = ADC_GetConversionValue(ADC1);
-//  ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-  return(data_adc);
-
-
-}

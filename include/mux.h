@@ -55,12 +55,6 @@ class Mux{
 		 */
 		void update(synth_params_t* synth_params_t, uint16_t* pMux);
 
-		/**
-		 * Read the selected channel on the ADC1
-		 * @param channel
-		 * @return ADC covnerted value
-		 */
-		uint16_t readADC1(uint8_t channel);
 
 };
 
