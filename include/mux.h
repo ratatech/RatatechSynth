@@ -32,6 +32,16 @@ This file is part of XXXXXXX
 class Mux{
 
 	public:
+
+		uint16_t mux_x0;
+		uint16_t mux_x1;
+		uint16_t mux_x2;
+		uint16_t mux_x3;
+		uint16_t mux_x4;
+		uint16_t mux_x5;
+		uint16_t mux_x6;
+		uint16_t mux_x7;
+
 		/** Constructor
 		*/
 		Mux(){

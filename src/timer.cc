@@ -42,7 +42,7 @@ void TIM_Config(void)
 #ifdef USE_AUDIO_TIMER
  	audio_on = true;
 #endif
- 	audio_on = false;
+ 	//audio_on = false;
  	if(audio_on)
  	{
 

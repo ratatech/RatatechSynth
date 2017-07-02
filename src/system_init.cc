@@ -291,7 +291,7 @@ void ADC_Conf_Init(void){
 	ADC_Init(ADC1, &ADC_InitStructure);
 
 	/* ADC1 regular channel14 configuration */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_55Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_1Cycles5);
 
 	/* Enable ADC1 DMA */
 	ADC_DMACmd(ADC1, ENABLE);
@@ -321,8 +321,6 @@ void ADC_Conf_Init(void){
 void DMA_Conf_Init(uint16_t* ADCConvertedValue){
 
 	DMA_InitTypeDef DMA_InitStructure;
-
-	//*ADCConvertedValue = 587;
 
 	/* DMA1 channel1 configuration ----------------------------------------------*/
 	DMA_DeInit(DMA1_Channel1);

@@ -47,12 +47,59 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 		(((s>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 		GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
 
-		for(int i=0;i<1000;i++){
-
-		}
-
 		/** Store each multiplexed input into the buffer */
-		pMux[s] = synth_params->adc_read;
+		//pMux[s] = synth_params->adc_read;
+
+	   /** Read adc corresponding to each selected bit */
+		switch(s){
+			/** MUX x0 */
+			case 0 :
+				mux_x0 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x1 */
+			case 1 :
+				mux_x1 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x2 */
+			case 2 :
+				mux_x2 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x3 */
+			case 3 :
+				mux_x3 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x4 */
+			case 4 :
+				mux_x4 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x5 */
+			case 5 :
+				mux_x5 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x6 */
+			case 6 :
+				mux_x6 = synth_params->adc_read;
+
+			break;
+
+			/** MUX x7 */
+			case 7 :
+				mux_x7 = synth_params->adc_read;
+
+			break;
+		}
 
 	}
 

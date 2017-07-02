@@ -22,7 +22,6 @@
  */
 
 #include "ratatechSynth.h"
-#define TRACE
 
 using namespace std;
 
@@ -143,10 +142,8 @@ void low_rate_tasks(void){
 		/** Set OSC freq from the MIDI table */
 		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
 	}
-
 	iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
-			synth_params.pMux[0],synth_params.pMux[1],synth_params.pMux[2],synth_params.pMux[3],
-			synth_params.pMux[4],synth_params.pMux[5],synth_params.pMux[6],synth_params.pMux[7]);
+			mux.mux_x0,mux.mux_x1,mux.mux_x2,mux.mux_x3,mux.mux_x4,mux.mux_x5,mux.mux_x6,mux.mux_x7);
 
 
 
