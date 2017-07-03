@@ -212,4 +212,30 @@ table = writeTable(name,macro_N,midi_table,'double')
 fp.writelines(table)
 fp.writelines('\n\n')
 
+'''-------------------------------------------------------------------------------
+ MIDI2PHASEINC TABLE
+------------------------------------------------------------------------------'''
+bits = 7;
+N = (2**bits);
+LUT_8_BIT = (2**8);
+SHIFT_20_BIT = (2**20);
+fs = 96000
+midi_ph_table = []
+
+for midi_num in range(0,N):
+    freq = np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000
+    ph_inc = np.int32(((float(LUT_8_BIT)/fs)*freq)*SHIFT_20_BIT)
+    midi_ph_table.append(ph_inc)
+    
+
+name = ' midi_phinc_lut' 
+macro_N = 'MIDI_PHINC_LUT_SIZE'
+table = writeTable(name,macro_N,midi_ph_table,'int32_t')
+
+
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+
 fp.close()

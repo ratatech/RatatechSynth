@@ -74,6 +74,12 @@ class Oscillator {
 		void set_freq_frac(double freq);
 
 		/**
+		 * Set oscillator fractional phase increment directly from the midi2ph table
+		 * @param midi_num Midi number
+		 */
+		void set_freq_midi(uint8_t midi_num);
+
+		/**
 		 * Set oscillator shape
 		 * @param _shape The selected shape of the oscillator to be chosen between {SIN,SQU,SAW,TRI}
 		 */

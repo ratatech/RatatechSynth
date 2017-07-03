@@ -74,7 +74,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 		break;
 
 		case SUSTAIN_STATE:
-			arm_fill_q15(sustain_level,pOut,FRAME_SIZE);
+			*pAdsr = sustain_level;
 			if (note_ON == false){
 				adsr_state = RELEASE_STATE;
 			}
@@ -114,12 +114,15 @@ void ADSR::set_params(synth_params_t *synth_params){
 
 	beta_att = adsr_beta_exp_curve_q31[synth_params->pMux[0]];
 	beta_dec = adsr_beta_exp_curve_q31[synth_params->pMux[1]];
-	beta_rel = adsr_beta_exp_curve_q31[synth_params->pMux[2]];
+	beta_rel = adsr_beta_exp_curve_q31[synth_params->pMux[3]];
 
-//	beta_att = adsr_beta_exp_curve_q31[255];
-//	beta_dec = adsr_beta_exp_curve_q31[15];
-//	beta_rel = adsr_beta_exp_curve_q31[0];
+	sustain_level = (q15_t)(synth_params->pMux[2]*MAX_AMP)>>12;
+	sustain_level = (q15_t)((int32_t)(synth_params->pMux[2]*MAX_AMP)>>12);
 
-//	iprintf("beta att = %i\r",(synth_params->pMux[0]*LUT_8_BIT)>>12);
+	/** Saturate sustain level */
+//	if(sustain_level>target_level_att)
+//		sustain_level = target_level_att;
+
+	target_level_dec = sustain_level+(sustain_level - ((sustain_level*TARGET_REACH)>>15));
 
 }

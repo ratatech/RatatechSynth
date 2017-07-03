@@ -44,7 +44,7 @@ void TIM_Config(void)
 #ifdef USE_AUDIO_TIMER
  	audio_on = true;
 #endif
- 	//audio_on = false;
+
  	if(audio_on)
  	{
 
@@ -59,7 +59,10 @@ void TIM_Config(void)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 
-		/*  Parameters to configure timer at 1hz ie. every 1s
+		/*
+		* 	Prescaler = ((((ClockSpeed) / ((period) / (1 / frequency))) + 0.5) - 1)
+		*
+		* 	Parameters to configure timer at 1hz ie. every 1s:
 		*	timerInitStructure.TIM_Period    = 32768;
 		*	timerInitStructure.TIM_Prescaler = 2197; */
 		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -85,7 +88,7 @@ void TIM_Config(void)
 #ifdef USE_LOW_RATE_TIMER
  	low_rate_tasks_on = true;
 #endif
-
+ 	 low_rate_tasks_on = false;
 	if(low_rate_tasks_on)
 	{
 		/* TIM2 NVIC configuration */
@@ -93,15 +96,14 @@ void TIM_Config(void)
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-
 		NVIC_Init(&NVIC_InitStructure);
 
 		/* TIM2 configuration
 		 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
-		timerInitStructure.TIM_ClockDivision = 0;
+		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-		timerInitStructure.TIM_Period = SystemCoreClock/CONTROL_RATE;
-		timerInitStructure.TIM_Prescaler = 0;
+		timerInitStructure.TIM_Period = 32768;
+		timerInitStructure.TIM_Prescaler = 2197;
 		timerInitStructure.TIM_RepetitionCounter = 0;
 		TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
@@ -113,10 +115,6 @@ void TIM_Config(void)
 	//*************************************************************************************
 	/* PWM Timer3 configuration*/
 	//*************************************************************************************
-
-
-
-
 	/*
 	 * PWM_frequency = timer_tick_frequency / (TIM_Period + 1)
 	*/
@@ -143,6 +141,13 @@ void TIM_Config(void)
     TIM_OC3Init( TIM3, &timeOCInitStructure );
     TIM_OC4Init( TIM3, &timeOCInitStructure );
     //TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
+
+	/* TIM3 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
 
 

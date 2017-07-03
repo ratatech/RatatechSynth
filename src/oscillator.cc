@@ -118,6 +118,15 @@ void Oscillator::init(osc_params_t* osc_param){
 void Oscillator::set_freq_frac(double freq)
 {
 	ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freq)*SHIFT_20_BIT);
-	k_frac = ph_inc_frac & 0xFFFFF;
 	freq_frac = freq;
 }
+
+/**
+ * Set oscillator fractional phase increment directly from the midi2ph table
+ * @param midi_num Midi number
+ */
+void Oscillator::set_freq_midi(uint8_t midi_num)
+{
+	ph_inc_frac = midi_phinc_lut[midi_num];
+}
+

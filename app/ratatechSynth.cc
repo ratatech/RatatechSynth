@@ -23,6 +23,58 @@
 
 #include "ratatechSynth.h"
 
+#define RATATECH_PROFILING
+
+#ifdef RATATECH_PROFILING
+
+/* DWT (Data Watchpoint and Trace) registers, only exists on ARM Cortex with a DWT unit */
+  #define KIN1_DWT_CONTROL             (*((volatile uint32_t*)0xE0001000))
+    /*!< DWT Control register */
+  #define KIN1_DWT_CYCCNTENA_BIT       (1UL<<0)
+    /*!< CYCCNTENA bit in DWT_CONTROL register */
+  #define KIN1_DWT_CYCCNT              (*((volatile uint32_t*)0xE0001004))
+    /*!< DWT Cycle Counter register */
+  #define KIN1_DEMCR                   (*((volatile uint32_t*)0xE000EDFC))
+    /*!< DEMCR: Debug Exception and Monitor Control Register */
+  #define KIN1_TRCENA_BIT              (1UL<<24)
+    /*!< Trace enable bit in DEMCR register */
+
+#define KIN1_InitCycleCounter() \
+  KIN1_DEMCR |= KIN1_TRCENA_BIT
+  /*!< TRCENA: Enable trace and debug block DEMCR (Debug Exception and Monitor Control Register */
+
+#define KIN1_ResetCycleCounter() \
+  KIN1_DWT_CYCCNT = 0
+  /*!< Reset cycle counter */
+
+#define KIN1_EnableCycleCounter() \
+  KIN1_DWT_CONTROL |= KIN1_DWT_CYCCNTENA_BIT
+  /*!< Enable cycle counter */
+
+#define KIN1_DisableCycleCounter() \
+  KIN1_DWT_CONTROL &= ~KIN1_DWT_CYCCNTENA_BIT
+  /*!< Disable cycle counter */
+
+#define KIN1_GetCycleCounter() \
+  KIN1_DWT_CYCCNT
+  /*!< Read cycle counter register */
+
+/** Usage :
+
+
+	uint32_t cycles; // number of cycles //
+
+	KIN1_InitCycleCounter(); 			// enable DWT hardware
+	KIN1_ResetCycleCounter(); 			// reset cycle counter
+	KIN1_EnableCycleCounter(); 			// start counting
+	foo(); 								// call function and count cycles
+	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
+	KIN1_DisableCycleCounter(); 		// disable counting if not used any more
+
+*/
+
+#endif
+
 using namespace std;
 
 /** Parameter structures */
@@ -58,10 +110,10 @@ bool status = true;
 
 uint16_t* pAdc;
 
-
-
 int main(void)
 {
+
+
 	/** Put objects in the pool */
 	object_pool.osc = 			&osc;
 	object_pool.lfo = 			&lfo;
@@ -87,7 +139,7 @@ int main(void)
 	osc.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc.set_freq_frac(1000);
+	osc.set_freq_frac(100);
 	osc.set_shape(SAW);
 
 	/** Init adsr */
@@ -115,6 +167,7 @@ int main(void)
 	while(1)
 	{
 		/** Fill audio buffer with a new sample */
+		//low_rate_tasks();
 		fill_buffer();
 
 	}
@@ -125,7 +178,17 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
+	//iprintf("ALIVE!\r");
+}
 
+/**
+ * Fill the main buffer containing the output audio samples
+ *
+ * @param void
+ * @return void
+ */
+inline void fill_buffer(void)
+{
 	/** Update midi information */
 	midi.update(&synth_params);
 
@@ -142,9 +205,10 @@ void low_rate_tasks(void){
 	svf.set_q(&synth_params);
 	adsr.set_params(&synth_params);
 
-
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
+
+
 
 		/** If a new note is received reset ADSR */
 		adsr.reset();
@@ -153,24 +217,11 @@ void low_rate_tasks(void){
 		midi.attack_trigger = false;
 
 		/** Set OSC freq from the MIDI table */
-		osc.set_freq_frac(midi_freq_lut[synth_params.pitch]);
+		osc.set_freq_midi(synth_params.pitch);
+
 	}
-	//iprintf("ADSR STATE = %i\r",adsr.adsr_state);
-//	iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
-//			synth_params.pMux[0],synth_params.pMux[1],synth_params.pMux[2],synth_params.pMux[3],
-//			synth_params.pMux[4],synth_params.pMux[5],synth_params.pMux[6],synth_params.pMux[7]);
+	//iprintf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 
-
-}
-
-/**
- * Fill the main buffer containing the output audio samples
- *
- * @param void
- * @return void
- */
-inline void fill_buffer(void)
-{
 
 	/** Sound generation */
 	snd_gen.gen_voice(&synth_params, pOut);
@@ -217,7 +268,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		low_rate_tasks();
+		//low_rate_tasks();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
@@ -244,3 +295,6 @@ void USART1_IRQHandler(void)
     /** ------------------------------------------------------------ */
     /** Other USART1 interrupts handler can go here ...             */
 }
+
+
+

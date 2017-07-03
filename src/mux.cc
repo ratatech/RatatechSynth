@@ -31,33 +31,38 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 {
 	BitAction sb;
 
-	/** Iterate over the 8 mux inputs*/
-	for(uint s=0;s<MUX_BITS;s++)
-	{
 
-		/** BIT 0 */
-		((s & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-		GPIO_WriteBit(GPIOB,GPIO_Pin_5,sb);
+	/** BIT 0 */
+	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(GPIOB,GPIO_Pin_5,sb);
 
-		/** BIT 1 */
-		(((s>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-		GPIO_WriteBit(GPIOB,GPIO_Pin_6,sb);
+	/** BIT 1 */
+	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(GPIOB,GPIO_Pin_6,sb);
 
-		/** BIT 2 */
-		(((s>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-		GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
+	/** BIT 2 */
+	(((seq_x>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
 
-		/** Add small delay to allow the DAC finish the conversion
-		30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
-		Just observed behaviour, to be checked if this is the right value
-		*/
-		for(uint d=0;d<30;d++){
-			__asm__("nop");
-		}
-
-		/** Read adc value corresponding to each mux selected bit */
-		pMux[s] = synth_params->adc_read;
+	/** Add small delay to allow the DAC finish the conversion
+	30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
+	Just observed behaviour, to be checked if this is the right value
+	*/
+	for(uint d=0;d<50;d++){
+		__asm__("nop");
 	}
+
+	/** Read adc value corresponding to each mux selected bit */
+	pMux[seq_x] = synth_params->adc_read;
+
+	seq_x++;
+	seq_x %= MUX_BITS;
+
+#if DEBUG_ADC
+		iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
+		synth_params->pMux[0],synth_params->pMux[1],synth_params->pMux[2],synth_params->pMux[3],
+		synth_params->pMux[4],synth_params->pMux[5],synth_params->pMux[6],synth_params->pMux[7]);
+#endif
 
 }
 
