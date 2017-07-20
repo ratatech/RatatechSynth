@@ -34,11 +34,24 @@ class RatatechBuild(object):
     def parseUsart(self,usartOutLines):
         # Print the usart output    
         test_result = True
+        start_printing = False
+        newUsartOutLines = []
         for line in usartOutLines:
-            print line 
+            
+            # Wait until the first line does not appear
+            if 'TEST:' in line:
+                start_printing = True
+            
+            # Print line 
+            if start_printing:
+                print line
+                newUsartOutLines.append(line)
+                
+            # Check for a failed result    
             if 'FAIL' in line:
                 test_result = False
-        return test_result
+                
+        return test_result,newUsartOutLines
                
     def testUsart(self,port="ttyUSB0"):    
         
@@ -54,7 +67,7 @@ class RatatechBuild(object):
         usartOutLines = ratatech_serial.readLines("1")
         
         # Parse lines and check for fails
-        test_result = self.parseUsart(usartOutLines)
+        test_result,usartOutLines = self.parseUsart(usartOutLines)
 
         return usartOutLines, test_result
     

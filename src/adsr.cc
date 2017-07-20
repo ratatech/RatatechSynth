@@ -54,7 +54,7 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 
 		case ATTACK_STATE:
 
-			if (adsr_sample >= target_level_att){
+			if (adsr_sample >= target_level_att-1){
 				target_level = sustain_level;
 				beta = beta_dec;
 				adsr_state = DECAY_STATE;

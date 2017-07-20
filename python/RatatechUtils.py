@@ -55,6 +55,7 @@ class RatatechUtils(object):
             plt.figure()
             plt.plot(raw_audio)
             plt.show(block=False)
+            plt.show()
             #plt.close()
             
             

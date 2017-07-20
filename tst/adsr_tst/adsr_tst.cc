@@ -94,7 +94,7 @@ void test_adsr_out(void){
 	osc.set_freq_frac(14000);
 
 	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 1;
+	uint8_t sustain_timeout = 100;
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -104,7 +104,7 @@ void test_adsr_out(void){
 	adsr.beta_dec = 1836840104; /** tau = 0.025, fs = 256Hz */
 	adsr.beta_rel = 2065214841; /** tau = 0.1,   fs = 256Hz */
 
-	//adsr.target_level = 0x7fff;
+	adsr.adsr_state = ATTACK_STATE;
 
 	//beta = 2065214841; // tau = 0.1, fs=256hz
 
@@ -127,7 +127,7 @@ void test_adsr_out(void){
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
-		arm_mult_q15(pAdsr,pOsc,pAdsr,FRAME_SIZE);
+		//arm_mult_q15(pAdsr,pOsc,pAdsr,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE],FRAME_SIZE);
@@ -146,11 +146,12 @@ void test_adsr_out(void){
 int main(void)
 {
 
-	/** Init system and peripherals */
-	ratatech_init();
-
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
+
+	/** Init system and peripherals */
+	ratatech_init(&synth_params);
+
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
