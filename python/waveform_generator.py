@@ -172,13 +172,16 @@ t = np.arange(0,N, dtype=np.float)
 c = 100;
 b = np.power((2**14/c),(np.divide(1.0, N-1)))
 exp_curve = np.int16(np.round(np.power(b, t)*c))
+ratio = 0.1
+AUDIO_FS = 96000
+FRAME_SIZE = 32
+fs = AUDIO_FS/FRAME_SIZE
 
-fs = 4000
 beta_table = [];
 time_table = np.logspace(np.log10(0.001),np.log10(10),N);
 for i in range(0,N-1):
     tau = time_table[i];
-    beta = np.int32((2**31)*np.exp(-(1/(tau*fs))));
+    beta = np.int32((2**31)*np.exp((-np.log((1.0 + ratio) / ratio)/(tau*fs))));
     beta_table.append(beta)
 
 name = 'adsr_beta_exp_curve_q31' 
@@ -187,7 +190,7 @@ table = writeTable(name,macro_N,beta_table,'q31_t')
 
 if plotting:
     plt.figure(6)
-    plt.plot(time_table)
+    plt.plot(beta_table)
     plt.show()
 
 # Write to output file

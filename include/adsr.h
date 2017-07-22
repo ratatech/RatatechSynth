@@ -22,14 +22,18 @@
 enum adsr_state_e {ATTACK_STATE,DECAY_STATE ,SUSTAIN_STATE,RELEASE_STATE,IDLE_STATE};
 enum adsr_mode_e {LIN,EXP,LOG};
 
-class ADSR: MovAvg{
+class ADSR{
 
 	public:
 
-		q31_t beta_att,beta_dec,beta_rel;
+		q31_t beta,beta_att,beta_dec,beta_rel;
+		q31_t base,base_att,base_dec,base_rel;
+		q31_t state;
 		q15_t target_level,target_level_att,target_level_dec,sustain_level;
+		int64_t ratio;
 		adsr_state_e adsr_state;
 		bool note_ON;
+
 
 
 		/** ADSR Constructor.
@@ -48,13 +52,18 @@ class ADSR: MovAvg{
 			beta_rel = synth_params->adsr_params.beta_rel;
 			state = synth_params->mov_avg_params.init_state;
             beta  = synth_params->mov_avg_params.beta;
-            target_level_att = (MAX_AMP*TARGET_REACH)>>15;
+            target_level_att = (MAX_AMP);
             target_level = target_level_att;
             adsr_state = IDLE_STATE;
-            sustain_level = target_level_att;
-            target_level_dec = sustain_level+(sustain_level - ((sustain_level*TARGET_REACH)>>15));
+            sustain_level = synth_params->adsr_params.sustain_level;
+            target_level_dec = sustain_level;
+
             note_ON = false;
 			beta = beta_att;
+	        base = base_att;
+	        ratio = synth_params->adsr_params.ratio;
+
+	        set_base(synth_params);
 		}
 
 		/**
@@ -72,6 +81,15 @@ class ADSR: MovAvg{
 
 		/** Get the newly read values from the ADC and set the coefficients */
 		void set_params(synth_params_t *synth_params);
+
+		/**
+		 *  Compute a new ADSR sample
+		 * @return ADSR sample
+		 */
+		q15_t update(void);
+
+		void set_base(synth_params_t *synth_params);
+
 
 };
 

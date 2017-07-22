@@ -20,10 +20,10 @@ class RatatechSerial(object):
         self.ser.parity = serial.PARITY_NONE #set parity check: no parity
         self.ser.stopbits = serial.STOPBITS_ONE #number of stop bits
         self.ser.timeout = 1            #non-block read
-        self.ser.xonxoff = False     #disable software flow control
-        self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
-        self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
-        self.ser.writeTimeout = 2     #timeout for write
+        self.ser.xonxoff = False        #disable software flow control
+        self.ser.rtscts = False         #disable hardware (RTS/CTS) flow control
+        self.ser.dsrdtr = False         #disable hardware (DSR/DTR) flow control
+        self.ser.writeTimeout = 2       #timeout for write
         self.ser.printConsole = False
 
     def open(self):
@@ -91,6 +91,10 @@ class RatatechSerial(object):
             
             # Send usart confirmation and then start reading 
             self.ser.write(confStr)
+            
+            # Flush Buffers
+            self.ser.flushInput() #flush input buffer, discarding all its contents
+            self.ser.flushOutput()#flush output buffer, aborting current output 
             
             numOfLines = 0
             usartLines = []

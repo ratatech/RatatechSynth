@@ -94,19 +94,19 @@ void test_adsr_out(void){
 	osc.set_freq_frac(14000);
 
 	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 100;
+	uint8_t sustain_timeout = 0;
 
 	/** Init adsr */
+	synth_params.adsr_params.sustain_level = MAX_AMP>>1;
 	adsr.init(&synth_params);
 
 	/** ADSR time params*/
-	adsr.beta_att = 1453060120; /** tau = 0.01,  fs = 256Hz */
-	adsr.beta_dec = 1836840104; /** tau = 0.025, fs = 256Hz */
-	adsr.beta_rel = 2065214841; /** tau = 0.1,   fs = 256Hz */
-
 	adsr.adsr_state = ATTACK_STATE;
+	synth_params.note_ON = true;
+	adsr.set_base(&synth_params);
+	adsr.base = adsr.base_att;
 
-	//beta = 2065214841; // tau = 0.1, fs=256hz
+
 
 
 	/** Specify the total number of frames */
@@ -115,11 +115,11 @@ void test_adsr_out(void){
 	/** Get ADSR envelope frames */
 	for(int i=0; i< NFRAMES; i++){
 
-		if(adsr.adsr_state == SUSTAIN_STATE){
-			sustain_timeout--;
-		}
+//		if(adsr.adsr_state == SUSTAIN_STATE){
+//			sustain_timeout--;
+//		}
 		if(sustain_timeout<=0){
-			adsr.note_ON = false;
+			synth_params.note_ON = false;
 		}
 		/** Get ADSR envelope frames */
 		adsr.get_frame(&synth_params,pAdsr,FRAME_SIZE);
