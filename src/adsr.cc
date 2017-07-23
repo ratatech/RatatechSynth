@@ -49,6 +49,51 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 		}
 	}
 
+	/** Update states */
+	switch(adsr_state){
+
+		case ATTACK_STATE:
+
+			if (adsr_sample >= target_level_att){
+				beta = beta_dec;
+		        base = base_dec;
+				adsr_state = DECAY_STATE;
+
+			}
+
+		break;
+
+		case DECAY_STATE:
+
+			if (adsr_sample <= target_level_dec){
+				beta = beta_rel;
+		        base = base_rel;
+				adsr_state = SUSTAIN_STATE;
+			}
+
+		break;
+
+		case SUSTAIN_STATE:
+			if (note_ON == false){
+				adsr_state = RELEASE_STATE;
+			}
+
+		break;
+
+		case RELEASE_STATE:
+
+			if (adsr_sample <= 0){
+				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
+				beta = beta_att;
+		        base = base_att;
+				adsr_state = IDLE_STATE;
+				adsr_sample = 0;
+
+			}
+
+		break;
+	}
+
 }
 
 /**
@@ -132,57 +177,6 @@ q15_t ADSR::update(void){
 			state = INT32_MAX;
 
 	q15_t adsr_sample = (q15_t)(state>>16); // 	 y = s0.31 >> 16   = s0.15
-
-
-
-	/** Update states */
-	switch(adsr_state){
-
-		case ATTACK_STATE:
-
-			if (adsr_sample >= target_level_att){
-				target_level = sustain_level;
-				beta = beta_dec;
-		        base = base_dec;
-				adsr_state = DECAY_STATE;
-
-			}
-
-		break;
-
-		case DECAY_STATE:
-
-			if (adsr_sample <= target_level_dec){
-				target_level = 0;
-				beta = beta_rel;
-		        base = base_rel;
-				adsr_state = SUSTAIN_STATE;
-			}
-
-		break;
-
-		case SUSTAIN_STATE:
-			adsr_sample = sustain_level;
-			if (note_ON == false){
-				adsr_state = RELEASE_STATE;
-			}
-
-		break;
-
-		case RELEASE_STATE:
-
-			if (adsr_sample <= 0){
-				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
-				target_level = MAX_AMP;
-				beta = beta_att;
-		        base = base_att;
-				adsr_state = IDLE_STATE;
-				adsr_sample = 0;
-
-			}
-
-		break;
-	}
 
 	return(adsr_sample);
 }

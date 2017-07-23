@@ -30,6 +30,8 @@ This file is part of XXXXXXX
  */
 #define BUFF_SIZE 256
 
+#define FRAME_SIZE_TEST 1
+
 /**
  * ADSR unit test reference buffer
  */
@@ -80,10 +82,10 @@ ADSR adsr;
 void test_adsr_out(void){
 
 	/** Pointer to ADSR envelope frame  **/
-	q15_t pAdsr[FRAME_SIZE];
+	q15_t pAdsr[FRAME_SIZE_TEST];
 
 	/** Pointer to oscillator frame  **/
-	q15_t pOsc[FRAME_SIZE];
+	q15_t pOsc[FRAME_SIZE_TEST];
 
 	int32_t sample;
 
@@ -94,7 +96,7 @@ void test_adsr_out(void){
 	osc.set_freq_frac(14000);
 
 	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 0;
+	uint8_t sustain_timeout = 10;
 
 	/** Init adsr */
 	synth_params.adsr_params.sustain_level = MAX_AMP>>1;
@@ -110,27 +112,27 @@ void test_adsr_out(void){
 
 
 	/** Specify the total number of frames */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint16_t NFRAMES = 256;
 
 	/** Get ADSR envelope frames */
 	for(int i=0; i< NFRAMES; i++){
 
-//		if(adsr.adsr_state == SUSTAIN_STATE){
-//			sustain_timeout--;
-//		}
+		if(adsr.adsr_state == SUSTAIN_STATE){
+			sustain_timeout--;
+		}
 		if(sustain_timeout<=0){
 			synth_params.note_ON = false;
 		}
 		/** Get ADSR envelope frames */
-		adsr.get_frame(&synth_params,pAdsr,FRAME_SIZE);
+		adsr.get_frame(&synth_params,pAdsr,FRAME_SIZE_TEST);
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
+		osc.get_frame(&synth_params,pOsc,FRAME_SIZE_TEST);
 
-		//arm_mult_q15(pAdsr,pOsc,pAdsr,FRAME_SIZE);
+		//arm_mult_q15(pAdsr,pOsc,pAdsr,FRAME_SIZE_TEST);
 
 		/** Store frames in outuput buffer */
-		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE],FRAME_SIZE);
+		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE_TEST],FRAME_SIZE_TEST);
 
 	};
 

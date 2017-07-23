@@ -51,9 +51,10 @@ class RatatechUtils(object):
         raw_audio = np.fromstring(raw_audio, dtype=np.int32, sep=',')
         raw_audio = np.asarray(raw_audio, dtype=np.int16)
         scipy.io.wavfile.write(sub.replace('buff','test')+'.wav',fs,raw_audio)
+        t = np.arange(0,float(len(raw_audio))/fs,float(1)/fs)
         if debug:
             plt.figure()
-            plt.plot(raw_audio)
+            plt.plot(t,raw_audio)
             plt.show(block=False)
             plt.show()
             #plt.close()
