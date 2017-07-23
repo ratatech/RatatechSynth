@@ -26,12 +26,11 @@ This file is part of XXXXXXX
 using namespace std;
 
 /**
- * Get a new adsr envelope frame
+ * Get a new adsr envelope sample
  * @param synth_params 	Synth global structure
  * @param pAdsr 		ADSR envelope output buffer
- * @param block_size 	Number of samples in the vector
  */
-void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_size)
+void ADSR::get_sample(synth_params_t *synth_params, q15_t* pAdsr)
 {
 
 	q15_t * pOut = pAdsr;	/** Output pointer */
@@ -40,59 +39,8 @@ void ADSR::get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_s
 	/** Update note on status*/
 	note_ON = synth_params->note_ON;
 
-	/** Whenever not in sustain or idle state, process frame */
-	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
-
-		for(uint i=0;i<block_size;i++){
-			adsr_sample = update();
-			*pOut++ = adsr_sample;
-		}
-	}
-
-	/** Update states */
-	switch(adsr_state){
-
-		case ATTACK_STATE:
-
-			if (adsr_sample >= target_level_att){
-				beta = beta_dec;
-		        base = base_dec;
-				adsr_state = DECAY_STATE;
-
-			}
-
-		break;
-
-		case DECAY_STATE:
-
-			if (adsr_sample <= target_level_dec){
-				beta = beta_rel;
-		        base = base_rel;
-				adsr_state = SUSTAIN_STATE;
-			}
-
-		break;
-
-		case SUSTAIN_STATE:
-			if (note_ON == false){
-				adsr_state = RELEASE_STATE;
-			}
-
-		break;
-
-		case RELEASE_STATE:
-
-			if (adsr_sample <= 0){
-				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
-				beta = beta_att;
-		        base = base_att;
-				adsr_state = IDLE_STATE;
-				adsr_sample = 0;
-
-			}
-
-		break;
-	}
+	adsr_sample = update();
+	*pOut++ = adsr_sample;
 
 }
 
@@ -129,7 +77,6 @@ void ADSR::set_base(synth_params_t *synth_params){
 	x64 = x64 * x32;
 	base_rel = -(q31_t)(x64>>31);
 
-
 }
 
 /** Get the newly read values from the ADC and set the coefficients */
@@ -141,13 +88,6 @@ void ADSR::set_params(synth_params_t *synth_params){
 
 	sustain_level = (q15_t)(synth_params->pMux[2]*MAX_AMP)>>12;
 	sustain_level = (q15_t)((int32_t)(synth_params->pMux[2]*MAX_AMP)>>12);
-
-	/** Saturate sustain level */
-//	if(sustain_level>target_level_att)
-//		sustain_level = target_level_att;
-
-	target_level_dec = sustain_level+(sustain_level - ((sustain_level*TARGET_REACH)>>15));
-
 
 	set_base(synth_params);
 
@@ -163,20 +103,83 @@ q15_t ADSR::update(void){
 	q31_t x32;
 	int64_t x64;
 
-	x64 = ((int64_t)state) * ((int64_t)beta);	// x64 = s0.31 * s0.31 = s0.62
-	x32 = (q31_t)(x64 >>31);					// x32 = s0.62 >> 31   = s0.31
-	state = base + x32;							// x32 = s0.31 + s0.31 = s0.31
-	arm_add_q31(&base,&x32,&state,1);
+	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
 
-    /** saturate */
-	//state = (q15_t) (__SSAT(state, 31));
-	//state = (q15_t) (__USAT(state, 16));
-	if(state<0)
-			state = 0;
-	if(state>=INT32_MAX)
-			state = INT32_MAX;
+		x64 = ((int64_t)state) * ((int64_t)beta);	// x64 = s0.31 * s0.31 = s0.62
+		x32 = (q31_t)(x64 >>31);					// x32 = s0.62 >> 31   = s0.31
+		state = base + x32;							// x32 = s0.31 + s0.31 = s0.31
+		arm_add_q31(&base,&x32,&state,1);
+
+		/** saturate */
+		//state = (q15_t) (__SSAT(state, 31));
+		//state = (q15_t) (__USAT(state, 16));
+		if(state<0)
+				state = 0;
+		if(state>=INT32_MAX)
+				state = INT32_MAX;
+	}
+
 
 	q15_t adsr_sample = (q15_t)(state>>16); // 	 y = s0.31 >> 16   = s0.15
+
+	/** Update states */
+	switch(adsr_state){
+
+		case ATTACK_STATE:
+
+			if (adsr_sample >= MAX_AMP){
+				beta = beta_dec;
+		        base = base_dec;
+
+		        /** If sustain level is set to MAX, Go straight to SUSTAIN state,
+		         *  otherwise jump to DECAY state */
+		        if(sustain_level>=MAX_AMP){
+		        	adsr_state = SUSTAIN_STATE;
+		        }else{
+		        	adsr_state = DECAY_STATE;
+		        }
+
+
+			}
+
+		break;
+
+		case DECAY_STATE:
+
+			if (adsr_sample <= sustain_level){
+				adsr_sample = sustain_level;
+				adsr_state = SUSTAIN_STATE;
+			}
+
+		break;
+
+		case SUSTAIN_STATE:
+			if (note_ON == false){
+				adsr_state = RELEASE_STATE;
+				beta = beta_rel;
+		        base = base_rel;
+			}
+
+		break;
+
+		case RELEASE_STATE:
+
+			if (adsr_sample <= 0){
+				/** End of ADSR envelope Already set level and coeff for a possible new attack state. Remain on idle state */
+				beta = beta_att;
+		        base = base_att;
+				adsr_state = IDLE_STATE;
+				adsr_sample = 0;
+
+			}
+
+		break;
+
+		case IDLE_STATE:
+			// Do Nothing
+
+		break;
+	}
 
 	return(adsr_sample);
 }

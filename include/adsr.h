@@ -52,11 +52,9 @@ class ADSR{
 			beta_rel = synth_params->adsr_params.beta_rel;
 			state = synth_params->mov_avg_params.init_state;
             beta  = synth_params->mov_avg_params.beta;
-            target_level_att = (MAX_AMP);
-            target_level = target_level_att;
+
             adsr_state = IDLE_STATE;
             sustain_level = synth_params->adsr_params.sustain_level;
-            target_level_dec = sustain_level;
 
             note_ON = false;
 			beta = beta_att;
@@ -67,12 +65,11 @@ class ADSR{
 		}
 
 		/**
-		 * Get a new adsr envelope frame
+		 * Get a new adsr envelope sample
 		 * @param synth_params 	Synth global structure
 		 * @param pAdsr 		ADSR envelope output buffer
-		 * @param block_size 	Number of samples in the vector
 		 */
-		void get_frame(synth_params_t *synth_params, q15_t* pAdsr,uint32_t block_size);
+		void get_sample(synth_params_t *synth_params, q15_t* pAdsr);
 
 		/**
 		 * Reset internal variables and go back to attack state
