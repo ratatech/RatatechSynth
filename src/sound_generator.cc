@@ -24,19 +24,27 @@ This file is part of XXXXXXX
 
 void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
-
 	Oscillator* osc = (Oscillator*)synth_params->object_pool.osc;
-	q15_t adsr_vol_amp = synth_params->adsr_vol_amp;
-	q15_t lfo_amp = synth_params->lfo_amp;
-	q15_t temp_buff[FRAME_SIZE];
+	LFO*			lfo = (LFO*)		synth_params->object_pool.lfo;
+	ADSR* 			adsr = (ADSR*)		synth_params->object_pool.adsr;
 
+	q15_t adsr_vol_amp;
+	q15_t* lfo_amp;
+
+	q15_t temp_buff[FRAME_SIZE];
 
 	/** Get oscillator frame */
 	osc->get_frame(synth_params,temp_buff,FRAME_SIZE);
 
+//	/** Compute a new LFO envelope frame/sample */
+//	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
+//
+	/** Compute a new ADSR envelope frame/sample */
+	adsr->get_sample(synth_params,&adsr_vol_amp);
 
 	/** LFO modulation */
 	//arm_scale_q15(temp_buff,lfo_amp,0,pSndGen,FRAME_SIZE);
+
 
 	/** Apply ADSR envelope */
 	arm_scale_q15(temp_buff,adsr_vol_amp,0,pSndGen,FRAME_SIZE);

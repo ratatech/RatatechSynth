@@ -33,14 +33,15 @@ using namespace std;
 void ADSR::get_sample(synth_params_t *synth_params, q15_t* pAdsr)
 {
 
-	q15_t * pOut = pAdsr;	/** Output pointer */
+	q15_t* pOut = pAdsr;	/** Output pointer */
 	q15_t adsr_sample;		/** Temp var */
 
 	/** Update note on status*/
 	note_ON = synth_params->note_ON;
 
 	adsr_sample = update();
-	*pOut++ = adsr_sample;
+	*pOut = adsr_sample;
+	synth_params->adsr_vol_amp = adsr_sample;
 
 }
 
@@ -49,10 +50,11 @@ void ADSR::get_sample(synth_params_t *synth_params, q15_t* pAdsr)
  */
 void ADSR::reset(void)
 {
-	target_level = MAX_AMP;
 	adsr_state = ATTACK_STATE;
+	state = 0;
 	note_ON = true;
 	beta = beta_att;
+	base = base_att;
 }
 
 void ADSR::set_base(synth_params_t *synth_params){
@@ -131,6 +133,7 @@ q15_t ADSR::update(void){
 				beta = beta_dec;
 		        base = base_dec;
 
+
 		        /** If sustain level is set to MAX, Go straight to SUSTAIN state,
 		         *  otherwise jump to DECAY state */
 		        if(sustain_level>=MAX_AMP){
@@ -138,7 +141,6 @@ q15_t ADSR::update(void){
 		        }else{
 		        	adsr_state = DECAY_STATE;
 		        }
-
 
 			}
 

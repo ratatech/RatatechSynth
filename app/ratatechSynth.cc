@@ -154,9 +154,6 @@ int main(void)
 	/** Init SVF filter params*/
 	svf.init(&synth_params);
 
-
-
-
 	/** Pre-fill the output buffer */
 	fill_buffer();
 
@@ -195,20 +192,12 @@ inline void fill_buffer(void)
 	/** Read inputs */
 	mux.update(&synth_params,synth_params.pMux);
 
-	/** Compute a new LFO envelope frame/sample */
-	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
-
-	/** Compute a new ADSR envelope frame/sample */
-	adsr.get_frame(&synth_params,pAdsr,ADSR_BLOCK_SIZE);
-
 	svf.set_fc(&synth_params);
 	svf.set_q(&synth_params);
 	adsr.set_params(&synth_params);
 
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
-
-
 
 		/** If a new note is received reset ADSR */
 		adsr.reset();
@@ -220,8 +209,7 @@ inline void fill_buffer(void)
 		osc.set_freq_midi(synth_params.pitch);
 
 	}
-	//iprintf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
-
+	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 
 	/** Sound generation */
 	snd_gen.gen_voice(&synth_params, pOut);

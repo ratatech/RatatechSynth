@@ -32,11 +32,11 @@ This file is part of XXXXXXX
 #define SHIFT_15_BIT 0x7FFF
 #define PWM_PERIOD   0x3FFF
 #define FRAME_SIZE 32
-#define	 ADSR_BLOCK_SIZE 1
-#define	 LFO_BLOCK_SIZE 1
+#define ADSR_BLOCK_SIZE 1
+#define LFO_BLOCK_SIZE 1
 #define MAX_AMP 0x7FFF
 #define MUX_BITS 8
-#define	 SHIFT_REGISTER_BITS 8
+#define SHIFT_REGISTER_BITS 8
 
 struct object_pool_t
 {

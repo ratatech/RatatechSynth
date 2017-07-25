@@ -56,7 +56,7 @@ class Svf {
 		 * BP = 0x05
 		 * HP = 0x03
 		 */
-		sreg_byte = 0x03;
+		sreg_byte = 0x06;
 
 		/* Filter order 12/24 dB/Oct
 		 * 12 = 0x10
@@ -108,7 +108,7 @@ class Svf {
 	void set_fc(synth_params_t* synth_params){
 		uint32_t fc_adc = (uint32_t)(synth_params->pMux[7]*PWM_PERIOD)>>12;
 		uint32_t fc_env = (uint32_t)(synth_params->adsr_vol_amp*PWM_PERIOD)>>15;
-		TIM3->CCR4 = PWM_PERIOD - (fc_env - fc_adc);
+		TIM3->CCR4 = PWM_PERIOD - (fc_env-fc_adc);
 
 	}
 

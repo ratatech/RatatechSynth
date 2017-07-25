@@ -57,11 +57,11 @@ class ADSR{
             sustain_level = synth_params->adsr_params.sustain_level;
 
             note_ON = false;
-			beta = beta_att;
-	        base = base_att;
 	        ratio = synth_params->adsr_params.ratio;
 
 	        set_base(synth_params);
+			beta = beta_att;
+	        base = base_att;
 		}
 
 		/**
