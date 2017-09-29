@@ -31,7 +31,7 @@ This file is part of XXXXXXX
  */
 class Svf {
 	public:
-		uint16_t q,fc;
+		uint16_t q,fc,PWM_SVF;
 
 
 	/** Constructor.
@@ -90,6 +90,13 @@ class Svf {
 
 		}
 
+		if(SVF_order_msk == 0x08){
+			PWM_SVF = PWM_PERIOD>>1;
+
+		}else{
+			PWM_SVF = PWM_PERIOD;
+		}
+
 	}
 
 	/**
@@ -97,7 +104,7 @@ class Svf {
 	 * @param q Filter resonance [0..PWM_PERIOD]
 	 */
 	void set_q(synth_params_t* synth_params){
-		uint32_t q = (uint32_t)(synth_params->pMux[6]*PWM_PERIOD)>>12;
+		uint32_t q = (uint32_t)(synth_params->pMux[6]*PWM_SVF)>>12;
 		TIM3->CCR2 = q;
 	}
 
@@ -108,8 +115,12 @@ class Svf {
 	void set_fc(synth_params_t* synth_params){
 		uint32_t fc_adc = (uint32_t)(synth_params->pMux[7]*PWM_PERIOD)>>12;
 		uint32_t fc_env = (uint32_t)(synth_params->adsr_vol_amp*PWM_PERIOD)>>15;
-		TIM3->CCR4 = PWM_PERIOD - (fc_env-fc_adc);
 
+		// Scale ADSR envelope with the adc knob fc selection.
+		//fc_adc = (fc_adc * fc_env)>>15;
+		//TIM3->CCR4 = PWM_PERIOD - (fc_env-fc_adc);
+		//TIM3->CCR4 = PWM_PERIOD-fc_env;
+		TIM3->CCR4 = PWM_PERIOD - fc_adc;
 	}
 
 };

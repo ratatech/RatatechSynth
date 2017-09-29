@@ -45,7 +45,7 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->adsr_params.beta_dec = adsr_beta_exp_curve_q31[3000];
 		synth_params->adsr_params.beta_rel = adsr_beta_exp_curve_q31[2000];
 		synth_params->adsr_params.sustain_level = MAX_AMP>>1;
-		synth_params->adsr_params.ratio = 214748364;
+		synth_params->adsr_params.ratio = 1073741824; // 100 in q31
 		synth_params->adsr_vol_amp = 0;
 
 		/** Object pool */

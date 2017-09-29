@@ -17,7 +17,6 @@
 
 
 #define ENV_LUT_LENGTH 256
-#define TARGET_REACH 32440 // 90% of target level in q15 format
 
 enum adsr_state_e {ATTACK_STATE,DECAY_STATE ,SUSTAIN_STATE,RELEASE_STATE,IDLE_STATE};
 enum adsr_mode_e {LIN,EXP,LOG};
@@ -76,7 +75,9 @@ class ADSR{
 		 */
 		void reset(void);
 
-		/** Get the newly read values from the ADC and set the coefficients */
+		/** Get the newly read values from the ADC and set the coefficients
+		 * @param synth_params 	Synth global structure
+		 */
 		void set_params(synth_params_t *synth_params);
 
 		/**

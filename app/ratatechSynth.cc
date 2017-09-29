@@ -83,7 +83,7 @@ object_pool_t object_pool;
 
 
 /** Make a local copy of the object instances */
-Oscillator 		osc;
+Oscillator 		osc1,osc2;
 LFO 				lfo;
 CircularBuffer		out_buffer;
 MIDI 				midi;
@@ -115,7 +115,7 @@ int main(void)
 
 
 	/** Put objects in the pool */
-	object_pool.osc = 			&osc;
+	object_pool.osc1 = 			&osc1;
 	object_pool.lfo = 			&lfo;
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
@@ -136,11 +136,21 @@ int main(void)
 	ratatech_init(&synth_params);
 
 	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
+	osc1.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc.set_freq_frac(100);
-	osc.set_shape(SAW);
+	osc1.set_freq_frac(100);
+	osc1.set_shape(SAW);
+
+
+	/** Init oscillator with default settings */
+	osc2.init(&synth_params.osc_params);
+
+	/** Configure oscillator*/
+	osc2.set_freq_frac(100);
+	osc2.set_shape(SQU);
+
+
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -206,7 +216,10 @@ inline void fill_buffer(void)
 		midi.attack_trigger = false;
 
 		/** Set OSC freq from the MIDI table */
-		osc.set_freq_midi(synth_params.pitch);
+		osc1.set_freq_midi(synth_params.pitch);
+
+		/** Set OSC freq from the MIDI table */
+		osc2.set_freq_midi(synth_params.pitch+1);
 
 	}
 	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);

@@ -30,7 +30,7 @@ This file is part of XXXXXXX
 #define SHIFT_20_BIT 0x100000
 #define SHIFT_31_BIT 0x7FFFFFFF
 #define SHIFT_15_BIT 0x7FFF
-#define PWM_PERIOD   0x3FFF
+#define PWM_PERIOD   0x7FFF
 #define FRAME_SIZE 32
 #define ADSR_BLOCK_SIZE 1
 #define LFO_BLOCK_SIZE 1
@@ -40,7 +40,8 @@ This file is part of XXXXXXX
 
 struct object_pool_t
 {
-	void* 	osc;
+	void* 	osc1;
+	void* 	osc2;
 	void* 	lfo;
 	void*	out_buffer;
 	void*	midi;

@@ -57,6 +57,10 @@ void ADSR::reset(void)
 	base = base_att;
 }
 
+
+/** Set base multiplier coefficient after updating params
+ * @param synth_params 	Synth global structure
+ */
 void ADSR::set_base(synth_params_t *synth_params){
 
 	int64_t x64;
@@ -81,7 +85,9 @@ void ADSR::set_base(synth_params_t *synth_params){
 
 }
 
-/** Get the newly read values from the ADC and set the coefficients */
+/** Get the newly read values from the ADC and set the coefficients
+ * @param synth_params 	Synth global structure
+ */
 void ADSR::set_params(synth_params_t *synth_params){
 
 	beta_att = adsr_beta_exp_curve_q31[synth_params->pMux[0]];
@@ -120,7 +126,6 @@ q15_t ADSR::update(void){
 		if(state>=INT32_MAX)
 				state = INT32_MAX;
 	}
-
 
 	q15_t adsr_sample = (q15_t)(state>>16); // 	 y = s0.31 >> 16   = s0.15
 
