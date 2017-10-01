@@ -150,16 +150,16 @@ int main(void)
 	osc1.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc1.set_freq_frac(100);
-	osc1.set_shape(SAW);
+	osc1.set_freq_frac(1000);
+	osc1.set_shape(SQU);
 
 
 	/** Init oscillator with default settings */
 	osc2.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc2.set_freq_frac(100);
-	osc2.set_shape(SQU);
+	osc2.set_freq_frac(1000);
+	osc2.set_shape(SIN);
 
 
 
