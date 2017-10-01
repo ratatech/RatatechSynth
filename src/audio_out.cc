@@ -38,11 +38,16 @@ void audio_out_write(uint16_t data)
 	// Drive CS low, enabling the shift register.
 	GPIOA->BRR = GPIO_Pin_9;
 
+//    // Send 24 bit word as specified in MAX5216 datasheet.
+//    // After, transmit the 24 bits of data through SPI (MSB first and LSB last)
+//	SPI_send(SPI1,(uint16_t)(data>>10 | 0x40) );
+//	SPI_send(SPI1,(uint16_t)(data>>2));
+//	SPI_send(SPI1,(uint16_t)(data<<6));
+
     // Send 24 bit word as specified in MAX5216 datasheet.
     // After, transmit the 24 bits of data through SPI (MSB first and LSB last)
-	SPI_send(SPI1,(uint8_t)(data>>10 | 0x40) );
-	SPI_send(SPI1,(uint8_t)(data>>2));
-	SPI_send(SPI1,(uint8_t)(data<<6));
+	SPI_send(SPI1,(uint16_t)(data>>2 | 0x4000));
+	SPI_send(SPI1,(uint16_t)(data<<14));
 
 	// Drive CS High
 	GPIOA->BSRR = GPIO_Pin_9;

@@ -12,7 +12,7 @@
 #define SPI_H_
 
 void SPI_Config(void);
-uint8_t SPI_send(SPI_TypeDef*,uint8_t);
+uint8_t SPI_send(SPI_TypeDef*,uint16_t);
 uint8_t SPI_DMA_send(SPI_TypeDef* SPIx);
 
 
