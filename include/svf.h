@@ -117,7 +117,7 @@ class Svf {
 		uint32_t fc_env = (uint32_t)(synth_params->adsr_vol_amp*PWM_PERIOD)>>15;
 
 		// Scale ADSR envelope with the adc knob fc selection.
-		//fc_adc = (fc_adc * fc_env)>>15;
+		fc_adc = (fc_adc * fc_env)>>15;
 		//TIM3->CCR4 = PWM_PERIOD - (fc_env-fc_adc);
 		//TIM3->CCR4 = PWM_PERIOD-fc_env;
 		TIM3->CCR4 = PWM_PERIOD - fc_adc;

@@ -106,6 +106,9 @@ struct synth_params_t{
 	uint16_t pMux[MUX_BITS];
 	uint16_t adc_read;
 
+	/** DAC out sample*/
+	uint16_t dac_write;
+
 	int16_t FM_mod_amp;
 	uint8_t I;
 	bool FM_synth;

@@ -27,6 +27,7 @@ uint8_t dataLow,dataHigh;
 
 using namespace std;
 
+
 /**
  * Write one sample to the DAC
  * @param data Unsigned 16bit samples
@@ -35,27 +36,22 @@ void audio_out_write(uint16_t data)
 {
 
 
-	// CS High
+	// Drive CS low, enabling the shift register.
 	GPIOA->BRR = GPIO_Pin_9;
+
+    // Send 24 bit word as specified in MAX5216 datasheet.
+    // After, transmit the 24 bits of data through SPI (MSB first and LSB last)
+
+	SPI_send(SPI1,(uint8_t)(data>>10 | 0x40) );
+	SPI_send(SPI1,(uint8_t)(data>>8));
+	SPI_send(SPI1,(uint8_t)(data));
+
+	// Drive CS High
+	GPIOA->BSRR = GPIO_Pin_9;
 
 	// Let CS High for at least 20ns as specified in the MAX5216.
 	// 1clk cycle ~= 13.889ns @72MHz
     __asm__("nop");
     __asm__("nop");
-
-
-	uint32_t MAXcode = data << 6 | 0x400000;
-	uint8_t byte1 = (MAXcode & ~(0x00FFFF)) >> 16;  // Extraxt B23-B16
-	uint8_t byte2 = (MAXcode & ~(0xFF00FF)) >> 8;   // Extraxt B15-B8
-	uint8_t byte3 = MAXcode  & ~(0xFFFF00);         // Extraxt B7-B1
-
-	// Transmit the two 8bit SPI messages
-	SPI_send(SPI1,byte1);
-	SPI_send(SPI1,byte2);
-	SPI_send(SPI1,byte3);
-
-
-	// CS Low
-	GPIOA->BSRR = GPIO_Pin_9;
 
 }

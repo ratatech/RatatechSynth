@@ -110,8 +110,19 @@ bool status = true;
 
 uint16_t* pAdc;
 
+
+uint32_t cycles; // number of cycles //
+
+
 int main(void)
 {
+
+
+
+	KIN1_InitCycleCounter(); 			// enable DWT hardware
+	KIN1_ResetCycleCounter(); 			// reset cycle counter
+	KIN1_EnableCycleCounter(); 			// start counting
+
 
 
 	/** Put objects in the pool */
@@ -236,8 +247,13 @@ inline void fill_buffer(void)
  */
 void audio_gen(void){
 
+	KIN1_ResetCycleCounter(); 			// disable counting if not used any more
+	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
 	out_buffer.read(&out_sample);
 	audio_out_write(out_sample);
+	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
+	KIN1_ResetCycleCounter(); 			// disable counting if not used any more
+
 }
 
 /*****************************************************************************************************************************

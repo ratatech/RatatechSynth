@@ -318,27 +318,45 @@ void ADC_Conf_Init(void){
 /**
  * Configure and initialize DMA Peripheral
  */
-void DMA_Conf_Init(uint16_t* ADCConvertedValue){
+void DMA_Conf_Init(uint16_t* ADCConvertedValue, uint16_t* dac_write){
 
 	DMA_InitTypeDef DMA_InitStructure;
 
-	/* DMA1 channel1 configuration ----------------------------------------------*/
-	DMA_DeInit(DMA1_Channel1);
-	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)ADCConvertedValue;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+//	/* DMA1 channel1 configuration ----------------------------------------------*/
+//	DMA_DeInit(DMA1_Channel1);
+//	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
+//	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)ADCConvertedValue;
+//	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+//	DMA_InitStructure.DMA_BufferSize = 1;
+//	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+//	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+//	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+//	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+//	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+//	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+//	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+//	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+//
+//	/* Enable DMA1 channel1 */
+//	DMA_Cmd(DMA1_Channel1, ENABLE);
+
+	/* DMA1 channel2 configuration ----------------------------------------------*/
+	DMA_DeInit(DMA1_Channel2);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dac_write;
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
 	DMA_InitStructure.DMA_BufferSize = 1;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
 	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+	DMA_Init(DMA1_Channel2, &DMA_InitStructure);
 
-	/* Enable DMA1 channel1 */
-	DMA_Cmd(DMA1_Channel1, ENABLE);
+	/* Enable DMA1 channel2 */
+	DMA_Cmd(DMA1_Channel2, ENABLE);
 }
 
 /**
@@ -464,11 +482,11 @@ void ratatech_init(synth_params_t* synth_params){
     /** Configure and init peripherals */
 	GPIO_Conf_Init();
 	SPI_Config();
-	TIM_Config();
 	ButtonsInitEXTI();
 	ADC_Conf_Init();
 	USART_Conf_Init();
-	DMA_Conf_Init(&synth_params->adc_read);
+	DMA_Conf_Init(&synth_params->adc_read, &synth_params->dac_write);
+	TIM_Config();
 
 
 
