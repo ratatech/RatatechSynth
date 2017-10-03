@@ -13,6 +13,8 @@ prjName = os.path.dirname(__file__).split('/')[-1]
 ratatechUtil = RatatechUtils()
 ratatechBuild = RatatechBuild(prjName)
 
+# Build the project
+ratatechBuild.buildPrj()
 
 # Check if board is connected and if so, set up usb rights if needed
 status = ratatechUtil.checkStm32()
@@ -22,8 +24,8 @@ if status == 'CONNECTED':
     ratatechBuild.flash()
     
     # Start usart communication and get test results
-    #port="ttyACM0"
-    port="ttyUSB0"
+    port="ttyACM0"
+    #port="ttyUSB0"
     uartOutLines = ratatechBuild.testUsart(port) 
     
     

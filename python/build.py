@@ -12,21 +12,34 @@ class RatatechBuild(object):
         self.stlink = '/usr/local/bin/st-flash '
 
         self.prjName = prjName
-    
-    def flash(self):
-
+        
         # Build dir
         buildDir = os.path.join(os.path.dirname(__file__), '..',self.prjName+'/')
-        buildDir = buildDir.replace(' ','\ ')
+        self.buildDir = buildDir.replace(' ','\ ')
+
+    def buildPrj(self):
+
+        # Put together all command line arguements
+        cmd = 'make all -C ' + self.buildDir
+        
+        # Execute command
+        return_value = os.system(cmd)
+        
+        # Throw error in case of fail
+        if return_value:
+            raise ValueError('Can not compile, Test Failed!')  
+    
+    def flash(self):
         
         # Binary name
         tst_bin = self.prjName+'.bin'
         
         # ST-link arguments
-        stlink_cmd = '--reset write ' + buildDir + tst_bin + ' 0x8000000'
+        stlink_cmd = '--reset write ' + self.buildDir + tst_bin + ' 0x8000000'
            
         # Put together all command line arguements
         cmd = self.stlink + stlink_cmd
+        
         
         # Execute command
         os.system(cmd)

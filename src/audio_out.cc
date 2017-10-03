@@ -34,7 +34,6 @@ using namespace std;
  */
 void audio_out_write(uint16_t data)
 {
-
 	// Drive CS low, enabling the shift register.
 	GPIOA->BRR = GPIO_Pin_9;
 

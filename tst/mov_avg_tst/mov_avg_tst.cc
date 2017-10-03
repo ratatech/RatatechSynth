@@ -59,6 +59,11 @@ q15_t pIn[FRAME_SIZE] = { 	0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7f
 };
 
 /**
+ * Dummy object pool
+ */
+object_pool_t object_pool;
+
+/**
  * Structure holding the main synth parameters
  */
 synth_params_t synth_params;
@@ -119,10 +124,10 @@ int main(void)
 {
 
 	/** Init system and peripherals */
-	ratatech_init();
+	ratatech_init(&synth_params);
 
 	/** Load initial default settings */
-	init_settings(&synth_params);
+	init_settings(&synth_params,object_pool);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

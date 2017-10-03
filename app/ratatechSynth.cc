@@ -251,8 +251,8 @@ void audio_gen(void){
 	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
 	out_buffer.read(&out_sample);
 	audio_out_write(out_sample);
-	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
-	KIN1_ResetCycleCounter(); 			// disable counting if not used any more
+	//cycles = KIN1_GetCycleCounter(); 	// get cycle counter
+	//KIN1_ResetCycleCounter(); 			// disable counting if not used any more
 
 }
 

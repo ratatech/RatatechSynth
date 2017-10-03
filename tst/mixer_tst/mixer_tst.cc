@@ -135,7 +135,7 @@ int main(void)
 {
 
 	/** Init system and peripherals */
-	ratatech_init();
+	ratatech_init(&synth_params);
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);

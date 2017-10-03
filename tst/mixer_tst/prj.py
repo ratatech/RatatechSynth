@@ -13,6 +13,9 @@ prjName = os.path.dirname(__file__).split('/')[-1]
 ratatechUtil = RatatechUtils()
 ratatechBuild = RatatechBuild(prjName)
 
+# Build the project
+ratatechBuild.buildPrj()
+
 # Check if board is connected and if so, set up usb rights if needed
 status = ratatechUtil.checkStm32()
 
@@ -23,7 +26,7 @@ if status == 'CONNECTED':
 
     # Start usart communication and get test results
     # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, ttyACM0 used for synth pcb debugging and testing
-    port="ttyUSB0"
+    port="ttyACM0"
     usartOutLines, test_result = ratatechBuild.testUsart(port) 
         
     # Parse the output buffer and create wav audio files for each of the generated signals.

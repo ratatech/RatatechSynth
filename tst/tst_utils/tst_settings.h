@@ -19,14 +19,20 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef TST_TST_UTILS_TST_SETTINGS_H_
-#define TST_TST_UTILS_TST_SETTINGS_H_
+#ifndef TST_SETTINGS_H_
+#define TST_SETTINGS_H_
 
-#define USART_X 3
-#define USART_TST USART3
+#ifdef NUCLEO
+#define USART_X 2
+#define USART_TST USART2
+#else
+#define USART_X 2
+#define USART_TST USART2
+#endif
+
 #define STDOUT_USART USART_X
 #define STDERR_USART USART_X
 #define STDIN_USART  USART_X
 
 
-#endif /* TST_TST_UTILS_TST_SETTINGS_H_ */
+#endif /* TST_SETTINGS_H_ */
