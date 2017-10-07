@@ -154,7 +154,7 @@ int main(void)
 
 	/** Configure oscillator*/
 	osc1.set_freq_frac(1000);
-	osc1.set_shape(SAW);
+	osc1.set_shape(SIN);
 
 
 	/** Init oscillator with default settings */
@@ -174,7 +174,7 @@ int main(void)
 	lfo.set_freq_frac(50);
 
 	/** Init SVF filter params*/
-	//svf.init(&synth_params);
+	svf.init(&synth_params);
 
 
 	/** Pre-fill the output buffer */
@@ -192,8 +192,8 @@ int main(void)
 		if(out_buffer.frame_read != out_buffer.frame_write){
 			fill_buffer();
 		}
-		//osc1.shape = SIN;
-		//osc2.shape = SAW;
+
+		// Add a couple of cycles delay between main loop
 	    __asm__("nop");
 	    __asm__("nop");
 
@@ -216,37 +216,36 @@ void low_rate_tasks(void){
  */
 inline void fill_buffer(void)
 {
-//	/** Update midi information */
-//	midi.update(&synth_params);
-//
-//	/** Read inputs */
-//	mux.update(&synth_params,synth_params.pMux);
-//
-//	svf.set_fc(&synth_params);
-//	svf.set_q(&synth_params);
-//	adsr.set_params(&synth_params);
-//
-//	/** Check if a new midi message has arrived */
-//	if(midi.attack_trigger){
-//
-//		/** If a new note is received reset ADSR */
-//		adsr.reset();
-//
-//		/** Remove attack setting flag */
-//		midi.attack_trigger = false;
-//
-//		/** Set OSC freq from the MIDI table */
-//		osc1.set_freq_midi(synth_params.pitch);
-//
-//		/** Set OSC freq from the MIDI table */
-//		osc2.set_freq_midi(synth_params.pitch+1);
-//
-//	}
+	/** Update midi information */
+	midi.update(&synth_params);
+
+	/** Read inputs */
+	mux.update(&synth_params,synth_params.pMux);
+
+	svf.set_fc(&synth_params);
+	svf.set_q(&synth_params);
+	adsr.set_params(&synth_params);
+
+	/** Check if a new midi message has arrived */
+	if(midi.attack_trigger){
+
+		/** If a new note is received reset ADSR */
+		adsr.reset();
+
+		/** Remove attack setting flag */
+		midi.attack_trigger = false;
+
+		/** Set OSC freq from the MIDI table */
+		osc1.set_freq_midi(synth_params.pitch);
+
+		/** Set OSC freq from the MIDI table */
+		osc2.set_freq_midi(synth_params.pitch+1);
+
+	}
 	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 
 	/** Sound generation */
 	snd_gen.gen_voice(&synth_params, pOut);
-
 
 	KIN1_ResetCycleCounter(); 			// reset cycle counter
 	cycles = KIN1_GetCycleCounter(); 	// get cycle counter

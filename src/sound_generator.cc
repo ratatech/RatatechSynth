@@ -49,7 +49,7 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 //	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
 //
 	/** Compute a new ADSR envelope frame/sample */
-	//adsr->get_sample(synth_params,&adsr_vol_amp);
+	adsr->get_sample(synth_params,&adsr_vol_amp);
 
 	/** LFO modulation */
 	//arm_scale_q15(temp_buff,lfo_amp,0,pSndGen,FRAME_SIZE);

@@ -69,9 +69,7 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 	 * 	fractional increment
 	 * */
 	ph_ind_frac += (ph_inc_frac + ph_mod_index);
-	if(ph_ind_frac >= LUT_8_BIT<<20){
-		ph_ind_frac -= LUT_8_BIT<<20;
-	}
+	ph_ind_frac %= LUT_8_BIT<<20;
 
 	/** Interpolate LUT */
 	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT)<<8;
