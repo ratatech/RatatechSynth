@@ -39,11 +39,8 @@ bool CircularBuffer::check_status(void)
  * @param sample Audio sample
  * @return Return status
  */
-bool CircularBuffer::write(uint16_t sample)
+bool CircularBuffer::write(q15_t sample)
 {
-	if ( ( end + 1 == start ) || ( start == 0 && end + 1 == BUFFER_SIZE ) )
-		 return false;
-
 
 	buffer[end] = sample;
 	end++;
@@ -58,15 +55,14 @@ bool CircularBuffer::write(uint16_t sample)
  * @param sample Pointer to the audio sample to be read
  * @return Return status
  */
-bool CircularBuffer::read(uint16_t *sample)
+bool CircularBuffer::read(q15_t *sample)
 {
-	if ((start == end) || (start + 1 == end))
-		return false;
-
-	*sample = buffer[start];
-	start++;
-	if (start >= BUFFER_SIZE)
-		start = 0;
+	*sample = buffer[start++];
+	start %= BUFFER_SIZE;
+	if((start % FRAME_SIZE) == 0){
+		frame_read++;
+		frame_read %= NFRAMES;
+	}
 
 	return true;
 }
@@ -79,19 +75,14 @@ bool CircularBuffer::read(uint16_t *sample)
  */
 bool CircularBuffer::write_frame(q15_t* pFrame)
 {
+
 	bool status = true;
 	q15_t * pOut = pFrame;	/** Output pointer */
-	uint16_t sample;
-	int i=0;
-	while(i<FRAME_SIZE)
-	{
-		if(check_status())
-		{
-			sample = int16_2_uint16(*pOut++);
-			status = write(sample);
-			i++;
-		}
-	}
+	arm_copy_q15(pOut,buffer+end,FRAME_SIZE);
+	end+=FRAME_SIZE;
+	end %= BUFFER_SIZE;
+	frame_write++;
+	frame_write %= NFRAMES;
 
 	return status;
 

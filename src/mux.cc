@@ -31,7 +31,6 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 {
 	BitAction sb;
 
-
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(GPIOB,GPIO_Pin_5,sb);
@@ -46,7 +45,7 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 
 	/** Add small delay to allow the DAC finish the conversion
 	30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
-	Just observed behaviour, to be checked if this is the right value
+	Just observed behavior, to be checked if this is the right value
 	*/
 	for(uint d=0;d<50;d++){
 		__asm__("nop");

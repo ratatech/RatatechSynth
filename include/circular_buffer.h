@@ -11,6 +11,7 @@
 #include "utils.h"
 
 #define BUFFER_SIZE 128
+#define NFRAMES  BUFFER_SIZE/FRAME_SIZE
 class CircularBuffer
 {
 
@@ -21,12 +22,16 @@ public:
 	{
 		start = 0;
 		end = 0;
+		frame_read = 0;
+		frame_write = 0;
 	}
 
 
-	uint8_t start;
-	uint8_t end;
-	uint16_t buffer[BUFFER_SIZE];
+	uint16_t start;
+	uint16_t end;
+	uint16_t frame_read;
+	uint16_t frame_write;
+	q15_t buffer[BUFFER_SIZE];
 
 	/**
 	 * Check buffer status
@@ -39,14 +44,14 @@ public:
 	 * @param sample Audio sample
 	 * @return Return status
 	 */
-	bool write(uint16_t sample);
+	bool write(q15_t sample);
 
 	/**
 	 * Read a sample from the circular buffer
 	 * @param sample Pointer to the audio sample to be read
 	 * @return Return status
 	 */
-	bool read(uint16_t *sample);
+	bool read(q15_t *sample);
 
 
 	/**
