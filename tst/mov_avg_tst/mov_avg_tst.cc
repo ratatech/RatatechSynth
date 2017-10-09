@@ -95,13 +95,13 @@ void test_mov_avg_out(void){
 	mov_avg.init(&synth_params.mov_avg_params);
 
 	/** Specify the total number of frames */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Specifically set beta coefficient for the test */
 	mov_avg.beta = 2065214841; // tau = 0.1, fs=256hz
 
 	/** Get moving average frames */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		mov_avg.process_frame(&synth_params,pIn,pMovAvg);
 

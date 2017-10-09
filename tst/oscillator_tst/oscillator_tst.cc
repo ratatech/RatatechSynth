@@ -135,10 +135,10 @@ void test_sine_out(void){
 	osc.init(&synth_params.osc_params);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
@@ -171,10 +171,10 @@ void test_square_out(void){
 	osc.set_shape(SQU);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
@@ -207,10 +207,10 @@ void test_saw_out(void){
 	osc.set_shape(SAW);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
@@ -243,10 +243,10 @@ void test_triangle_out(void){
 	osc.set_shape(TRI);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);

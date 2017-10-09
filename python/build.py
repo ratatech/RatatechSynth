@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, sys, serial, time
+from termcolor import colored
 py_scripts_pth = os.path.join(os.path.dirname(__file__), '.')
 sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
@@ -27,6 +28,8 @@ class RatatechBuild(object):
         
         # Throw error in case of fail
         if return_value:
+            print colored(cmd,'red')
+            
             raise ValueError('Can not compile, Test Failed!')  
     
     def flash(self):

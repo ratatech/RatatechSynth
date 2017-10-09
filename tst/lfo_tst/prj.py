@@ -7,7 +7,7 @@ from build import RatatechBuild
 
 # Get project name from the directory name. Note that the test project directory name
 # should match with the build directory name. 
-prjName = os.path.dirname(__file__).split('/')[-1]
+prjName = os.path.realpath(__file__).split('/')[-2]
 
 # Create test objects
 ratatechUtil = RatatechUtils()

@@ -105,10 +105,10 @@ void test_mix_out(void){
 	q15_t mix_par = MAX_AMP>>1;
 
 	/** Number of frames */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		osc1.get_frame(&synth_params,pOsc1,FRAME_SIZE);

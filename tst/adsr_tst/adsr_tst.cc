@@ -134,10 +134,10 @@ void test_adsr_env_out(void){
 	adsr.base = adsr.base_att;
 
 	/** Specify the total number of frames */
-	uint16_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint16_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get ADSR envelope frames */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		if(adsr.adsr_state == SUSTAIN_STATE){
 			sustain_timeout--;

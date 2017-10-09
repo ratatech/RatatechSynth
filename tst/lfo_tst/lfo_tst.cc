@@ -140,10 +140,10 @@ void test_lfo_sine_out(void){
 	lfo.init(&synth_params.lfo_params);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
@@ -177,10 +177,10 @@ void test_lfo_saw_out(void){
 	lfo.set_shape(SAW);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
@@ -214,10 +214,10 @@ void test_lfo_tri_out(void){
 	lfo.set_shape(TRI);
 
 	/** Store frames in outuput buffer */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
+	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
 	/** Get oscillator samples */
-	for(int i=0; i< NFRAMES; i++){
+	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
 		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
