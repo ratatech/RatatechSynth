@@ -30,7 +30,7 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	ADSR* 			adsr = (ADSR*)		synth_params->object_pool.adsr;
 
 	q15_t adsr_vol_amp;
-	q15_t* lfo_amp;
+	q15_t lfo_amp;
 
 	q15_t temp_buff1[FRAME_SIZE];
 	q15_t temp_buff2[FRAME_SIZE];
@@ -39,22 +39,20 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	osc1->get_frame(synth_params,temp_buff1,FRAME_SIZE);
 
 	/** Get oscillator frame */
-	//osc2->get_frame(synth_params,temp_buff2,FRAME_SIZE);
+	osc2->get_frame(synth_params,temp_buff2,FRAME_SIZE);
 
-	//Mixer mixer;
+	mix(synth_params,temp_buff1,temp_buff2,temp_buff1,MAX_AMP>>1);
 
-	//mixer.mix(synth_params,temp_buff1,temp_buff2,temp_buff1,MAX_AMP>>1);
+	/** Compute a new LFO envelope frame/sample */
+	lfo_amp = lfo->get_sample(synth_params);
 
-//	/** Compute a new LFO envelope frame/sample */
-//	lfo.get_frame(&synth_params,pLfo,LFO_BLOCK_SIZE);
-//
 	/** Compute a new ADSR envelope frame/sample */
 	adsr->get_sample(synth_params,&adsr_vol_amp);
 
 	/** LFO modulation */
-	//arm_scale_q15(temp_buff,lfo_amp,0,pSndGen,FRAME_SIZE);
+	arm_scale_q15(temp_buff1,lfo_amp,0,temp_buff2,FRAME_SIZE);
 
 	/** Apply ADSR envelope */
-	arm_scale_q15(temp_buff1,adsr_vol_amp,0,pSndGen,FRAME_SIZE);
+	arm_scale_q15(temp_buff2,adsr_vol_amp,0,pSndGen,FRAME_SIZE);
 
 }

@@ -22,9 +22,9 @@ This file is part of XXXXXXX
 
 #include <stdio.h>
 #include "unity.h"
-#include "ratatechSynth.h"
+#include "oscillator.h"
 #include "tst_utils.h"
-#include "arm_math.h"
+
 
 /**
  * Size of reference and output buffers
