@@ -61,4 +61,5 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->FM_mod_amp = 0;
 		synth_params->I = 0;
 		synth_params->FM_synth = 0;
+
 }

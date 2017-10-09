@@ -318,7 +318,7 @@ void ADC_Conf_Init(void){
 /**
  * Configure and initialize DMA Peripheral
  */
-void DMA_Conf_Init(uint16_t* ADCConvertedValue, uint16_t* dac_write){
+void DMA_Conf_Init(synth_params_t* synth_params){
 
 	DMA_InitTypeDef DMA_InitStructure;
 
@@ -340,23 +340,36 @@ void DMA_Conf_Init(uint16_t* ADCConvertedValue, uint16_t* dac_write){
 //	/* Enable DMA1 channel1 */
 //	DMA_Cmd(DMA1_Channel1, ENABLE);
 
-	/* DMA1 channel2 configuration ----------------------------------------------*/
-	DMA_DeInit(DMA1_Channel2);
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI1->DR;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dac_write;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-	DMA_InitStructure.DMA_BufferSize = 1;
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel2, &DMA_InitStructure);
 
-	/* Enable DMA1 channel2 */
-	DMA_Cmd(DMA1_Channel2, ENABLE);
+	q15_t* _pOut = synth_params->pOut;
+	q15_t* _pBuff;
+	//q15_t* _pBuff = synth_params->object_pool.out_buffer.buffer;
+
+	/* DMA1 channel2 configuration ----------------------------------------------*/
+    DMA_DeInit(DMA1_Channel2);
+
+    DMA_InitStructure.DMA_M2M = DMA_M2M_Enable;
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+    DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Enable;
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+    DMA_InitStructure.DMA_BufferSize = FRAME_SIZE*2;
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)_pOut;
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)_pBuff;
+
+    DMA_Init(DMA1_Channel2, &DMA_InitStructure);
+    DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
+
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
 }
 
 /**
@@ -485,7 +498,7 @@ void ratatech_init(synth_params_t* synth_params){
 	ButtonsInitEXTI();
 	ADC_Conf_Init();
 	USART_Conf_Init();
-	DMA_Conf_Init(&synth_params->adc_read, &synth_params->dac_write);
+	DMA_Conf_Init(synth_params);
 	TIM_Config();
 
 

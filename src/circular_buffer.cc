@@ -87,3 +87,42 @@ bool CircularBuffer::write_frame(q15_t* pFrame)
 	return status;
 
 }
+
+/**
+ * Write a frame to the circular buffer using DMA
+ * @param pFrame Audio frame
+ * @return Return status
+ */
+bool CircularBuffer::write_frame_dma(q15_t* pFrame)
+{
+	bool status = true;
+	q15_t * pOut = pFrame;	/** Output pointer */
+	dma_transfer_complete = false;
+	//dma_transfer_complete = false;
+	DMA_Cmd(DMA1_Channel2, DISABLE);
+    DMA1_Channel2->CNDTR = FRAME_SIZE;
+    DMA1_Channel2->CPAR = (uint32_t)pOut;
+    DMA1_Channel2->CMAR = (uint32_t)buffer+(end*2);
+    DMA_ClearFlag(DMA1_FLAG_GL2);
+    DMA_ClearFlag(DMA1_FLAG_TC2);
+    DMA_Cmd(DMA1_Channel2, ENABLE);
+
+    /** Wait DMA transfer to be complete*/
+    while(!dma_transfer_complete);
+
+	end+=FRAME_SIZE;
+	end %= BUFFER_SIZE;
+	frame_write++;
+	frame_write %= NFRAMES;
+
+	return status;
+
+}
+
+bool CircularBuffer::get_dma_transfer_status(void){
+	return(dma_transfer_complete);
+}
+
+void CircularBuffer::set_dma_transfer_status(void){
+	dma_transfer_complete = true;
+}

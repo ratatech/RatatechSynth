@@ -26,7 +26,7 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 	Oscillator* 	osc1 = (Oscillator*)synth_params->object_pool.osc1;
 	Oscillator* 	osc2 = (Oscillator*)synth_params->object_pool.osc2;
-	LFO*			lfo = (LFO*)		synth_params->object_pool.lfo;
+	LFO*			lfo	= (LFO*)		synth_params->object_pool.lfo;
 	ADSR* 			adsr = (ADSR*)		synth_params->object_pool.adsr;
 
 	q15_t adsr_vol_amp;

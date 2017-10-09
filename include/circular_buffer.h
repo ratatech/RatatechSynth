@@ -24,6 +24,7 @@ public:
 		end = 0;
 		frame_read = 0;
 		frame_write = 0;
+		dma_transfer_complete = false;
 	}
 
 
@@ -32,6 +33,7 @@ public:
 	uint16_t frame_read;
 	uint16_t frame_write;
 	q15_t buffer[BUFFER_SIZE];
+	volatile bool dma_transfer_complete;
 
 	/**
 	 * Check buffer status
@@ -60,6 +62,24 @@ public:
 	 * @return Return status
 	 */
 	bool write_frame(q15_t* pFrame);
+
+	/**
+	 * Write a frame to the circular buffer using DMA
+	 * @param pFrame Audio frame
+	 * @return Return status
+	 */
+	bool write_frame_dma(q15_t* pFrame);
+
+	/**
+	 * Check DMA transfer status
+	 * @return Return status
+	 */
+	bool get_dma_transfer_status(void);
+
+	/**
+	 * Set DMA transfer status
+	 */
+	void set_dma_transfer_status(void);
 
 };
 

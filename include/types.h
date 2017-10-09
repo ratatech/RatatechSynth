@@ -112,6 +112,10 @@ struct synth_params_t{
 	int16_t FM_mod_amp;
 	uint8_t I;
 	bool FM_synth;
+
+	/** Pointer to output frame*/
+	q15_t* pOut;
+
 };
 
 
