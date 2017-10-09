@@ -85,7 +85,7 @@ object_pool_t object_pool;
 /** Make a local copy of the object instances */
 Oscillator 		osc1,osc2;
 LFO 				lfo;
-CircularBuffer		out_buffer;
+CircularBuffer	out_buffer;
 MIDI 				midi;
 SoundGenerator 	snd_gen;
 ADSR				adsr;
@@ -156,7 +156,7 @@ int main(void)
 
 	/** Configure oscillator*/
 	osc1.set_freq_frac(1000);
-	osc1.set_shape(SIN);
+	osc1.set_shape(SAW);
 
 
 	/** Init oscillator with default settings */
@@ -178,49 +178,8 @@ int main(void)
 	/** Init SVF filter params*/
 	svf.init(&synth_params);
 
-
 	/** Pre-fill the output buffer */
 	fill_buffer();
-
-
-
-
-//    uint32_t source[FRAME_SIZE];
-//    q15_t destination[FRAME_SIZE];
-//    for (int i=0; i<FRAME_SIZE;i++)
-//        source[i]=i;
-//
-//    for (int i=0; i<FRAME_SIZE;i++)
-//        destination[i]=0;
-//
-//    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-//
-//    DMA_InitTypeDef  DMA_InitStructure;
-//    DMA_DeInit(DMA1_Channel1);
-//
-//    DMA_InitStructure.DMA_M2M = DMA_M2M_Enable;
-//    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-//    DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;
-//    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-//    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-//    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-//    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Enable;
-//    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-//    DMA_InitStructure.DMA_BufferSize = FRAME_SIZE;
-//    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)pOut;
-//    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)destination;
-//
-//    DMA_Init(DMA1_Channel2, &DMA_InitStructure);
-//    DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
-//
-//    NVIC_InitTypeDef NVIC_InitStructure;
-//    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel2_IRQn;
-//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//    NVIC_Init(&NVIC_InitStructure);
-//
-//    status = 1;
 
 	/*******************************************************************************************
 	 * Main Loop
@@ -238,43 +197,9 @@ int main(void)
 	    __asm__("nop");
 	    __asm__("nop");
 
-
-
-
-//        if(status == 1)
-//        {
-//           status = 0;
-//           DMA_Cmd(DMA1_Channel2, DISABLE);
-//           DMA1_Channel2->CNDTR = FRAME_SIZE;
-//           DMA1_Channel2->CPAR = (uint32_t)pOut;
-//           DMA1_Channel2->CMAR = (uint32_t)destination;
-//           DMA_ClearFlag(DMA1_FLAG_GL2);
-//           DMA_ClearFlag(DMA1_FLAG_TC2);
-//
-//
-//           DMA_Cmd(DMA1_Channel2, ENABLE);
-//        }
-
-
 	}
 
-
-
-
-
-
 }
-
-void DMA1_Channel2_IRQHandler(void)
-{
-  if(DMA_GetITStatus(DMA1_IT_TC2))
-  {
-    out_buffer.dma_transfer_complete = true;
-    DMA_ClearITPendingBit(DMA1_IT_GL2);
-  }
-}
-
-
 
 /**
  * Execute all tasks running at CONTROL_RATE
@@ -295,11 +220,11 @@ inline void fill_buffer(void)
 	midi.update(&synth_params);
 
 	/** Read inputs */
-	//mux.update(&synth_params,synth_params.pMux);
+	mux.update(&synth_params,synth_params.pMux);
 
 	svf.set_fc(&synth_params);
 	svf.set_q(&synth_params);
-	//adsr.set_params(&synth_params);
+	adsr.set_params(&synth_params);
 
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
@@ -325,13 +250,11 @@ inline void fill_buffer(void)
 	/** Sound generation */
 	snd_gen.gen_voice(&synth_params, pOut);
 
-	KIN1_ResetCycleCounter(); 			// reset cycle counter
-	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
+    /** Wait DMA transfer to be complete*/
+	while(!out_buffer.dma_transfer_complete);
+
 	/** Fill the output buffer with fresh frames*/
 	status = out_buffer.write_frame_dma(pOut);
-	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
-	KIN1_ResetCycleCounter();
-
 
 }
 
@@ -339,11 +262,8 @@ inline void fill_buffer(void)
  * Read a sample of the output buffer and write it to the DAC @AUDIO FS
  */
 void audio_gen(void){
-//	KIN1_ResetCycleCounter(); 			// reset cycle counter
 	out_buffer.read(&out_sample);
 	audio_out_write(int16_2_uint16(out_sample));
-//	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
-//	KIN1_ResetCycleCounter(); 			// reset cycle counter
 }
 
 /*****************************************************************************************************************************
@@ -383,15 +303,6 @@ void TIM2_IRQHandler(void)
 }
 
 
-//void DMA1_Channel2_IRQHandler(void)
-//{
-//  if(DMA_GetITStatus(DMA1_IT_TC2))
-//  {
-//    //status=1;
-//    DMA_ClearITPendingBit(DMA1_IT_GL2);
-//  }
-//}
-
 /*****************************************************************************************************************************
 ******************* USART INTERRUPTS *****************************************************************************************
 ******************************************************************************************************************************/
@@ -413,4 +324,15 @@ void USART1_IRQHandler(void)
 }
 
 
+/*****************************************************************************************************************************
+******************* DMA INTERRUPTS *******************************************************************************************
+******************************************************************************************************************************/
+void DMA1_Channel2_IRQHandler(void)
+{
+  if(DMA_GetITStatus(DMA1_IT_TC2))
+  {
+    out_buffer.dma_transfer_complete = true;
+    DMA_ClearITPendingBit(DMA1_IT_GL2);
+  }
+}
 

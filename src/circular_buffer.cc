@@ -96,20 +96,23 @@ bool CircularBuffer::write_frame(q15_t* pFrame)
 bool CircularBuffer::write_frame_dma(q15_t* pFrame)
 {
 	bool status = true;
-	q15_t * pOut = pFrame;	/** Output pointer */
+
+	/** Output pointer */
+	q15_t * pOut = pFrame;
+
+	/** Disable dma transfer flag*/
 	dma_transfer_complete = false;
-	//dma_transfer_complete = false;
+
+	/** DMA transfer tasks */
 	DMA_Cmd(DMA1_Channel2, DISABLE);
     DMA1_Channel2->CNDTR = FRAME_SIZE;
     DMA1_Channel2->CPAR = (uint32_t)pOut;
-    DMA1_Channel2->CMAR = (uint32_t)buffer+(end*2);
+    DMA1_Channel2->CMAR = (uint32_t)buffer+(end<<1);
     DMA_ClearFlag(DMA1_FLAG_GL2);
     DMA_ClearFlag(DMA1_FLAG_TC2);
     DMA_Cmd(DMA1_Channel2, ENABLE);
 
-    /** Wait DMA transfer to be complete*/
-    while(!dma_transfer_complete);
-
+    /** Increase sample and frame counters*/
 	end+=FRAME_SIZE;
 	end %= BUFFER_SIZE;
 	frame_write++;

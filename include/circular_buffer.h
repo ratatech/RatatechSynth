@@ -24,7 +24,7 @@ public:
 		end = 0;
 		frame_read = 0;
 		frame_write = 0;
-		dma_transfer_complete = false;
+		dma_transfer_complete = true;
 	}
 
 
