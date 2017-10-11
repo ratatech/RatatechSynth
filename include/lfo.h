@@ -39,7 +39,7 @@ class LFO {
 		int32_t ph_inc;
 		int32_t ph_ind;
 		int32_t k_frac;
-		int32_t lfo_amp = 0;
+		q15_t lfo_amp = 0;
 		q15_t lfo_amo = 0;
 		const int16_t *wavetable;
 
@@ -53,7 +53,7 @@ class LFO {
 		*/
 		void set_freq_frac(double freqHz)
 		{
-			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)CONTROL_RATE)*freqHz)*SHIFT_20_BIT);
+			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
 		}
 
 		/**

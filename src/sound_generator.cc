@@ -24,6 +24,7 @@ This file is part of XXXXXXX
 
 void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
+	volatile uint32_t cycles; // number of cycles //
 	Oscillator* 	osc1 = (Oscillator*)synth_params->object_pool.osc1;
 	Oscillator* 	osc2 = (Oscillator*)synth_params->object_pool.osc2;
 	LFO*			lfo	= (LFO*)		synth_params->object_pool.lfo;
@@ -34,25 +35,68 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 	q15_t temp_buff1[FRAME_SIZE];
 	q15_t temp_buff2[FRAME_SIZE];
+	q15_t temp_buff3[FRAME_SIZE];
 
+
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
 	/** Get oscillator frame */
 	osc1->get_frame(synth_params,temp_buff1,FRAME_SIZE);
+	//~5000
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
 	/** Get oscillator frame */
 	osc2->get_frame(synth_params,temp_buff2,FRAME_SIZE);
+	//~5000
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 
-	mix(synth_params,temp_buff1,temp_buff2,temp_buff1,MAX_AMP>>1);
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
+	/** Get oscillator frame */
+	mix(synth_params,temp_buff1,temp_buff2,temp_buff3,MAX_AMP>>1);
+	//~3000
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
 	/** Compute a new LFO envelope frame/sample */
-	lfo_amp = lfo->get_sample(synth_params);
+	//lfo_amp = lfo->get_sample(synth_params);
+	lfo->get_frame(synth_params,temp_buff2,FRAME_SIZE);
+	//~3000
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
 	/** Compute a new ADSR envelope frame/sample */
 	adsr->get_sample(synth_params,&adsr_vol_amp);
+	//~66
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
 	/** LFO modulation */
-	arm_scale_q15(temp_buff1,lfo_amp,0,temp_buff2,FRAME_SIZE);
+	//arm_scale_q15(temp_buff3,lfo_amp,0,temp_buff3,FRAME_SIZE);
+	arm_mult_q15(temp_buff3,temp_buff2,temp_buff3,FRAME_SIZE);
+	//~873
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
+	//
 	/** Apply ADSR envelope */
-	arm_scale_q15(temp_buff2,adsr_vol_amp,0,pSndGen,FRAME_SIZE);
+	arm_scale_q15(temp_buff3,adsr_vol_amp,0,pSndGen,FRAME_SIZE);
+	//~815
+	//arm_scale_q15(temp_buff3,MAX_AMP,0,pSndGen,FRAME_SIZE);
+	//
+	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
+
+	__asm("nop");
 
 }

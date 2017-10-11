@@ -88,7 +88,7 @@ void TIM_Config(void)
 #ifdef USE_LOW_RATE_TIMER
  	low_rate_tasks_on = true;
 #endif
- 	 low_rate_tasks_on = false;
+
 	if(low_rate_tasks_on)
 	{
 		/* TIM2 NVIC configuration */

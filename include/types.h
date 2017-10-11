@@ -89,8 +89,8 @@ struct synth_params_t{
 	object_pool_t object_pool;
 
 	/** LFO */
-	int16_t lfo_amp;
-	int16_t lfo_amo;
+	q15_t* lfo_amp;
+	q15_t lfo_amo;
 	dest_t lfo_dest;
 
 	/** ADSR  */

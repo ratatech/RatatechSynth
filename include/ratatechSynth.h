@@ -57,6 +57,5 @@ void DMA1_Channel1_IRQHandler(void);
 }
 
 
-
 #endif /* __RATATECHSYNTH_H */
 

@@ -23,64 +23,11 @@
 
 #include "ratatechSynth.h"
 
-#define RATATECH_PROFILING
-
-#ifdef RATATECH_PROFILING
-
-/* DWT (Data Watchpoint and Trace) registers, only exists on ARM Cortex with a DWT unit */
-  #define KIN1_DWT_CONTROL             (*((volatile uint32_t*)0xE0001000))
-    /*!< DWT Control register */
-  #define KIN1_DWT_CYCCNTENA_BIT       (1UL<<0)
-    /*!< CYCCNTENA bit in DWT_CONTROL register */
-  #define KIN1_DWT_CYCCNT              (*((volatile uint32_t*)0xE0001004))
-    /*!< DWT Cycle Counter register */
-  #define KIN1_DEMCR                   (*((volatile uint32_t*)0xE000EDFC))
-    /*!< DEMCR: Debug Exception and Monitor Control Register */
-  #define KIN1_TRCENA_BIT              (1UL<<24)
-    /*!< Trace enable bit in DEMCR register */
-
-#define KIN1_InitCycleCounter() \
-  KIN1_DEMCR |= KIN1_TRCENA_BIT
-  /*!< TRCENA: Enable trace and debug block DEMCR (Debug Exception and Monitor Control Register */
-
-#define KIN1_ResetCycleCounter() \
-  KIN1_DWT_CYCCNT = 0
-  /*!< Reset cycle counter */
-
-#define KIN1_EnableCycleCounter() \
-  KIN1_DWT_CONTROL |= KIN1_DWT_CYCCNTENA_BIT
-  /*!< Enable cycle counter */
-
-#define KIN1_DisableCycleCounter() \
-  KIN1_DWT_CONTROL &= ~KIN1_DWT_CYCCNTENA_BIT
-  /*!< Disable cycle counter */
-
-#define KIN1_GetCycleCounter() \
-  KIN1_DWT_CYCCNT
-  /*!< Read cycle counter register */
-
-/** Usage :
-
-
-	uint32_t cycles; // number of cycles //
-
-	KIN1_InitCycleCounter(); 			// enable DWT hardware
-	KIN1_ResetCycleCounter(); 			// reset cycle counter
-	KIN1_EnableCycleCounter(); 			// start counting
-	foo(); 								// call function and count cycles
-	cycles = KIN1_GetCycleCounter(); 	// get cycle counter
-	KIN1_DisableCycleCounter(); 		// disable counting if not used any more
-
-*/
-
-#endif
-
 using namespace std;
 
 /** Parameter structures */
 synth_params_t synth_params;
 object_pool_t object_pool;
-
 
 /** Make a local copy of the object instances */
 Oscillator 		osc1,osc2;
@@ -94,13 +41,6 @@ Svf 				svf;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
-
-/** ADSR out pointer*/
-q15_t* pAdsr;
-
-/** LFO out pointer*/
-q15_t* pLfo;
-
 
 /** Sample to be written in the DAC */
 q15_t out_sample;
@@ -120,16 +60,13 @@ volatile size_t frame_write_n;
 int main(void)
 {
 
-
-
 	KIN1_InitCycleCounter(); 			// enable DWT hardware
 	KIN1_ResetCycleCounter(); 			// reset cycle counter
 	KIN1_EnableCycleCounter(); 			// start counting
 
-
-
 	/** Put objects in the pool */
 	object_pool.osc1 = 			&osc1;
+	object_pool.osc2 = 			&osc2;
 	object_pool.lfo = 			&lfo;
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
@@ -137,13 +74,10 @@ int main(void)
 	object_pool.mux = 			&mux;
 	object_pool.svf =			&svf;
 
-	/** Link ADSR and LFO pointers to the global structure */
-	pAdsr = &synth_params.adsr_vol_amp;
-	pLfo  = &synth_params.lfo_amp;
-	pAdc  = &synth_params.adc_read;
-
 	/** Link output frame ponter to global structure */
 	synth_params.pOut = &pOut[0];
+
+	synth_params.lfo_amp = &lfo.lfo_amp;
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
@@ -163,8 +97,8 @@ int main(void)
 	osc2.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc2.set_freq_frac(1000);
-	osc2.set_shape(SAW);
+	osc2.set_freq_frac(2000);
+	osc2.set_shape(SQU);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -187,6 +121,7 @@ int main(void)
 	 * *****************************************************************************************/
 	while(1)
 	{
+
 		/** Fill audio buffer with a new sample */
 		//low_rate_tasks();
 		if(out_buffer.frame_read != out_buffer.frame_write){
@@ -205,7 +140,14 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
-	//iprintf("ALIVE!\r");
+
+	/** Read inputs */
+	mux.update(&synth_params,synth_params.pMux);
+	svf.set_fc(&synth_params);
+	svf.set_q(&synth_params);
+	adsr.set_params(&synth_params);
+	lfo.set_freq_frac((double)((synth_params.pMux[5]*200)>>12));
+
 }
 
 /**
@@ -216,15 +158,10 @@ void low_rate_tasks(void){
  */
 inline void fill_buffer(void)
 {
+
 	/** Update midi information */
 	midi.update(&synth_params);
 
-	/** Read inputs */
-	mux.update(&synth_params,synth_params.pMux);
-
-	svf.set_fc(&synth_params);
-	svf.set_q(&synth_params);
-	adsr.set_params(&synth_params);
 
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
@@ -239,13 +176,15 @@ inline void fill_buffer(void)
 		osc1.set_freq_midi(synth_params.pitch);
 
 		/** Set OSC freq from the MIDI table */
-		osc2.set_freq_midi(synth_params.pitch+1);
+		osc2.set_freq_midi(synth_params.pitch+4);
 
 	}
 
 #if DEBUG_ADC
 	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 #endif
+
+
 
 	/** Sound generation */
 	snd_gen.gen_voice(&synth_params, pOut);
@@ -255,6 +194,8 @@ inline void fill_buffer(void)
 
 	/** Fill the output buffer with fresh frames*/
 	status = out_buffer.write_frame_dma(pOut);
+
+
 
 }
 
@@ -295,7 +236,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		//low_rate_tasks();
+		low_rate_tasks();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 

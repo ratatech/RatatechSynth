@@ -142,8 +142,8 @@ void test_sound_gen_out(void){
 
 	/** Configure lfo */
 	lfo.FM_synth = false;
-	lfo.set_shape(SIN);
-	lfo.set_freq_frac(1);
+	lfo.set_shape(SAW);
+	lfo.set_freq_frac(300);
 
 
 	/** Define number of samples to stay on sustain state*/
@@ -182,6 +182,7 @@ void test_sound_gen_out(void){
 		if(sustain_timeout<=0){
 			synth_params.note_ON = false;
 		}
+
 
 		/** Sound generation */
 		snd_gen.gen_voice(&synth_params, pAdsr);

@@ -78,3 +78,14 @@ void mix(synth_params_t *synth_params,q15_t* pFrame_a, q15_t* pFrame_b, q15_t* p
 	arm_add_q15(_pFrame_mix, _pFrame_mix_temp ,_pFrame_mix,FRAME_SIZE);
 }
 
+void reset_profiling(void){
+	KIN1_ResetCycleCounter(); 			// reset cycle counter
+	KIN1_EnableCycleCounter(); 			// start counting
+}
+
+uint32_t get_cycles_profiling(void){
+	volatile uint32_t cycles = KIN1_GetCycleCounter(); 	// get cycle counter
+	KIN1_DisableCycleCounter();
+	return cycles;
+}
+

@@ -139,6 +139,9 @@ void test_lfo_sine_out(void){
 	/** Init oscillator with default settings */
 	lfo.init(&synth_params.lfo_params);
 
+	/** Set lfo freq */
+	lfo.set_freq_frac(600);
+
 	/** Store frames in outuput buffer */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
@@ -176,6 +179,9 @@ void test_lfo_saw_out(void){
 	/** Set the lfo shape */
 	lfo.set_shape(SAW);
 
+	/** Set lfo freq */
+	lfo.set_freq_frac(600);
+
 	/** Store frames in outuput buffer */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 
@@ -212,6 +218,9 @@ void test_lfo_tri_out(void){
 
 	/** Set the lfo shape */
 	lfo.set_shape(TRI);
+
+	/** Set lfo freq */
+	lfo.set_freq_frac(600);
 
 	/** Store frames in outuput buffer */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
