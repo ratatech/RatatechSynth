@@ -30,7 +30,7 @@ synth_params_t synth_params;
 object_pool_t object_pool;
 
 /** Make a local copy of the object instances */
-Oscillator 		osc1,osc2;
+Oscillator 		oscA,oscB;
 LFO 				lfo;
 CircularBuffer	out_buffer;
 MIDI 				midi;
@@ -65,8 +65,8 @@ int main(void)
 	KIN1_EnableCycleCounter(); 			// start counting
 
 	/** Put objects in the pool */
-	object_pool.osc1 = 			&osc1;
-	object_pool.osc2 = 			&osc2;
+	object_pool.oscA = 			&oscA;
+	object_pool.oscB = 			&oscB;
 	object_pool.lfo = 			&lfo;
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
@@ -86,19 +86,19 @@ int main(void)
 	ratatech_init(&synth_params);
 
 	/** Init oscillator with default settings */
-	osc1.init(&synth_params.osc_params);
+	oscA.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc1.set_freq_frac(1000);
-	osc1.set_shape(SAW);
+	oscA.set_freq_frac(1000);
+	oscA.set_shape(SAW);
 
 
 	/** Init oscillator with default settings */
-	osc2.init(&synth_params.osc_params);
+	oscB.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc2.set_freq_frac(2000);
-	osc2.set_shape(SQU);
+	oscB.set_freq_frac(2000);
+	oscB.set_shape(SQU);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -173,10 +173,10 @@ inline void fill_buffer(void)
 		midi.attack_trigger = false;
 
 		/** Set OSC freq from the MIDI table */
-		osc1.set_freq_midi(synth_params.pitch);
+		oscA.set_freq_midi(synth_params.pitch);
 
 		/** Set OSC freq from the MIDI table */
-		osc2.set_freq_midi(synth_params.pitch+4);
+		oscB.set_freq_midi(synth_params.pitch+4);
 
 	}
 
@@ -221,7 +221,8 @@ void TIM1_UP_IRQHandler(void)
 
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
-		audio_gen();
+
+		//audio_gen();
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
 
@@ -236,7 +237,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		low_rate_tasks();
+		//low_rate_tasks();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 

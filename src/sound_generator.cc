@@ -25,78 +25,38 @@ This file is part of XXXXXXX
 void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 	volatile uint32_t cycles; // number of cycles //
-	Oscillator* 	osc1 = (Oscillator*)synth_params->object_pool.osc1;
-	Oscillator* 	osc2 = (Oscillator*)synth_params->object_pool.osc2;
-	LFO*			lfo	= (LFO*)		synth_params->object_pool.lfo;
-	ADSR* 			adsr = (ADSR*)		synth_params->object_pool.adsr;
+	Oscillator* 	oscA 	= (Oscillator*)synth_params->object_pool.oscA;
+	Oscillator* 	oscB 	= (Oscillator*)synth_params->object_pool.oscB;
+	LFO*			lfo		= (LFO*)		synth_params->object_pool.lfo;
+	ADSR* 			adsr 	= (ADSR*)		synth_params->object_pool.adsr;
 
-	q15_t adsr_vol_amp;
-	q15_t lfo_amp;
-
-	q15_t temp_buff1[FRAME_SIZE];
-	q15_t temp_buff2[FRAME_SIZE];
-	q15_t temp_buff3[FRAME_SIZE];
+	q15_t mod, sample_a, sample_b, mix_out;
 
 
 	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
 	//
-	/** Get oscillator frame */
-	osc1->get_frame(synth_params,temp_buff1,FRAME_SIZE);
-	//~5000
+	for(uint i=0;i<FRAME_SIZE;i++){
+
+		/** Get oscillator A and B samples */
+		sample_a = oscA->get_sample(synth_params);
+		sample_b = oscB->get_sample(synth_params);
+
+		/** Mix the two samples */
+		mix_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+
+		/** Get LFO sample and modulate the output */
+		mod = lfo->get_sample(synth_params);
+		mix_out = mul_q15_q15(mix_out, mod);
+
+		/** Get ADSR sample and modulate the output */
+		mod = adsr->get_sample(synth_params);
+		mix_out = mul_q15_q15(mix_out,mod);
+
+		*pSndGen++ = mix_out;
+
+	}
 	//
 	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
-	/** Get oscillator frame */
-	osc2->get_frame(synth_params,temp_buff2,FRAME_SIZE);
-	//~5000
-	//
-	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
-	/** Get oscillator frame */
-	mix(synth_params,temp_buff1,temp_buff2,temp_buff3,MAX_AMP>>1);
-	//~3000
-	//
-	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
-	/** Compute a new LFO envelope frame/sample */
-	//lfo_amp = lfo->get_sample(synth_params);
-	lfo->get_frame(synth_params,temp_buff2,FRAME_SIZE);
-	//~3000
-	//
-	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
-	/** Compute a new ADSR envelope frame/sample */
-	adsr->get_sample(synth_params,&adsr_vol_amp);
-	//~66
-	//
-	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
-	/** LFO modulation */
-	//arm_scale_q15(temp_buff3,lfo_amp,0,temp_buff3,FRAME_SIZE);
-	arm_mult_q15(temp_buff3,temp_buff2,temp_buff3,FRAME_SIZE);
-	//~873
-	//
-	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
-	/** Apply ADSR envelope */
-	arm_scale_q15(temp_buff3,adsr_vol_amp,0,pSndGen,FRAME_SIZE);
-	//~815
-	//arm_scale_q15(temp_buff3,MAX_AMP,0,pSndGen,FRAME_SIZE);
-	//
-	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
-
 	__asm("nop");
 
 }

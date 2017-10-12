@@ -66,9 +66,9 @@ class ADSR{
 		/**
 		 * Get a new adsr envelope sample
 		 * @param synth_params 	Synth global structure
-		 * @param pAdsr 		ADSR envelope output buffer
+		 * @return ADSR envelope output
 		 */
-		void get_sample(synth_params_t *synth_params, q15_t* pAdsr);
+		q15_t get_sample(synth_params_t *synth_params);
 
 		/**
 		 * Reset internal variables and go back to attack state

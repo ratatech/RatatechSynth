@@ -92,7 +92,7 @@ class LFO {
 		 * Compute a new lfo sample
 		 * @return lfo_amp The computed lfo sample
 		 */
-		int32_t get_sample(synth_params_t* synth_params);
+		q15_t get_sample(synth_params_t* synth_params);
 
 		/**
 		 * Compute a new lfo frame

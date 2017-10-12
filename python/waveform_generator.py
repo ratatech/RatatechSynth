@@ -52,7 +52,7 @@ This file is part of XXXXXXX
 # Write file header
 fp.writelines(file_header)
 
-AMP = 2**8-1
+AMP = 2**16-1
 
 '''-------------------------------------------------------------------------------
  SINE TABLE
@@ -100,8 +100,8 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 bits = 8;
 N = 2**bits;
-a = np.arange(-128,128,2, dtype=np.float)
-b = np.arange(127,-128,-2, dtype=np.float)
+a = np.arange(-(AMP/2),(AMP/2),N*2, dtype=np.float)
+b = np.arange((AMP/2)-1,-(AMP/2),-N*2, dtype=np.float)
 t = np.append(a,b)
 wave = np.int16(t)
 name = 'tri_lut_q15' 
@@ -175,7 +175,7 @@ exp_curve = np.int16(np.round(np.power(b, t)*c))
 ratio = 0.5
 print 'ADSR RATIO in q31 = '+ str(ratio*2**31)
 AUDIO_FS = 96000
-FRAME_SIZE = 32
+FRAME_SIZE = 1
 fs = AUDIO_FS/FRAME_SIZE
 
 beta_table = [];

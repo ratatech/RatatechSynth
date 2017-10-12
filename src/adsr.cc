@@ -30,18 +30,17 @@ using namespace std;
  * @param synth_params 	Synth global structure
  * @param pAdsr 		ADSR envelope output buffer
  */
-void ADSR::get_sample(synth_params_t *synth_params, q15_t* pAdsr)
+q15_t ADSR::get_sample(synth_params_t *synth_params)
 {
 
-	q15_t* pOut = pAdsr;	/** Output pointer */
 	q15_t adsr_sample;		/** Temp var */
 
 	/** Update note on status*/
 	note_ON = synth_params->note_ON;
 
 	adsr_sample = update();
-	*pOut = adsr_sample;
 	synth_params->adsr_vol_amp = adsr_sample;
+	return(adsr_sample);
 
 }
 

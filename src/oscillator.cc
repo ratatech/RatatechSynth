@@ -31,9 +31,32 @@ using namespace std;
  */
 int32_t Oscillator::get_sample(synth_params_t *synth_params)
 {
+
 	int32_t interp_lut,interp_lut_temp,frac,mod;
 	int64_t ph_mod_index = 0;
 
+	/** If FM Synthesis is not enabled, the wavetable is read as usual with the calculated
+	 * 	fractional increment
+	 * */
+	ph_ind_frac += ph_inc_frac;
+	ph_ind_frac %= LUT_8_20_BIT;
+
+	/** Interpolate LUT */
+	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
+
+	return interp_lut;
+
+}
+
+/**
+ * Compute a new fm oscillator sample
+ * @param synth_params	Synth global structure
+ * @return interp_lut	The computed oscillator sample
+ */
+int32_t Oscillator::get_sample_fm(synth_params_t *synth_params)
+{
+	int32_t interp_lut,interp_lut_temp,frac,mod;
+	int64_t ph_mod_index = 0;
 
 	/**
 	 * FM Synthesis
@@ -55,15 +78,12 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 	 * See more about this amazing technique on John M.Chowwning paper on FM Synthesis
 	 *
 	 * */
-	if(FM_synth){
 
-		/** Get modulator increment scaled by the modulation index I */
-		ph_mod_index =((synth_params->I*synth_params->FM_mod_amp>>15));
+	/** Get modulator increment scaled by the modulation index I */
+	ph_mod_index =((synth_params->I*synth_params->FM_mod_amp>>15));
 
-		/** Shift 20 bits as the fractional index of the carrier wave */
-		ph_mod_index <<= 20;
-
-	}
+	/** Shift 20 bits as the fractional index of the carrier wave */
+	ph_mod_index <<= 20;
 
 	/** If FM Synthesis is not enabled, the wavetable is read as usual with the calculated
 	 * 	fractional increment
@@ -76,7 +96,6 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 
 	return interp_lut;
 
-
 }
 
 /**
@@ -87,6 +106,7 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
  */
 void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t block_size)
 {
+
 	 q15_t *pOut = pOsc;	/* output pointer */
 
 	 /** Generate samples and store it in the output buffer */

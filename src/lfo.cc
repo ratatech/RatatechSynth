@@ -28,22 +28,16 @@ using namespace std;
  * Compute a new lfo sample
  * @return lfo_amp The computed lfo sample
  */
-int32_t LFO::get_sample(synth_params_t *synth_params)
+q15_t LFO::get_sample(synth_params_t *synth_params)
 {
-	uint32_t int_ind;
 
-	/** Increase phase index*/
+	int32_t interp_lut,interp_lut_temp,frac,mod;
+
 	ph_ind_frac += ph_inc_frac;
+	ph_ind_frac %= LUT_8_20_BIT;
 
-	/** Wrap around */
-	if (ph_ind_frac >=(LUT_8_20_BIT))
-		ph_ind_frac -= (LUT_8_20_BIT);
-
-	/** Discard fractional part*/
-	int_ind = ((ph_ind_frac & 0xFFF00000) >> 20);
-
-	/** Get the sample from the wavetable scaled to 16bits */
-	lfo_amp = wavetable[int_ind]<<8;
+	/** Interpolate LUT */
+	lfo_amp = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
 
 	/** Scale the waveform and add offset to have only positive numbers*/
 	lfo_amp = (lfo_amp>>1)+ LFO_DC_OFF;

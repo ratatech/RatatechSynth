@@ -40,8 +40,8 @@ This file is part of XXXXXXX
 
 struct object_pool_t
 {
-	void* 	osc1;
-	void* 	osc2;
+	void* 	oscA;
+	void* 	oscB;
 	void* 	lfo;
 	void*	out_buffer;
 	void*	midi;
