@@ -87,7 +87,7 @@ object_pool_t object_pool;
 /**
  * Oscillator class instance
  */
-Oscillator oscA,oscB;
+Oscillator osc;
 
 /**
  * Unit test output buffer
@@ -118,8 +118,7 @@ void test_sound_gen_out(void){
 	q15_t adsr_sample;
 
 	/** Put objects in the pool */
-	object_pool.oscA = 			&oscA;
-	object_pool.oscB = 			&oscB;
+	object_pool.osc = 			&osc;
 	object_pool.lfo = 			&lfo;
 	object_pool.adsr = 			&adsr;
 
@@ -127,17 +126,10 @@ void test_sound_gen_out(void){
 	init_settings(&synth_params,object_pool);
 
 	/** Init oscillator with default settings */
-	oscA.init(&synth_params.osc_params);
+	osc.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	oscA.set_freq_frac(7000);
-
-	/** Init oscillator with default settings */
-	oscB.init(&synth_params.osc_params);
-
-	/** Configure oscillator*/
-	oscB.set_freq_frac(7000);
-	oscB.set_shape(SIN);
+	osc.set_freq_frac(7000);
 
 	/** Configure lfo */
 	lfo.FM_synth = false;

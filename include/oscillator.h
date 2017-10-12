@@ -114,7 +114,14 @@ class Oscillator {
 		 * @param synth_params Synth global structure
 		 * @return interp_lut The computed oscillator sample
 		 */
-		int32_t get_sample(synth_params_t *synth_params);
+		q15_t get_sample(synth_params_t *synth_params);
+
+		/**
+		 * Compute a new dual oscillator sample
+		 * @param synth_params	Synth global structure
+		 * @return interp_lut	The computed oscillator sample
+		 */
+		q15_t get_sample_dual(synth_params_t *synth_params);
 
 		/**
 		 * Compute a new fm oscillator sample

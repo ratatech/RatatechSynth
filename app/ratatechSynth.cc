@@ -30,7 +30,7 @@ synth_params_t synth_params;
 object_pool_t object_pool;
 
 /** Make a local copy of the object instances */
-Oscillator 		oscA,oscB;
+Oscillator 		osc;
 LFO 				lfo;
 CircularBuffer	out_buffer;
 MIDI 				midi;
@@ -65,8 +65,7 @@ int main(void)
 	KIN1_EnableCycleCounter(); 			// start counting
 
 	/** Put objects in the pool */
-	object_pool.oscA = 			&oscA;
-	object_pool.oscB = 			&oscB;
+	object_pool.osc = 			&osc;
 	object_pool.lfo = 			&lfo;
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
@@ -86,19 +85,11 @@ int main(void)
 	ratatech_init(&synth_params);
 
 	/** Init oscillator with default settings */
-	oscA.init(&synth_params.osc_params);
+	osc.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	oscA.set_freq_frac(1000);
-	oscA.set_shape(SAW);
-
-
-	/** Init oscillator with default settings */
-	oscB.init(&synth_params.osc_params);
-
-	/** Configure oscillator*/
-	oscB.set_freq_frac(2000);
-	oscB.set_shape(SQU);
+	osc.set_freq_frac(1000);
+	osc.set_shape(SAW);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -173,10 +164,7 @@ inline void fill_buffer(void)
 		midi.attack_trigger = false;
 
 		/** Set OSC freq from the MIDI table */
-		oscA.set_freq_midi(synth_params.pitch);
-
-		/** Set OSC freq from the MIDI table */
-		oscB.set_freq_midi(synth_params.pitch+4);
+		osc.set_freq_midi(synth_params.pitch);
 
 	}
 

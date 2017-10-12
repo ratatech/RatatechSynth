@@ -25,8 +25,7 @@ This file is part of XXXXXXX
 void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 	volatile uint32_t cycles; // number of cycles //
-	Oscillator* 	oscA 	= (Oscillator*)synth_params->object_pool.oscA;
-	Oscillator* 	oscB 	= (Oscillator*)synth_params->object_pool.oscB;
+	Oscillator* 	osc 	= (Oscillator*)synth_params->object_pool.osc;
 	LFO*			lfo		= (LFO*)		synth_params->object_pool.lfo;
 	ADSR* 			adsr 	= (ADSR*)		synth_params->object_pool.adsr;
 
@@ -38,15 +37,11 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	for(uint i=0;i<FRAME_SIZE;i++){
 
 		/** Get oscillator A and B samples */
-		sample_a = oscA->get_sample(synth_params);
-		sample_b = oscB->get_sample(synth_params);
-
-		/** Mix the two samples */
-		mix_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+		sample_a = osc->get_sample_dual(synth_params);
 
 		/** Get LFO sample and modulate the output */
 		mod = lfo->get_sample(synth_params);
-		mix_out = mul_q15_q15(mix_out, mod);
+		mix_out = mul_q15_q15(sample_a, mod);
 
 		/** Get ADSR sample and modulate the output */
 		mod = adsr->get_sample(synth_params);

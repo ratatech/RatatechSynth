@@ -29,15 +29,13 @@ using namespace std;
  * @param synth_params	Synth global structure
  * @return interp_lut	The computed oscillator sample
  */
-int32_t Oscillator::get_sample(synth_params_t *synth_params)
+q15_t Oscillator::get_sample(synth_params_t *synth_params)
 {
 
 	int32_t interp_lut,interp_lut_temp,frac,mod;
 	int64_t ph_mod_index = 0;
+	q15_t sample_0,sample_1;
 
-	/** If FM Synthesis is not enabled, the wavetable is read as usual with the calculated
-	 * 	fractional increment
-	 * */
 	ph_ind_frac += ph_inc_frac;
 	ph_ind_frac %= LUT_8_20_BIT;
 
@@ -45,6 +43,35 @@ int32_t Oscillator::get_sample(synth_params_t *synth_params)
 	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
 
 	return interp_lut;
+
+}
+
+/**
+ * Compute a new dual oscillator sample
+ * @param synth_params	Synth global structure
+ * @return interp_lut	The computed oscillator sample
+ */
+q15_t Oscillator::get_sample_dual(synth_params_t *synth_params)
+{
+
+	int32_t interp_lut,interp_lut_temp,frac,mod,ph_ind_frac_dual;
+	int64_t ph_mod_index = 0;
+	q15_t sample_a,sample_b,sample_out;
+
+	ph_ind_frac += ph_inc_frac;
+	ph_ind_frac %= LUT_8_20_BIT;
+
+	/** Interpolate LUT */
+	sample_a = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
+
+	ph_ind_frac_dual = ph_ind_frac*synth_params->osc_params.osc_detune;
+	ph_ind_frac_dual %= LUT_8_20_BIT;
+
+	sample_b = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac_dual,LUT_8_BIT);
+
+	sample_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+
+	return sample_out;
 
 }
 
@@ -111,7 +138,7 @@ void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t b
 
 	 /** Generate samples and store it in the output buffer */
 	 for(uint i=0;i<block_size;i++){
-		 *pOut++ = get_sample(synth_params);
+		 *pOut++ = get_sample_dual(synth_params);
 	 }
 
 	 /** Shift/Saturate to get a square wave */

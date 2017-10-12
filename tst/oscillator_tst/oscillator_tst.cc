@@ -287,9 +287,9 @@ int main(void)
     /** Start unity and trigger tests */
     UNITY_BEGIN();
     RUN_TEST(test_sine_out);
-    RUN_TEST(test_square_out);
-    RUN_TEST(test_saw_out);
-    RUN_TEST(test_triangle_out);
+//    RUN_TEST(test_square_out);
+//    RUN_TEST(test_saw_out);
+//    RUN_TEST(test_triangle_out);
 
     /** FInish unity */
     return UNITY_END();
