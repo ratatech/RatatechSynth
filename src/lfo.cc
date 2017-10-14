@@ -31,18 +31,28 @@ using namespace std;
 q15_t LFO::get_sample(synth_params_t *synth_params)
 {
 
-	int32_t interp_lut,interp_lut_temp,frac,mod;
+	uint32_t interp_lut,interp_lut_temp,frac,ph_ind_frac_dual;
+	q31_t sample_a,sample_b,sample_out,_y0,_y1;
+	q31_t y;
+	uint32_t ind_frac;
+	uint16_t ind_int;
 
 	ph_ind_frac += ph_inc_frac;
-	ph_ind_frac %= LUT_8_20_BIT;
+	ph_ind_frac %= WRAP_AROUND_LUT;
 
-	/** Interpolate LUT */
-	lfo_amp = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
+    /** 9 bits for the integer part, 23 bits for the fractional part */
+    ind_frac = (ph_ind_frac & MASK_PHASE_FRAC);
+    ind_int = (ph_ind_frac >> SHIFT_PHASE_INT);
 
-	/** Scale the waveform and add offset to have only positive numbers*/
-	lfo_amp = (lfo_amp>>1)+ LFO_DC_OFF;
+    /** Read two nearest output values from the index */
+    _y0 = wavetable[ind_int];
+    _y1 = wavetable[(ind_int + 1 ) % LUT_8_BIT];
 
-	return lfo_amp;
+    /** Linear interpolation */
+    y = ((q63_t)(_y1 - _y0)*ind_frac)>>SHIFT_PHASE_INT;
+    y += _y0;
+
+    return y;
 }
 
 

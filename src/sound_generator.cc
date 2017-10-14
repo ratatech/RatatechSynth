@@ -29,24 +29,31 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	LFO*			lfo		= (LFO*)		synth_params->object_pool.lfo;
 	ADSR* 			adsr 	= (ADSR*)		synth_params->object_pool.adsr;
 
-	q15_t mod, sample_a, sample_b, mix_out;
+	q15_t mod_adsr, mod_lfo, sample_a, sample_b, mix_out;
+
+
+	/** --- FRAME RATE PROCESSING ---- */
+
+	/** Get ADSR sample and modulate the output */
+	mod_adsr = adsr->get_sample(synth_params);
 
 
 	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
 	//
+	/** --- SAMPLE RATE PROCESSING --- */
 	for(uint i=0;i<FRAME_SIZE;i++){
 
 		/** Get oscillator A and B samples */
 		sample_a = osc->get_sample_dual(synth_params);
 
 		/** Get LFO sample and modulate the output */
-		mod = lfo->get_sample(synth_params);
-		mix_out = mul_q15_q15(sample_a, mod);
+		mod_lfo = lfo->get_sample(synth_params);
+		mix_out = mul_q15_q15(sample_a, mod_lfo);
 
 		/** Get ADSR sample and modulate the output */
-		mod = adsr->get_sample(synth_params);
-		mix_out = mul_q15_q15(mix_out,mod);
+		mix_out = mul_q15_q15(mix_out,mod_adsr);
 
+		/** Store output sample */
 		*pSndGen++ = mix_out;
 
 	}

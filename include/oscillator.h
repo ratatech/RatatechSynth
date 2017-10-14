@@ -43,9 +43,8 @@ class Oscillator {
 		uint16_t sawTop;
 		uint16_t squareTop;
 		osc_shape_t shape;
-		int32_t ph_inc_frac;
-		int32_t ph_ind_frac;
-		int32_t k_frac;
+		uint32_t ph_inc_frac;
+		volatile uint32_t ph_ind_frac;
 		int32_t triangle_out;
 		int32_t triangle_ref;
 		int32_t square_out;

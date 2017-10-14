@@ -32,17 +32,43 @@ using namespace std;
 q15_t Oscillator::get_sample(synth_params_t *synth_params)
 {
 
-	int32_t interp_lut,interp_lut_temp,frac,mod;
-	int64_t ph_mod_index = 0;
-	q15_t sample_0,sample_1;
+//	int32_t interp_lut,interp_lut_temp,frac,mod;
+//	int64_t ph_mod_index = 0;
+//	q15_t sample_0,sample_1;
+//
+//	ph_ind_frac += ph_inc_frac;
+//	ph_ind_frac %= LUT_8_20_BIT;
+//
+//	/** Interpolate LUT */
+//	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
+//
+//	return interp_lut;
+
+	q15_t _y0,_y1;
+	q31_t y;
+	uint32_t ind_frac;
+	uint16_t ind_int0,ind_int1;
 
 	ph_ind_frac += ph_inc_frac;
-	ph_ind_frac %= LUT_8_20_BIT;
+	ph_ind_frac %= WRAP_AROUND_LUT;
 
-	/** Interpolate LUT */
-	interp_lut = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
+    /** 9 bits for the integer part, 23 bits for the fractional part */
+    ind_frac = (ph_ind_frac & MASK_PHASE_FRAC);
+    ind_int0 = (ph_ind_frac >> SHIFT_PHASE_INT);
 
-	return interp_lut;
+    ind_int1 = ind_int0 + 1;
+    ind_int1 %= LUT_8_BIT;
+
+    /** Read two nearest output values from the index */
+    _y0 = wavetable[ind_int0];
+    _y1 = wavetable[ind_int1];
+
+    /** Linear interpolation */
+    y = ((q63_t)(_y1 - _y0)*ind_frac)>>SHIFT_PHASE_INT;
+    y += _y0;
+
+    return y;
+
 
 }
 
@@ -54,22 +80,45 @@ q15_t Oscillator::get_sample(synth_params_t *synth_params)
 q15_t Oscillator::get_sample_dual(synth_params_t *synth_params)
 {
 
-	int32_t interp_lut,interp_lut_temp,frac,mod,ph_ind_frac_dual;
-	int64_t ph_mod_index = 0;
-	q15_t sample_a,sample_b,sample_out;
+	uint32_t interp_lut,interp_lut_temp,frac,ph_ind_frac_dual,ind_frac;
+	q31_t sample_a,sample_b,sample_out,_y0,_y1,y;
+	uint16_t ind_int;
+
+    /** ---------  OSC B --------- */
 
 	ph_ind_frac += ph_inc_frac;
-	ph_ind_frac %= LUT_8_20_BIT;
+	ph_ind_frac %= WRAP_AROUND_LUT;
 
-	/** Interpolate LUT */
-	sample_a = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac,LUT_8_BIT);
+    /** 9 bits for the integer part, 23 bits for the fractional part */
+    ind_frac = (ph_ind_frac & MASK_PHASE_FRAC);
+    ind_int = (ph_ind_frac >> SHIFT_PHASE_INT);
+
+    /** Read two nearest output values from the index */
+    _y0 = wavetable[ind_int];
+    _y1 = wavetable[(ind_int + 1 ) % LUT_8_BIT];
+
+    /** Linear interpolation */
+    sample_a = ((q63_t)(_y1 - _y0)*ind_frac)>>SHIFT_PHASE_INT;
+    sample_a += _y0;
+
+    /** ---------  OSC B (detuned) --------- */
 
 	ph_ind_frac_dual = ph_ind_frac*synth_params->osc_params.osc_detune;
-	ph_ind_frac_dual %= LUT_8_20_BIT;
+	ph_ind_frac_dual %= WRAP_AROUND_LUT;
 
-	sample_b = arm_linear_interp_q15((int16_t*)wavetable,ph_ind_frac_dual,LUT_8_BIT);
+    /** 9 bits for the integer part, 23 bits for the fractional part */
+    ind_frac = (ph_ind_frac_dual & MASK_PHASE_FRAC);
+    ind_int = (ph_ind_frac_dual >> SHIFT_PHASE_INT);
 
-	sample_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+    /** Read two nearest output values from the index */
+    _y0 = wavetable[ind_int];
+    _y1 = wavetable[(ind_int + 1 ) % LUT_8_BIT];
+
+    /** Linear interpolation */
+    sample_b = ((q63_t)(_y1 - _y0)*ind_frac)>>SHIFT_PHASE_INT;
+    sample_b += _y0;
+
+    sample_out = mix(synth_params,(q15_t)sample_a,(q15_t)sample_b,synth_params->osc_params.osc_mix);
 
 	return sample_out;
 
@@ -162,7 +211,7 @@ void Oscillator::init(osc_params_t* osc_param){
 */
 void Oscillator::set_freq_frac(double freq)
 {
-	ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freq)*SHIFT_20_BIT);
+	ph_inc_frac = (uint32_t)((((double)LUT_8_BIT/(double)FS)*freq)*PHASE_FRAC_MULT);
 	freq_frac = freq;
 }
 

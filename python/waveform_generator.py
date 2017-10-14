@@ -57,7 +57,7 @@ AMP = 2**16-1
 '''-------------------------------------------------------------------------------
  SINE TABLE
 ------------------------------------------------------------------------------'''
-bits = 8;
+bits = 9;
 N = 2**bits;
 t = np.arange(0,N, dtype=np.float)
 wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(AMP)/2))
@@ -78,7 +78,7 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  SAW TABLE
 ------------------------------------------------------------------------------'''
-bits = 8;
+bits = 9;
 N = 2**bits;
 t = np.floor(np.arange(-(AMP/2),(AMP/2),(float(AMP)/N), dtype=np.float))
 wave = np.int16(t)
@@ -98,7 +98,7 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  TRIANGLE TABLE    
 ------------------------------------------------------------------------------'''
-bits = 8;
+bits = 9;
 N = 2**bits;
 a = np.arange(-(AMP/2),(AMP/2),N*2, dtype=np.float)
 b = np.arange((AMP/2)-1,-(AMP/2),-N*2, dtype=np.float)
@@ -122,7 +122,7 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 # Not used anymore
 '''
-bits = 8;
+bits = 9;
 N = 2**bits;
 ones_neg = np.ones(N/2)*(-N/2);
 ones_pos = np.ones(N/2)*((N/2)-1);
@@ -175,7 +175,7 @@ exp_curve = np.int16(np.round(np.power(b, t)*c))
 ratio = 0.5
 print 'ADSR RATIO in q31 = '+ str(ratio*2**31)
 AUDIO_FS = 96000
-FRAME_SIZE = 1
+FRAME_SIZE = 32
 fs = AUDIO_FS/FRAME_SIZE
 
 beta_table = [];
@@ -222,13 +222,13 @@ fp.writelines('\n\n')
 bits = 7;
 N = (2**bits);
 LUT_8_BIT = (2**8);
-SHIFT_20_BIT = (2**20);
+SHIFT_PHASE = (2**23);
 fs = 96000
 midi_ph_table = []
 
 for midi_num in range(0,N):
     freq = np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000
-    ph_inc = np.int32(((float(LUT_8_BIT)/fs)*freq)*SHIFT_20_BIT)
+    ph_inc = np.int32(((float(LUT_8_BIT)/fs)*freq)*SHIFT_PHASE)
     midi_ph_table.append(ph_inc)
     
 

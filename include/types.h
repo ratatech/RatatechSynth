@@ -37,6 +37,10 @@ This file is part of XXXXXXX
 #define MAX_AMP 0x7FFF
 #define MUX_BITS 8
 #define SHIFT_REGISTER_BITS 8
+#define MASK_PHASE_FRAC 0x7FFFFF
+#define SHIFT_PHASE_INT 23
+#define WRAP_AROUND_LUT LUT_8_BIT << SHIFT_PHASE_INT
+#define PHASE_FRAC_MULT 0x800000
 
 struct object_pool_t
 {
