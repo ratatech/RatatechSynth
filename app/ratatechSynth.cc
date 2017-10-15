@@ -153,7 +153,7 @@ inline void fill_buffer(void)
 
 	/** Update midi information */
 	midi.update(&synth_params);
-
+	adsr.set_params(&synth_params);
 
 	/** Check if a new midi message has arrived */
 	if(midi.attack_trigger){
