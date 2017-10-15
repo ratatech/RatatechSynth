@@ -22,13 +22,16 @@ This file is part of XXXXXXX
 #ifndef TST_SETTINGS_H_
 #define TST_SETTINGS_H_
 
-#ifdef NUCLEO
-#define USART_X 2
-#define USART_TST USART2
-#else
-#define USART_X 2
-#define USART_TST USART2
-#endif
+//#ifdef NUCLEO
+//#define USART_X 2
+//#define USART_TST USART2
+//#else
+//#define USART_X 3
+//#define USART_TST USART3
+//#endif
+
+#define USART_X 3
+#define USART_TST USART3
 
 #define STDOUT_USART USART_X
 #define STDERR_USART USART_X

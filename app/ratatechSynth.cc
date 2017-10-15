@@ -137,7 +137,8 @@ void low_rate_tasks(void){
 	svf.set_fc(&synth_params);
 	svf.set_q(&synth_params);
 	adsr.set_params(&synth_params);
-	lfo.set_freq_frac((double)((synth_params.pMux[5]*200)>>12));
+	lfo.set_freq_lut(synth_params.pMux[5]);
+	//iprintf("LFO pot =%.4i \r",lfo_phinc_lut[synth_params.pMux[5]]);
 
 }
 
@@ -210,7 +211,7 @@ void TIM1_UP_IRQHandler(void)
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
 
-		//audio_gen();
+		audio_gen();
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
 
@@ -225,7 +226,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		//low_rate_tasks();
+		low_rate_tasks();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 

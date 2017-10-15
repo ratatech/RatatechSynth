@@ -45,6 +45,20 @@ q15_t ADSR::get_sample(synth_params_t *synth_params)
 }
 
 /**
+ * Interpolate adsr samples
+ * @param synth_params 	Synth global structure
+ * @param pAdsr 		interpolated value
+ */
+q15_t ADSR::interp(synth_params_t *synth_params, q15_t y1,uint8_t ind)
+{
+
+	q63_t y = interp_q15(interp_state,y1,67108864*ind,31);
+	return (q15_t)y;
+
+}
+
+
+/**
  * Reset internal variables and go back to attack state
  */
 void ADSR::reset(void)
@@ -54,6 +68,7 @@ void ADSR::reset(void)
 	note_ON = true;
 	beta = beta_att;
 	base = base_att;
+	interp_state = 0;
 }
 
 

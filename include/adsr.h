@@ -10,6 +10,7 @@
 
 #include "tables.h"
 #include "mov_avg.h"
+#include "utils.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -28,7 +29,7 @@ class ADSR{
 		q31_t beta,beta_att,beta_dec,beta_rel;
 		q31_t base,base_att,base_dec,base_rel;
 		q31_t state;
-		q15_t target_level,target_level_att,target_level_dec,sustain_level;
+		q15_t target_level,target_level_att,target_level_dec,sustain_level,interp_state;
 		int64_t ratio;
 		adsr_state_e adsr_state;
 		bool note_ON;
@@ -61,6 +62,8 @@ class ADSR{
 	        set_base(synth_params);
 			beta = beta_att;
 	        base = base_att;
+
+	        interp_state = 0;
 		}
 
 		/**
@@ -87,6 +90,13 @@ class ADSR{
 		q15_t update(void);
 
 		void set_base(synth_params_t *synth_params);
+
+		/**
+		 * Interpolate adsr samples
+		 * @param synth_params 	Synth global structure
+		 * @param pAdsr 		interpolated value
+		 */
+		q15_t interp(synth_params_t *synth_params, q15_t y1, uint8_t ind);
 
 
 };

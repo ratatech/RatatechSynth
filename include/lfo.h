@@ -14,8 +14,7 @@
 
 #include <math.h>
 
-#define LFO_DC_OFF 0x4000
-#define LFO_DC_OFF 0x4000
+#define LFO_DC_OFFSET 0x4000
 
 /**
 BABLALBALBALBL
@@ -34,11 +33,7 @@ class LFO {
 
 
 	    osc_shape_t shape;
-		int32_t ph_inc_frac;
-		int32_t ph_ind_frac;
-		int32_t ph_inc;
-		int32_t ph_ind;
-		int32_t k_frac;
+		uint32_t ph_inc_frac,ph_ind_frac,ph_inc,ph_ind;
 		q15_t lfo_amp = 0;
 		q15_t lfo_amo = 0;
 		const int16_t *wavetable;
@@ -48,13 +43,23 @@ class LFO {
 
 
 		/**
-		 * Set lfo  frequency
+		 * Set LFO fractional frequency
 		@param freqHz Frequency in Hz
 		*/
-		void set_freq_frac(double freqHz)
+		void set_freq_frac(double freq)
 		{
-			ph_inc_frac = (int32_t)((((double)LUT_8_BIT/(double)FS)*freqHz)*SHIFT_20_BIT);
+			ph_inc_frac = (uint32_t)((((double)LUT_LENGTH/(double)FS)*freq)*PHASE_FRAC_MULT);
 		}
+
+		/**
+		 * Set LFO fractional frequency from a given LUT
+		 * @param ind	Index to retrieve the fractinal frequency increment
+		 */
+		void set_freq_lut(uint32_t ind)
+		{
+			ph_inc_frac = lfo_phinc_lut[ind];
+		}
+
 
 		/**
 		 * Set lfo shape

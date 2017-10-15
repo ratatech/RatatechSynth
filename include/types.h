@@ -39,8 +39,9 @@ This file is part of XXXXXXX
 #define SHIFT_REGISTER_BITS 8
 #define MASK_PHASE_FRAC 0x7FFFFF
 #define SHIFT_PHASE_INT 23
-#define WRAP_AROUND_LUT LUT_8_BIT << SHIFT_PHASE_INT
+#define WRAP_AROUND_LUT LUT_9_BIT << SHIFT_PHASE_INT
 #define PHASE_FRAC_MULT 0x800000
+#define LUT_LENGTH LUT_9_BIT
 
 struct object_pool_t
 {
@@ -58,7 +59,7 @@ typedef enum {SIN,SQU,SAW,TRI} osc_shape_t;
 
 struct osc_params_t{
 	osc_shape_t shape_osc;
-	q15_t osc_mix;
+	q15_t mixAB;
 	q15_t osc_detune;
 	double freq_frac;
 };

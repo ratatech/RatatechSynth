@@ -52,7 +52,7 @@ This file is part of XXXXXXX
 # Write file header
 fp.writelines(file_header)
 
-AMP = 2**16-1
+AMP = 2**15-1
 
 '''-------------------------------------------------------------------------------
  SINE TABLE
@@ -60,13 +60,14 @@ AMP = 2**16-1
 bits = 9;
 N = 2**bits;
 t = np.arange(0,N, dtype=np.float)
-wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(AMP)/2))
+wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(AMP)))
 
 name = 'sin_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
 table = writeTable(name,macro_N,wave,'q15_t')
 
 if plotting:
+
     plt.figure(1)
     plt.plot(wave)
     plt.show()
@@ -80,7 +81,13 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 bits = 9;
 N = 2**bits;
-t = np.floor(np.arange(-(AMP/2),(AMP/2),(float(AMP)/N), dtype=np.float))
+t = np.floor(np.arange(-(AMP),(AMP),(float(AMP*2)/N), dtype=np.float))
+
+a = np.arange(-AMP,AMP-1,(4*AMP/(N-1)),dtype=np.float)
+b = np.arange(AMP-1,-AMP,-(4*AMP/(N-1)), dtype=np.float)
+
+t = np.append(a,a)
+
 wave = np.int16(t)
 name = 'saw_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
@@ -100,8 +107,9 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 bits = 9;
 N = 2**bits;
-a = np.arange(-(AMP/2),(AMP/2),N*2, dtype=np.float)
-b = np.arange((AMP/2)-1,-(AMP/2),-N*2, dtype=np.float)
+a = np.arange(-AMP,AMP-1,(4*AMP/(N-1)),dtype=np.float)
+b = np.arange(AMP-1,-AMP,-(4*AMP/(N-1)), dtype=np.float)
+
 t = np.append(a,b)
 wave = np.int16(t)
 name = 'tri_lut_q15' 
@@ -221,21 +229,46 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 bits = 7;
 N = (2**bits);
-LUT_8_BIT = (2**8);
+LUT_9_BIT = (2**9);
 SHIFT_PHASE = (2**23);
 fs = 96000
 midi_ph_table = []
 
 for midi_num in range(0,N):
     freq = np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000
-    ph_inc = np.int32(((float(LUT_8_BIT)/fs)*freq)*SHIFT_PHASE)
+    ph_inc = np.uint32(((float(LUT_9_BIT)/fs)*freq)*SHIFT_PHASE)
     midi_ph_table.append(ph_inc)
     
 
 name = ' midi_phinc_lut' 
 macro_N = 'MIDI_PHINC_LUT_SIZE'
-table = writeTable(name,macro_N,midi_ph_table,'int32_t')
+table = writeTable(name,macro_N,midi_ph_table,'uint32_t')
 
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+'''-------------------------------------------------------------------------------
+ LFO PHASEINC TABLE
+------------------------------------------------------------------------------'''
+bits = 12;
+N = (2**bits);
+LUT_9_BIT = (2**9);
+SHIFT_PHASE = (2**23);
+fs = 96000
+min_freq = 0.1
+max_freq = 100
+lfo_ph_table = []
+
+freqs = np.linspace(min_freq,max_freq,N)
+for freq in freqs:
+    ph_inc = np.uint32(((float(LUT_9_BIT)/fs)*freq)*SHIFT_PHASE)
+    lfo_ph_table.append(ph_inc)
+    
+
+name = ' lfo_phinc_lut' 
+macro_N = 'LFO_PHINC_LUT_SIZE'
+table = writeTable(name,macro_N,lfo_ph_table,'uint32_t')
 
 # Write to output file
 fp.writelines(table)

@@ -36,6 +36,19 @@ q15_t mix(synth_params_t *synth_params,q15_t a, q15_t b, q15_t mix_par);
  */
 void mix_frames(synth_params_t *synth_params,q15_t* pFrame_a, q15_t* pFrame_b, q15_t* pFrame_mix , q15_t mix_par);
 
+/**
+ * Linear interpolatin
+ * @param y0			Sample at instant t0
+ * @param y1			Sample at instant t1
+ * @param k				Fractional part
+ * @param shift_frac	Shift to be applied corresponding to the fractional part multiplication
+ * @return				Interpolated sample
+ */
+inline q15_t interp_q15(q15_t y0,q15_t y1,uint32_t k,uint8_t shift_frac){
+	q63_t y = ((q63_t)(y1 - y0)*k)>>shift_frac;
+	y += y0;
+	return (q15_t)y;
+}
 
 #define RATATECH_PROFILING
 

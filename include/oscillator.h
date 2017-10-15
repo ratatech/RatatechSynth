@@ -23,7 +23,7 @@ class Oscillator {
 
 	public:
 		osc_shape_t _shape_osc;
-		int16_t osc_mix;
+		int16_t mixAB;
 		double freq_frac;
 		double phaseInd;
 		double phaseIncFrac;

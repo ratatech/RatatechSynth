@@ -134,7 +134,6 @@ void test_sine_out(void){
 	/** Init oscillator with default settings */
 	osc.init(&synth_params.osc_params);
 
-
 	/** Store frames in outuput buffer */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
 

@@ -29,19 +29,17 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	LFO*			lfo		= (LFO*)		synth_params->object_pool.lfo;
 	ADSR* 			adsr 	= (ADSR*)		synth_params->object_pool.adsr;
 
-	q15_t mod_adsr, mod_lfo, sample_a, sample_b, mix_out;
+	q15_t mod_adsr, mod_lfo, sample_a, sample_b, mix_out,mod_adsr_interp;
 
 
 	/** --- FRAME RATE PROCESSING ---- */
-
+	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
 	/** Get ADSR sample and modulate the output */
 	mod_adsr = adsr->get_sample(synth_params);
 
-
-	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	//
 	/** --- SAMPLE RATE PROCESSING --- */
 	for(uint i=0;i<FRAME_SIZE;i++){
+
 
 		/** Get oscillator A and B samples */
 		sample_a = osc->get_sample_dual(synth_params);
@@ -51,13 +49,16 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 		mix_out = mul_q15_q15(sample_a, mod_lfo);
 
 		/** Get ADSR sample and modulate the output */
-		mix_out = mul_q15_q15(mix_out,mod_adsr);
+		mod_adsr_interp = adsr->interp(synth_params,mod_adsr,i);
+		mix_out = mul_q15_q15(mix_out, mod_adsr_interp);
 
 		/** Store output sample */
 		*pSndGen++ = mix_out;
 
 	}
-	//
+	/** Update ADSR interpolation state */
+	adsr->interp_state = mod_adsr;
+
 	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
 	__asm("nop");
 
