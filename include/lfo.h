@@ -34,8 +34,8 @@ class LFO {
 
 	    osc_shape_t shape;
 		uint32_t ph_inc_frac,ph_ind_frac,ph_inc,ph_ind;
-		q15_t lfo_amp = 0;
-		q15_t lfo_amo = 0;
+		q15_t lfo_amp,interp_state;
+		q15_t lfo_amo;
 		const int16_t *wavetable;
 
 		bool top;
@@ -48,7 +48,7 @@ class LFO {
 		*/
 		void set_freq_frac(double freq)
 		{
-			ph_inc_frac = (uint32_t)((((double)LUT_LENGTH/(double)FS)*freq)*PHASE_FRAC_MULT);
+			ph_inc_frac = (uint32_t)((((double)LUT_LENGTH/(double)(FS/FRAME_SIZE))*freq)*PHASE_FRAC_MULT);
 		}
 
 		/**
@@ -106,6 +106,13 @@ class LFO {
 		 * @param block_size 	Number of samples in the vector
 		 */
 		void get_frame(synth_params_t *synth_params, q15_t* pLfo, uint32_t block_size);
+
+		/**
+		 * Interpolate lfo samples
+		 * @param synth_params 	Synth global structure
+		 * @param y		 		Interpolated value
+		 */
+		q15_t interp(synth_params_t *synth_params, q15_t y1,uint8_t ind);
 
 };
 

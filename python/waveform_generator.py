@@ -255,14 +255,15 @@ bits = 12;
 N = (2**bits);
 LUT_9_BIT = (2**9);
 SHIFT_PHASE = (2**23);
-fs = 96000
+FS = 96000
+FRAME_SIZE = 32
 min_freq = 0.1
 max_freq = 100
 lfo_ph_table = []
 
 freqs = np.linspace(min_freq,max_freq,N)
 for freq in freqs:
-    ph_inc = np.uint32(((float(LUT_9_BIT)/fs)*freq)*SHIFT_PHASE)
+    ph_inc = np.uint32(((float(LUT_9_BIT)/(FS/FRAME_SIZE))*freq)*SHIFT_PHASE)
     lfo_ph_table.append(ph_inc)
     
 

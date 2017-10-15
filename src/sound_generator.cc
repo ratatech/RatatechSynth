@@ -29,26 +29,31 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	LFO*			lfo		= (LFO*)		synth_params->object_pool.lfo;
 	ADSR* 			adsr 	= (ADSR*)		synth_params->object_pool.adsr;
 
-	q15_t mod_adsr, mod_lfo, sample_a, sample_b, mix_out,mod_adsr_interp;
+	q15_t mod_adsr, mod_lfo, sample_a, sample_b, mix_out,mod_adsr_interp,mod_lfo_interp,mix_temp;
 
 
 	/** --- FRAME RATE PROCESSING ---- */
 	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
-	/** Get ADSR sample and modulate the output */
+
+	/** Get ADSR sample */
 	mod_adsr = adsr->get_sample(synth_params);
+
+	/** Get LFO sample */
+	mod_lfo = lfo->get_sample(synth_params);
 
 	/** --- SAMPLE RATE PROCESSING --- */
 	for(uint i=0;i<FRAME_SIZE;i++){
 
-
 		/** Get oscillator A and B samples */
 		sample_a = osc->get_sample_dual(synth_params);
 
-		/** Get LFO sample and modulate the output */
-		mod_lfo = lfo->get_sample(synth_params);
-		mix_out = mul_q15_q15(sample_a, mod_lfo);
+		/** Get the interpolated LFO sample and modulate the output */
+		mod_lfo_interp = lfo->interp(synth_params,mod_lfo,i);
+		mix_out = mul_q15_q15(sample_a, mod_lfo_interp);
+		//mix_out = mix(synth_params,sample_a,mix_temp,synth_params->lfo_amo);
+		//TODO(JoH): LFO amount not working?
 
-		/** Get ADSR sample and modulate the output */
+		/** Get the interpolated ADSR sample and modulate the output */
 		mod_adsr_interp = adsr->interp(synth_params,mod_adsr,i);
 		mix_out = mul_q15_q15(mix_out, mod_adsr_interp);
 
@@ -59,7 +64,11 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	/** Update ADSR interpolation state */
 	adsr->interp_state = mod_adsr;
 
+	/** Update LFO interpolation state */
+	lfo->interp_state = mod_lfo;
+
 	cycles = get_cycles_profiling(); // PROFILING END --------------------------------------------------------------------------
+	__asm("nop");
 	__asm("nop");
 
 }

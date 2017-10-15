@@ -113,8 +113,7 @@ int main(void)
 	while(1)
 	{
 
-		/** Fill audio buffer with a new sample */
-		//low_rate_tasks();
+		/** Fill audio buffer with a new frames */
 		if(out_buffer.frame_read != out_buffer.frame_write){
 			fill_buffer();
 		}
@@ -138,6 +137,7 @@ void low_rate_tasks(void){
 	svf.set_q(&synth_params);
 	adsr.set_params(&synth_params);
 	lfo.set_freq_lut(synth_params.pMux[5]);
+	synth_params.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
 	//iprintf("LFO pot =%.4i \r",lfo_phinc_lut[synth_params.pMux[5]]);
 
 }

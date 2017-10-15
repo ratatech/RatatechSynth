@@ -28,7 +28,7 @@ using namespace std;
 /**
  * Get a new adsr envelope sample
  * @param synth_params 	Synth global structure
- * @param pAdsr 		ADSR envelope output buffer
+ * @return				ADSR sample
  */
 q15_t ADSR::get_sample(synth_params_t *synth_params)
 {
@@ -47,12 +47,12 @@ q15_t ADSR::get_sample(synth_params_t *synth_params)
 /**
  * Interpolate adsr samples
  * @param synth_params 	Synth global structure
- * @param pAdsr 		interpolated value
+ * @param y		 		Interpolated value
  */
 q15_t ADSR::interp(synth_params_t *synth_params, q15_t y1,uint8_t ind)
 {
 
-	q63_t y = interp_q15(interp_state,y1,67108864*ind,31);
+	q63_t y = interp_q15(interp_state,y1,FRAME_INTERP_K*ind,SHIFT_FRAME_INTERP);
 	return (q15_t)y;
 
 }

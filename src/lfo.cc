@@ -55,6 +55,16 @@ q15_t LFO::get_sample(synth_params_t *synth_params)
     return y;
 }
 
+/**
+ * Interpolate lfo samples
+ * @param synth_params 	Synth global structure
+ * @param y		 		Interpolated value
+ */
+q15_t LFO::interp(synth_params_t *synth_params, q15_t y1,uint8_t ind)
+{
+	q63_t y = interp_q15(interp_state,y1,FRAME_INTERP_K*ind,SHIFT_FRAME_INTERP);
+	return (q15_t)y;
+}
 
 /**
  * Compute a new lfo frame
@@ -81,6 +91,7 @@ void LFO::init(lfo_params_t* lfo_param){
 	set_shape(lfo_param->shape_osc);
 	set_freq_frac(lfo_param->freq_frac);
 	lfo_amo = lfo_param->lfo_amo;
+	interp_state = 0;
 
 }
 

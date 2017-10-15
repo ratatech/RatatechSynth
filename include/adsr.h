@@ -69,7 +69,7 @@ class ADSR{
 		/**
 		 * Get a new adsr envelope sample
 		 * @param synth_params 	Synth global structure
-		 * @return ADSR envelope output
+		 * @return				ADSR sample
 		 */
 		q15_t get_sample(synth_params_t *synth_params);
 
@@ -89,12 +89,16 @@ class ADSR{
 		 */
 		q15_t update(void);
 
+		/**
+		 * Set internal adsr coefficients
+		 * @param synth_params Synth global structure
+		 */
 		void set_base(synth_params_t *synth_params);
 
 		/**
 		 * Interpolate adsr samples
 		 * @param synth_params 	Synth global structure
-		 * @param pAdsr 		interpolated value
+		 * @param y		 		Interpolated value
 		 */
 		q15_t interp(synth_params_t *synth_params, q15_t y1, uint8_t ind);
 

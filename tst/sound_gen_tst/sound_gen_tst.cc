@@ -239,7 +239,7 @@ void test_sound_gen_out(void){
 	/** Configure lfo */
 	lfo.FM_synth = false;
 	lfo.set_shape(SIN);
-	lfo.set_freq_frac(50);
+	lfo.set_freq_lut(4095);
 
 
 	/** Define number of samples to stay on sustain state*/
