@@ -133,7 +133,7 @@ void low_rate_tasks(void){
 
 	/** Read inputs */
 	mux.update(&synth_params,synth_params.pMux);
-	svf.set_fc(&synth_params);
+	//svf.set_fc(&synth_params);
 	svf.set_q(&synth_params);
 	adsr.set_params(&synth_params);
 	lfo.set_freq_lut(synth_params.pMux[5]);

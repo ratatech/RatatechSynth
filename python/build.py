@@ -7,16 +7,26 @@ sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
 
 class RatatechBuild(object):
-    def __init__(self,prjName):
+    def __init__(self,prjName,target='ratatech_board'):
         
         # ST-link dir
         self.stlink = '/usr/local/bin/st-flash '
+        
+        # Openocd command
+        self.openocd = 'openocd '
 
         self.prjName = prjName
         
         # Build dir
         buildDir = os.path.join(os.path.dirname(__file__), '..',self.prjName+'/')
         self.buildDir = buildDir.replace(' ','\ ')
+        
+        # Root dir
+        rootDir = (os.path.join(os.path.dirname(__file__), '..'))
+        self.rootDir = rootDir.replace(' ','\ ')
+        
+        # Set target board used to flash the program
+        self.target_board = target
 
     def buildPrj(self):
 
@@ -43,6 +53,29 @@ class RatatechBuild(object):
         # Put together all command line arguements
         cmd = self.stlink + stlink_cmd
         
+        
+        # Execute command
+        os.system(cmd)
+
+    def flash_openocd(self):
+        
+        # Binary name
+        tst_bin = self.prjName+'.bin'
+        
+        # Openocd flash script
+        openocd_scr = self.rootDir + '/openocd/ratatech_synth.cfg'
+        
+        # Set target board configuration file
+        if 'nucleo' in self.target_board:
+            stlink_ver = 'stlink-v2-1.cfg'
+        else:
+            stlink_ver = 'stlink-v2.cfg'
+            
+        # Openocd arguments
+        openocd_cmd = '-f interface/' + stlink_ver +' -f target/stm32f1x_stlink.cfg -f ' + openocd_scr
+                      
+        # Put together all command line arguements
+        cmd = self.openocd + openocd_cmd
         
         # Execute command
         os.system(cmd)
