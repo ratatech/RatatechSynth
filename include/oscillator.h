@@ -100,8 +100,7 @@ class Oscillator {
 				break;
 
 				case SQU:
-					/** Just use the sine wave table and perform shift/saturate */
-					wavetable = sin_lut_q15;
+					wavetable = squ_lut_q15;
 				break;
 			}
 

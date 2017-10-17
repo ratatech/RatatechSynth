@@ -34,8 +34,6 @@ class ADSR{
 		adsr_state_e adsr_state;
 		bool note_ON;
 
-
-
 		/** ADSR Constructor.
 		 *
 		 */

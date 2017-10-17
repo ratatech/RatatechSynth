@@ -129,12 +129,13 @@ fp.writelines('\n\n')
  SQUARE TABLE
 ------------------------------------------------------------------------------'''
 # Not used anymore
-'''
+
 bits = 9;
 N = 2**bits;
-ones_neg = np.ones(N/2)*(-N/2);
-ones_pos = np.ones(N/2)*((N/2)-1);
-wave = np.int16(np.concatenate((ones_neg,ones_pos), axis=1))
+
+ones_neg = np.ones(N/2)*(-AMP-1);
+ones_pos = np.ones(N/2)*((AMP));
+wave = np.int16(np.concatenate((ones_neg,ones_pos)))
 name = 'squ_lut_q15' 
 macro_N = 'LUT_' + str(bits) + '_BIT'
 table = writeTable(name,macro_N,wave,'q15_t')
@@ -147,7 +148,7 @@ if plotting:
 # Write to output file
 fp.writelines(table)
 fp.writelines('\n\n')
-'''
+
 
 '''-------------------------------------------------------------------------------
  LFO SINE TABLE

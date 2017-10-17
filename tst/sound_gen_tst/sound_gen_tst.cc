@@ -258,7 +258,7 @@ void test_sound_gen_out(void){
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
 	//TODO(JoH): Find better adsr params for frame based envelope
-	adsr.beta_att = adsr_beta_exp_curve_q31[1000];
+	adsr.beta_att = adsr_beta_exp_curve_q31[10];
 	adsr.beta_dec = adsr_beta_exp_curve_q31[200];
 	adsr.beta_rel = adsr_beta_exp_curve_q31[2000];
 	synth_params.note_ON = true;

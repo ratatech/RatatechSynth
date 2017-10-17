@@ -89,13 +89,13 @@ int main(void)
 
 	/** Configure oscillator*/
 	osc.set_freq_frac(1000);
-	osc.set_shape(SAW);
+	osc.set_shape(SQU);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
 
 	/** Configure lfo */
-	osc_shape_t shape_lfo = SIN;
+	osc_shape_t shape_lfo = SAW;
 	lfo.FM_synth = false;
 	lfo.set_shape(shape_lfo);
 	lfo.set_freq_frac(50);
@@ -133,12 +133,11 @@ void low_rate_tasks(void){
 
 	/** Read inputs */
 	mux.update(&synth_params,synth_params.pMux);
-	//svf.set_fc(&synth_params);
+	svf.set_fc(&synth_params);
 	svf.set_q(&synth_params);
 	adsr.set_params(&synth_params);
 	lfo.set_freq_lut(synth_params.pMux[5]);
-	synth_params.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
-	//iprintf("LFO pot =%.4i \r",lfo_phinc_lut[synth_params.pMux[5]]);
+	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
 
 }
 
@@ -151,28 +150,9 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 
-	/** Update midi information */
-	midi.update(&synth_params);
-	adsr.set_params(&synth_params);
-
-	/** Check if a new midi message has arrived */
-	if(midi.attack_trigger){
-
-		/** If a new note is received reset ADSR */
-		adsr.reset();
-
-		/** Remove attack setting flag */
-		midi.attack_trigger = false;
-
-		/** Set OSC freq from the MIDI table */
-		osc.set_freq_midi(synth_params.pitch);
-
-	}
-
 #if DEBUG_ADC
 	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 #endif
-
 
 
 	/** Sound generation */
@@ -183,7 +163,6 @@ inline void fill_buffer(void)
 
 	/** Fill the output buffer with fresh frames*/
 	status = out_buffer.write_frame_dma(pOut);
-
 
 
 }
@@ -248,7 +227,25 @@ void USART1_IRQHandler(void)
     {
     	uint16_t midi_in = USART_ReceiveData(USART1);
     	midi.parseMsg(midi_in);
+
+    	/** Update midi information */
+    	midi.update(&synth_params);
+
+    	if(midi.note_ON){
+			/** If a new note is received reset ADSR */
+			adsr.reset();
+
+			/** Set OSC freq from the MIDI table */
+			osc.set_freq_midi(synth_params.pitch);
+		}else{
+			adsr.note_ON = false;
+		}
+
+
     }
+
+
+
 
     /** ------------------------------------------------------------ */
     /** Other USART1 interrupts handler can go here ...             */

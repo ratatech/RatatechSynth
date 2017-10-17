@@ -49,8 +49,9 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 		/** Get the interpolated LFO sample and modulate the output */
 		mod_lfo_interp = lfo->interp(synth_params,mod_lfo,i);
-		mix_out = mul_q15_q15(sample_a, mod_lfo_interp);
-		//mix_out = mix(synth_params,sample_a,mix_temp,synth_params->lfo_amo);
+		mix_temp = mul_q15_q15(sample_a, mod_lfo_interp);
+		mix_out = mix(synth_params,sample_a,mix_temp,lfo->lfo_amo);
+
 		//TODO(JoH): LFO amount not working?
 
 		/** Get the interpolated ADSR sample and modulate the output */

@@ -69,6 +69,7 @@ void ADSR::reset(void)
 	beta = beta_att;
 	base = base_att;
 	interp_state = 0;
+
 }
 
 
@@ -77,20 +78,20 @@ void ADSR::reset(void)
  */
 void ADSR::set_base(synth_params_t *synth_params){
 
-	int64_t x64;
-	q31_t x32;
+	volatile int64_t x64;
+	volatile q31_t x32;
+	volatile int64_t temp;
 
 	x64 = (int64_t)(INT32_MAX + ratio);
 	x32 = (INT32_MAX - beta_att);
 	x64 = x64 * x32;
+	temp = x64>>31;
 	base_att = (q31_t)(x64>>31);
-
 
 	x64 = (int64_t)(((q31_t)sustain_level<<15) - ratio);
 	x32 = (INT32_MAX - beta_dec);
 	x64 = x64 * x32;
 	base_dec = (q31_t)(x64>>31);
-
 
 	x64 = (int64_t)(ratio);
 	x32 = (INT32_MAX - beta_rel);
@@ -103,6 +104,8 @@ void ADSR::set_base(synth_params_t *synth_params){
  * @param synth_params 	Synth global structure
  */
 void ADSR::set_params(synth_params_t *synth_params){
+
+	uint32_t	_beta_att,_beta_dec,_beta_rel,_sustain_level;
 
 	beta_att = adsr_beta_exp_curve_q31[synth_params->pMux[0]];
 	beta_dec = adsr_beta_exp_curve_q31[synth_params->pMux[1]];
@@ -163,6 +166,12 @@ q15_t ADSR::update(void){
 
 			}
 
+			if (note_ON == false){
+				adsr_state = RELEASE_STATE;
+				beta = beta_rel;
+		        base = base_rel;
+			}
+
 		break;
 
 		case DECAY_STATE:
@@ -170,6 +179,11 @@ q15_t ADSR::update(void){
 			if (adsr_sample <= sustain_level){
 				adsr_sample = sustain_level;
 				adsr_state = SUSTAIN_STATE;
+			}
+			if (note_ON == false){
+				adsr_state = RELEASE_STATE;
+				beta = beta_rel;
+		        base = base_rel;
 			}
 
 		break;
