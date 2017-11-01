@@ -95,9 +95,8 @@ int main(void)
 	adsr.init(&synth_params);
 
 	/** Configure lfo */
-	osc_shape_t shape_lfo = SAW;
 	lfo.FM_synth = false;
-	lfo.set_shape(shape_lfo);
+	lfo.set_shape(SIN);
 	lfo.set_freq_frac(50);
 
 	/** Init SVF filter params*/

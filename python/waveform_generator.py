@@ -16,7 +16,7 @@ def writeTable(name,N,data,type):
             #outstring = outstring + '                                         '
             lineBreakCtr = 0
         
-    outstring = outstring + '}'
+    outstring = outstring + '};'
     return outstring
 
 # Define output file
@@ -203,7 +203,7 @@ else:
 '''-------------------------------------------------------------------------------
  SINE TABLE
 ------------------------------------------------------------------------------'''
-bits = 9
+bits = 8
 N = 2**bits
 t = np.arange(0,N, dtype=np.float)
 wave = np.int16(np.floor(np.sin(t*2*np.pi/N)*(AMP)))
