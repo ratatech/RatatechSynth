@@ -1,5 +1,6 @@
 import os,sys,time
-py_scripts_pth = os.path.join(os.path.dirname(__file__),'..','python')
+py_scripts_pth = os.path.join(os.path.dirname(__file__),'..','..','python')
+print py_scripts_pth
 sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
 from RatatechUtils import RatatechUtils

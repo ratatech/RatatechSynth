@@ -1,5 +1,6 @@
 import os,sys,time
 py_scripts_pth = os.path.join(os.path.dirname(__file__), '..','..','python')
+
 sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
 from RatatechUtils import RatatechUtils
@@ -12,7 +13,7 @@ prjName = os.path.realpath(__file__).split('/')[-2]
 
 # Create test objects
 ratatechUtil = RatatechUtils()
-ratatechBuild = RatatechBuild(prjName)
+ratatechBuild = RatatechBuild('_' + prjName)
 
 # Build the project
 ratatechBuild.buildPrj()
