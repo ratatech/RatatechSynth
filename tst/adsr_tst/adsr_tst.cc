@@ -22,7 +22,8 @@ This file is part of XXXXXXX
 
 #include <stdio.h>
 #include "unity.h"
-#include "ratatechSynth.h"
+//#include "ratatechSynth.h"
+#include "adsr.h"
 #include "tst_utils.h"
 
 /**
@@ -146,7 +147,7 @@ void test_adsr_env_out(void){
 			synth_params.note_ON = false;
 		}
 		/** Get ADSR envelope frames */
-		adsr.get_sample(&synth_params,&adsr_sample);
+		adsr_sample = adsr.get_sample(&synth_params);
 
 		/** Get oscillator frames */
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
@@ -211,7 +212,7 @@ void test_adsr_out(void){
 			synth_params.note_ON = false;
 		}
 		/** Get ADSR envelope frames */
-		adsr.get_sample(&synth_params,&adsr_sample);
+		adsr_sample = adsr.get_sample(&synth_params);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(&adsr_sample,&pAdsr_out[i],1);
