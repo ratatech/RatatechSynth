@@ -31,7 +31,6 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 	q15_t mod_adsr, mod_lfo, sample_a, sample_b, mix_out,mod_adsr_interp,mod_lfo_interp,mix_temp;
 
-
 	/** --- FRAME RATE PROCESSING ---- */
 	reset_profiling(); // PROFILING START ---------------------------------------------------------------------------------------
 
