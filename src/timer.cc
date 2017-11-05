@@ -36,61 +36,43 @@ void TIM_Config(void)
 	//*************************************************************************************
 	/* PWM Timer1 configuration*/
 	//*************************************************************************************
-
- 	/* Set audio_on flag to true to have the audio rate interrupt
- 	* working. Disabling it helps to speed up debugging */
- 	bool audio_on = false;
-
 #ifdef USE_AUDIO_TIMER
- 	audio_on = true;
+
+	/* TIM1 configuration
+	 * Timer 1 configured to work with an output audio sampling
+	 * frequency of FS */
+
+	/* TIM1 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/*
+	 * 	Prescaler = ((((ClockSpeed) / ((period) / (1 / frequency))) + 0.5) - 1)
+	 *
+	 * 	Parameters to configure timer at 1hz ie. every 1s:
+	 *	timerInitStructure.TIM_Period    = 32768;
+	 *	timerInitStructure.TIM_Prescaler = 2197; */
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = SystemCoreClock/FS;
+	timerInitStructure.TIM_Prescaler = 0;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM1, &timerInitStructure);
+
+	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM1, ENABLE);
+
 #endif
-
- 	if(audio_on)
- 	{
-
-		/* TIM1 configuration
-		 * Timer 1 configured to work with an output audio sampling
-		 * frequency of FS */
-
-		/* TIM1 NVIC configuration */
-		NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
-
-		/*
-		* 	Prescaler = ((((ClockSpeed) / ((period) / (1 / frequency))) + 0.5) - 1)
-		*
-		* 	Parameters to configure timer at 1hz ie. every 1s:
-		*	timerInitStructure.TIM_Period    = 32768;
-		*	timerInitStructure.TIM_Prescaler = 2197; */
-		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-		timerInitStructure.TIM_Period = SystemCoreClock/FS;
-		timerInitStructure.TIM_Prescaler = 0;
-		timerInitStructure.TIM_RepetitionCounter = 0;
-		TIM_TimeBaseInit(TIM1, &timerInitStructure);
-
-		TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
-		TIM_Cmd(TIM1, ENABLE);
-	}
 
 	//*************************************************************************************
 	/* PWM Timer2 configuration*/
 	//*************************************************************************************
 
-
- 	/* Set audio_on flag to true to have the audio rate interrupt
- 	* working. Disabling it helps to speed up debugging */
- 	bool low_rate_tasks_on = false;
-
 #ifdef USE_LOW_RATE_TIMER
- 	low_rate_tasks_on = true;
-#endif
 
-	if(low_rate_tasks_on)
-	{
 		/* TIM2 NVIC configuration */
 		NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
@@ -109,7 +91,7 @@ void TIM_Config(void)
 
 		TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 		TIM_Cmd(TIM2, ENABLE);
-	}
+#endif
 
 
 	//*************************************************************************************

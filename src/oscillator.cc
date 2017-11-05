@@ -72,7 +72,7 @@ q15_t Oscillator::get_sample_dual(synth_params_t *synth_params)
 	q31_t sample_a,sample_b,sample_out,_y0,_y1,y;
 	uint16_t ind_int;
 
-    /** ---------  OSC B --------- */
+    /** ---------  OSC A --------- */
 
 	ph_ind_frac += ph_inc_frac;
 	ph_ind_frac %= WRAP_AROUND_LUT;
