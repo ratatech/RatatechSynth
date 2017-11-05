@@ -27,8 +27,8 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 
 		/** Oscillator settings */
 		synth_params->osc_params.shape_osc = SIN;
-		synth_params->osc_params.mixAB = MAX_AMP>>1;
-		synth_params->osc_params.osc_detune = 2;
+		synth_params->osc_params.mixAB = 0;
+		synth_params->osc_params.osc_detune = 1;
 		synth_params->osc_params.freq_frac = 1000;
 
 		/** LFO settings */
