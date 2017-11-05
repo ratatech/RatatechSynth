@@ -36,7 +36,7 @@ if status == 'CONNECTED':
     # Each of the corresponding substrings should match the name of the output buffers used in
     # oscillator_tst.cc otherwise the parsing won't work.
     FS = 96000
-    debug = True
+    debug = False
     ratatechUtil.rawUsart2wav('buff_sound_gen_out',usartOutLines,FS,debug)
   
     # Throw error in case of fail

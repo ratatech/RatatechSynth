@@ -16,5 +16,5 @@ print '\t------------------------------------------------'
 for result in results:
     result_string = ('OK' if result[1] == 0 else 'FAIL')
     out_color = ('green' if result[1] == 0 else 'red')
-    print colored('\t' + result[0] + ' ---> ' + result_string,out_color)
+    print colored('\t' + result[0] + ' ' + '\t ---> ' + result_string,out_color)
 print '\n'
