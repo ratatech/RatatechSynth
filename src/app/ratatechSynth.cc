@@ -139,7 +139,7 @@ void low_rate_tasks(void){
 	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
 
 }
-
+#define  DEBUG_ADC
 /**
  * Fill the main buffer containing the output audio samples
  *
@@ -149,8 +149,9 @@ void low_rate_tasks(void){
 inline void fill_buffer(void)
 {
 
-#if DEBUG_ADC
-	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
+
+#ifdef DEBUG_ADC
+	printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 #endif
 
 

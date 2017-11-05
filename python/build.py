@@ -32,7 +32,7 @@ class RatatechBuild(object):
 
         # Put together all command line arguements
         cmd = 'make all -C ' + self.buildDir
-        
+
         # Execute command
         return_value = os.system(cmd)
         
@@ -60,10 +60,10 @@ class RatatechBuild(object):
     def flash_openocd(self):
         
         # Binary name
-        tst_bin = self.prjName+'.bin'
-        
+        tst_bin = self.prjName +'.bin'
+
         # Openocd flash script
-        openocd_scr = self.rootDir + '/openocd/ratatech_synth.cfg'
+        openocd_scr = self.rootDir + '/openocd/scripts/' + self.prjName[1:] + '.cfg'
         
         # Set target board configuration file
         if 'nucleo' in self.target_board:
@@ -76,9 +76,10 @@ class RatatechBuild(object):
                       
         # Put together all command line arguements
         cmd = self.openocd + openocd_cmd
-        
+
         # Execute command
-        os.system(cmd)
+        os.system(cmd)       
+
     
     def parseUsart(self,usartOutLines):
         # Print the usart output    
