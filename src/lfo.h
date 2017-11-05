@@ -48,7 +48,7 @@ class LFO {
 		*/
 		void set_freq_frac(double freq)
 		{
-			ph_inc_frac = (uint32_t)((((double)LUT_LENGTH/(double)(FS/FRAME_SIZE))*freq)*PHASE_FRAC_MULT);
+			ph_inc_frac = (uint32_t)((((double)LUT_LENGTH/(double)FS)*freq)*PHASE_FRAC_MULT);
 		}
 
 		/**
