@@ -24,10 +24,21 @@ This file is part of XXXXXXX
 #include <stdio.h>
 #include <stdlib.h>
 #include "unity.h"
-#include "ratatechSynth.h"
 #include "tst_utils.h"
 #include "arm_math.h"
+#include "types.h"
+#include "settings.h"
+#include "system_init.h"
 
+/**
+ * Structure holding the main synth parameters
+ */
+synth_params_t synth_params;
+
+/**
+ * Dummy object pool
+ */
+object_pool_t object_pool;
 
 
 /**
@@ -68,9 +79,6 @@ void test_serial_com(void){
 	q15_t pOscOut[BUFF_SIZE];
 	q15_t tempOscOut[BUFF_SIZE];
 
-	/** Init oscillator with default settings */
-	uint8_t NFRAMES = BUFF_SIZE/FRAME_SIZE;
-
 	/** Just copy paste samples */
 	for(int i=0; i<BUFF_SIZE; i++){
 		pOscOut[i] = buff_serial_com_ref[i];
@@ -84,14 +92,16 @@ void test_serial_com(void){
 int main(void)
 {
 
-	/** System init */
-	ratatech_init();
+	/** Load initial default settings */
+	init_settings(&synth_params,object_pool);
+
+	/** Init system and peripherals */
+	ratatech_init(&synth_params);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-
 
     /** Wait usart confirmation to start the test  */
     wait_usart_ready();

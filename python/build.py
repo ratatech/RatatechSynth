@@ -15,8 +15,9 @@ class RatatechBuild(object):
         # Openocd command
         self.openocd = 'openocd '
 
-        self.prjName = prjName
+        self.prjName = '_' + prjName
         
+
         # Build dir
         buildDir = os.path.join(os.path.dirname(__file__), '..',self.prjName+'/')
         self.buildDir = buildDir.replace(' ','\ ')
@@ -53,6 +54,7 @@ class RatatechBuild(object):
         # Put together all command line arguements
         cmd = self.stlink + stlink_cmd
         
+        print cmd
         
         # Execute command
         os.system(cmd)

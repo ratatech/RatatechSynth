@@ -22,7 +22,6 @@ This file is part of XXXXXXX
 
 #include <stdio.h>
 #include "unity.h"
-//#include "ratatechSynth.h"
 #include "adsr.h"
 #include "tst_utils.h"
 
