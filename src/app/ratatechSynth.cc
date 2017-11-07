@@ -139,7 +139,7 @@ void low_rate_tasks(void){
 	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
 
 }
-#define  DEBUG_ADC
+
 /**
  * Fill the main buffer containing the output audio samples
  *

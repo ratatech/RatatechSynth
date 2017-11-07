@@ -25,9 +25,9 @@
 #define MIDI_BANDLIM_INDS_LUT_SIZE 128
 
 extern const q15_t sin_lut_q15[LUT_8_BIT];
-extern const q15_t squ_0_lut_q15[N_BANDLIM][LUT_8_BIT];
-extern const q15_t saw_0_lut_q15[N_BANDLIM][LUT_8_BIT];
-extern const q15_t tri_0_lut_q15[N_BANDLIM][LUT_8_BIT];
+extern const q15_t squ_bandlim_lut_q15[N_BANDLIM][LUT_8_BIT];
+extern const q15_t saw_bandlim_lut_q15[N_BANDLIM][LUT_8_BIT];
+extern const q15_t tri_bandlim_lut_q15[N_BANDLIM][LUT_8_BIT];
 
 
 extern const q15_t sin_lut_lfo[LUT_5_BIT];

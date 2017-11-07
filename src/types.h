@@ -25,7 +25,7 @@ This file is part of XXXXXXX
 #include <stdint.h>
 #include "arm_math.h"
 
-#define FS 96000
+#define FS 48000
 #define CONTROL_RATE 16000
 #define SHIFT_20_BIT 0x100000
 #define SHIFT_31_BIT 0x7FFFFFFF
@@ -63,6 +63,7 @@ struct osc_params_t{
 	osc_shape_t shape_osc;
 	q15_t mixAB;
 	q15_t osc_detune;
+	uint8_t banlim_ind;
 	double freq_frac;
 };
 

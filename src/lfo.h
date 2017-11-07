@@ -75,11 +75,11 @@ class LFO {
 				break;
 
 				case TRI:
-					wavetable = tri_0_lut_q15[0];
+					wavetable = tri_bandlim_lut_q15[0];
 				break;
 
 				case SAW:
-					wavetable = saw_0_lut_q15[0];
+					wavetable = saw_bandlim_lut_q15[0];
 				break;
 
 			}

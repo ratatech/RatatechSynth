@@ -22,7 +22,7 @@ args = parser.parse_args()
 # should match with the build directory name. If not, just define the project name as 
 # the desired target build directory
 #prjName = os.path.realpath(__file__).split('/')[-2]
-prjName = '_release'
+prjName = 'release'
 
 
 # Create test objects

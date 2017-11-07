@@ -135,7 +135,7 @@ if USE_BANDLIMITED :
         
         # Write tables to the file
         table_ind = 0
-        name = mode + '_' + str(table_ind) + '_lut_q15' 
+        name = mode + '_bandlim_lut_q15' 
         table_ind = table_ind + 1
         macro_N = 'LUT_' + str(bits) + '_BIT'
         table = writeTable(name, macro_N, wavetables, 'q15_t',isMultDim=True)
@@ -144,8 +144,7 @@ if USE_BANDLIMITED :
         fp.writelines(table)
         fp.writelines('\n\n')
         
-        #if plotting:
-        if True:
+        if plotting:
             plt.figure(2)
             plt.plot(np.transpose(wavetables))
             plt.show()

@@ -93,15 +93,15 @@ class Oscillator {
 				break;
 
 				case TRI:
-					wavetable = tri_0_lut_q15[banlim_ind];
+					wavetable = tri_bandlim_lut_q15[banlim_ind];
 				break;
 
 				case SAW:
-					wavetable = saw_0_lut_q15[banlim_ind];
+					wavetable = saw_bandlim_lut_q15[banlim_ind];
 				break;
 
 				case SQU:
-					wavetable = squ_0_lut_q15[banlim_ind];
+					wavetable = squ_bandlim_lut_q15[banlim_ind];
 				break;
 			}
 

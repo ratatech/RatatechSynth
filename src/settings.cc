@@ -30,6 +30,7 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->osc_params.mixAB = 0;
 		synth_params->osc_params.osc_detune = 1;
 		synth_params->osc_params.freq_frac = 1000;
+		synth_params->osc_params.banlim_ind = 0;
 
 		/** LFO settings */
 		synth_params->lfo_params.shape_osc = SIN;
