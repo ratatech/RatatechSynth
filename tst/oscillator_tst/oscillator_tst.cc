@@ -224,6 +224,7 @@ void test_square_out(void){
 
 	/** Set shape */
 	osc.set_shape(SQU);
+	osc.set_freq_midi(127);
 
 	/** Store frames in outuput buffer */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;

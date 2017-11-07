@@ -21,43 +21,20 @@
 #define MIDI_FREQ_LUT_SIZE 128
 #define MIDI_PHINC_LUT_SIZE 128
 #define LFO_PHINC_LUT_SIZE 4096
+#define N_BANDLIM 10
+#define MIDI_BANDLIM_INDS_LUT_SIZE 128
 
 extern const q15_t sin_lut_q15[LUT_8_BIT];
-extern const q15_t squ_0_lut_q15[LUT_8_BIT];
-extern const q15_t squ_1_lut_q15[LUT_8_BIT];
-extern const q15_t squ_2_lut_q15[LUT_8_BIT];
-extern const q15_t squ_3_lut_q15[LUT_8_BIT];
-extern const q15_t squ_4_lut_q15[LUT_8_BIT];
-extern const q15_t squ_5_lut_q15[LUT_8_BIT];
-extern const q15_t squ_6_lut_q15[LUT_8_BIT];
-extern const q15_t squ_7_lut_q15[LUT_8_BIT];
-extern const q15_t squ_8_lut_q15[LUT_8_BIT];
-extern const q15_t squ_9_lut_q15[LUT_8_BIT];
-extern const q15_t saw_0_lut_q15[LUT_8_BIT];
-extern const q15_t saw_1_lut_q15[LUT_8_BIT];
-extern const q15_t saw_2_lut_q15[LUT_8_BIT];
-extern const q15_t saw_3_lut_q15[LUT_8_BIT];
-extern const q15_t saw_4_lut_q15[LUT_8_BIT];
-extern const q15_t saw_5_lut_q15[LUT_8_BIT];
-extern const q15_t saw_6_lut_q15[LUT_8_BIT];
-extern const q15_t saw_7_lut_q15[LUT_8_BIT];
-extern const q15_t saw_8_lut_q15[LUT_8_BIT];
-extern const q15_t saw_9_lut_q15[LUT_8_BIT];
-extern const q15_t tri_0_lut_q15[LUT_8_BIT];
-extern const q15_t tri_1_lut_q15[LUT_8_BIT];
-extern const q15_t tri_2_lut_q15[LUT_8_BIT];
-extern const q15_t tri_3_lut_q15[LUT_8_BIT];
-extern const q15_t tri_4_lut_q15[LUT_8_BIT];
-extern const q15_t tri_5_lut_q15[LUT_8_BIT];
-extern const q15_t tri_6_lut_q15[LUT_8_BIT];
-extern const q15_t tri_7_lut_q15[LUT_8_BIT];
-extern const q15_t tri_8_lut_q15[LUT_8_BIT];
-extern const q15_t tri_9_lut_q15[LUT_8_BIT];
+extern const q15_t squ_0_lut_q15[N_BANDLIM][LUT_8_BIT];
+extern const q15_t saw_0_lut_q15[N_BANDLIM][LUT_8_BIT];
+extern const q15_t tri_0_lut_q15[N_BANDLIM][LUT_8_BIT];
+
 
 extern const q15_t sin_lut_lfo[LUT_5_BIT];
 extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];
 extern const q31_t adsr_beta_exp_curve_q31[LUT_12_BIT];
 extern const uint32_t midi_phinc_lut[MIDI_PHINC_LUT_SIZE];
 extern const uint32_t lfo_phinc_lut[LFO_PHINC_LUT_SIZE];
+extern const uint8_t  midi_bandlim_inds_lut[MIDI_BANDLIM_INDS_LUT_SIZE];
 
 #endif /* TABLES_H_ */

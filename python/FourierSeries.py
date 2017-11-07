@@ -61,16 +61,16 @@ class FourierSeries(object):
         
         # Add first the DC bin to the summation
         y = y + a_0
-        
+
         # Iterate over harmonics
-        for n in range(1,Nh):
+        for n in range(1,Nh+1):
             
             # Low pass filter designed with the Lanczos sigma factor 
             # used to mitigate waveform artefacts due to the Gibbs 
             # phenomenon. More info on the book "Digital Waveform
             # Genearation", chapter 5- DDS arbitrary waveform
             # generation.
-            Hk = ((Nh)/(n*np.pi)) * np.sin((n*np.pi)/(Nh))
+            Hk = ((Nh+1)/(n*np.pi)) * np.sin((n*np.pi)/(Nh+1))
             #Hk = 1;
             # Get the coefficients
             [a_n,b_n] = self.get_coeffs(n)

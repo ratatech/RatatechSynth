@@ -4,17 +4,36 @@ import datetime
 import os,sys
 from FourierSeries import FourierSeries
 
-def writeTable(name,N,data,type):
+def writeTableContent(data,tableStr,isMultDim):
     
     lineBreakCtr = 0
-    outstring = 'const ' + str(type) + ' ' + str(name) + '[' + str(N) + '] = {\n'
-    for element in data:
-        outstring = outstring + str(element) + ','
-        lineBreakCtr = lineBreakCtr + len(str(element)) + 1
-        if (lineBreakCtr)>=100:
-            outstring = outstring + '\n'
-            #outstring = outstring + '                                         '
-            lineBreakCtr = 0
+        
+    tables = data
+    if not isMultDim:      
+        tables = np.array([[],data])
+        
+    for subTable in tables:
+        if isMultDim:
+            tableStr = tableStr + '{'
+        for element in subTable:
+            tableStr = tableStr + str(element) + ','
+            lineBreakCtr = lineBreakCtr + len(str(element)) + 1
+            if (lineBreakCtr)>=100:
+                tableStr = tableStr + '\n'
+                lineBreakCtr = 0  
+        if isMultDim:          
+            tableStr = tableStr + '},'
+            
+    return tableStr
+    
+def writeTable(name,N,data,type,isMultDim=False):
+    
+    lineBreakCtr = 0
+    if isMultDim:      
+        outstring = 'const ' + str(type) + ' ' + str(name) + '[N_BANDLIM]' + '[' + str(N) + '] = {\n'
+    else:
+        outstring = 'const ' + str(type) + ' ' + str(name) + '[' + str(N) + '] = {\n'
+    outstring = writeTableContent(data,outstring,isMultDim)
         
     outstring = outstring + '};'
     return outstring
@@ -59,6 +78,9 @@ fp.writelines(file_header)
 # Common amplitude in most table calculations
 AMP = 2**15-1
 
+# Common sampling frequency
+AUDIO_FS = 48000
+
 # Enable/disable wavetable generation
 USE_LFO_TABLE = False
 USE_BANDLIMITED = True
@@ -70,7 +92,7 @@ if USE_BANDLIMITED :
     ------------------------------------------------------------------------------'''
     bits = 8
     N = 2**bits
-    fs = 64000
+    fs = AUDIO_FS
     a = 440
     
     for mode in ['squ','saw','tri']:
@@ -85,7 +107,8 @@ if USE_BANDLIMITED :
         # Init variables
         wavetables = np.int16(np.zeros(256))
         wavetable = np.array([])
-        max_ripple = 0.023317714281841 # Empirical ripple observation
+        max_ripple = 0.0278668934426245; # Empirical ripple observation. To be changed in each case, to avoid
+                                         # Clipping or negative to positive int16 jumps
         A = 1-max_ripple
         
         # Create fourier series object
@@ -100,7 +123,7 @@ if USE_BANDLIMITED :
             # Total number of harmonics that fit in our frequency without
             # producing aliasing, i.e. frequencies below Nyquist (Nh<fs/2)
             Nh = int(np.floor((np.double(fs)/2)/freq))
-        
+           
             # Fourier series synthesis
             wavetable = fos.process(Nh)
             
@@ -112,17 +135,17 @@ if USE_BANDLIMITED :
         
         # Write tables to the file
         table_ind = 0
-        for wave in wavetables:
-            name = mode + '_' + str(table_ind) + '_lut_q15' 
-            table_ind = table_ind + 1
-            macro_N = 'LUT_' + str(bits) + '_BIT'
-            table = writeTable(name,macro_N,wave,'q15_t')
-             
-            # Write to output file
-            fp.writelines(table)
-            fp.writelines('\n\n')
+        name = mode + '_' + str(table_ind) + '_lut_q15' 
+        table_ind = table_ind + 1
+        macro_N = 'LUT_' + str(bits) + '_BIT'
+        table = writeTable(name, macro_N, wavetables, 'q15_t',isMultDim=True)
+         
+        # Write to output file
+        fp.writelines(table)
+        fp.writelines('\n\n')
         
-        if plotting:
+        #if plotting:
+        if True:
             plt.figure(2)
             plt.plot(np.transpose(wavetables))
             plt.show()
@@ -256,7 +279,7 @@ b = np.power((2**14/c),(np.divide(1.0, N-1)))
 exp_curve = np.int16(np.round(np.power(b, t)*c))
 ratio = 0.5
 print 'ADSR RATIO in q31 = '+ str(ratio*2**31)
-AUDIO_FS = 96000
+
 FRAME_SIZE = 32
 fs = AUDIO_FS/FRAME_SIZE
  
@@ -329,7 +352,7 @@ bits = 12
 N = (2**bits)
 LUT_9_BIT = (2**9)
 SHIFT_PHASE = (2**23)
-FS = 96000
+FS = AUDIO_FS
 FRAME_SIZE = 32
 min_freq = 0.1
 max_freq = 100
@@ -348,6 +371,33 @@ table = writeTable(name,macro_N,lfo_ph_table,'uint32_t')
 # Write to output file
 fp.writelines(table)
 fp.writelines('\n\n')
+
+'''-------------------------------------------------------------------------------
+ MIDI2BANDLIMIND
+------------------------------------------------------------------------------'''
+bits = 7
+N = (2**bits)
+LUT_9_BIT = (2**9)
+SHIFT_PHASE = (2**23)
+N_TABLES = 10;
+fs = AUDIO_FS
+freqs = []
  
+for midi_num in range(0,N):
+    freq = np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000
+    freqs.append(freq)
+    
+midi2inc = (np.ceil(np.log2(np.ceil((freqs)/octaves[0]))))
+midi2inc = np.array(midi2inc)
+midi2inc = midi2inc.astype(int)
+
+name = ' midi_bandlim_inds_lut' 
+macro_N = 'MIDI_BANDLIM_INDS_LUT_SIZE'
+table = writeTable(name,macro_N,midi2inc,'uint8_t')
+
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
  
 fp.close()

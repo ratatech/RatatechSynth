@@ -209,5 +209,7 @@ void Oscillator::set_freq_frac(double freq)
 void Oscillator::set_freq_midi(uint8_t midi_num)
 {
 	ph_inc_frac = midi_phinc_lut[midi_num];
+	banlim_ind = midi_bandlim_inds_lut[midi_num];
+	set_shape(shape);
 }
 

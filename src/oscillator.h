@@ -30,7 +30,7 @@ class Oscillator {
 		uint16_t phaseInc;
 		uint16_t K;
 		double KFrac;
-		const int16_t *wavetable;
+		const q15_t *wavetable;
 		uint16_t tableShift;
 		double sampleDebug;
 		double sampleDebug2;
@@ -50,6 +50,7 @@ class Oscillator {
 		int32_t square_out;
 		bool top,FM_synth;
 		int32_t scaled_LUT;
+		uint8_t banlim_ind;
 
 
 		/** Constructor.
@@ -92,15 +93,15 @@ class Oscillator {
 				break;
 
 				case TRI:
-					wavetable = tri_0_lut_q15;
+					wavetable = tri_0_lut_q15[banlim_ind];
 				break;
 
 				case SAW:
-					wavetable = saw_0_lut_q15;
+					wavetable = saw_0_lut_q15[banlim_ind];
 				break;
 
 				case SQU:
-					wavetable = squ_0_lut_q15;
+					wavetable = squ_0_lut_q15[banlim_ind];
 				break;
 			}
 

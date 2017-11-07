@@ -36,7 +36,7 @@ class LFO {
 		uint32_t ph_inc_frac,ph_ind_frac,ph_inc,ph_ind;
 		q15_t lfo_amp,interp_state;
 		q15_t lfo_amo;
-		const int16_t *wavetable;
+		const q15_t *wavetable;
 
 		bool top;
 		bool FM_synth;
@@ -75,11 +75,11 @@ class LFO {
 				break;
 
 				case TRI:
-					wavetable = tri_0_lut_q15;
+					wavetable = tri_0_lut_q15[0];
 				break;
 
 				case SAW:
-					wavetable = saw_0_lut_q15;
+					wavetable = saw_0_lut_q15[0];
 				break;
 
 			}
