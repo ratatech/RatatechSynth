@@ -80,6 +80,8 @@ void MIDI::parseMsg(uint16_t byte){
 	if(midi_msg_type == DATA_VEL){
 		if(midi_buffer[2]>0){
 			new_event = true;
+		}else{
+			new_event = false;
 		}
 
 	}

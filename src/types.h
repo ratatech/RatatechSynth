@@ -47,7 +47,10 @@ This file is part of XXXXXXX
 
 struct object_pool_t
 {
-	void* 	osc;
+	void* 	osc1;
+	void* 	osc2;
+	void* 	osc3;
+	void* 	osc4;
 	void* 	lfo;
 	void*	out_buffer;
 	void*	midi;

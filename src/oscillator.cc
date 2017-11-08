@@ -52,8 +52,7 @@ q15_t Oscillator::get_sample(synth_params_t *synth_params)
     _y1 = wavetable[ind_int1];
 
     /** Linear interpolation */
-    y = ((q63_t)(_y1 - _y0)*ind_frac)>>SHIFT_PHASE_INT;
-    y += _y0;
+    y = interp_q15(_y0,_y1,ind_frac,SHIFT_PHASE_INT);
 
     return y;
 

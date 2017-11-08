@@ -32,9 +32,9 @@ if status == 'CONNECTED':
     # Parse the output buffer and create wav audio files for each of the generated signals.
     # Each of the corresponding substrings should match the name of the output buffers used in
     # oscillator_tst.cc otherwise the parsing won't work.
-    FS = 96000
-    debug = False
-    ratatechUtil.rawUsart2wav('buff_adsr_env_out',usartOutLines,FS,debug)
+    FS = 48000
+    debug = True
+    #ratatechUtil.rawUsart2wav('buff_adsr_env_out',usartOutLines,FS,debug)
     ratatechUtil.rawUsart2wav('buff_adsr_out',usartOutLines,FS,debug)
      
     # Throw error in case of fail

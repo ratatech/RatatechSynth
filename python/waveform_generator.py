@@ -283,7 +283,7 @@ FRAME_SIZE = 32
 fs = AUDIO_FS/FRAME_SIZE
  
 beta_table = []
-time_table = np.logspace(np.log10(0.001),np.log10(5),N)
+time_table = np.logspace(np.log10(0.01),np.log10(5),N)
 for i in range(0,N-1):
     tau = time_table[i]
     beta = np.int32((2**31)*np.exp((-np.log((1.0 + ratio) / ratio)/(tau*fs))))
@@ -354,7 +354,7 @@ SHIFT_PHASE = (2**23)
 FS = AUDIO_FS
 FRAME_SIZE = 32
 min_freq = 0.1
-max_freq = 100
+max_freq = 50
 lfo_ph_table = []
  
 freqs = np.linspace(min_freq,max_freq,N)

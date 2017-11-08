@@ -30,7 +30,7 @@ synth_params_t synth_params;
 object_pool_t object_pool;
 
 /** Make a local copy of the object instances */
-Oscillator 		osc;
+Oscillator 		osc1,osc2,osc3,osc4;
 LFO 				lfo;
 CircularBuffer	out_buffer;
 MIDI 				midi;
@@ -65,7 +65,10 @@ int main(void)
 	KIN1_EnableCycleCounter(); 			// start counting
 
 	/** Put objects in the pool */
-	object_pool.osc = 			&osc;
+	object_pool.osc1 = 			&osc1;
+	object_pool.osc2 = 			&osc2;
+	object_pool.osc3 = 			&osc3;
+	object_pool.osc4 = 			&osc4;
 	object_pool.lfo = 			&lfo;
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
@@ -85,11 +88,16 @@ int main(void)
 	ratatech_init(&synth_params);
 
 	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
+	osc1.init(&synth_params.osc_params);
+	osc2.init(&synth_params.osc_params);
+	osc3.init(&synth_params.osc_params);
+	osc4.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc.set_freq_frac(1000);
-	osc.set_shape(SQU);
+	osc1.set_shape(SQU);
+	osc2.set_shape(SAW);
+	osc3.set_shape(SAW);
+	osc4.set_shape(SAW);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -139,6 +147,8 @@ void low_rate_tasks(void){
 	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
 
 }
+
+//#define DEBUG_ADC
 
 /**
  * Fill the main buffer containing the output audio samples
@@ -231,15 +241,25 @@ void USART1_IRQHandler(void)
     	/** Update midi information */
     	midi.update(&synth_params);
 
-    	if(midi.note_ON){
+    	if(midi.new_event){
 			/** If a new note is received reset ADSR */
 			adsr.reset();
 
 			/** Set OSC freq from the MIDI table */
-			osc.set_freq_midi(synth_params.pitch);
+			osc1.set_freq_midi(synth_params.pitch);
+			osc2.set_freq_midi(synth_params.pitch+2);
+			osc3.set_freq_midi(synth_params.pitch+4);
+			osc4.set_freq_midi(synth_params.pitch+8);
+
 		}else{
+			//printf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],midi.midi_buffer[2]);
+			//printf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],synth_params.vel);
 			adsr.note_ON = false;
 		}
+
+    	if(midi.note_ON && (synth_params.vel == 0)){
+    		adsr.note_ON = false;
+    	}
 
 
     }

@@ -191,9 +191,9 @@ void test_adsr_out(void){
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
-	adsr.beta_att = adsr_beta_exp_curve_q31[1500];	/** tau = 0.029188, fs = 3000Hz */
-	adsr.beta_dec = adsr_beta_exp_curve_q31[1800];	/** tau = 0.057311, fs = 3000Hz */
-	adsr.beta_rel = adsr_beta_exp_curve_q31[1500];	/** tau = 0.029188, fs = 3000Hz */
+	adsr.beta_att = adsr_beta_exp_curve_q31[500];	/** tau = 0.029188, fs = 3000Hz */
+	adsr.beta_dec = adsr_beta_exp_curve_q31[200];	/** tau = 0.057311, fs = 3000Hz */
+	adsr.beta_rel = adsr_beta_exp_curve_q31[1200];	/** tau = 0.029188, fs = 3000Hz */
 	synth_params.note_ON = true;
 	adsr.set_base(&synth_params);
 	adsr.beta = adsr.beta_att;
@@ -247,7 +247,7 @@ int main(void)
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
-    RUN_TEST(test_adsr_env_out);
+    //RUN_TEST(test_adsr_env_out);
     RUN_TEST(test_adsr_out);
 
     /** FInish unity */
