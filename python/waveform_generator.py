@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import datetime
 import os,sys
 from FourierSeries import FourierSeries
+from ADSR import ADSR
 
 def writeTableContent(data,tableStr,isMultDim):
     
@@ -301,6 +302,87 @@ if plotting:
 # Write to output file
 fp.writelines(table)
 fp.writelines('\n\n')
+
+'''-------------------------------------------------------------------------------
+ ADSR ATTACK/DECAY TABLES
+------------------------------------------------------------------------------'''
+
+
+init_state = 0;
+MAX_AMP = int('7FFF', 16)
+targetRatio_att = 0.5;
+targetRatio_dec = 0.001;
+sustain_lvl_f = 0;
+sustain_lvl = np.floor(sustain_lvl_f*MAX_AMP);
+control_signal = MAX_AMP;
+
+# Set state targets
+ATTACK_TARGET = MAX_AMP;
+DECAY_TARGET = sustain_lvl; 
+RELEASE_TARGET = 0;
+
+# Beta coeffs table generation
+bits = 8
+N = 2**bits;
+tau = N;
+beta_att = ((2**31)*np.exp(-np.log((1 + targetRatio_att) / targetRatio_att) / (tau)));
+beta_dec = np.int32((2**31)*np.exp(-np.log((1 + targetRatio_dec) / targetRatio_dec) / (tau)));
+
+
+# Init moving average filter
+#---------------------------------------------
+adsr = ADSR(sustain_lvl,init_state);
+adsr.set_beta(beta_att,targetRatio_att,'ATT');
+adsr.set_beta(beta_dec,targetRatio_dec,'DEC');
+
+
+# Generate the AD envelope 
+#---------------------------------------------
+avg_mem = [];
+state = 'ATT';
+adsr.beta = adsr.beta_att;
+adsr.base = adsr.base_att;
+
+while 'END' not in state: 
+    adsr.update()
+    avg_mem.append(adsr.avg_val)
+    
+    if (adsr.avg_val >= ATTACK_TARGET ) and ('ATT' in state):
+        adsr.base = adsr.base_dec;
+        adsr.beta = adsr.beta_dec;
+        att_table = avg_mem
+        avg_mem = []
+        state = 'DEC'; 
+      
+    if adsr.avg_val <= DECAY_TARGET and ('DEC' in state):
+        
+        dec_table = [MAX_AMP] + avg_mem
+        state = 'END';
+     
+# Configure exp attack table to write  
+data_type = 'q15'
+name = 'adsr_att_exp_' + data_type 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,att_table, data_type + '_t')
+  
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+# Configure exp decay table to write 
+name = 'adsr_dec_exp_' + data_type 
+macro_N = 'LUT_' + str(bits) + '_BIT'
+table = writeTable(name,macro_N,dec_table, data_type + '_t')
+  
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+if plotting:
+    plt.figure(10)
+    plt.plot(att_table+dec_table)
+    plt.show()
+
  
 '''-------------------------------------------------------------------------------
  MIDI2FREQ TABLE

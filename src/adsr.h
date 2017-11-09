@@ -33,6 +33,8 @@ class ADSR{
 		int64_t ratio;
 		adsr_state_e adsr_state;
 		bool note_ON;
+		uint16_t ind;
+		q15_t *adsr_table;
 
 		/** ADSR Constructor.
 		 *
@@ -62,6 +64,8 @@ class ADSR{
 	        base = base_att;
 
 	        interp_state = 0;
+	        ind = 0;
+	        adsr_table = adsr_att_exp_q15;
 		}
 
 		/**

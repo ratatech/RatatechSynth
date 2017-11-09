@@ -130,21 +130,27 @@ q15_t ADSR::update(void){
 
 	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
 
-		x64 = ((int64_t)state) * ((int64_t)beta);	// x64 = s0.31 * s0.31 = s0.62
-		x32 = (q31_t)(x64 >>31);					// x32 = s0.62 >> 31   = s0.31
-		state = base + x32;							// x32 = s0.31 + s0.31 = s0.31
-		arm_add_q31(&base,&x32,&state,1);
+//		x64 = ((int64_t)state) * ((int64_t)beta);	// x64 = s0.31 * s0.31 = s0.62
+//		x32 = (q31_t)(x64 >>31);					// x32 = s0.62 >> 31   = s0.31
+//		state = base + x32;							// x32 = s0.31 + s0.31 = s0.31
+//		arm_add_q31(&base,&x32,&state,1);
+//
+//		/** saturate */
+//		//state = (q15_t) (__SSAT(state, 31));
+//		//state = (q15_t) (__USAT(state, 16));
+//		if(state<0)
+//				state = 0;
+//		if(state>=INT32_MAX)
+//				state = INT32_MAX;
 
-		/** saturate */
-		//state = (q15_t) (__SSAT(state, 31));
-		//state = (q15_t) (__USAT(state, 16));
-		if(state<0)
-				state = 0;
-		if(state>=INT32_MAX)
-				state = INT32_MAX;
+		state = adsr_table[ind];
+		ind += 4;
+
 	}
 
-	q15_t adsr_sample = (q15_t)(state>>16); // 	 y = s0.31 >> 16   = s0.15
+	//q15_t adsr_sample = (q15_t)(state>>16); // 	 y = s0.31 >> 16   = s0.15
+	q15_t adsr_sample = state; // 	 y = s0.31 >> 16   = s0.15
+
 
 	/** Update states */
 	switch(adsr_state){
@@ -154,6 +160,8 @@ q15_t ADSR::update(void){
 			if (adsr_sample >= MAX_AMP){
 				beta = beta_dec;
 		        base = base_dec;
+		        adsr_table =  adsr_dec_exp_q15;
+		        ind = 0;
 
 
 		        /** If sustain level is set to MAX, Go straight to SUSTAIN state,

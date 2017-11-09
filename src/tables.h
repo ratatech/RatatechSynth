@@ -33,6 +33,8 @@ extern const q15_t tri_bandlim_lut_q15[N_BANDLIM][LUT_8_BIT];
 extern const q15_t sin_lut_lfo[LUT_5_BIT];
 extern const double midi_freq_lut[MIDI_FREQ_LUT_SIZE];
 extern const q31_t adsr_beta_exp_curve_q31[LUT_12_BIT];
+extern q15_t adsr_att_exp_q15[LUT_8_BIT];
+extern q15_t adsr_dec_exp_q15[LUT_8_BIT];
 extern const uint32_t midi_phinc_lut[MIDI_PHINC_LUT_SIZE];
 extern const uint32_t lfo_phinc_lut[LFO_PHINC_LUT_SIZE];
 extern const uint8_t  midi_bandlim_inds_lut[MIDI_BANDLIM_INDS_LUT_SIZE];
