@@ -173,7 +173,7 @@ void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t b
 
 	 /** Generate samples and store it in the output buffer */
 	 for(uint i=0;i<block_size;i++){
-		 *pOut++ = get_sample_dual(synth_params);
+		 *pOut++ = get_sample(synth_params);
 	 }
 
 	 /** Shift/Saturate to get a square wave */

@@ -55,7 +55,6 @@ class Oscillator {
 
 		/** Constructor.
 		 *
-		 * @param osc_param Structure holding init parameters
 		 */
 		Oscillator(void){
 

@@ -27,13 +27,18 @@ def writeTableContent(data,tableStr,isMultDim):
             
     return tableStr
     
-def writeTable(name,N,data,type,isMultDim=False):
+def writeTable(name,N,data,type,isMultDim=False,isConst=True):
     
     lineBreakCtr = 0
-    if isMultDim:      
-        outstring = 'const ' + str(type) + ' ' + str(name) + '[N_BANDLIM]' + '[' + str(N) + '] = {\n'
+    if isConst:
+        constType = 'const '
     else:
-        outstring = 'const ' + str(type) + ' ' + str(name) + '[' + str(N) + '] = {\n'
+        constType = ''
+        
+    if isMultDim:      
+        outstring =  constType + str(type) + ' ' + str(name) + '[N_BANDLIM]' + '[' + str(N) + '] = {\n'
+    else:
+        outstring = constType + str(type) + ' ' + str(name) + '[' + str(N) + '] = {\n'
     outstring = writeTableContent(data,outstring,isMultDim)
         
     outstring = outstring + '};'
@@ -310,7 +315,7 @@ fp.writelines('\n\n')
 
 init_state = 0;
 MAX_AMP = int('7FFF', 16)
-targetRatio_att = 0.5;
+targetRatio_att = 1;
 targetRatio_dec = 0.001;
 sustain_lvl_f = 0;
 sustain_lvl = np.floor(sustain_lvl_f*MAX_AMP);
@@ -363,7 +368,7 @@ while 'END' not in state:
 data_type = 'q15'
 name = 'adsr_att_exp_' + data_type 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,att_table, data_type + '_t')
+table = writeTable(name,macro_N,att_table, data_type + '_t',isConst=False)
   
 # Write to output file
 fp.writelines(table)
@@ -372,13 +377,13 @@ fp.writelines('\n\n')
 # Configure exp decay table to write 
 name = 'adsr_dec_exp_' + data_type 
 macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,dec_table, data_type + '_t')
+table = writeTable(name,macro_N,dec_table, data_type + '_t',isConst=False)
   
 # Write to output file
 fp.writelines(table)
 fp.writelines('\n\n')
 
-if plotting:
+if True:#plotting:
     plt.figure(10)
     plt.plot(att_table+dec_table)
     plt.show()

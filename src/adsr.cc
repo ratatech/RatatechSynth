@@ -144,7 +144,7 @@ q15_t ADSR::update(void){
 //				state = INT32_MAX;
 
 		state = adsr_table[ind];
-		ind += 4;
+		ind += 8;
 
 	}
 
