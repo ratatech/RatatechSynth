@@ -22,6 +22,7 @@
 
 #include "oscillator.h"
 
+
 using namespace std;
 
 /**
@@ -31,32 +32,7 @@ using namespace std;
  */
 q15_t Oscillator::get_sample(synth_params_t *synth_params)
 {
-
-	q15_t _y0,_y1;
-	q31_t y;
-	uint32_t ind_frac;
-	uint16_t ind_int0,ind_int1;
-
-	ph_ind_frac += ph_inc_frac;
-	ph_ind_frac %= WRAP_AROUND_LUT;
-
-    /** 9 bits for the integer part, 23 bits for the fractional part */
-    ind_frac = (ph_ind_frac & MASK_PHASE_FRAC);
-    ind_int0 = (ph_ind_frac >> SHIFT_PHASE_INT);
-
-    ind_int1 = ind_int0 + 1;
-    ind_int1 %= LUT_LENGTH;
-
-    /** Read two nearest output values from the index */
-    _y0 = wavetable[ind_int0];
-    _y1 = wavetable[ind_int1];
-
-    /** Linear interpolation */
-    y = interp_q15(_y0,_y1,ind_frac,SHIFT_PHASE_INT);
-
-    return y;
-
-
+    return pLut_interp->get_sample(ph_inc_frac,wavetable);
 }
 
 /**
@@ -189,6 +165,10 @@ void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t b
 void Oscillator::init(osc_params_t* osc_param){
 	set_shape(osc_param->shape_osc);
 	set_freq_frac(osc_param->freq_frac);
+
+	/** Init lut interpolator object */
+	pLut_interp = new Lut_interp(LUT_BITS,LUT_FRAC_BITS);
+
 }
 
 /**

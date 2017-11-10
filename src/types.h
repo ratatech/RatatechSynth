@@ -44,6 +44,8 @@ This file is part of XXXXXXX
 #define PHASE_FRAC_MULT 0x800000
 #define FRAME_INTERP_K 0x4000000
 #define SHIFT_FRAME_INTERP 31
+#define LUT_FRAC_BITS 23
+#define LUT_BITS 8
 
 struct object_pool_t
 {

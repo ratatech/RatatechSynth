@@ -22,29 +22,30 @@
 
 #include "Lutinterp.h"
 
-q15_t Lut_interp::get_sample(uint32_t ph_inc_frac, q15_t *wavetable) {
+
+q15_t Lut_interp::get_sample(uint32_t ph_inc_frac, const q15_t *wavetable) {
 
 	q15_t _y0, _y1;
 	q31_t y;
-	uint32_t k;
+	uint32_t ind_frac;
 	uint16_t ind_int0, ind_int1;
 
 	ph_ind_frac += ph_inc_frac;
-	ph_ind_frac %= WRAP_AROUND_LUT;
+	ph_ind_frac %= wrap_lut;
 
 	/** 9 bits for the integer part, 23 bits for the fractional part */
-	k = (ph_ind_frac & MASK_PHASE_FRAC);
-	ind_int0 = (ph_ind_frac >> SHIFT_PHASE_INT);
+	ind_frac = (ph_ind_frac & mask);
+	ind_int0 = (ph_ind_frac >> shift_phase);
 
 	ind_int1 = ind_int0 + 1;
-	ind_int1 %= LUT_LENGTH;
+	ind_int1 %= lut_length;
 
 	/** Read two nearest output values from the index */
 	_y0 = wavetable[ind_int0];
 	_y1 = wavetable[ind_int1];
 
 	/** Linear interpolation */
-	y = interp_q15(_y0, _y1, k, SHIFT_PHASE_INT);
+	y = interp_q15(_y0,_y1,ind_frac,shift_phase);
 
 	return y;
 }
