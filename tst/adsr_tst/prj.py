@@ -34,7 +34,7 @@ if status == 'CONNECTED':
     # oscillator_tst.cc otherwise the parsing won't work.
     FS = 1
     debug = True
-    #ratatechUtil.rawUsart2wav('buff_adsr_env_out',usartOutLines,FS,debug)
+    ratatechUtil.rawUsart2wav('buff_adsr_env_out',usartOutLines,FS,debug)
     ratatechUtil.rawUsart2wav('buff_adsr_out',usartOutLines,FS,debug)
      
     # Throw error in case of fail

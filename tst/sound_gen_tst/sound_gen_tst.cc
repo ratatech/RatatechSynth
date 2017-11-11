@@ -230,7 +230,7 @@ object_pool_t object_pool;
 /**
  * Oscillator class instance
  */
-Oscillator osc;
+Oscillator osc1;
 
 /**
  * Unit test output buffer
@@ -261,7 +261,7 @@ void test_sound_gen_out(void){
 	q15_t adsr_sample;
 
 	/** Put objects in the pool */
-	object_pool.osc = 			&osc;
+	object_pool.osc1 = 			&osc1;
 	object_pool.lfo = 			&lfo;
 	object_pool.adsr = 			&adsr;
 
@@ -271,8 +271,8 @@ void test_sound_gen_out(void){
 
 	/** Init oscillator with default settings and few custom */
     synth_params.osc_params.mixAB = MAX_AMP>>1;
-	osc.init(&synth_params.osc_params);
-	osc.set_freq_frac(4000);
+	osc1.init(&synth_params.osc_params);
+	osc1.set_freq_frac(4000);
 
 	/** Configure lfo */
 	lfo.FM_synth = false;
@@ -290,19 +290,14 @@ void test_sound_gen_out(void){
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
 	synth_params.note_ON = true;
-	adsr.set_base(&synth_params);
-	adsr.base = adsr.base_att;
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
-	//TODO(JoH): Find better adsr params for frame based envelope
-	adsr.beta_att = adsr_beta_exp_curve_q31[1300];
-	adsr.beta_dec = adsr_beta_exp_curve_q31[1000];
-	adsr.beta_rel = adsr_beta_exp_curve_q31[1700];
+	adsr.ph_inc_att = adsr_time_phinc_lut[10];
+	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
+	adsr.ph_inc_rel = adsr_time_phinc_lut[100];
 	synth_params.note_ON = true;
-	adsr.set_base(&synth_params);
-	adsr.beta = adsr.beta_att;
-	adsr.base = adsr.base_att;
+	adsr.ph_inc = adsr.ph_inc_att;
 
 	/** Specify the total number of frames */
 	uint16_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;

@@ -85,11 +85,10 @@ struct mov_avg_params_t{
 };
 
 struct adsr_params_t{
-	q31_t beta_att;
-	q31_t beta_dec;
-	q31_t beta_rel;
+	q31_t ph_inc_att;
+	q31_t ph_inc_dec;
+	q31_t ph_inc_rel;
 	q15_t sustain_level;
-	int64_t ratio;
 };
 
 struct synth_params_t{

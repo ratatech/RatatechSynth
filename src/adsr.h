@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+class Lut_interp;
 
 #define ENV_LUT_LENGTH 256
 
@@ -26,15 +27,15 @@ class ADSR{
 
 	public:
 
-		q31_t beta,beta_att,beta_dec,beta_rel;
-		q31_t base,base_att,base_dec,base_rel;
-		q31_t state;
-		q15_t target_level,target_level_att,target_level_dec,sustain_level,interp_state;
+		q31_t ph_inc,ph_inc_att,ph_inc_dec,ph_inc_rel;
+		q15_t state;
+		q15_t target_level,top_level_rel,target_level_dec,sustain_level,interp_state;
 		int64_t ratio;
 		adsr_state_e adsr_state;
 		bool note_ON;
 		uint16_t ind;
 		q15_t *adsr_table;
+		Lut_interp *pLut_interp;
 
 		/** ADSR Constructor.
 		 *
@@ -45,28 +46,7 @@ class ADSR{
 		 * Set initial ADSR parameters
 		 * @param synth_params Synth global structure
 		 */
-		void init(synth_params_t* synth_params){
-
-			beta_att = synth_params->adsr_params.beta_att;
-			beta_dec = synth_params->adsr_params.beta_dec;
-			beta_rel = synth_params->adsr_params.beta_rel;
-			state = synth_params->mov_avg_params.init_state;
-            beta  = synth_params->mov_avg_params.beta;
-
-            adsr_state = IDLE_STATE;
-            sustain_level = synth_params->adsr_params.sustain_level;
-
-            note_ON = false;
-	        ratio = synth_params->adsr_params.ratio;
-
-	        set_base(synth_params);
-			beta = beta_att;
-	        base = base_att;
-
-	        interp_state = 0;
-	        ind = 0;
-	        adsr_table = adsr_att_exp_q15;
-		}
+		void init(synth_params_t* synth_params);
 
 		/**
 		 * Get a new adsr envelope sample

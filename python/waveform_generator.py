@@ -86,10 +86,12 @@ AMP = 2**15-1
 
 # Common sampling frequency
 AUDIO_FS = 48000
+CONTROL_FS = 16000
 
 # Enable/disable wavetable generation
 USE_LFO_TABLE = False
 USE_BANDLIMITED = True
+USE_ADSR_BETA_COEFFS = False
 
 if USE_BANDLIMITED :
 
@@ -271,47 +273,47 @@ if USE_LFO_TABLE:
     # Write to output file
     fp.writelines(table)
     fp.writelines('\n\n')
- 
-'''-------------------------------------------------------------------------------
- ADSR BETA EXP TABLE
-------------------------------------------------------------------------------'''
- 
-bits = 12
-N = (2**bits)
-t = np.arange(0,N, dtype=np.float)
-c = 100
-b = np.power((2**14/c),(np.divide(1.0, N-1)))
-exp_curve = np.int16(np.round(np.power(b, t)*c))
-ratio = 0.5
-print 'ADSR RATIO in q31 = '+ str(ratio*2**31)
 
-FRAME_SIZE = 32
-fs = AUDIO_FS/FRAME_SIZE
- 
-beta_table = []
-time_table = np.logspace(np.log10(0.01),np.log10(5),N)
-for i in range(0,N-1):
-    tau = time_table[i]
-    beta = np.int32((2**31)*np.exp((-np.log((1.0 + ratio) / ratio)/(tau*fs))))
-    beta_table.append(beta)
- 
-name = 'adsr_beta_exp_curve_q31' 
-macro_N = 'LUT_' + str(bits) + '_BIT'
-table = writeTable(name,macro_N,beta_table,'q31_t')
- 
-if plotting:
-    plt.figure(6)
-    plt.plot(beta_table)
-    plt.show()
- 
-# Write to output file
-fp.writelines(table)
-fp.writelines('\n\n')
+if USE_ADSR_BETA_COEFFS:
+    '''-------------------------------------------------------------------------------
+     ADSR BETA EXP TABLE
+    ------------------------------------------------------------------------------'''
+     
+    bits = 12
+    N = (2**bits)
+    t = np.arange(0,N, dtype=np.float)
+    c = 100
+    b = np.power((2**14/c),(np.divide(1.0, N-1)))
+    exp_curve = np.int16(np.round(np.power(b, t)*c))
+    ratio = 0.5
+    print 'ADSR RATIO in q31 = '+ str(ratio*2**31)
+    
+    FRAME_SIZE = 32
+    fs = AUDIO_FS/FRAME_SIZE
+     
+    beta_table = []
+    time_table = np.logspace(np.log10(0.01),np.log10(5),N)
+    for i in range(0,N-1):
+        tau = time_table[i]
+        beta = np.int32((2**31)*np.exp((-np.log((1.0 + ratio) / ratio)/(tau*fs))))
+        beta_table.append(beta)
+     
+    name = 'adsr_beta_exp_curve_q31' 
+    macro_N = 'LUT_' + str(bits) + '_BIT'
+    table = writeTable(name,macro_N,beta_table,'q31_t')
+     
+    if plotting:
+        plt.figure(6)
+        plt.plot(beta_table)
+        plt.show()
+     
+    # Write to output file
+    fp.writelines(table)
+    fp.writelines('\n\n')
 
 '''-------------------------------------------------------------------------------
  ADSR ATTACK/DECAY TABLES
 ------------------------------------------------------------------------------'''
-
 
 init_state = 0;
 MAX_AMP = int('7FFF', 16)
@@ -383,17 +385,50 @@ table = writeTable(name,macro_N,dec_table, data_type + '_t',isConst=False)
 fp.writelines(table)
 fp.writelines('\n\n')
 
-if True:#plotting:
+if plotting:
     plt.figure(10)
     plt.plot(att_table+dec_table)
     plt.show()
 
+
+'''-------------------------------------------------------------------------------
+ ADSR TIME2PHASEINC TABLE
+------------------------------------------------------------------------------'''
+bits_adc = 12
+N = (2**bits_adc)
+bits_lut = 8
+LUT_LENGHT = (2**bits_lut)
+SHIFT_PHASE = (2**23)
+FS = AUDIO_FS
+FRAME_SIZE = 32
+min_time_exp = 0.001
+max_time_exp = 1
+min_time_lin = 1
+max_time_lin = 10
+adsr_ph_table = []
+ 
+times_exp = np.linspace(min_time_exp,max_time_exp,N/4)
+times_lin = np.linspace(min_time_lin,max_time_lin, N - N/4 + 2)
+times = np.append(times_exp,times_lin[1:-1])
+
+for time in times:
+    ph_inc = np.uint32(((float(LUT_LENGHT)/(FS/FRAME_SIZE))/time)*SHIFT_PHASE)
+    adsr_ph_table.append(ph_inc)
+     
+
+name = 'adsr_time_phinc_lut' 
+macro_N = 'ADSR_TIME_PHINC_LUT_SIZE'
+table = writeTable(name,macro_N,adsr_ph_table,'uint32_t')
+ 
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
  
 '''-------------------------------------------------------------------------------
  MIDI2FREQ TABLE
 ------------------------------------------------------------------------------'''
-bits = 7
-N = (2**bits)
+bits_midi = 7
+N = (2**bits_midi)
 midi_table = np.array([])
  
 for midi_num in range(0,N):
@@ -410,16 +445,17 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  MIDI2PHASEINC TABLE
 ------------------------------------------------------------------------------'''
-bits = 7
-N = (2**bits)
-LUT_9_BIT = (2**9)
+bits_midi = 7
+N = (2**bits_midi)
+bits_lut = 8
+LUT_LENGHT = (2**bits_lut)
 SHIFT_PHASE = (2**23)
-fs = 96000
+fs = 48000
 midi_ph_table = []
  
 for midi_num in range(0,N):
     freq = np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000
-    ph_inc = np.uint32(((float(LUT_9_BIT)/fs)*freq)*SHIFT_PHASE)
+    ph_inc = np.uint32(((float(LUT_LENGHT)/fs)*freq)*SHIFT_PHASE)
     midi_ph_table.append(ph_inc)
      
  
@@ -434,9 +470,10 @@ fp.writelines('\n\n')
 '''-------------------------------------------------------------------------------
  LFO PHASEINC TABLE
 ------------------------------------------------------------------------------'''
-bits = 12
-N = (2**bits)
-LUT_9_BIT = (2**9)
+bits_adc = 12
+N = (2**bits_adc)
+bits_lut = 8
+LUT_LENGHT = (2**bits_lut)
 SHIFT_PHASE = (2**23)
 FS = AUDIO_FS
 FRAME_SIZE = 32
@@ -446,7 +483,7 @@ lfo_ph_table = []
  
 freqs = np.linspace(min_freq,max_freq,N)
 for freq in freqs:
-    ph_inc = np.uint32(((float(LUT_9_BIT)/(FS/FRAME_SIZE))*freq)*SHIFT_PHASE)
+    ph_inc = np.uint32(((float(LUT_LENGHT)/(FS/FRAME_SIZE))*freq)*SHIFT_PHASE)
     lfo_ph_table.append(ph_inc)
      
  
@@ -463,7 +500,6 @@ fp.writelines('\n\n')
 ------------------------------------------------------------------------------'''
 bits = 7
 N = (2**bits)
-LUT_9_BIT = (2**9)
 SHIFT_PHASE = (2**23)
 N_TABLES = 10;
 fs = AUDIO_FS

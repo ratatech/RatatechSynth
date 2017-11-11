@@ -118,19 +118,14 @@ void test_adsr_env_out(void){
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
 	synth_params.note_ON = true;
-	adsr.set_base(&synth_params);
-	adsr.base = adsr.base_att;
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
-	//TODO(JoH): Find better adsr params for frame based envelope
-	adsr.beta_att = adsr_beta_exp_curve_q31[150];
-	adsr.beta_dec = adsr_beta_exp_curve_q31[100];
-	adsr.beta_rel = adsr_beta_exp_curve_q31[20];
+	adsr.ph_inc_att = adsr_time_phinc_lut[10];
+	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
+	adsr.ph_inc_rel = adsr_time_phinc_lut[10];
 	synth_params.note_ON = true;
-	adsr.set_base(&synth_params);
-	adsr.beta = adsr.beta_att;
-	adsr.base = adsr.base_att;
+	adsr.ph_inc = adsr.ph_inc_att;
 
 	/** Specify the total number of frames */
 	uint16_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
@@ -151,7 +146,6 @@ void test_adsr_env_out(void){
 		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
 
 		arm_scale_q15(pOsc,adsr_sample,0,pAdsr,FRAME_SIZE);
-
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE],FRAME_SIZE);
@@ -176,12 +170,6 @@ void test_adsr_out(void){
 
 	q15_t adsr_sample;
 
-	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
-
-	/** Configure oscillator*/
-	osc.set_freq_frac(14000);
-
 	/** Define number of samples to stay on sustain state*/
 	uint8_t sustain_timeout = 30;
 
@@ -191,14 +179,11 @@ void test_adsr_out(void){
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
-	adsr.beta_att = adsr_beta_exp_curve_q31[500];	/** tau = 0.029188, fs = 3000Hz */
-	adsr.beta_dec = adsr_beta_exp_curve_q31[200];	/** tau = 0.057311, fs = 3000Hz */
-	adsr.beta_rel = adsr_beta_exp_curve_q31[1200];	/** tau = 0.029188, fs = 3000Hz */
+	adsr.ph_inc_att = adsr_time_phinc_lut[100];
+	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
+	adsr.ph_inc_rel = adsr_time_phinc_lut[100];
 	synth_params.note_ON = true;
-	adsr.set_base(&synth_params);
-	adsr.beta = adsr.beta_att;
-	adsr.base = adsr.base_att;
-
+	adsr.ph_inc = adsr.ph_inc_att;
 
 	/** Get ADSR envelope frames */
 	for(int i=0; i< BUFF_SIZE; i++){
@@ -247,7 +232,7 @@ int main(void)
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
-    //RUN_TEST(test_adsr_env_out);
+    RUN_TEST(test_adsr_env_out);
     RUN_TEST(test_adsr_out);
 
     /** FInish unity */
