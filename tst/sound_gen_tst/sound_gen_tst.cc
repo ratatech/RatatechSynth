@@ -293,7 +293,7 @@ void test_sound_gen_out(void){
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
-	adsr.ph_inc_att = adsr_time_phinc_lut[10];
+	adsr.ph_inc_att = adsr_time_phinc_lut[5];
 	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
 	adsr.ph_inc_rel = adsr_time_phinc_lut[100];
 	synth_params.note_ON = true;
@@ -304,7 +304,13 @@ void test_sound_gen_out(void){
 
 	/** Get ADSR envelope frames */
 	for(int i=0; i< _NFRAMES; i++){
-
+		if(i==12){
+			synth_params.note_ON = false;
+		}
+		if(i==64){
+			synth_params.note_ON = true;
+			adsr.reset();
+		}
 		if(adsr.adsr_state == SUSTAIN_STATE){
 			sustain_timeout--;
 		}

@@ -148,7 +148,7 @@ void low_rate_tasks(void){
 
 }
 
-//#define DEBUG_ADC
+//#define DEBUG_ADSR
 
 /**
  * Fill the main buffer containing the output audio samples
@@ -160,7 +160,7 @@ inline void fill_buffer(void)
 {
 
 
-#ifdef DEBUG_ADC
+#ifdef DEBUG_ADSR
 	printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i\r",adsr.adsr_state,adsr.sustain_level,synth_params.adsr_vol_amp);
 #endif
 
@@ -243,15 +243,14 @@ void USART1_IRQHandler(void)
 
     	if(midi.new_event){
 			/** If a new note is received reset ADSR */
-    		if(synth_params.vel != 0){
-    			adsr.reset();
-    		}
+    		adsr.reset();
 
 			/** Set OSC freq from the MIDI table */
 			osc1.set_freq_midi(synth_params.pitch);
 			osc2.set_freq_midi(synth_params.pitch+2);
 			osc3.set_freq_midi(synth_params.pitch+4);
 			osc4.set_freq_midi(synth_params.pitch+8);
+			midi.new_event = false;
 
 		}else{
 			//printf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],midi.midi_buffer[2]);
@@ -264,7 +263,6 @@ void USART1_IRQHandler(void)
     		adsr.note_ON = false;
     		synth_params.note_ON = false;
     	}
-
 
     }
 

@@ -94,6 +94,7 @@ void ADSR::reset(void)
 	note_ON = true;
 	interp_state = 0;
 	adsr_table = adsr_att_exp_q15;
+	ph_inc = ph_inc_att;
 	pLut_interp->reset();
 
 }
@@ -128,16 +129,16 @@ q15_t ADSR::update(void){
 		adsr_sample = pLut_interp->get_sample(ph_inc,adsr_table);
 	}
 
+	//printf("ADSR STATE = %i ADSR S_LVL = %i ADSR LVL = %i ADSR TOPREL = %i\r",adsr_state,sustain_level,adsr_sample,top_level_rel);
 
 	/** Update states */
 	switch (adsr_state) {
 
 	case ATTACK_STATE:
-
+		top_level_rel = adsr_sample;
 		if (adsr_sample >= MAX_AMP || (pLut_interp->ph_ind_frac_ovf > pLut_interp->wrap_lut)) {
 			ph_inc = ph_inc_dec;
 			adsr_sample = MAX_AMP;
-			//adsr_sample = interp_q15(state,MAX_AMP,pLut_interp->ph_ind_frac_ovf, pLut_interp->shift_phase);
 			pLut_interp->reset();
 			adsr_table = adsr_dec_exp_q15;
 			ind = 0;
@@ -156,8 +157,9 @@ q15_t ADSR::update(void){
 			adsr_state = RELEASE_STATE;
 			ph_inc = ph_inc_rel;
 			adsr_table = adsr_dec_exp_q15;
-			top_level_rel = MAX_AMP;
+			top_level_rel = adsr_sample;
 			pLut_interp->reset();
+
 		}
 
 		break;
@@ -169,7 +171,9 @@ q15_t ADSR::update(void){
 
 		if (adsr_sample <= sustain_level || (pLut_interp->ph_ind_frac_ovf > pLut_interp->wrap_lut) ) {
 			adsr_sample = sustain_level;
+			top_level_rel = adsr_sample;
 			adsr_state = SUSTAIN_STATE;
+			ph_inc = ph_inc_rel;
 			pLut_interp->reset();
 		}
 		if (note_ON == false) {

@@ -30,8 +30,8 @@ This file is part of XXXXXXX
 //#define USART_TST USART3
 //#endif
 
-#define USART_X 2
-#define USART_TST USART2
+#define USART_X 3
+#define USART_TST USART3
 #define STDOUT_USART USART_X
 #define STDERR_USART USART_X
 #define STDIN_USART  USART_X
