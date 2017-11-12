@@ -33,21 +33,6 @@ This file is part of XXXXXXX
 #define FRAME_SIZE_TEST 1
 
 /**
- * ADSR envelope unit test reference buffer
- */
-q15_t buff_adsr_env_out[BUFF_SIZE] = {
-	7034,11161,10676,5777,-1509,-8172,-11458,-10009,-4424,2990,9167,11555,9167,2990,-4423,-10008,-11458,-8173,-1509,5777,10675,11161,7034,0,-7036,-11163,-10678,-5779,1507,8170,
-	11456,10007,7804,-5280,-16182,-20397,-16182,-5280,7803,17661,20219,14421,2661,-10198,-18844,-19702,-12417,-1,12414,19699,18842,10196,-2663,-14423,-20221,-17664,-7807,5277,
-	16179,20395,16179,5277,-7806,-17664,-26925,-19205,-3546,13575,25087,26228,16529,0,-16533,-26232,-25091,-13579,3543,19200,26920,23516,10391,-7030,-21545,-27158,-21545,-7030,
-	10390,23515,26921,19201,3543,-13579,-25091,-26232,-16533,-1,19677,31223,29866,16161,-4221,-22861,-32051,-27998,-12374,8364,25644,32327,25644,8364,-12373,-27997,-32052,-22862,
-	-4221,16161,29865,31223,19677,0,-19681,-31227,-29870,-16165,4217,22857,32047,27994,12537,-8481,-25995,-32767,-25995,-8481,12536,28372,32482,23167,4274,-16383,-30273,-31650,
-	-19947,-1,19943,31646,30270,16379,-4278,-23170,-32485,-28377,-12541,8477,25991,32764,25991,8477,-12540,-28376,-22038,-15719,-2903,11111,20534,21468,13529,0,-13532,-21471,-20538,
-	-11114,2900,15715,22034,19248,8505,-5754,-17635,-22229,-17635,-5754,8504,19247,22035,15716,2900,-11114,-20537,-21471,-13532,-1,9971,15822,15134,8189,-2139,-11585,-16242,-14188,
-	-6271,4238,12995,16381,12995,4238,-6270,-14188,-16243,-11585,-2139,8189,15134,15822,9971,0,-9973,-15825,-15137,-8192,2137,11582,16240,14186,5510,-3728,-11426,-14402,-11426,-3728,
-	5510,12470,14276,10182,1878,-7201,-13306,-13911,-8767,-1,8765,13909,13304,7199,-1881,-10184,-14278,-12473,-5512,3726,11423,14400,11423,3726,-5512,-12472,
-};
-
-/**
  * ADSR unit test reference buffer
  */
 q15_t buff_adsr_out[BUFF_SIZE] = {
@@ -62,6 +47,31 @@ q15_t buff_adsr_out[BUFF_SIZE] = {
 		0,0,0,0,0,0,
 };
 
+/**
+ * Midi note status indicator
+ */
+q15_t midi_note_ON[BUFF_SIZE] = {
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+		0,  0,  0,  0,  0,  0,  0,  0,  0,
+};
 
 
 /**
@@ -88,77 +98,6 @@ q15_t pAdsr_out [BUFF_SIZE];
 /** ADSR object instance*/
 ADSR adsr;
 
-/**
- * ADSR test
- */
-void test_adsr_env_out(void){
-
-	/** Pointer to ADSR envelope frame  **/
-	q15_t pAdsr[FRAME_SIZE];
-
-	/** Pointer to oscillator frame  **/
-	q15_t pOsc[FRAME_SIZE];
-
-	q15_t adsr_sample;
-
-	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
-
-	/** Configure oscillator*/
-	osc.set_freq_frac(10000);
-	synth_params.osc_params.mixAB = 0;
-
-	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 10;
-
-	/** Init adsr */
-	synth_params.adsr_params.sustain_level = MAX_AMP>>1;
-	adsr.init(&synth_params);
-
-	/** ADSR time params*/
-	adsr.adsr_state = ATTACK_STATE;
-	synth_params.note_ON = true;
-
-	/** ADSR time params*/
-	adsr.adsr_state = ATTACK_STATE;
-	adsr.ph_inc_att = adsr_time_phinc_lut[10];
-	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
-	adsr.ph_inc_rel = adsr_time_phinc_lut[10];
-	synth_params.note_ON = true;
-	adsr.ph_inc = adsr.ph_inc_att;
-
-	/** Specify the total number of frames */
-	uint16_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
-
-	/** Get ADSR envelope frames */
-	for(int i=0; i< _NFRAMES; i++){
-
-		if(adsr.adsr_state == SUSTAIN_STATE){
-			sustain_timeout--;
-		}
-		if(sustain_timeout<=0){
-			synth_params.note_ON = false;
-		}
-		/** Get ADSR envelope frames */
-		adsr_sample = adsr.get_sample(&synth_params);
-
-		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
-
-		arm_scale_q15(pOsc,adsr_sample,0,pAdsr,FRAME_SIZE);
-
-		/** Store frames in outuput buffer */
-		arm_copy_q15(pAdsr,&pAdsr_out[i*FRAME_SIZE],FRAME_SIZE);
-
-	};
-
-	/** Print output buffer */
-	printOutBuff("buff_adsr_env_out", &pAdsr_out[0], BUFF_SIZE);
-
-	/** Compare output vs reference */
-	TEST_ASSERT_EQUAL_INT16_ARRAY(buff_adsr_env_out,pAdsr_out,BUFF_SIZE);
-
-}
 
 /**
  * ADSR test
@@ -171,19 +110,20 @@ void test_adsr_out(void){
 	q15_t adsr_sample;
 
 	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 30;
+	int8_t sustain_timeout = 30;
 
 	/** Init adsr */
-	synth_params.adsr_params.sustain_level = (q15_t)(float(MAX_AMP)*0.7);
+	synth_params.adsr_params.sustain_level = (q15_t)(float(MAX_AMP)*0.5);
 	adsr.init(&synth_params);
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
-	adsr.ph_inc_att = adsr_time_phinc_lut[100];
-	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
+	adsr.ph_inc_att = adsr_time_phinc_lut[30];
+	adsr.ph_inc_dec = adsr_time_phinc_lut[50];
 	adsr.ph_inc_rel = adsr_time_phinc_lut[100];
 	synth_params.note_ON = true;
 	adsr.ph_inc = adsr.ph_inc_att;
+	adsr.pLut_interp->reset();
 
 	/** Get ADSR envelope frames */
 	for(int i=0; i< BUFF_SIZE; i++){
@@ -194,6 +134,15 @@ void test_adsr_out(void){
 		if(sustain_timeout<=0){
 			synth_params.note_ON = false;
 		}
+//		if(i == 15	){
+//			synth_params.note_ON = false;
+//		}
+//		if(i == 50){
+//			synth_params.note_ON = true;
+//			adsr.reset();
+//		}
+
+
 		/** Get ADSR envelope frames */
 		adsr_sample = adsr.get_sample(&synth_params);
 
@@ -232,7 +181,6 @@ int main(void)
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
-    RUN_TEST(test_adsr_env_out);
     RUN_TEST(test_adsr_out);
 
     /** FInish unity */

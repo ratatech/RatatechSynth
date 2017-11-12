@@ -247,20 +247,18 @@ void USART1_IRQHandler(void)
 
 			/** Set OSC freq from the MIDI table */
 			osc1.set_freq_midi(synth_params.pitch);
-			osc2.set_freq_midi(synth_params.pitch+2);
-			osc3.set_freq_midi(synth_params.pitch+4);
-			osc4.set_freq_midi(synth_params.pitch+8);
+//			osc2.set_freq_midi(synth_params.pitch+2);
+//			osc3.set_freq_midi(synth_params.pitch+4);
+//			osc4.set_freq_midi(synth_params.pitch+8);
 			midi.new_event = false;
 
 		}else{
 			//printf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],midi.midi_buffer[2]);
 			//printf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],synth_params.vel);
-			adsr.note_ON = false;
 			synth_params.note_ON = false;
 		}
 
     	if(midi.note_ON && (synth_params.vel == 0)){
-    		adsr.note_ON = false;
     		synth_params.note_ON = false;
     	}
 

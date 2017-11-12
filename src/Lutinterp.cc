@@ -24,7 +24,7 @@
 
 void Lut_interp::reset(void) {
 	ph_ind_frac = 0;
-	ph_ind_frac_ovf = 0;
+	ind_int0 = 0;
 }
 
 
@@ -33,12 +33,10 @@ q15_t Lut_interp::get_sample(uint32_t ph_inc_frac, const q15_t *wavetable) {
 	q15_t _y0, _y1;
 	q31_t y;
 	uint32_t ind_frac;
-	uint16_t ind_int0, ind_int1;
+	uint16_t ind_int1;
 
 	ph_ind_frac += ph_inc_frac;
-	ph_ind_frac_ovf += ph_inc_frac;
 	ph_ind_frac %= wrap_lut;
-	ph_ind_frac_ovf %= wrap_lut_ovf;
 
 	/** 9 bits for the integer part, 23 bits for the fractional part */
 	ind_frac = (ph_ind_frac & mask);

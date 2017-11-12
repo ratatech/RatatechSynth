@@ -29,10 +29,9 @@ class ADSR{
 
 		q31_t ph_inc,ph_inc_att,ph_inc_dec,ph_inc_rel;
 		q15_t state;
-		q15_t target_level,top_level_rel,target_level_dec,sustain_level,interp_state;
+		q15_t target_level,top_level_rel,top_level_dec,sustain_level,interp_state;
 		int64_t ratio;
 		adsr_state_e adsr_state;
-		bool note_ON;
 		uint16_t ind;
 		q15_t *adsr_table;
 		Lut_interp *pLut_interp;
@@ -69,7 +68,7 @@ class ADSR{
 		 *  Compute a new ADSR sample
 		 * @return ADSR sample
 		 */
-		q15_t update(void);
+		q15_t update(synth_params_t *synth_params);
 
 		/**
 		 * Set internal adsr coefficients

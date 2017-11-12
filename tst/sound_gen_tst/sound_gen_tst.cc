@@ -284,7 +284,7 @@ void test_sound_gen_out(void){
 	uint8_t sustain_timeout = 10;
 
 	/** Init adsr */
-	synth_params.adsr_params.sustain_level = MAX_AMP>>1;
+	synth_params.adsr_params.sustain_level = 0;//MAX_AMP>>1;
 	adsr.init(&synth_params);
 
 	/** ADSR time params*/
@@ -294,7 +294,7 @@ void test_sound_gen_out(void){
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
 	adsr.ph_inc_att = adsr_time_phinc_lut[5];
-	adsr.ph_inc_dec = adsr_time_phinc_lut[10];
+	adsr.ph_inc_dec = adsr_time_phinc_lut[100];
 	adsr.ph_inc_rel = adsr_time_phinc_lut[100];
 	synth_params.note_ON = true;
 	adsr.ph_inc = adsr.ph_inc_att;
@@ -304,7 +304,7 @@ void test_sound_gen_out(void){
 
 	/** Get ADSR envelope frames */
 	for(int i=0; i< _NFRAMES; i++){
-		if(i==12){
+		if(i==5){
 			synth_params.note_ON = false;
 		}
 		if(i==64){

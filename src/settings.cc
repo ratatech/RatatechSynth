@@ -43,7 +43,7 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->mov_avg_params.init_state = 0;
 
 		/** ADSR settings */
-		synth_params->adsr_params.ph_inc_att = adsr_time_phinc_lut[10];
+		synth_params->adsr_params.ph_inc_att = adsr_time_phinc_lut[1000];
 		synth_params->adsr_params.ph_inc_dec = adsr_time_phinc_lut[3000];
 		synth_params->adsr_params.ph_inc_rel = adsr_time_phinc_lut[4094];
 		synth_params->adsr_params.sustain_level = MAX_AMP;

@@ -21,20 +21,18 @@ class Lut_interp {
 public:
 
 	volatile uint32_t ph_ind_frac;
-	volatile uint64_t ph_ind_frac_ovf,wrap_lut_ovf;
 	uint32_t mask, shift_phase, lut_length, wrap_lut;
+	uint16_t ind_int0;
 
 	/** Constructor.
 	 *
 	 */
 	Lut_interp(uint16_t lut_n_bits, uint8_t frac_n_bits){
 		ph_ind_frac 	= 0;
-		ph_ind_frac_ovf	= 0;
 		mask 			= (1<< frac_n_bits) - 1;
 		shift_phase	 	= frac_n_bits;
 		lut_length 		= 1<<lut_n_bits;
 		wrap_lut 		= 1 << (lut_n_bits + frac_n_bits);
-		wrap_lut_ovf	= (uint64_t)wrap_lut<<1;
 	};
 
 //	virtual ~Lut_interp();
