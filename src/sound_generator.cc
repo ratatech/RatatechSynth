@@ -47,14 +47,14 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 	for(uint i=0;i<FRAME_SIZE;i++){
 
 		/** Get oscillator A and B samples */
-		mix_out = osc1->get_sample(synth_params);
-//		sample_b = osc2->get_sample(synth_params);
-//		mix_temp = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
-//
-//		sample_a = osc3->get_sample(synth_params);
-//		sample_b = osc4->get_sample(synth_params);
-//		mix_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
-//		mix_out = mix(synth_params,mix_temp,mix_out,MAX_AMP>>1);
+		sample_a = osc1->get_sample(synth_params);
+		sample_b = osc2->get_sample(synth_params);
+		mix_temp = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+
+		sample_a = osc3->get_sample(synth_params);
+		sample_b = osc4->get_sample(synth_params);
+		mix_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+		mix_out = mix(synth_params,mix_temp,mix_out,MAX_AMP>>1);
 
 		/** Get the interpolated LFO sample and modulate the output */
 		mod_lfo_interp = lfo->interp(synth_params,mod_lfo,i);

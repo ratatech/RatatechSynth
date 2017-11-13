@@ -119,9 +119,6 @@ q15_t ADSR::update(synth_params_t *synth_params){
 	int64_t x64;
 	q15_t adsr_sample;
 
-	adsr_sample = pLut_interp->get_sample(ph_inc,adsr_table);
-
-
 	if((adsr_state != SUSTAIN_STATE) && (adsr_state != IDLE_STATE)){
 		adsr_sample = pLut_interp->get_sample(ph_inc,adsr_table);
 	}
@@ -136,7 +133,9 @@ q15_t ADSR::update(synth_params_t *synth_params){
 
 		if ( (pLut_interp->ph_ind_frac + ph_inc ) > pLut_interp->wrap_lut) {
 			ph_inc = ph_inc_dec;
-			//adsr_sample = state;
+			adsr_sample = MAX_AMP;
+			top_level_rel = adsr_sample;
+			top_level_dec = adsr_sample;
 			pLut_interp->reset();
 			adsr_table = adsr_dec_exp_q15;
 			ind = 0;

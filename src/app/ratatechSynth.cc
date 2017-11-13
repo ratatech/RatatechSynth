@@ -97,7 +97,7 @@ int main(void)
 	osc1.set_shape(SQU);
 	osc2.set_shape(SAW);
 	osc3.set_shape(SAW);
-	osc4.set_shape(SAW);
+	osc4.set_shape(TRI);
 
 	/** Init adsr */
 	adsr.init(&synth_params);
@@ -247,9 +247,9 @@ void USART1_IRQHandler(void)
 
 			/** Set OSC freq from the MIDI table */
 			osc1.set_freq_midi(synth_params.pitch);
-//			osc2.set_freq_midi(synth_params.pitch+2);
-//			osc3.set_freq_midi(synth_params.pitch+4);
-//			osc4.set_freq_midi(synth_params.pitch+8);
+			osc2.set_freq_midi(synth_params.pitch+1);
+			osc3.set_freq_midi(synth_params.pitch+2);
+			osc4.set_freq_midi(synth_params.pitch+3);
 			midi.new_event = false;
 
 		}else{

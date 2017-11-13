@@ -281,10 +281,10 @@ void test_sound_gen_out(void){
 
 
 	/** Define number of samples to stay on sustain state*/
-	uint8_t sustain_timeout = 10;
+	uint8_t sustain_timeout = 30;
 
 	/** Init adsr */
-	synth_params.adsr_params.sustain_level = 0;//MAX_AMP>>1;
+	synth_params.adsr_params.sustain_level = MAX_AMP>>1;
 	adsr.init(&synth_params);
 
 	/** ADSR time params*/
@@ -292,10 +292,13 @@ void test_sound_gen_out(void){
 	synth_params.note_ON = true;
 
 	/** ADSR time params*/
+	uint64_t att_time = rand();
+	att_time = (att_time * 4096) / RAND_MAX;
+	att_time = 100;
 	adsr.adsr_state = ATTACK_STATE;
-	adsr.ph_inc_att = adsr_time_phinc_lut[5];
-	adsr.ph_inc_dec = adsr_time_phinc_lut[100];
-	adsr.ph_inc_rel = adsr_time_phinc_lut[100];
+	adsr.ph_inc_att = adsr_time_phinc_lut[att_time];
+	adsr.ph_inc_dec = adsr_time_phinc_lut[200];
+	adsr.ph_inc_rel = adsr_time_phinc_lut[200];
 	synth_params.note_ON = true;
 	adsr.ph_inc = adsr.ph_inc_att;
 
@@ -304,11 +307,13 @@ void test_sound_gen_out(void){
 
 	/** Get ADSR envelope frames */
 	for(int i=0; i< _NFRAMES; i++){
-		if(i==5){
-			synth_params.note_ON = false;
-		}
-		if(i==64){
+//		if(i==5){
+//			synth_params.note_ON = false;
+//		}
+		if(i==32){
+			osc1.set_freq_midi(100);
 			synth_params.note_ON = true;
+			sustain_timeout = 30;
 			adsr.reset();
 		}
 		if(adsr.adsr_state == SUSTAIN_STATE){
