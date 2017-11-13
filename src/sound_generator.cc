@@ -48,18 +48,18 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 
 		/** Get oscillator A and B samples */
 		sample_a = osc1->get_sample(synth_params);
-		sample_b = osc2->get_sample(synth_params);
-		mix_temp = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
-
-		sample_a = osc3->get_sample(synth_params);
-		sample_b = osc4->get_sample(synth_params);
-		mix_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
-		mix_out = mix(synth_params,mix_temp,mix_out,MAX_AMP>>1);
+//		sample_b = osc2->get_sample(synth_params);
+//		mix_temp = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+//
+//		sample_a = osc3->get_sample(synth_params);
+//		sample_b = osc4->get_sample(synth_params);
+//		mix_out = mix(synth_params,sample_a,sample_b,MAX_AMP>>1);
+//		mix_out = mix(synth_params,mix_temp,mix_out,MAX_AMP>>1);
 
 		/** Get the interpolated LFO sample and modulate the output */
 		mod_lfo_interp = lfo->interp(synth_params,mod_lfo,i);
 		mix_temp = mul_q15_q15(mix_out, mod_lfo_interp);
-		mix_out = mix(synth_params,mix_out,mix_temp,lfo->lfo_amo);
+		mix_out = mix(synth_params,sample_a,mix_temp,lfo->lfo_amo);
 
 		/** Get the interpolated ADSR sample and modulate the output */
 		mod_adsr_interp = adsr->interp(synth_params,mod_adsr,i);

@@ -4,7 +4,7 @@ from termcolor import colored
 
 results = []
 
-tests = 'oscillator_tst','lfo_tst','adsr_tst','mixer_tst','mov_avg_tst'
+tests = 'oscillator_tst','lfo_tst','adsr_tst','mixer_tst','mov_avg_tst','sound_gen_tst'
 
 for test_name in tests:
     return_value = os.system("python " + test_name + "/prj.py")
