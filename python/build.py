@@ -105,11 +105,13 @@ class RatatechBuild(object):
                 
         return test_result,newUsartOutLines
                
-    def testUsart(self,port="ttyUSB0"):    
+    def testUsart(self,port="ttyUSB0",printConsole=False):    
         
         # Open serial port to read test output
-        ratatech_serial = RatatechSerial(port)
-        ratatech_serial.open()  
+        ratatech_serial = RatatechSerial(port)       
+        ratatech_serial.ser.printConsole = printConsole
+        ratatech_serial.open()       
+        
         print 'Serial port open success!'
      
         time.sleep(0.1)    
