@@ -92,7 +92,8 @@ class Svf {
 		}
 
 		if(SVF_order_msk == 0x08){
-			PWM_SVF = PWM_PERIOD - (PWM_PERIOD>>2);
+			//PWM_SVF = PWM_PERIOD - (PWM_PERIOD>>2);
+			PWM_SVF = PWM_PERIOD;
 
 		}else{
 			PWM_SVF = PWM_PERIOD;
@@ -106,7 +107,7 @@ class Svf {
 	 */
 	void set_q(synth_params_t* synth_params){
 		uint32_t q = (uint32_t)(synth_params->pMux[6]*PWM_SVF)>>12;
-		TIM3->CCR2 = q;
+		//TIM3->CCR2 = q;
 	}
 
 	/**
@@ -124,7 +125,9 @@ class Svf {
 		//fc_adc = (fc_adc * ((uint32_t)(synth_params->lfo_amp*PWM_PERIOD)>>15) )>>15;
 		//TIM3->CCR4 = PWM_PERIOD - (fc_env-fc_adc);
 		//TIM3->CCR4 = PWM_PERIOD-fc_env;
-		TIM3->CCR4 = PWM_PERIOD - fc_adc;
+		TIM3->CCR2 = PWM_PERIOD - fc_adc;
+		//TIM3->CCR2 = PWM_PERIOD-fc_env;
+		//TIM3->CCR4 = fc_adc;
 		//TIM3->CCR4 = PWM_PERIOD - ((fc_adc * fc_lfo)>>15);
 		//TIM3->CCR4 = PWM_PERIOD - (fc_lfo);
 

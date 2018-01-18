@@ -94,7 +94,7 @@ int main(void)
 	osc4.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc1.set_shape(SQU);
+	osc1.set_shape(SAW);
 	osc2.set_shape(SAW);
 	osc3.set_shape(SAW);
 	osc4.set_shape(TRI);
