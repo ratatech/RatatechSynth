@@ -16,7 +16,6 @@ class RatatechBuild(object):
         self.openocd = 'openocd '
 
         self.prjName = '_' + prjName
-        
 
         # Build dir
         buildDir = os.path.join(os.path.dirname(__file__), '..',self.prjName+'/')

@@ -29,14 +29,3 @@ if status == 'CONNECTED':
     port="ttyACM0"
     usartOutLines, test_result = ratatechBuild.testUsart(port,True) 
                            
-#     # Parse the output buffer and create wav audio files for each of the generated signals.
-#     # Each of the corresponding substrings should match the name of the output buffers used in
-#     # oscillator_tst.cc otherwise the parsing won't work.
-#     FS = 1
-#     debug = False
-#     ratatechUtil.rawUsart2wav('buff_adsr_out',usartOutLines,FS,debug)
-#      
-#     # Throw error in case of fail
-#     if not test_result:
-#         raise ValueError('Test Failed!')
-    
