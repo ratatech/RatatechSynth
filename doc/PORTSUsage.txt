@@ -1,0 +1,54 @@
+PORTA:
+	0 
+	1 
+	2
+	3
+	4  ---> Analog In
+	5  ---> DAC_SCLK 
+	6
+	7  ---> DAC_MOSI
+	8
+	9  ---> DAC_CS
+	10 ---> USART1_Rx
+	11 ---> SHR_LATCH
+	12 
+	13 ---> SWD_TMS
+	14 ---> SWD_TCK
+	15
+
+PORTB:
+	0
+	1
+	2
+	3  ---> SWD_SWO
+	4
+	5  ---> MUX_A
+	6  ---> MUX_B
+	7
+	8
+	9  ---> MUX_C
+	10 ---> PWM2_3
+	11 ---> PWM2_4
+	12
+	13 ---> SHR_CLOCK
+	14
+	15 ---> SHR_DATA
+
+PORTC:
+	0  ---> ADC10
+	1  ---> ADC11
+	2
+	3
+	4
+	5
+	6  ---> PWM3_1
+	7  ---> CV_Q
+	8  ---> PWM3_3
+	9  ---> CV_FC
+	10 ---> USART3_TX
+	11 ---> USART3_RX
+	12
+	13
+	14
+	15
+

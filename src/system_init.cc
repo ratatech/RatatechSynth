@@ -100,29 +100,16 @@ void GPIO_Conf_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
-	/* Configure PA1pins as analog input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_4;
+	/* Configure PA4 pin as analog input */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	/* CS DAC (PA9)*/
+	/* CS DAC (PA9) */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* CS POT_F2P1 (PA11)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* CS POT_F1P1 (PA12)*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
 
 	/* USART1 Rx */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
@@ -130,16 +117,11 @@ void GPIO_Conf_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    /* Configure USART2 Tx as push-pull */
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    /* Configure USART2 Rx as input floating */
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+	/* SHR_LATCH (PA11) */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     /* Configure USART3 Tx as push-pull */
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -404,6 +386,7 @@ void USART_Conf_Init(void){
     /* Enable USART1 global interrupt */
     NVIC_EnableIRQ(USART1_IRQn);
 
+#if 0
 	// ---------------------------------------------------------------------------------------//
 	//		USART2
     // ---------------------------------------------------------------------------------------//
@@ -432,6 +415,7 @@ void USART_Conf_Init(void){
     //USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
     /* Enable USART2 global interrupt */
     NVIC_EnableIRQ(USART2_IRQn);
+#endif
 
 	// ---------------------------------------------------------------------------------------//
 	//		USART3

@@ -47,7 +47,7 @@ void init_rotary_encoder()
     GPIO_InitTypeDef GPIO_InitStruct;
 
     // Step 1: Initialize GPIO as input for rotary encoder
-    // PB7 (TIM4_CH2) (encoder pin A), PB6 (TIM4_CH1) (encoder pin B)
+    // PB7 (TIM4_CH2) (encoder pin A), PB8 (TIM4_CH3) (encoder pin B)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
@@ -80,15 +80,14 @@ void rotary_encoder_tst(void){
 
     while (1)
     {
-//        // Get encoder value
-//        enc_cnt = TIM_GetCounter(TIM4)>>2;
-//
-//        // Print encoder value
-//        sprintf(enc_cnt_buf, "%i", enc_cnt);
-//        lcd16x2_clrscr();
-//        lcd16x2_puts(enc_cnt_buf);
-    	lcd16x2_puts("   MARIA T'ESTIMO   ");
-        DelayMs(500);
+        // Get encoder value
+        enc_cnt = TIM_GetCounter(TIM4)>>2;
+
+        // Print encoder value
+        sprintf(enc_cnt_buf, "%i", enc_cnt);
+        lcd16x2_clrscr();
+        lcd16x2_puts(enc_cnt_buf);
+        DelayMs(250);
 
     }
 }
