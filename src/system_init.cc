@@ -28,6 +28,15 @@ This file is part of XXXXXXX
 
 uint16_t adc_read_test;
 
+
+/****************************************************************************************
+ *
+ * STM32F01 PERIPHERALS
+ *
+ ***************************************************************************************/
+
+
+
 void RCC_Clocks_Init(void)
 {
 
@@ -449,6 +458,32 @@ void USART_Conf_Init(void){
 
 }
 
+/****************************************************************************************
+ *
+ * EXTERNAL HARDWARE
+ *
+ ***************************************************************************************/
+
+
+void init_rotary_encoder(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct;
+
+    // Step 1: Initialize GPIO as input for rotary encoder
+    // PB7 (TIM4_CH2) (encoder pin A), PB8 (TIM4_CH3) (encoder pin B)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // Step 2: Setup TIM4 for encoder input
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+    TIM_EncoderInterfaceConfig(TIM4, TIM_EncoderMode_TI12,
+        TIM_ICPolarity_Rising, TIM_ICPolarity_Falling);
+    TIM_Cmd(TIM4, ENABLE);
+}
+
 /**
  * Init system related routines(STM32F1) and all prefipherals needed for the synthesizer
  */
@@ -475,7 +510,8 @@ void ratatech_init(synth_params_t* synth_params){
 	DMA_Conf_Init(synth_params);
 	TIM_Config();
 
-
+	/** Configure and init HW */
+	init_rotary_encoder();
 
 }
 

@@ -42,34 +42,12 @@ uint8_t custom_char[] = { 0x0E, 0x1B, 0x11, 0x11, 0x11, 0x11, 0x1F, 0x1F };
 uint16_t enc_cnt;
 char enc_cnt_buf[8];
 
-void init_rotary_encoder()
-{
-    GPIO_InitTypeDef GPIO_InitStruct;
-
-    // Step 1: Initialize GPIO as input for rotary encoder
-    // PB7 (TIM4_CH2) (encoder pin A), PB8 (TIM4_CH3) (encoder pin B)
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    // Step 2: Setup TIM4 for encoder input
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-    TIM_EncoderInterfaceConfig(TIM4, TIM_EncoderMode_TI12,
-        TIM_ICPolarity_Rising, TIM_ICPolarity_Falling);
-    TIM_Cmd(TIM4, ENABLE);
-}
-
 /**
  * Rotary encoder test
  */
 void rotary_encoder_tst(void){
 
-	init_rotary_encoder();
-
-
-    // Delay initialization
+    // Delayinitialization
     DelayInit();
 
     // LCD initialization
@@ -124,7 +102,7 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
     /** Wait usart confirmation to start the test  */
-    wait_usart_ready();
+    //wait_usart_ready();
 
 	/** Ready to start test  */
     iprintf("\nTEST:  ROTARY ENCODER\n-----------------------");
