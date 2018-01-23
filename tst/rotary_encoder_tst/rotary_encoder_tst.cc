@@ -24,7 +24,6 @@ This file is part of XXXXXXX
 #include "unity.h"
 #include "adsr.h"
 #include "tst_utils.h"
-#include "lcd16x2.h"
 
 /**
  * Structure holding the main synth parameters
@@ -49,9 +48,6 @@ void rotary_encoder_tst(void){
 
     // Delayinitialization
     DelayInit();
-
-    // LCD initialization
-    lcd16x2_init(LCD16X2_DISPLAY_ON_CURSOR_OFF_BLINK_OFF);
 
     // Create custom char
     lcd16x2_create_custom_char(0, custom_char);
@@ -102,7 +98,7 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
     /** Wait usart confirmation to start the test  */
-    //wait_usart_ready();
+    wait_usart_ready();
 
 	/** Ready to start test  */
     iprintf("\nTEST:  ROTARY ENCODER\n-----------------------");

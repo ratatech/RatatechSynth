@@ -10,6 +10,8 @@
 
 #include "ratatechSynth.h"
 #include "types.h"
+#include "lcd16x2.h"
+
 
 
 void RCC_Clocks_Init(void);

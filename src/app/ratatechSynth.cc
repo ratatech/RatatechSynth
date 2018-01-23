@@ -57,6 +57,11 @@ uint32_t cycles; // number of cycles //
 volatile size_t frame_read_n;
 volatile size_t frame_write_n;
 
+// Temp vars, to be removed
+uint16_t enc_cnt;
+char enc_cnt_buf[8];
+bool LCD_FLAG = false;
+
 int main(void)
 {
 
@@ -113,6 +118,8 @@ int main(void)
 	/** Pre-fill the output buffer */
 	fill_buffer();
 
+    DelayInit();
+
 	/*******************************************************************************************
 	 * Main Loop
 	 *
@@ -123,6 +130,25 @@ int main(void)
 		/** Fill audio buffer with a new frames */
 		if(out_buffer.frame_read != out_buffer.frame_write){
 			fill_buffer();
+		}
+
+		if(LCD_FLAG){
+			/** QUICK N DIRTY LCD + ENCODER
+			 * TO BE REMOVED
+			 * */
+
+			// Get encoder value
+			enc_cnt = TIM_GetCounter(TIM4)>>2;
+
+			// Print encoder value
+			sprintf(enc_cnt_buf, "%i", enc_cnt);
+			lcd16x2_clrscr();
+			lcd16x2_puts(enc_cnt_buf);
+			/** QUICK N DIRTY LCD + ENCODER
+			 * TO BE REMOVED
+			 * */
+			LCD_FLAG = false;
+	        DelayMs(250);
 		}
 
 		// Add a couple of cycles delay between main loop
@@ -145,6 +171,8 @@ void low_rate_tasks(void){
 	adsr.set_params(&synth_params);
 	lfo.set_freq_lut(synth_params.pMux[5]);
 	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
+
+	LCD_FLAG = true;
 
 }
 

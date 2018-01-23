@@ -21,7 +21,7 @@ This file is part of XXXXXXX
 */
 
 #include "mux.h"
-//#define DEBUG_ADC
+#define DEBUG_ADC
 
 /**
  * Iterate over the possible multiplexer inputs and store the read values into the buffer
@@ -34,15 +34,15 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(GPIOB,GPIO_Pin_5,sb);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_0,sb);
 
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(GPIOB,GPIO_Pin_6,sb);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_1,sb);
 
 	/** BIT 2 */
 	(((seq_x>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(GPIOB,GPIO_Pin_9,sb);
+	GPIO_WriteBit(GPIOB,GPIO_Pin_12,sb);
 
 	/** Add small delay to allow the ADC finish the conversion
 	30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
