@@ -138,18 +138,20 @@ int main(void)
 			 * */
 
 			// Get encoder value
-			enc_cnt = TIM_GetCounter(TIM4)>>2;
+			//enc_cnt = TIM_GetCounter(TIM4)>>2;
+			enc_cnt = synth_params.pMux[0];
 
 			// Print encoder value
-			sprintf(enc_cnt_buf, "%i", enc_cnt);
+			sprintf(enc_cnt_buf, "%i %i %i %i %i %i %i %i", synth_params.pMux[0],synth_params.pMux[1], synth_params.pMux[2],synth_params.pMux[3]
+												          , synth_params.pMux[4],synth_params.pMux[5], synth_params.pMux[6],synth_params.pMux[7]);
 			lcd16x2_clrscr();
 			lcd16x2_puts(enc_cnt_buf);
 			/** QUICK N DIRTY LCD + ENCODER
 			 * TO BE REMOVED
 			 * */
 			LCD_FLAG = false;
-	        DelayMs(250);
-		}
+	        DelayMs(10);
+	    }
 
 		// Add a couple of cycles delay between main loop
 	    __asm__("nop");
@@ -166,11 +168,11 @@ void low_rate_tasks(void){
 
 	/** Read inputs */
 	mux.update(&synth_params,synth_params.pMux);
-	svf.set_fc(&synth_params);
-	svf.set_q(&synth_params);
-	adsr.set_params(&synth_params);
-	lfo.set_freq_lut(synth_params.pMux[5]);
-	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
+//	svf.set_fc(&synth_params);
+//	svf.set_q(&synth_params);
+//	adsr.set_params(&synth_params);
+//	lfo.set_freq_lut(synth_params.pMux[5]);
+//	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
 
 	LCD_FLAG = true;
 
