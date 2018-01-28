@@ -35,13 +35,13 @@ extern "C" {
 #define LCD16X2_GPIO_D6						GPIOC
 #define LCD16X2_GPIO_D7						GPIOC
 // Pin definition
-#define LCD16X2_PIN_RS	GPIO_Pin_0
-#define LCD16X2_PIN_RW	GPIO_Pin_1
-#define LCD16X2_PIN_EN	GPIO_Pin_2
-#define LCD16X2_PIN_D4	GPIO_Pin_3		// 4-bit mode LSB
-#define LCD16X2_PIN_D5	GPIO_Pin_4
-#define LCD16X2_PIN_D6	GPIO_Pin_5
-#define LCD16X2_PIN_D7	GPIO_Pin_12		// 4-bit mode MSB
+#define LCD16X2_PIN_RS	GPIO_Pin_2
+#define LCD16X2_PIN_RW	GPIO_Pin_3
+#define LCD16X2_PIN_EN	GPIO_Pin_4
+#define LCD16X2_PIN_D4	GPIO_Pin_5		// 4-bit mode LSB
+#define LCD16X2_PIN_D5	GPIO_Pin_12
+#define LCD16X2_PIN_D6	GPIO_Pin_0
+#define LCD16X2_PIN_D7	GPIO_Pin_1		// 4-bit mode MSB
 
 /** Display size ------------------------------------------------------------ */
 // Number of visible lines of the display (1 or 2)
