@@ -87,6 +87,8 @@ int main(void)
 
 	synth_params.lfo_amp = &lfo.lfo_amp;
 
+	mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
+
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
 
@@ -115,6 +117,7 @@ int main(void)
 
 	/** Init SVF filter params*/
 	svf.init(&synth_params);
+
 
 	/** Pre-fill the output buffer */
 	fill_buffer();
@@ -166,6 +169,8 @@ int main(void)
  * Execute all tasks running at CONTROL_RATE
  */
 void low_rate_tasks(void){
+
+	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
 
 	/** Read inputs */
 	mux.update(&synth_params,synth_params.pMux);

@@ -35,7 +35,6 @@ This file is part of XXXXXXX
 #define ADSR_BLOCK_SIZE 1
 #define LFO_BLOCK_SIZE 1
 #define MAX_AMP 0x7FFF
-#define MUX_BITS 8
 #define SHIFT_REGISTER_BITS 8
 #define LUT_LENGTH LUT_8_BIT
 #define MASK_PHASE_FRAC 0x7FFFFF

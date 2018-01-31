@@ -28,8 +28,15 @@ This file is part of XXXXXXX
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MUX_BITS 8
 
 class Mux{
+
+	private:
+		GPIO_TypeDef* MUX_PORT;
+		uint16_t MUX_A;
+		uint16_t MUX_B;
+		uint16_t MUX_C;
 
 	public:
 
@@ -42,6 +49,21 @@ class Mux{
 
 			//mux_mov_avg = MovAvg();
 
+		}
+
+		/**
+		 * Configure multiplexer input port and pins
+		 * @param GPIOx			Where x can be (A..C) to select the GPIO peripheral.
+		 * @param GPIO_Pin_A 	Specifies the port bit to be written. Control input A of the multiplexer
+		 * @param GPIO_Pin_B	Specifies the port bit to be written. Control input B of the multiplexer
+		 * @param GPIO_Pin_C	Specifies the port bit to be written. Control input C of the multiplexer
+		 */
+		void config(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, uint16_t GPIO_Pin_C){
+
+			MUX_PORT = GPIOx;
+			MUX_A = GPIO_Pin_0;
+			MUX_B = GPIO_Pin_1;
+			MUX_C = GPIO_Pin_12;
 		}
 
 		/**

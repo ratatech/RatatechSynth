@@ -23,25 +23,27 @@ This file is part of XXXXXXX
 #include "mux.h"
 
 /**
- * Iterate over the possible multiplexer inputs and store the read values into the buffer
+ * Iterate over the possible multiplexer inputs and store the read values into the buffer.
+ * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
  * @param pMux				Output buffer containing the mux read values
  */
 void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 {
+
 	BitAction sb;
 
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(GPIOB,GPIO_Pin_0,sb);
+	GPIO_WriteBit(MUX_PORT,MUX_A,sb);
 
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(GPIOB,GPIO_Pin_1,sb);
+	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
 
 	/** BIT 2 */
 	(((seq_x>>2) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(GPIOB,GPIO_Pin_12,sb);
+	GPIO_WriteBit(MUX_PORT,MUX_C,sb);
 
 	/** Add small delay to allow the ADC finish the conversion
 	30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
@@ -52,9 +54,9 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 	}
 
 	/** Read adc value corresponding to each mux selected bit */
-	//pMux[seq_x] = (synth_params->adc_read>>1)<<1;
 	pMux[seq_x] = (synth_params->adc_read);
 
+	/** Increment buffer index and wrap around */
 	seq_x++;
 	seq_x %= MUX_BITS;
 
