@@ -35,19 +35,19 @@ PORTB:
 	15 ---> SHR_DATA
 
 PORTC:
-	0  ---> ADC10
-	1  ---> ADC11
-	2
-	3
-	4
-	5
+	0  ---> LCD16X2_PIN_D6
+	1  ---> LCD16X2_PIN_D7
+	2  ---> LCD16X2_PIN_RS
+	3  ---> LCD16X2_PIN_RW
+	4  ---> LCD16X2_PIN_EN
+	5  ---> LCD16X2_PIN_D4
 	6  ---> PWM3_1
 	7  ---> CV_Q
 	8  ---> PWM3_3
 	9  ---> CV_FC
 	10 ---> USART3_TX
 	11 ---> USART3_RX
-	12
+	12 ---> LCD16X2_PIN_D5
 	13
 	14
 	15

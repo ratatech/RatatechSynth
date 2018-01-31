@@ -132,26 +132,26 @@ int main(void)
 			fill_buffer();
 		}
 
-		if(LCD_FLAG){
-			/** QUICK N DIRTY LCD + ENCODER
-			 * TO BE REMOVED
-			 * */
-
-			// Get encoder value
-			//enc_cnt = TIM_GetCounter(TIM4)>>2;
-			enc_cnt = synth_params.pMux[0];
-
-			// Print encoder value
-			sprintf(enc_cnt_buf, "%i %i %i %i %i %i %i %i", synth_params.pMux[0],synth_params.pMux[1], synth_params.pMux[2],synth_params.pMux[3]
-												          , synth_params.pMux[4],synth_params.pMux[5], synth_params.pMux[6],synth_params.pMux[7]);
-			lcd16x2_clrscr();
-			lcd16x2_puts(enc_cnt_buf);
-			/** QUICK N DIRTY LCD + ENCODER
-			 * TO BE REMOVED
-			 * */
-			LCD_FLAG = false;
-	        DelayMs(10);
-	    }
+//		if(LCD_FLAG){
+//			/** QUICK N DIRTY LCD + ENCODER
+//			 * TO BE REMOVED
+//			 * */
+//
+//			// Get encoder value
+//			//enc_cnt = TIM_GetCounter(TIM4)>>2;
+//			enc_cnt = synth_params.pMux[0];
+//
+//			// Print encoder value
+//			sprintf(enc_cnt_buf, "%i %i %i %i %i %i %i %i", synth_params.pMux[0],synth_params.pMux[1], synth_params.pMux[2],synth_params.pMux[3]
+//												          , synth_params.pMux[4],synth_params.pMux[5], synth_params.pMux[6],synth_params.pMux[7]);
+//			lcd16x2_clrscr();
+//			lcd16x2_puts(enc_cnt_buf);
+//			/** QUICK N DIRTY LCD + ENCODER
+//			 * TO BE REMOVED
+//			 * */
+//			LCD_FLAG = false;
+//	        DelayMs(10);
+//	    }
 
 		// Add a couple of cycles delay between main loop
 	    __asm__("nop");
