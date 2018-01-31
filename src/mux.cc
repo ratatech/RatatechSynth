@@ -21,7 +21,6 @@ This file is part of XXXXXXX
 */
 
 #include "mux.h"
-#define DEBUG_ADC
 
 /**
  * Iterate over the possible multiplexer inputs and store the read values into the buffer
@@ -53,16 +52,11 @@ void Mux::update(synth_params_t* synth_params, uint16_t* pMux)
 	}
 
 	/** Read adc value corresponding to each mux selected bit */
-	pMux[seq_x] = (synth_params->adc_read>>1)<<1;
+	//pMux[seq_x] = (synth_params->adc_read>>1)<<1;
+	pMux[seq_x] = (synth_params->adc_read);
 
 	seq_x++;
 	seq_x %= MUX_BITS;
-
-#ifdef DEBUG_ADC
-		iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
-		synth_params->pMux[0],synth_params->pMux[1],synth_params->pMux[2],synth_params->pMux[3],
-		synth_params->pMux[4],synth_params->pMux[5],synth_params->pMux[6],synth_params->pMux[7]);
-#endif
 
 }
 

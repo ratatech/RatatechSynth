@@ -61,6 +61,7 @@ volatile size_t frame_write_n;
 uint16_t enc_cnt;
 char enc_cnt_buf[8];
 bool LCD_FLAG = false;
+#define DEBUG_ADC
 
 int main(void)
 {
@@ -168,6 +169,13 @@ void low_rate_tasks(void){
 
 	/** Read inputs */
 	mux.update(&synth_params,synth_params.pMux);
+
+#ifdef DEBUG_ADC
+		iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
+		synth_params.pMux[0],synth_params.pMux[1],synth_params.pMux[2],synth_params.pMux[3],
+		synth_params.pMux[4],synth_params.pMux[5],synth_params.pMux[6],synth_params.pMux[7]);
+#endif
+
 //	svf.set_fc(&synth_params);
 //	svf.set_q(&synth_params);
 //	adsr.set_params(&synth_params);

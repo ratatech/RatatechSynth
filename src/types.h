@@ -26,7 +26,7 @@ This file is part of XXXXXXX
 #include "arm_math.h"
 
 #define FS 48000
-#define CONTROL_RATE 16000
+#define CONTROL_RATE 2000
 #define SHIFT_20_BIT 0x100000
 #define SHIFT_31_BIT 0x7FFFFFFF
 #define SHIFT_15_BIT 0x7FFF

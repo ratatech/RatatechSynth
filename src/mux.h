@@ -40,6 +40,8 @@ class Mux{
 		*/
 		Mux(){
 
+			//mux_mov_avg = MovAvg();
+
 		}
 
 		/**
