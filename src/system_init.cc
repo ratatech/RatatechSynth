@@ -284,7 +284,7 @@ void ADC_Conf_Init(void){
 	ADC_Init(ADC1, &ADC_InitStructure);
 
 	/* ADC1 regular channel14 configuration */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 0, ADC_SampleTime_13Cycles5 );
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 0, ADC_SampleTime_55Cycles5 );
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_13Cycles5 );
 
 	/* Enable ADC1 */
