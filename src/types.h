@@ -45,8 +45,9 @@ This file is part of XXXXXXX
 #define SHIFT_FRAME_INTERP 31
 #define LUT_FRAC_BITS 23
 #define LUT_BITS 8
-#define ADC_CHANNELS 2
-#define ADC_ARRAY_SIZE ADC_CHANNELS*4
+#define ADC_CHANNELS 1
+#define N_ADC 2
+#define ADC_ARRAY_SIZE 1
 
 struct object_pool_t
 {
@@ -118,7 +119,7 @@ struct synth_params_t{
 	/** MUX */
 	uint16_t pMux_x[4];
 	uint16_t pMux_y[4];
-	uint16_t adc_read[ADC_ARRAY_SIZE];
+	uint32_t adc_read[ADC_ARRAY_SIZE];
 	bool DMA_ADC_transfer_complete;
 
 	/** DAC out sample*/

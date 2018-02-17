@@ -33,13 +33,15 @@ void Mux::update(synth_params_t* synth_params)
 
 	BitAction sb;
 
-//	//wait for DMA complete
-//	while (!synth_params->DMA_ADC_transfer_complete){};
-//	synth_params->DMA_ADC_transfer_complete = false;
-//	ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-//    DMA_ClearFlag(DMA1_FLAG_GL1);
-//    DMA_ClearFlag(DMA1_FLAG_TC1);
+	/** Read adc value corresponding to each mux selected bit */
+	synth_params->pMux_x[seq_x] = (synth_params->adc_read[0] >> 16) ;
+	synth_params->pMux_y[seq_y] = (synth_params->adc_read[0] & 0xFFFF);
 
+	/** Increment buffer index and wrap around */
+	seq_x++;
+	seq_x %= MUX_CHANNELS;
+	seq_y++;
+	seq_y %= MUX_CHANNELS;
 
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
@@ -48,28 +50,6 @@ void Mux::update(synth_params_t* synth_params)
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
-
-
-
-	/** Add small delay to allow the ADC finish the conversion
-	30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
-	Just observed behavior, to be checked if this is the right value
-	*/
-	for(uint d=0;d<200;d++){
-		__asm__("nop");
-	}
-
-	/** Read adc value corresponding to each mux selected bit */
-	synth_params->pMux_y[seq_y] = (synth_params->adc_read[0]);
-	synth_params->pMux_x[seq_x] = (synth_params->adc_read[1]);
-
-	/** Increment buffer index and wrap around */
-	seq_x++;
-	seq_x %= 4;
-	seq_y++;
-	seq_y %= 4;
-
-
 
 }
 

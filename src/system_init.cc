@@ -89,7 +89,7 @@ void RCC_Clocks_Init(void)
 
 	/* Enable peripheral clocks */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOB | RCC_APB2Periph_SPI1 |
-						RCC_APB2Periph_TIM1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_AFIO, ENABLE);
+						RCC_APB2Periph_TIM1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_USART2 | RCC_APB1Periph_USART3 |
 						RCC_APB1Periph_SPI2, ENABLE);
 
@@ -275,41 +275,71 @@ void ADC_Conf_Init(void){
 
 	ADC_InitTypeDef ADC_InitStructure;
 
+	/* ADC1 regular channel0, channel4 configurations */
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_7Cycles5);
+
 	/* ADC1 configuration ------------------------------------------------------*/
-	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+	ADC_InitStructure.ADC_Mode = ADC_Mode_RegSimult;
 	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
 	ADC_InitStructure.ADC_NbrOfChannel = ADC_CHANNELS;
 	ADC_Init(ADC1, &ADC_InitStructure);
-
-	/* ADC1 regular channel0, channel4 configurations */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_239Cycles5);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_239Cycles5);
-
+	/* ADC1 regular channels configuration */
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_7Cycles5);
 	/* Enable ADC1 DMA */
 	ADC_DMACmd(ADC1, ENABLE);
 
+	/* ADC2 configuration ------------------------------------------------------*/
+	ADC_InitStructure.ADC_Mode = ADC_Mode_RegSimult;
+	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+	ADC_InitStructure.ADC_NbrOfChannel = ADC_CHANNELS;
+	ADC_Init(ADC2, &ADC_InitStructure);
+	/* ADC2 regular channels configuration */
+	ADC_RegularChannelConfig(ADC2, ADC_Channel_4, 1, ADC_SampleTime_7Cycles5);
+
+	/* Enable ADC2 external trigger conversion */
+	ADC_ExternalTrigConvCmd(ADC2, ENABLE);
+
 	/* Enable ADC1 */
 	ADC_Cmd(ADC1, ENABLE);
-
-	/* Enable TempSensor and Vrefint channels: channel0 and Channel4 */
+	/* Enable Vrefint channel17 */
 	ADC_TempSensorVrefintCmd(ENABLE);
 
 	/* Enable ADC1 reset calibration register */
 	ADC_ResetCalibration(ADC1);
-
 	/* Check the end of ADC1 reset calibration register */
 	while(ADC_GetResetCalibrationStatus(ADC1));
+
+	/* Start ADC1 calibration */
+	ADC_StartCalibration(ADC1);
+	/* Check the end of ADC1 calibration */
+	while(ADC_GetCalibrationStatus(ADC1));
+
+	/* Enable ADC2 */
+	ADC_Cmd(ADC2, ENABLE);
+
+	/* Enable ADC2 reset calibration register */
+	ADC_ResetCalibration(ADC2);
+	/* Check the end of ADC2 reset calibration register */
+	while(ADC_GetResetCalibrationStatus(ADC2));
+
+	/* Start ADC2 calibration */
+	ADC_StartCalibration(ADC2);
+	/* Check the end of ADC2 calibration */
+	while(ADC_GetCalibrationStatus(ADC2));
 
 	/* Start ADC1 Software Conversion */
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
-	/* Test on Channel 1 DMA1_FLAG_TC flag */
+	/* Test on DMA1 channel1 transfer complete flag */
 	while(!DMA_GetFlagStatus(DMA1_FLAG_TC1));
-
-	/* Clear Channel 1 DMA1_FLAG_TC flag */
+	/* Clear DMA1 channel1 transfer complete flag */
 	DMA_ClearFlag(DMA1_FLAG_TC1);
 
 
@@ -328,11 +358,11 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&synth_params->adc_read;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure.DMA_BufferSize = ADC_CHANNELS;
+	DMA_InitStructure.DMA_BufferSize = ADC_ARRAY_SIZE;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
 	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
@@ -341,11 +371,11 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 	/* Enable DMA1 channel1 */
 	DMA_Cmd(DMA1_Channel1, ENABLE);
 
-    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
+//    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
+//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//    NVIC_Init(&NVIC_InitStructure);
 
 	q15_t* _pOut = synth_params->pOut;
 	q15_t* _pBuff;

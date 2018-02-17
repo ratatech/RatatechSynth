@@ -1,17 +1,17 @@
 PORTA:
-	0 
-	1 
+	0  ---> Analog In
+	1  ---> Analog In
 	2  ---> USART2_TX (NUCLEO)
 	3  ---> USART2_RX (NUCLEO)
 	4  ---> Analog In
 	5  ---> DAC_SCLK 
-	6
+	6  ---> Analog In
 	7  ---> DAC_MOSI
 	8
 	9  ---> DAC_CS
 	10 ---> USART1_Rx
 	11 ---> SHR_LATCH
-	12 
+	12
 	13 ---> SWD_TMS
 	14 ---> SWD_TCK
 	15

@@ -29,6 +29,7 @@ This file is part of XXXXXXX
 #include <stdlib.h>
 
 #define MUX_BITS 8
+#define MUX_CHANNELS 4
 
 class Mux{
 
@@ -36,7 +37,6 @@ class Mux{
 		GPIO_TypeDef* MUX_PORT;
 		uint16_t MUX_A;
 		uint16_t MUX_B;
-		uint16_t MUX_C;
 
 	public:
 
