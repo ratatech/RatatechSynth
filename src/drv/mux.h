@@ -61,9 +61,9 @@ class Mux{
 		void config(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, uint16_t GPIO_Pin_C){
 
 			MUX_PORT = GPIOx;
-			MUX_A = GPIO_Pin_0;
-			MUX_B = GPIO_Pin_1;
-			MUX_C = GPIO_Pin_12;
+			//MUX_A = GPIO_Pin_0;
+			MUX_A = GPIO_Pin_1;
+			MUX_B = GPIO_Pin_12;
 		}
 
 		/**

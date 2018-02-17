@@ -45,7 +45,8 @@ This file is part of XXXXXXX
 #define SHIFT_FRAME_INTERP 31
 #define LUT_FRAC_BITS 23
 #define LUT_BITS 8
-#define ADC_ARRAY_SIZE 2*4
+#define ADC_CHANNELS 2
+#define ADC_ARRAY_SIZE ADC_CHANNELS*4
 
 struct object_pool_t
 {

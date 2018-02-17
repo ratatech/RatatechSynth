@@ -61,7 +61,7 @@ volatile size_t frame_write_n;
 uint16_t enc_cnt;
 char enc_cnt_buf[8];
 bool LCD_FLAG = false;
-//#define DEBUG_ADC
+#define DEBUG_ADC
 
 int main(void)
 {
@@ -171,15 +171,14 @@ int main(void)
 void low_rate_tasks(void){
 
 	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
-
 	/** Read inputs */
-	//mux.update(&synth_params);
-	iprintf("adc_read[0] = %.4i adc_read[1] = %.4i\r",synth_params.adc_read[0],synth_params.adc_read[1]);
+	mux.update(&synth_params);
+	//iprintf("adc_read[0] = %.4i adc_read[1] = %.4i\r",synth_params.adc_read[0],synth_params.adc_read[1]);
 
 #ifdef DEBUG_ADC
-		iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i x4 =%.4i x5 =%.4i x6 =%.4i x7 =%.4i \r",
+		iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i y0 =%.4i y1 =%.4i y2 =%.4i y3 =%.4i \r",
 		synth_params.pMux_x[0],synth_params.pMux_x[1],synth_params.pMux_x[2],synth_params.pMux_x[3],
-		synth_params.pMux_y[4],synth_params.pMux_y[5],synth_params.pMux_y[6],synth_params.pMux_y[7]);
+		synth_params.pMux_y[0],synth_params.pMux_y[1],synth_params.pMux_y[2],synth_params.pMux_y[3]);
 #endif
 
 //	svf.set_fc(&synth_params);
@@ -324,9 +323,8 @@ void DMA1_Channel1_IRQHandler(void)
 {
   if(DMA_GetITStatus(DMA1_IT_TC1))
   {
-	ADC_SoftwareStartConvCmd(ADC1, DISABLE);
 	iprintf("ADC-DMA interrupt trigger!!!\r");
-	mux.update(&synth_params);
+	status = true;
     DMA_ClearITPendingBit(DMA1_IT_TC1);
     DMA_ClearITPendingBit(DMA1_IT_GL1);
   }

@@ -275,36 +275,42 @@ void ADC_Conf_Init(void){
 
 	ADC_InitTypeDef ADC_InitStructure;
 
+	/* ADC1 configuration ------------------------------------------------------*/
 	ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
 	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStructure.ADC_NbrOfChannel = 2;
+	ADC_InitStructure.ADC_NbrOfChannel = ADC_CHANNELS;
 	ADC_Init(ADC1, &ADC_InitStructure);
 
-	/* ADC1 regular channel14 configuration */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 0, ADC_SampleTime_55Cycles5 );
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_13Cycles5 );
-
-	/* Enable ADC1 */
-	ADC_Cmd(ADC1, ENABLE);
+	/* ADC1 regular channel0, channel4 configurations */
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_239Cycles5);
 
 	/* Enable ADC1 DMA */
 	ADC_DMACmd(ADC1, ENABLE);
 
+	/* Enable ADC1 */
+	ADC_Cmd(ADC1, ENABLE);
+
+	/* Enable TempSensor and Vrefint channels: channel0 and Channel4 */
+	ADC_TempSensorVrefintCmd(ENABLE);
+
 	/* Enable ADC1 reset calibration register */
 	ADC_ResetCalibration(ADC1);
+
 	/* Check the end of ADC1 reset calibration register */
 	while(ADC_GetResetCalibrationStatus(ADC1));
 
-	/* Start ADC1 calibration */
-	ADC_StartCalibration(ADC1);
-	/* Check the end of ADC1 calibration */
-	while(ADC_GetCalibrationStatus(ADC1));
-
 	/* Start ADC1 Software Conversion */
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+
+	/* Test on Channel 1 DMA1_FLAG_TC flag */
+	while(!DMA_GetFlagStatus(DMA1_FLAG_TC1));
+
+	/* Clear Channel 1 DMA1_FLAG_TC flag */
+	DMA_ClearFlag(DMA1_FLAG_TC1);
 
 
 }
@@ -322,7 +328,7 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&synth_params->adc_read;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure.DMA_BufferSize = ADC_ARRAY_SIZE;
+	DMA_InitStructure.DMA_BufferSize = ADC_CHANNELS;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
@@ -332,17 +338,14 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
 	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
 
-	/* Enable DMA1 interrupt on channel1 */
-    //DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
-
 	/* Enable DMA1 channel1 */
 	DMA_Cmd(DMA1_Channel1, ENABLE);
 
-//    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
-//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//    NVIC_Init(&NVIC_InitStructure);
+    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
 
 	q15_t* _pOut = synth_params->pOut;
 	q15_t* _pBuff;
@@ -518,16 +521,15 @@ void ratatech_init(synth_params_t* synth_params){
 	RCC_GetClocksFreq(&RCC_Clocks);
 	SysTick_Config(RCC_Clocks.HCLK_Frequency / 1000);
 
-
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);    //4 bits for preemp priority 0 bit for sub priority
 
     /** Configure and init peripherals */
 	GPIO_Conf_Init();
 	SPI_Config();
 	ButtonsInitEXTI();
+	DMA_Conf_Init(synth_params);
 	ADC_Conf_Init();
 	USART_Conf_Init();
-	DMA_Conf_Init(synth_params);
 	TIM_Config();
 
 	/** Configure and init HW */

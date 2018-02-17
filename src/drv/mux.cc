@@ -50,17 +50,18 @@ void Mux::update(synth_params_t* synth_params)
 	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
 
 
+
 	/** Add small delay to allow the ADC finish the conversion
 	30 cycles delay seems to work well for "ADC_SampleTime_7Cycles5"
 	Just observed behavior, to be checked if this is the right value
 	*/
-	for(uint d=0;d<50;d++){
+	for(uint d=0;d<200;d++){
 		__asm__("nop");
 	}
 
 	/** Read adc value corresponding to each mux selected bit */
-	synth_params->pMux_x[seq_x] = (synth_params->adc_read[0]);
-	synth_params->pMux_y[seq_y] = (synth_params->adc_read[1]);
+	synth_params->pMux_y[seq_y] = (synth_params->adc_read[0]);
+	synth_params->pMux_x[seq_x] = (synth_params->adc_read[1]);
 
 	/** Increment buffer index and wrap around */
 	seq_x++;
