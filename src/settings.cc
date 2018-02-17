@@ -63,4 +63,7 @@ void init_settings(synth_params_t* synth_params, object_pool_t object_pool){
 		synth_params->I = 0;
 		synth_params->FM_synth = 0;
 
+		/** Mux */
+		synth_params->DMA_ADC_transfer_complete = false;
+
 }

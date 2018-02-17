@@ -110,7 +110,7 @@ void GPIO_Conf_Init(void)
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
 	/* Configure PA4 pin as analog input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -280,17 +280,18 @@ void ADC_Conf_Init(void){
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
 	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStructure.ADC_NbrOfChannel = 1;
+	ADC_InitStructure.ADC_NbrOfChannel = 2;
 	ADC_Init(ADC1, &ADC_InitStructure);
 
 	/* ADC1 regular channel14 configuration */
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 0, ADC_SampleTime_13Cycles5 );
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_13Cycles5 );
-
-	/* Enable ADC1 DMA */
-	ADC_DMACmd(ADC1, ENABLE);
 
 	/* Enable ADC1 */
 	ADC_Cmd(ADC1, ENABLE);
+
+	/* Enable ADC1 DMA */
+	ADC_DMACmd(ADC1, ENABLE);
 
 	/* Enable ADC1 reset calibration register */
 	ADC_ResetCalibration(ADC1);
@@ -314,15 +315,16 @@ void ADC_Conf_Init(void){
 void DMA_Conf_Init(synth_params_t* synth_params){
 
 	DMA_InitTypeDef DMA_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* DMA1 channel1 configuration ----------------------------------------------*/
 	DMA_DeInit(DMA1_Channel1);
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&synth_params->adc_read;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure.DMA_BufferSize = 1;
+	DMA_InitStructure.DMA_BufferSize = ADC_ARRAY_SIZE;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
 	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
 	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
@@ -330,9 +332,17 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
 	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
 
+	/* Enable DMA1 interrupt on channel1 */
+    //DMA_ITConfig(DMA1_Channel1, DMA_IT_TC, ENABLE);
+
 	/* Enable DMA1 channel1 */
 	DMA_Cmd(DMA1_Channel1, ENABLE);
 
+//    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
+//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//    NVIC_Init(&NVIC_InitStructure);
 
 	q15_t* _pOut = synth_params->pOut;
 	q15_t* _pBuff;
@@ -355,7 +365,6 @@ void DMA_Conf_Init(synth_params_t* synth_params){
     DMA_Init(DMA1_Channel2, &DMA_InitStructure);
     DMA_ITConfig(DMA1_Channel2, DMA_IT_TC, ENABLE);
 
-    NVIC_InitTypeDef NVIC_InitStructure;
     NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel2_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;

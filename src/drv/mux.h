@@ -40,7 +40,7 @@ class Mux{
 
 	public:
 
-		uint16_t seq_x;
+		uint16_t seq_x,seq_y;
 
 
 		/** Constructor
@@ -69,9 +69,8 @@ class Mux{
 		/**
 		 * Iterate over the possible multiplexer inputs and store the read values into the buffer
 		 * @param synth_params_t	Synth global structure
-		 * @param pMux				Output buffer containing the mux read values
 		 */
-		void update(synth_params_t* synth_params_t, uint16_t* pMux);
+		void update(synth_params_t* synth_params_t);
 
 
 };

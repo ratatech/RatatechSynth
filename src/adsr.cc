@@ -99,12 +99,12 @@ void ADSR::reset(void)
  */
 void ADSR::set_params(synth_params_t *synth_params) {
 
-	ph_inc_att = adsr_time_phinc_lut[synth_params->pMux[0]];
-	ph_inc_dec = adsr_time_phinc_lut[synth_params->pMux[1]];
-	ph_inc_rel = adsr_time_phinc_lut[synth_params->pMux[3]];
+	ph_inc_att = adsr_time_phinc_lut[synth_params->pMux_x[0]];
+	ph_inc_dec = adsr_time_phinc_lut[synth_params->pMux_x[0]];
+	ph_inc_rel = adsr_time_phinc_lut[synth_params->pMux_x[0]];
 
-	sustain_level = (q15_t) (synth_params->pMux[2] * MAX_AMP) >> 12;
-	sustain_level = (q15_t) ((int32_t) (synth_params->pMux[2] * MAX_AMP) >> 12);
+	sustain_level = (q15_t) (synth_params->pMux_x[0] * MAX_AMP) >> 12;
+	sustain_level = (q15_t) ((int32_t) (synth_params->pMux_x[0] * MAX_AMP) >> 12);
 
 }
 
