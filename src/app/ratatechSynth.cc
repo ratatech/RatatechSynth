@@ -65,6 +65,8 @@ bool LCD_FLAG = false;
 //#define DEBUG_MUX_ADC_1
 uint16_t exti_trigger_cnt = 0;
 
+uint16_t touch_keys[12];
+
 int main(void)
 {
 
@@ -186,8 +188,18 @@ static void print_mux_adc(void){
 
 }
 
-static void print_exti_irq(void){
+static void update_touch_keys(uint8_t exti_line){
 	iprintf("EXTI_0 triggered %i times\r",exti_trigger_cnt);
+//	switch(exti_line){
+//		case 0:
+//		break;
+//
+//		case 1:
+//		break;
+//
+//		case 2:
+//		break;
+//	}
 	//print_mux_adc();
 }
 
@@ -202,7 +214,7 @@ void low_rate_tasks(void){
 	mux_0.update(&synth_params);
 	mux_1.update(&synth_params);
 	cycles = KIN1_GetCycleCounter();
-	print_exti_irq();
+	update_touch_keys(0);
 
 #ifdef DEBUG_MUX_ADC_0
 	//print_mux_adc();

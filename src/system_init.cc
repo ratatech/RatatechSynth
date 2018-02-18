@@ -273,10 +273,8 @@ void ButtonsInitEXTI(void)
 //    //update NVIC registers
 //    NVIC_Init(&NVIC_InitStructure);
 
-	/* Enable GPIOA clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 
-	/* Configure PA.00 pin as input floating */
+	/* Configure PB.00 pin as input floating */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
