@@ -110,7 +110,7 @@ void GPIO_Conf_Init(void)
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
 	/* Configure PA4 pin as analog input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_4 | GPIO_Pin_6;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -275,10 +275,6 @@ void ADC_Conf_Init(void){
 
 	ADC_InitTypeDef ADC_InitStructure;
 
-	/* ADC1 regular channel0, channel4 configurations */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_7Cycles5);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_7Cycles5);
-
 	/* ADC1 configuration ------------------------------------------------------*/
 	ADC_InitStructure.ADC_Mode = ADC_Mode_RegSimult;
 	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
@@ -289,6 +285,7 @@ void ADC_Conf_Init(void){
 	ADC_Init(ADC1, &ADC_InitStructure);
 	/* ADC1 regular channels configuration */
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 2, ADC_SampleTime_7Cycles5);
 	/* Enable ADC1 DMA */
 	ADC_DMACmd(ADC1, ENABLE);
 
@@ -302,6 +299,7 @@ void ADC_Conf_Init(void){
 	ADC_Init(ADC2, &ADC_InitStructure);
 	/* ADC2 regular channels configuration */
 	ADC_RegularChannelConfig(ADC2, ADC_Channel_4, 1, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC2, ADC_Channel_6, 2, ADC_SampleTime_7Cycles5);
 
 	/* Enable ADC2 external trigger conversion */
 	ADC_ExternalTrigConvCmd(ADC2, ENABLE);

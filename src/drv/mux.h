@@ -31,16 +31,30 @@ This file is part of XXXXXXX
 #define MUX_BITS 8
 #define MUX_CHANNELS 4
 
+/**
+ * Multiplexer IDs
+ */
+typedef enum {
+	MUX_ADC_0, //!< MUX_ADC_0
+	MUX_ADC_1, //!< MUX_ADC_1
+	MUX_EXTI_0,//!< MUX_EXTI_0
+	MUX_EXTI_1,//!< MUX_EXTI_1
+	MUX_EXTI_2,//!< MUX_EXTI_2
+}MUX_ID_e;
+
 class Mux{
 
 	private:
 		GPIO_TypeDef* MUX_PORT;
 		uint16_t MUX_A;
 		uint16_t MUX_B;
+		MUX_ID_e MUX_ID;
+
 
 	public:
 
 		uint16_t seq_x,seq_y;
+		mux_out_t pMux;
 
 
 		/** Constructor
@@ -53,18 +67,13 @@ class Mux{
 
 		/**
 		 * Configure multiplexer input port and pins
-		 * @param GPIOx			Where x can be (A..C) to select the GPIO peripheral.
-		 * @param GPIO_Pin_A 	Specifies the port bit to be written. Control input A of the multiplexer
-		 * @param GPIO_Pin_B	Specifies the port bit to be written. Control input B of the multiplexer
-		 * @param GPIO_Pin_C	Specifies the port bit to be written. Control input C of the multiplexer
+		 * @param synth_params_t	Synth global structure
+		 * @param GPIOx				Where x can be (A..C) to select the GPIO peripheral.
+		 * @param GPIO_Pin_A 		Specifies the port bit to be written. Control input A of the multiplexer
+		 * @param GPIO_Pin_B		Specifies the port bit to be written. Control input B of the multiplexer
+		 * @param MUX_ID			Specifies the selected multiplexer ID
 		 */
-		void config(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, uint16_t GPIO_Pin_C){
-
-			MUX_PORT = GPIOx;
-			//MUX_A = GPIO_Pin_0;
-			MUX_A = GPIO_Pin_1;
-			MUX_B = GPIO_Pin_12;
-		}
+		void config(synth_params_t* synth_params_t, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, MUX_ID_e _MUX_ID);
 
 		/**
 		 * Iterate over the possible multiplexer inputs and store the read values into the buffer

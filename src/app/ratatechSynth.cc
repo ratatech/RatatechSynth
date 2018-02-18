@@ -31,13 +31,13 @@ object_pool_t object_pool;
 
 /** Make a local copy of the object instances */
 Oscillator 		osc1,osc2,osc3,osc4;
-LFO 				lfo;
+LFO 			lfo;
 CircularBuffer	out_buffer;
-MIDI 				midi;
+MIDI 			midi;
 SoundGenerator 	snd_gen;
-ADSR				adsr;
-Mux					mux;
-Svf 				svf;
+ADSR			adsr;
+Mux				mux_0,mux_1;
+Svf 			svf;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
@@ -79,7 +79,7 @@ int main(void)
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
 	object_pool.adsr = 			&adsr;
-	object_pool.mux = 			&mux;
+	object_pool.mux = 			&mux_0;
 	object_pool.svf =			&svf;
 
 	/** Link output frame ponter to global structure */
@@ -87,10 +87,13 @@ int main(void)
 
 	synth_params.lfo_amp = &lfo.lfo_amp;
 
-	mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
+
+	mux_0.config(&synth_params, GPIOB,GPIO_Pin_1,GPIO_Pin_12,MUX_ADC_0);
+	mux_1.config(&synth_params, GPIOB,GPIO_Pin_1,GPIO_Pin_12,MUX_ADC_1);
+
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -172,13 +175,17 @@ void low_rate_tasks(void){
 
 	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
 	/** Read inputs */
-	mux.update(&synth_params);
-	//iprintf("adc_read[0] = %.4i adc_read[1] = %.4i\r",synth_params.adc_read[0],synth_params.adc_read[1]);
+	mux_0.update(&synth_params);
+	mux_1.update(&synth_params);
 
 #ifdef DEBUG_ADC
-		iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i y0 =%.4i y1 =%.4i y2 =%.4i y3 =%.4i \r",
-		synth_params.pMux_x[0],synth_params.pMux_x[1],synth_params.pMux_x[2],synth_params.pMux_x[3],
-		synth_params.pMux_y[0],synth_params.pMux_y[1],synth_params.pMux_y[2],synth_params.pMux_y[3]);
+		iprintf("mux_0_x0 =%.4i mux_0_x1 =%.4i mux_0_x2 =%.4i mux_0_x3 =%.4i mux_0_y0 =%.4i mux_0_y1 =%.4i mux_0_y2 =%.4i y3 =%.4i ",
+		mux_0.pMux.mux_x[0],mux_0.pMux.mux_x[1],mux_0.pMux.mux_x[2],mux_0.pMux.mux_x[3],
+		mux_0.pMux.mux_y[0],mux_0.pMux.mux_y[1],mux_0.pMux.mux_y[2],mux_0.pMux.mux_y[3]);
+
+		iprintf("mux_1_x0 =%.4i mux_1_x1 =%.4i mux_1_x2 =%.4i mux_1_x3 =%.4i mux_1_y0 =%.4i mux_1_y1 =%.4i mux_1_y2 =%.4i y3 =%.4i \r",
+		mux_1.pMux.mux_x[0],mux_1.pMux.mux_x[1],mux_1.pMux.mux_x[2],mux_1.pMux.mux_x[3],
+		mux_1.pMux.mux_y[0],mux_1.pMux.mux_y[1],mux_1.pMux.mux_y[2],mux_1.pMux.mux_y[3]);
 #endif
 
 //	svf.set_fc(&synth_params);

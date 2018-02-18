@@ -45,9 +45,10 @@ This file is part of XXXXXXX
 #define SHIFT_FRAME_INTERP 31
 #define LUT_FRAC_BITS 23
 #define LUT_BITS 8
-#define ADC_CHANNELS 1
+#define ADC_CHANNELS 2
 #define N_ADC 2
-#define ADC_ARRAY_SIZE 1
+#define ADC_ARRAY_SIZE 1*ADC_CHANNELS
+#define MUX_INPUTS 4
 
 struct object_pool_t
 {
@@ -93,6 +94,11 @@ struct adsr_params_t{
 	q15_t sustain_level;
 };
 
+struct mux_out_t{
+	uint16_t mux_x[MUX_INPUTS];
+	uint16_t mux_y[MUX_INPUTS];
+};
+
 struct synth_params_t{
 
 	/** Structs holding fixed or semi-fixed initial parameters */
@@ -117,8 +123,8 @@ struct synth_params_t{
 	bool note_ON;
 
 	/** MUX */
-	uint16_t pMux_x[4];
-	uint16_t pMux_y[4];
+	mux_out_t mux_0_out;
+	mux_out_t mux_1_out;
 	uint32_t adc_read[ADC_ARRAY_SIZE];
 	bool DMA_ADC_transfer_complete;
 

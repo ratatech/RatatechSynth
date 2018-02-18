@@ -23,6 +23,34 @@ This file is part of XXXXXXX
 #include "mux.h"
 
 /**
+ * Configure multiplexer input port and pins
+ * @param synth_params_t	Synth global structure
+ * @param GPIOx				Where x can be (A..C) to select the GPIO peripheral.
+ * @param GPIO_Pin_A 		Specifies the port bit to be written. Control input A of the multiplexer
+ * @param GPIO_Pin_B		Specifies the port bit to be written. Control input B of the multiplexer
+ * @param MUX_ID			Specifies the selected multiplexer ID
+ */
+void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, MUX_ID_e _MUX_ID){
+
+	/** Asign main config parameters */
+	MUX_PORT 	= GPIOx;
+	MUX_A 		= GPIO_Pin_A;
+	MUX_B 		= GPIO_Pin_B;
+	MUX_ID 		= _MUX_ID;
+
+	switch(MUX_ID){
+		case MUX_ADC_0:
+			pMux = synth_params->mux_0_out;
+		break;
+		case MUX_ADC_1:
+			pMux = synth_params->mux_1_out;
+		break;
+	}
+
+
+}
+
+/**
  * Iterate over the possible multiplexer inputs and store the read values into the buffer.
  * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
@@ -34,14 +62,12 @@ void Mux::update(synth_params_t* synth_params)
 	BitAction sb;
 
 	/** Read adc value corresponding to each mux selected bit */
-	synth_params->pMux_x[seq_x] = (synth_params->adc_read[0] >> 16) ;
-	synth_params->pMux_y[seq_y] = (synth_params->adc_read[0] & 0xFFFF);
+	pMux.mux_x[seq_x] = (synth_params->adc_read[MUX_ID] >> 16) ;
+	pMux.mux_y[seq_x] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
 
 	/** Increment buffer index and wrap around */
 	seq_x++;
 	seq_x %= MUX_CHANNELS;
-	seq_y++;
-	seq_y %= MUX_CHANNELS;
 
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;

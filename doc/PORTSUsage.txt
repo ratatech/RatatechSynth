@@ -17,8 +17,8 @@ PORTA:
 	15
 
 PORTB:
-	0 ---> MUX_A
-	1 ---> MUX_B
+	0
+	1 ---> MUX_A
 	2 ---> BOOT1
 	3  ---> SWD_SWO
 	4
@@ -29,7 +29,7 @@ PORTB:
 	9 
 	10 ---> PWM2_3
 	11 ---> PWM2_4
-	12 ---> MUX_C
+	12 ---> MUX_B
 	13 ---> SHR_CLOCK
 	14
 	15 ---> SHR_DATA
