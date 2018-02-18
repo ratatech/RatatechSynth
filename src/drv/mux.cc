@@ -40,12 +40,16 @@ void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIOx, uint16_t GPI
 
 	switch(MUX_ID){
 		case MUX_ADC_0:
-			pMux_x = synth_params->mux_0_out.mux_x;
-			pMux_y = synth_params->mux_0_out.mux_y;
+			pMux_x = synth_params->mux_adc_0_out.mux_x;
+			pMux_y = synth_params->mux_adc_0_out.mux_y;
 		break;
 		case MUX_ADC_1:
-			pMux_x = synth_params->mux_1_out.mux_x;
-			pMux_y = synth_params->mux_1_out.mux_y;
+			pMux_x = synth_params->mux_adc_1_out.mux_x;
+			pMux_y = synth_params->mux_adc_1_out.mux_y;
+		break;
+		case MUX_EXTI_0:
+			pMux_x = synth_params->mux_gpio_0_out.mux_x;
+			pMux_y = synth_params->mux_gpio_0_out.mux_y;
 		break;
 	}
 
@@ -53,12 +57,11 @@ void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIOx, uint16_t GPI
 }
 
 /**
- * Iterate over the possible multiplexer inputs and store the read values into the buffer.
+ * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
  * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
- * @param pMux				Output buffer containing the mux read values
  */
-void Mux::update(synth_params_t* synth_params)
+void Mux::adc_update(synth_params_t* synth_params)
 {
 
 	BitAction sb;
@@ -80,6 +83,38 @@ void Mux::update(synth_params_t* synth_params)
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
+
+}
+
+/**
+ * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
+ * Each multiplexed input is read every call to the update function.
+ * @param synth_params_t	Synth global structure
+ * @param pMux				Output buffer containing the mux read values
+ */
+void Mux::gpio_update(synth_params_t* synth_params)
+{
+
+	BitAction sb;
+
+	/** BIT 0 */
+	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(MUX_PORT,MUX_A,sb);
+
+	/** BIT 1 */
+	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
+
+	/** Read gpio pins and store the value corresponding to the selected bit */
+	uint16_t pin_state = GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_4);
+	volatile uint16_t port_state = GPIO_ReadInputData(GPIOB);
+	pMux_x[seq_x] = pin_state;
+	pMux_y[seq_x] = pin_state;
+
+	/** Increment buffer index and wrap around */
+	seq_x++;
+	seq_x %= MUX_CHANNELS;
+
 
 }
 

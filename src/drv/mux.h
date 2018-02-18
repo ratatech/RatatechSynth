@@ -76,11 +76,18 @@ class Mux{
 		void config(synth_params_t* synth_params_t, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, MUX_ID_e _MUX_ID);
 
 		/**
-		 * Iterate over the possible multiplexer inputs and store the read values into the buffer
+		 * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
+		 * Each multiplexed input is read every call to the update function.
 		 * @param synth_params_t	Synth global structure
 		 */
-		void update(synth_params_t* synth_params_t);
+		void adc_update(synth_params_t* synth_params_t);
 
+		/**
+		 * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
+		 * Each multiplexed input is read every call to the update function.
+		 * @param synth_params_t	Synth global structure
+		 */
+		void gpio_update(synth_params_t* synth_params_t);
 
 };
 

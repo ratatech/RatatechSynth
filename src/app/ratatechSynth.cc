@@ -36,7 +36,7 @@ CircularBuffer	out_buffer;
 MIDI 			midi;
 SoundGenerator 	snd_gen;
 ADSR			adsr;
-Mux				mux_0,mux_1;
+Mux				mux_0,mux_1,mux_2;
 Svf 			svf;
 
 /** Pointer to main output frame buffer  **/
@@ -61,11 +61,12 @@ volatile size_t frame_write_n;
 uint16_t enc_cnt;
 char enc_cnt_buf[8];
 bool LCD_FLAG = false;
-#define DEBUG_MUX_ADC_0
+//#define DEBUG_MUX_ADC_0
 //#define DEBUG_MUX_ADC_1
 uint16_t exti_trigger_cnt = 0;
 
-uint16_t touch_keys[12];
+bool touch_keys[12];
+bool touch_key_on = false;
 
 int main(void)
 {
@@ -97,7 +98,7 @@ int main(void)
 
 	mux_0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, MUX_ADC_0);
 	mux_1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, MUX_ADC_1);
-
+	mux_2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, MUX_EXTI_0);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -189,7 +190,9 @@ static void print_mux_adc(void){
 }
 
 static void update_touch_keys(uint8_t exti_line){
-	iprintf("EXTI_0 triggered %i times\r",exti_trigger_cnt);
+	iprintf("tk_0 =%i tk_1 =%i tk_2 =%i tk_3 =%i ----- touch_key_on =%i\r",
+			synth_params.mux_gpio_0_out.mux_y[0],synth_params.mux_gpio_0_out.mux_y[1],synth_params.mux_gpio_0_out.mux_y[2],synth_params.mux_gpio_0_out.mux_y[3],touch_key_on);
+
 //	switch(exti_line){
 //		case 0:
 //		break;
@@ -211,13 +214,15 @@ void low_rate_tasks(void){
 	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
 	/** Read inputs */
 	KIN1_ResetCycleCounter();
-	mux_0.update(&synth_params);
-	mux_1.update(&synth_params);
+//	mux_0.adc_update(&synth_params);
+//	mux_1.adc_update(&synth_params);
+
+	mux_2.gpio_update(&synth_params);
 	cycles = KIN1_GetCycleCounter();
 	update_touch_keys(0);
 
 #ifdef DEBUG_MUX_ADC_0
-	//print_mux_adc();
+	print_mux_adc();
 #endif
 
 #ifdef DEBUG_MUX_ADC_1
@@ -416,7 +421,13 @@ void EXTI0_IRQHandler(void)
     //Check if EXTI_Line0 is asserted
     if(EXTI_GetITStatus(EXTI_Line0) != RESET)
     {
-    	exti_trigger_cnt++;
+    	if(GPIOB->IDR & 0x01){
+    		touch_key_on = true;
+    		touch_keys[mux_1.seq_x] = true;
+    	}else{
+    		touch_key_on = false;
+    		touch_keys[mux_1.seq_x] = false;
+    	}
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line0);
