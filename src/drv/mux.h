@@ -50,11 +50,11 @@ class Mux{
 		uint16_t MUX_B;
 		MUX_ID_e MUX_ID;
 
-
 	public:
 
 		uint16_t seq_x,seq_y;
 		mux_out_t pMux;
+		uint16_t *pMux_x,*pMux_y;
 
 
 		/** Constructor

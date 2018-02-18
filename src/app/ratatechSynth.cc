@@ -61,7 +61,7 @@ volatile size_t frame_write_n;
 uint16_t enc_cnt;
 char enc_cnt_buf[8];
 bool LCD_FLAG = false;
-#define DEBUG_ADC
+#define DEBUG_MUX_ADC_0
 
 int main(void)
 {
@@ -91,8 +91,8 @@ int main(void)
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
 
-	mux_0.config(&synth_params, GPIOB,GPIO_Pin_1,GPIO_Pin_12,MUX_ADC_0);
-	mux_1.config(&synth_params, GPIOB,GPIO_Pin_1,GPIO_Pin_12,MUX_ADC_1);
+	mux_0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, MUX_ADC_0);
+	mux_1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, MUX_ADC_1);
 
 
 	/** Init system and peripherals */
@@ -175,17 +175,21 @@ void low_rate_tasks(void){
 
 	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
 	/** Read inputs */
+	KIN1_ResetCycleCounter();
 	mux_0.update(&synth_params);
 	mux_1.update(&synth_params);
+	cycles = KIN1_GetCycleCounter();
 
-#ifdef DEBUG_ADC
-		iprintf("mux_0_x0 =%.4i mux_0_x1 =%.4i mux_0_x2 =%.4i mux_0_x3 =%.4i mux_0_y0 =%.4i mux_0_y1 =%.4i mux_0_y2 =%.4i y3 =%.4i ",
-		mux_0.pMux.mux_x[0],mux_0.pMux.mux_x[1],mux_0.pMux.mux_x[2],mux_0.pMux.mux_x[3],
-		mux_0.pMux.mux_y[0],mux_0.pMux.mux_y[1],mux_0.pMux.mux_y[2],mux_0.pMux.mux_y[3]);
+#ifdef DEBUG_MUX_ADC_0
+		iprintf("mux_0_x0 =%.4i mux_0_x1 =%.4i mux_0_x2 =%.4i mux_0_x3 =%.4i mux_0_y0 =%.4i mux_0_y1 =%.4i mux_0_y2 =%.4i y3 =%.4i \r",
+		synth_params.mux_0_out.mux_x[0],synth_params.mux_0_out.mux_x[1],synth_params.mux_0_out.mux_x[2],synth_params.mux_0_out.mux_x[3],
+		synth_params.mux_0_out.mux_y[0],synth_params.mux_0_out.mux_y[1],synth_params.mux_0_out.mux_y[2],synth_params.mux_0_out.mux_y[3]);
+#endif
 
+#ifdef DEBUG_MUX_ADC_1
 		iprintf("mux_1_x0 =%.4i mux_1_x1 =%.4i mux_1_x2 =%.4i mux_1_x3 =%.4i mux_1_y0 =%.4i mux_1_y1 =%.4i mux_1_y2 =%.4i y3 =%.4i \r",
-		mux_1.pMux.mux_x[0],mux_1.pMux.mux_x[1],mux_1.pMux.mux_x[2],mux_1.pMux.mux_x[3],
-		mux_1.pMux.mux_y[0],mux_1.pMux.mux_y[1],mux_1.pMux.mux_y[2],mux_1.pMux.mux_y[3]);
+		synth_params.mux_1_out.mux_x[0],synth_params.mux_1_out.mux_x[1],synth_params.mux_1_out.mux_x[2],synth_params.mux_1_out.mux_x[3],
+		synth_params.mux_1_out.mux_y[0],synth_params.mux_1_out.mux_y[1],synth_params.mux_1_out.mux_y[2],synth_params.mux_1_out.mux_y[3]);
 #endif
 
 //	svf.set_fc(&synth_params);

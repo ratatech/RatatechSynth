@@ -40,10 +40,12 @@ void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIOx, uint16_t GPI
 
 	switch(MUX_ID){
 		case MUX_ADC_0:
-			pMux = synth_params->mux_0_out;
+			pMux_x = synth_params->mux_0_out.mux_x;
+			pMux_y = synth_params->mux_0_out.mux_y;
 		break;
 		case MUX_ADC_1:
-			pMux = synth_params->mux_1_out;
+			pMux_x = synth_params->mux_1_out.mux_x;
+			pMux_y = synth_params->mux_1_out.mux_y;
 		break;
 	}
 
@@ -61,9 +63,11 @@ void Mux::update(synth_params_t* synth_params)
 
 	BitAction sb;
 
-	/** Read adc value corresponding to each mux selected bit */
-	pMux.mux_x[seq_x] = (synth_params->adc_read[MUX_ID] >> 16) ;
-	pMux.mux_y[seq_x] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
+	/** Read simultuaneously ADC1 and ADC2 and store the value corresponding to the selected bit.
+	 * ADC1 and ADC2 converted values are stored in a 32bit word and then splited in two 16bit samples.
+	 * */
+	pMux_x[seq_x] = (synth_params->adc_read[MUX_ID] >> 16) ;
+	pMux_y[seq_x] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
 
 	/** Increment buffer index and wrap around */
 	seq_x++;
