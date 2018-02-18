@@ -179,24 +179,33 @@ void ButtonsInitEXTI(void)
     //NVIC structure to set up NVIC controller
     NVIC_InitTypeDef NVIC_InitStructure;
     //GPIO structure used to initialize Button pins
+
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+//    /* Configure PB.00 pin as input floating */
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+//    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
     //Connect EXTI Lines to Button Pins
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource0);
 //    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource1);
 //    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource2);
 //    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource3);
 //    GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
-
-
-    //select EXTI line0
-    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
-    //select interrupt mode
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-    //generate interrupt on rising edge
-    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-    //enable EXTI line
-    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-    //send values to registers
-    EXTI_Init(&EXTI_InitStructure);
+//
+//    GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
+//
+//    //select EXTI line0
+//    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+//    //select interrupt mode
+//    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+//    //generate interrupt on rising edge
+//    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+//    //enable EXTI line
+//    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+//    //send values to registers
+//    EXTI_Init(&EXTI_InitStructure);
 
 //    //select EXTI line1
 //    EXTI_InitStructure.EXTI_Line = EXTI_Line1;
@@ -221,19 +230,19 @@ void ButtonsInitEXTI(void)
 //    //select EXTI line6
 //    EXTI_InitStructure.EXTI_Line = EXTI_Line6;
 //    EXTI_Init(&EXTI_InitStructure);
-
-    //configure NVIC
-    //select NVIC channel 0 to configure
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-    //set priority to lowest
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-    //set subpriority to lowest
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-    //enable IRQ channel
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    //update NVIC registers
-    NVIC_Init(&NVIC_InitStructure);
 //
+//    //configure NVIC
+//    //select NVIC channel 0 to configure
+//    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+//    //set priority to lowest
+//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+//    //set subpriority to lowest
+//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+//    //enable IRQ channel
+//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//    //update NVIC registers
+//    NVIC_Init(&NVIC_InitStructure);
+////
 //    //select NVIC channel 1 to configure
 //    NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
 //    //update NVIC registers
@@ -263,6 +272,31 @@ void ButtonsInitEXTI(void)
 //    NVIC_InitStructure.NVIC_IRQChannel = EXTI6_IRQn;
 //    //update NVIC registers
 //    NVIC_Init(&NVIC_InitStructure);
+
+	/* Enable GPIOA clock */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+	/* Configure PA.00 pin as input floating */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	/* Connect EXTI0 Line to PA.00 pin */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
+
+	/* Configure EXTI0 line */
+	EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+	/* Enable and set EXTI0 Interrupt to the lowest priority */
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
 }
 

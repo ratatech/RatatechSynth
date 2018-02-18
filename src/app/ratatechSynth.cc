@@ -62,6 +62,8 @@ uint16_t enc_cnt;
 char enc_cnt_buf[8];
 bool LCD_FLAG = false;
 #define DEBUG_MUX_ADC_0
+//#define DEBUG_MUX_ADC_1
+uint16_t exti_trigger_cnt = 0;
 
 int main(void)
 {
@@ -168,17 +170,7 @@ int main(void)
 
 }
 
-/**
- * Execute all tasks running at CONTROL_RATE
- */
-void low_rate_tasks(void){
-
-	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
-	/** Read inputs */
-	KIN1_ResetCycleCounter();
-	mux_0.update(&synth_params);
-	mux_1.update(&synth_params);
-	cycles = KIN1_GetCycleCounter();
+static void print_mux_adc(void){
 
 #ifdef DEBUG_MUX_ADC_0
 		iprintf("mux_0_x0 =%.4i mux_0_x1 =%.4i mux_0_x2 =%.4i mux_0_x3 =%.4i mux_0_y0 =%.4i mux_0_y1 =%.4i mux_0_y2 =%.4i y3 =%.4i \r",
@@ -190,6 +182,34 @@ void low_rate_tasks(void){
 		iprintf("mux_1_x0 =%.4i mux_1_x1 =%.4i mux_1_x2 =%.4i mux_1_x3 =%.4i mux_1_y0 =%.4i mux_1_y1 =%.4i mux_1_y2 =%.4i y3 =%.4i \r",
 		synth_params.mux_1_out.mux_x[0],synth_params.mux_1_out.mux_x[1],synth_params.mux_1_out.mux_x[2],synth_params.mux_1_out.mux_x[3],
 		synth_params.mux_1_out.mux_y[0],synth_params.mux_1_out.mux_y[1],synth_params.mux_1_out.mux_y[2],synth_params.mux_1_out.mux_y[3]);
+#endif
+
+}
+
+static void print_exti_irq(void){
+	iprintf("EXTI_0 triggered %i times\r",exti_trigger_cnt);
+	//print_mux_adc();
+}
+
+/**
+ * Execute all tasks running at CONTROL_RATE
+ */
+void low_rate_tasks(void){
+
+	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
+	/** Read inputs */
+	KIN1_ResetCycleCounter();
+	mux_0.update(&synth_params);
+	mux_1.update(&synth_params);
+	cycles = KIN1_GetCycleCounter();
+	print_exti_irq();
+
+#ifdef DEBUG_MUX_ADC_0
+	//print_mux_adc();
+#endif
+
+#ifdef DEBUG_MUX_ADC_1
+	print_mux_adc();
 #endif
 
 //	svf.set_fc(&synth_params);
@@ -351,3 +371,41 @@ void DMA1_Channel2_IRQHandler(void)
   }
 }
 
+
+/*****************************************************************************************************************************
+******************* EXTI INTERRUPTS ******************************************************************************************
+******************************************************************************************************************************/
+
+///**
+//  * @brief  This function handles External Interrupt 4 Handler.
+//  * @param  None
+//  * @retval None
+//  */
+//void EXTI4_IRQHandler(void)
+//{
+//
+//
+//    //Check if EXTI_Line0 is asserted
+//    if(EXTI_GetITStatus(EXTI_Line4) != RESET)
+//    {
+//    	iprintf("EXTI4 trigger!!!\r");
+//    }
+//    //we need to clear line pending bit manually
+//    EXTI_ClearITPendingBit(EXTI_Line4);
+//}
+
+/**
+  * @brief  This function handles External Interrupt 4 Handler.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+    //Check if EXTI_Line0 is asserted
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+    {
+    	exti_trigger_cnt++;
+    }
+    //we need to clear line pending bit manually
+    EXTI_ClearITPendingBit(EXTI_Line0);
+}
