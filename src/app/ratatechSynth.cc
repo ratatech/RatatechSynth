@@ -36,7 +36,7 @@ CircularBuffer	out_buffer;
 MIDI 			midi;
 SoundGenerator 	snd_gen;
 ADSR			adsr;
-Mux				mux_0,mux_1,mux_2,mux_3;
+Mux				mux_0,mux_1,mux_2,mux_3,mux_4;
 Svf 			svf;
 
 /** Pointer to main output frame buffer  **/
@@ -100,6 +100,7 @@ int main(void)
 	mux_1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1);
 	mux_2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_4, GPIO_Pin_5,  MUX_GPIO_0);
 	mux_3.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, 0,  MUX_GPIO_1);
+	mux_4.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, 0,  MUX_GPIO_2);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -206,6 +207,13 @@ static void update_touch_keys(uint8_t exti_line){
 	synth_params.mux_gpio_1_out.mux_x[0],synth_params.mux_gpio_1_out.mux_x[1],
 	synth_params.mux_gpio_1_out.mux_x[2],synth_params.mux_gpio_1_out.mux_x[3]);
 
+	iprintf("kx0=%i kx1=%i kx2=%i kx3=%i		ky0=%i ky1=%i ky2=%i ky3=%i		kx0=%i kx1=%i kx2=%i kx3=%i\r",
+	synth_params.mux_gpio_2_out.mux_y[0],synth_params.mux_gpio_2_out.mux_y[1],
+	synth_params.mux_gpio_2_out.mux_y[2],synth_params.mux_gpio_2_out.mux_y[3],
+	synth_params.mux_gpio_2_out.mux_x[0],synth_params.mux_gpio_2_out.mux_x[1],
+	synth_params.mux_gpio_2_out.mux_x[2],synth_params.mux_gpio_2_out.mux_x[3],
+	synth_params.mux_gpio_1_out.mux_y[0],synth_params.mux_gpio_1_out.mux_y[1],
+	synth_params.mux_gpio_1_out.mux_y[2],synth_params.mux_gpio_1_out.mux_y[3]);
 
 
 //	iprintf("kx0=%i kx1=%i kx2=%i kx3=%i\r",
@@ -234,6 +242,7 @@ void low_rate_tasks(void){
 
 	mux_2.gpio_update(&synth_params);
 	mux_3.gpio_update(&synth_params);
+	mux_4.gpio_update(&synth_params);
 	cycles = KIN1_GetCycleCounter();
 	update_touch_keys(0);
 

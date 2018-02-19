@@ -62,6 +62,10 @@ void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint16_t
 			pMux_x = synth_params->mux_gpio_1_out.mux_x;
 			pMux_y = synth_params->mux_gpio_1_out.mux_y;
 		break;
+		case MUX_GPIO_2:
+			pMux_x = synth_params->mux_gpio_2_out.mux_x;
+			pMux_y = synth_params->mux_gpio_2_out.mux_y;
+		break;
 	}
 
 

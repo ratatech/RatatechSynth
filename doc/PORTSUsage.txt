@@ -17,21 +17,21 @@ PORTA:
 	15
 
 PORTB:
-	0  ---> MUX_GPIO_0_OUT_X
+	0  ---> MUX_GPIO_1_OUT_Y 
 	1  ---> MUX_A
 	2  ---> BOOT1
 	3  ---> SWD_SWO
-	4  ---> MUX_GPIO_1_OUT_Y
-	5  
+	4  ---> MUX_GPIO_0_OUT_X
+	5  ---> MUX_GPIO_0_OUT_Y
 	6  ---> Rotary encoder Tim4_1
 	7  ---> Rotary encoder Tim4_2
-	8
-	9 
+	8  ---> MUX_GPIO_1_OUT_X 
+	9  ---> MUX_GPIO_2_OUT_X
 	10 ---> PWM2_3
 	11 ---> PWM2_4
 	12 ---> MUX_B
 	13 ---> SHR_CLOCK
-	14
+	14 ---> MUX_GPIO_2_OUT_Y
 	15 ---> SHR_DATA
 
 PORTC:
