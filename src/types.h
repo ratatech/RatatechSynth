@@ -26,7 +26,7 @@ This file is part of XXXXXXX
 #include "arm_math.h"
 
 #define FS 48000
-#define CONTROL_RATE 16000
+#define CONTROL_RATE 4000
 #define SHIFT_20_BIT 0x100000
 #define SHIFT_31_BIT 0x7FFFFFFF
 #define SHIFT_15_BIT 0x7FFF
@@ -126,6 +126,7 @@ struct synth_params_t{
 	mux_out_t mux_adc_0_out;
 	mux_out_t mux_adc_1_out;
 	mux_out_t mux_gpio_0_out;
+	mux_out_t mux_gpio_1_out;
 
 	uint32_t adc_read[ADC_ARRAY_SIZE];
 	bool DMA_ADC_transfer_complete;

@@ -166,7 +166,7 @@ void GPIO_Conf_Init(void)
 
 
 	/* Configure PB5/6/9 as OUTPUT for multiplexing */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1| GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_1| GPIO_Pin_12;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -275,10 +275,11 @@ void ButtonsInitEXTI(void)
 
 
 	/* Configure PB.00 pin as input floating */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_5 | GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
 
 //	/* Connect EXTI0 Line to PA.00 pin */
 //	GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);

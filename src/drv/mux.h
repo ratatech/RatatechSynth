@@ -37,17 +37,16 @@ This file is part of XXXXXXX
 typedef enum {
 	MUX_ADC_0, //!< MUX_ADC_0
 	MUX_ADC_1, //!< MUX_ADC_1
-	MUX_EXTI_0,//!< MUX_EXTI_0
-	MUX_EXTI_1,//!< MUX_EXTI_1
-	MUX_EXTI_2,//!< MUX_EXTI_2
+	MUX_GPIO_0,//!< MUX_EXTI_0
+	MUX_GPIO_1,//!< MUX_EXTI_1
+	MUX_GPIO_2,//!< MUX_EXTI_2
 }MUX_ID_e;
 
 class Mux{
 
 	private:
-		GPIO_TypeDef* MUX_PORT;
-		uint16_t MUX_A;
-		uint16_t MUX_B;
+		GPIO_TypeDef* MUX_PORT_CTRL, *MUX_PORT_READ;
+		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y;
 		MUX_ID_e MUX_ID;
 
 	public:
@@ -67,13 +66,16 @@ class Mux{
 
 		/**
 		 * Configure multiplexer input port and pins
-		 * @param synth_params_t	Synth global structure
-		 * @param GPIOx				Where x can be (A..C) to select the GPIO peripheral.
-		 * @param GPIO_Pin_A 		Specifies the port bit to be written. Control input A of the multiplexer
-		 * @param GPIO_Pin_B		Specifies the port bit to be written. Control input B of the multiplexer
-		 * @param MUX_ID			Specifies the selected multiplexer ID
+		 * @param synth_params	Synth global structure
+		 * @param GPIO_CTRL		GPIO port used for swtiching states of the MUX
+		 * @param GPIO_Pin_A	Specifies the port bit to be written. Control input A of the multiplexer
+		 * @param GPIO_Pin_B	Specifies the port bit to be written. Control input B of the multiplexer
+		 * @param GPIO_READ		GPIO port used for reading GPIO pins connected to the MUX output
+		 * @param GPIO_Pin_X	GPIO pin connected to MUX output X
+		 * @param GPIO_Pin_Y	GPIO pin connected to MUX output Y
+		 * @param _MUX_ID		Specifies the selected multiplexer ID
 		 */
-		void config(synth_params_t* synth_params_t, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, MUX_ID_e _MUX_ID);
+		void config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, GPIO_TypeDef* GPIO_READ, uint16_t GPIO_Pin_X, uint16_t GPIO_Pin_Y,MUX_ID_e _MUX_ID);
 
 		/**
 		 * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.

@@ -22,21 +22,28 @@ This file is part of XXXXXXX
 
 #include "mux.h"
 
+
 /**
  * Configure multiplexer input port and pins
- * @param synth_params_t	Synth global structure
- * @param GPIOx				Where x can be (A..C) to select the GPIO peripheral.
- * @param GPIO_Pin_A 		Specifies the port bit to be written. Control input A of the multiplexer
- * @param GPIO_Pin_B		Specifies the port bit to be written. Control input B of the multiplexer
- * @param MUX_ID			Specifies the selected multiplexer ID
+ * @param synth_params	Synth global structure
+ * @param GPIO_CTRL		GPIO port used for swtiching states of the MUX
+ * @param GPIO_Pin_A	Specifies the port bit to be written. Control input A of the multiplexer
+ * @param GPIO_Pin_B	Specifies the port bit to be written. Control input B of the multiplexer
+ * @param GPIO_READ		GPIO port used for reading GPIO pins connected to the MUX output
+ * @param GPIO_Pin_X	GPIO pin connected to MUX output X
+ * @param GPIO_Pin_Y	GPIO pin connected to MUX output Y
+ * @param _MUX_ID		Specifies the selected multiplexer ID
  */
-void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, MUX_ID_e _MUX_ID){
+void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, GPIO_TypeDef* GPIO_READ, uint16_t GPIO_Pin_X, uint16_t GPIO_Pin_Y,MUX_ID_e _MUX_ID){
 
 	/** Asign main config parameters */
-	MUX_PORT 	= GPIOx;
-	MUX_A 		= GPIO_Pin_A;
-	MUX_B 		= GPIO_Pin_B;
-	MUX_ID 		= _MUX_ID;
+	MUX_PORT_CTRL	= GPIO_CTRL;
+	MUX_A 			= GPIO_Pin_A;
+	MUX_B 			= GPIO_Pin_B;
+	MUX_ID 			= _MUX_ID;
+	MUX_PORT_READ	= GPIO_READ;
+	MUX_X			= GPIO_Pin_X;
+	MUX_Y			= GPIO_Pin_Y;
 
 	switch(MUX_ID){
 		case MUX_ADC_0:
@@ -47,9 +54,13 @@ void Mux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIOx, uint16_t GPI
 			pMux_x = synth_params->mux_adc_1_out.mux_x;
 			pMux_y = synth_params->mux_adc_1_out.mux_y;
 		break;
-		case MUX_EXTI_0:
+		case MUX_GPIO_0:
 			pMux_x = synth_params->mux_gpio_0_out.mux_x;
 			pMux_y = synth_params->mux_gpio_0_out.mux_y;
+		break;
+		case MUX_GPIO_1:
+			pMux_x = synth_params->mux_gpio_1_out.mux_x;
+			pMux_y = synth_params->mux_gpio_1_out.mux_y;
 		break;
 	}
 
@@ -78,11 +89,11 @@ void Mux::adc_update(synth_params_t* synth_params)
 
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT,MUX_A,sb);
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
 
 }
 
@@ -99,17 +110,18 @@ void Mux::gpio_update(synth_params_t* synth_params)
 
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT,MUX_A,sb);
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT,MUX_B,sb);
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
 
 	/** Read gpio pins and store the value corresponding to the selected bit */
-	uint16_t pin_state = GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_4);
-	volatile uint16_t port_state = GPIO_ReadInputData(GPIOB);
-	pMux_x[seq_x] = pin_state;
-	pMux_y[seq_x] = pin_state;
+	uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
+	uint16_t pin_state_y = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_Y);
+
+	pMux_x[seq_x] = pin_state_x;
+	pMux_y[seq_x] = pin_state_y;
 
 	/** Increment buffer index and wrap around */
 	seq_x++;

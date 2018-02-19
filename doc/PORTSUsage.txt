@@ -17,11 +17,11 @@ PORTA:
 	15
 
 PORTB:
-	0
-	1 ---> MUX_A
-	2 ---> BOOT1
+	0  ---> MUX_GPIO_0_OUT_X
+	1  ---> MUX_A
+	2  ---> BOOT1
 	3  ---> SWD_SWO
-	4
+	4  ---> MUX_GPIO_1_OUT_Y
 	5  
 	6  ---> Rotary encoder Tim4_1
 	7  ---> Rotary encoder Tim4_2
