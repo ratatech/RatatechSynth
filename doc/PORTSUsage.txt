@@ -22,7 +22,7 @@ PORTB:
 	2  ---> BOOT1
 	3  ---> SWD_SWO
 	4  
-	5  
+	5  ---> Rotary push ON/OFF
 	6  ---> Rotary encoder Tim4_1
 	7  ---> Rotary encoder Tim4_2
 	8  ---> MUX_GPIO_1_OUT_X 

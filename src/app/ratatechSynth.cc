@@ -61,8 +61,9 @@ volatile size_t frame_write_n;
 uint16_t enc_cnt;
 char enc_cnt_buf[8];
 bool LCD_FLAG = false;
-#define DEBUG_MUX_ADC_0
+//#define DEBUG_MUX_ADC_0
 //#define DEBUG_MUX_ADC_1
+//#define DEBUG_MUX_GPIOS
 uint16_t exti_trigger_cnt = 0;
 
 bool touch_keys[12];
@@ -146,26 +147,33 @@ int main(void)
 			fill_buffer();
 		}
 
-//		if(LCD_FLAG){
-//			/** QUICK N DIRTY LCD + ENCODER
-//			 * TO BE REMOVED
-//			 * */
+
+		/** QUICK N DIRTY LCD + ENCODER
+		 * TO BE REMOVED
+		 * */
+
+		// Get encoder value
+        enc_cnt = TIM_GetCounter(TIM4)>>2;
+
+        // Print encoder value
+        sprintf(enc_cnt_buf, "%i", enc_cnt);
+        lcd16x2_clrscr();
+        lcd16x2_puts(enc_cnt_buf);
+
+
+		// Print encoder value
+//		sprintf(enc_cnt_buf, "%i %i %i %i %i %i %i %i", synth_params.mux_adc_0_out.mux_x[0]>>3,synth_params.mux_adc_0_out.mux_x[1]>>3, synth_params.mux_adc_0_out.mux_x[2]>>3,synth_params.mux_adc_0_out.mux_x[3]>>3
+//													  , synth_params.mux_adc_0_out.mux_y[0]>>3,synth_params.mux_adc_0_out.mux_y[1]>>3, synth_params.mux_adc_0_out.mux_y[2]>>3,synth_params.mux_adc_0_out.mux_y[3]>>3);
 //
-//			// Get encoder value
-//			//enc_cnt = TIM_GetCounter(TIM4)>>2;
-//			enc_cnt = synth_params.pMux[0];
-//
-//			// Print encoder value
-//			sprintf(enc_cnt_buf, "%i %i %i %i %i %i %i %i", synth_params.pMux[0],synth_params.pMux[1], synth_params.pMux[2],synth_params.pMux[3]
-//												          , synth_params.pMux[4],synth_params.pMux[5], synth_params.pMux[6],synth_params.pMux[7]);
-//			lcd16x2_clrscr();
-//			lcd16x2_puts(enc_cnt_buf);
-//			/** QUICK N DIRTY LCD + ENCODER
-//			 * TO BE REMOVED
-//			 * */
-//			LCD_FLAG = false;
-//	        DelayMs(10);
-//	    }
+//		lcd16x2_clrscr();
+//		lcd16x2_puts(enc_cnt_buf);
+		/** QUICK N DIRTY LCD + ENCODER
+		 * TO BE REMOVED
+		 * */
+
+		DelayMs(10);
+
+
 
 		// Add a couple of cycles delay between main loop
 	    __asm__("nop");
@@ -193,19 +201,21 @@ static void print_mux_adc(void){
 
 static void update_touch_keys(uint8_t exti_line){
 
-//		iprintf("x0=%i x1=%i x2=%i x3=%i	y0=%i y1=%i y2=%i y3=%i	y0=%i y1=%i y2=%i y3=%i	x0=%i x1=%i x2=%i x3=%i	x0=%i x1=%i x2=%i x3=%i	y0=%i y1=%i y2=%i y3=%i\r",
-//		synth_params.mux_gpio_0_out.mux_x[0],synth_params.mux_gpio_0_out.mux_x[1],
-//		synth_params.mux_gpio_0_out.mux_x[2],synth_params.mux_gpio_0_out.mux_x[3],
-//		synth_params.mux_gpio_0_out.mux_y[0],synth_params.mux_gpio_0_out.mux_y[1],
-//		synth_params.mux_gpio_0_out.mux_y[2],synth_params.mux_gpio_0_out.mux_y[3],
-//		synth_params.mux_gpio_1_out.mux_y[0],synth_params.mux_gpio_1_out.mux_y[1],
-//		synth_params.mux_gpio_1_out.mux_y[2],synth_params.mux_gpio_1_out.mux_y[3],
-//		synth_params.mux_gpio_1_out.mux_x[0],synth_params.mux_gpio_1_out.mux_x[1],
-//		synth_params.mux_gpio_1_out.mux_x[2],synth_params.mux_gpio_1_out.mux_x[3],
-//		synth_params.mux_gpio_2_out.mux_x[0],synth_params.mux_gpio_2_out.mux_x[1],
-//		synth_params.mux_gpio_2_out.mux_x[2],synth_params.mux_gpio_2_out.mux_x[3],
-//		synth_params.mux_gpio_2_out.mux_y[0],synth_params.mux_gpio_2_out.mux_y[1],
-//		synth_params.mux_gpio_2_out.mux_y[2],synth_params.mux_gpio_2_out.mux_y[3]);
+#ifdef DEBUG_MUX_GPIOS
+		iprintf("x0=%i x1=%i x2=%i x3=%i	y0=%i y1=%i y2=%i y3=%i	y0=%i y1=%i y2=%i y3=%i	x0=%i x1=%i x2=%i x3=%i	x0=%i x1=%i x2=%i x3=%i	y0=%i y1=%i y2=%i y3=%i\r",
+		synth_params.mux_gpio_0_out.mux_x[0],synth_params.mux_gpio_0_out.mux_x[1],
+		synth_params.mux_gpio_0_out.mux_x[2],synth_params.mux_gpio_0_out.mux_x[3],
+		synth_params.mux_gpio_0_out.mux_y[0],synth_params.mux_gpio_0_out.mux_y[1],
+		synth_params.mux_gpio_0_out.mux_y[2],synth_params.mux_gpio_0_out.mux_y[3],
+		synth_params.mux_gpio_1_out.mux_y[0],synth_params.mux_gpio_1_out.mux_y[1],
+		synth_params.mux_gpio_1_out.mux_y[2],synth_params.mux_gpio_1_out.mux_y[3],
+		synth_params.mux_gpio_1_out.mux_x[0],synth_params.mux_gpio_1_out.mux_x[1],
+		synth_params.mux_gpio_1_out.mux_x[2],synth_params.mux_gpio_1_out.mux_x[3],
+		synth_params.mux_gpio_2_out.mux_x[0],synth_params.mux_gpio_2_out.mux_x[1],
+		synth_params.mux_gpio_2_out.mux_x[2],synth_params.mux_gpio_2_out.mux_x[3],
+		synth_params.mux_gpio_2_out.mux_y[0],synth_params.mux_gpio_2_out.mux_y[1],
+		synth_params.mux_gpio_2_out.mux_y[2],synth_params.mux_gpio_2_out.mux_y[3]);
+#endif
 
 }
 
@@ -214,12 +224,10 @@ static void update_touch_keys(uint8_t exti_line){
  */
 void low_rate_tasks(void){
 
-	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
-	/** Read inputs */
-	KIN1_ResetCycleCounter();
 
-
-
+//	/** Read inputs */
+//	KIN1_ResetCycleCounter();
+//
 	BitAction sb;
 
 	/** BIT 0 */
@@ -229,15 +237,15 @@ void low_rate_tasks(void){
 	/** BIT 1 */
 	(((mux_0.seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(mux_0.MUX_PORT_CTRL,mux_0.MUX_B,sb);
-
+//
 	mux_0.adc_update(&synth_params);
 	mux_1.adc_update(&synth_params);
-	mux_2.gpio_update(&synth_params);
-	mux_3.gpio_update(&synth_params);
-	mux_4.gpio_update(&synth_params);
-
-	cycles = KIN1_GetCycleCounter();
-	update_touch_keys(0);
+//	mux_2.gpio_update(&synth_params);
+//	mux_3.gpio_update(&synth_params);
+//	mux_4.gpio_update(&synth_params);
+//
+//	cycles = KIN1_GetCycleCounter();
+//	update_touch_keys(0);
 
 #ifdef DEBUG_MUX_ADC_0
 	print_mux_adc();
@@ -449,4 +457,20 @@ void EXTI0_IRQHandler(void)
     }
     //we need to clear line pending bit manually
     EXTI_ClearITPendingBit(EXTI_Line0);
+}
+
+/**
+  * @brief  This function handles External lines 9 to 5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI9_5_IRQHandler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
+	{
+		iprintf("EXTI9_5_IRQHandler trigger!!!\r");
+
+		/* Clear the  EXTI line 9 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line5);
+	}
 }
