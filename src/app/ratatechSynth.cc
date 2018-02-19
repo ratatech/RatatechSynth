@@ -229,8 +229,8 @@ void low_rate_tasks(void){
 	//mux.config(GPIOB,GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_12);
 	/** Read inputs */
 	KIN1_ResetCycleCounter();
-//	mux_0.adc_update(&synth_params);
-//	mux_1.adc_update(&synth_params);
+	mux_0.adc_update(&synth_params);
+	mux_1.adc_update(&synth_params);
 
 	mux_2.gpio_update(&synth_params);
 	mux_3.gpio_update(&synth_params);
