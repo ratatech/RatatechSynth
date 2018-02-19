@@ -81,16 +81,6 @@ void Mux::adc_update(synth_params_t* synth_params)
 
 	BitAction sb;
 
-	/** Read simultuaneously ADC1 and ADC2 and store the value corresponding to the selected bit.
-	 * ADC1 and ADC2 converted values are stored in a 32bit word and then splited in two 16bit samples.
-	 * */
-	pMux_x[seq_x] = (synth_params->adc_read[MUX_ID] >> 16) ;
-	pMux_y[seq_x] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
-
-	/** Increment buffer index and wrap around */
-	seq_x++;
-	seq_x %= MUX_CHANNELS;
-
 	/** BIT 0 */
 	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
@@ -98,6 +88,17 @@ void Mux::adc_update(synth_params_t* synth_params)
 	/** BIT 1 */
 	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
+
+	/** Read simultuaneously ADC1 and ADC2 and store the value corresponding to the selected bit.
+	 * ADC1 and ADC2 converted values are stored in a 32bit word and then splited in two 16bit samples.
+	 * */
+	pMux_x[seq_x] = (synth_params->adc_read[MUX_ID] >> 16) ;
+	pMux_y[seq_x] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
+
+
+	/** Increment buffer index and wrap around */
+	seq_x++;
+	seq_x %= MUX_CHANNELS;
 
 }
 
@@ -112,24 +113,26 @@ void Mux::gpio_update(synth_params_t* synth_params)
 
 	BitAction sb;
 
-	/** BIT 0 */
-	((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
+	//for(int i=0; i<4; i++){
+		/** BIT 0 */
+		((seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+		GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
-	/** BIT 1 */
-	(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
+		/** BIT 1 */
+		(((seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+		GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
 
-	/** Read gpio pins and store the value corresponding to the selected bit */
-	uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
-	uint16_t pin_state_y = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_Y);
+		/** Read gpio pins and store the value corresponding to the selected bit */
+		uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
+		uint16_t pin_state_y = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_Y);
 
-	pMux_x[seq_x] = pin_state_x;
-	pMux_y[seq_x] = pin_state_y;
+		pMux_x[seq_x] = pin_state_x;
+		pMux_y[seq_x] = pin_state_y;
 
-	/** Increment buffer index and wrap around */
-	seq_x++;
-	seq_x %= MUX_CHANNELS;
+		/** Increment buffer index and wrap around */
+		seq_x++;
+		seq_x %= MUX_CHANNELS;
+	//}
 
 
 }

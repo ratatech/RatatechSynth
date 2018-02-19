@@ -160,7 +160,6 @@ void GPIO_Conf_Init(void)
 	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
-
 	GPIO_Init( GPIOC, &GPIO_InitStructure );
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
 
@@ -275,10 +274,16 @@ void ButtonsInitEXTI(void)
 
 
 	/* Configure PB.00 pin as input floating */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_5 | GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_14;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	/* Configure PB5/6/9 as OUTPUT for multiplexing */
+	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_8| GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
 //	/* Connect EXTI0 Line to PA.00 pin */

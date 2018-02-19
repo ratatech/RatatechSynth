@@ -7,11 +7,11 @@ PORTA:
 	5  ---> DAC_SCLK 
 	6  ---> Analog In
 	7  ---> DAC_MOSI
-	8
+	8  ---> MUX_GPIO_0_OUT_X
 	9  ---> DAC_CS
 	10 ---> USART1_Rx
 	11 ---> SHR_LATCH
-	12
+	12 ---> MUX_GPIO_0_OUT_Y
 	13 ---> SWD_TMS
 	14 ---> SWD_TCK
 	15
@@ -21,8 +21,8 @@ PORTB:
 	1  ---> MUX_A
 	2  ---> BOOT1
 	3  ---> SWD_SWO
-	4  ---> MUX_GPIO_0_OUT_X
-	5  ---> MUX_GPIO_0_OUT_Y
+	4  
+	5  
 	6  ---> Rotary encoder Tim4_1
 	7  ---> Rotary encoder Tim4_2
 	8  ---> MUX_GPIO_1_OUT_X 
@@ -32,7 +32,7 @@ PORTB:
 	12 ---> MUX_B
 	13 ---> SHR_CLOCK
 	14 ---> MUX_GPIO_2_OUT_Y
-	15 ---> SHR_DATA
+	15 ---> SHR_DATA	
 
 PORTC:
 	0  ---> LCD16X2_PIN_D6
