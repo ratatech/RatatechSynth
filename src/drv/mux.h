@@ -44,12 +44,11 @@ typedef enum {
 
 class Mux{
 
-	private:
+	public:
 		GPIO_TypeDef* MUX_PORT_CTRL, *MUX_PORT_READ;
 		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y;
 		MUX_ID_e MUX_ID;
 
-	public:
 
 		uint16_t seq_x,seq_y;
 		mux_out_t pMux;

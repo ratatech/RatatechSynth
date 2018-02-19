@@ -218,6 +218,18 @@ void low_rate_tasks(void){
 	/** Read inputs */
 	KIN1_ResetCycleCounter();
 
+
+
+	BitAction sb;
+
+	/** BIT 0 */
+	((mux_0.seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(mux_0.MUX_PORT_CTRL,mux_0.MUX_A,sb);
+
+	/** BIT 1 */
+	(((mux_0.seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(mux_0.MUX_PORT_CTRL,mux_0.MUX_B,sb);
+
 	mux_0.adc_update(&synth_params);
 	mux_1.adc_update(&synth_params);
 	mux_2.gpio_update(&synth_params);
