@@ -50,6 +50,18 @@ This file is part of XXXXXXX
 #define ADC_ARRAY_SIZE 1*ADC_CHANNELS
 #define MUX_INPUTS 4
 
+/**
+ * Multiplexer IDs
+ */
+typedef enum {
+	MUX_ADC_0, //!< MUX_ADC_0
+	MUX_ADC_1, //!< MUX_ADC_1
+	MUX_GPIO_0,//!< MUX_EXTI_0
+	MUX_GPIO_1,//!< MUX_EXTI_1
+	MUX_GPIO_2,//!< MUX_EXTI_2
+}MUX_ID_e;
+
+
 struct object_pool_t
 {
 	void* 	osc1;

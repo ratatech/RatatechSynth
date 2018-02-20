@@ -36,8 +36,10 @@ CircularBuffer	out_buffer;
 MIDI 			midi;
 SoundGenerator 	snd_gen;
 ADSR			adsr;
-Mux				mux_0,mux_1,mux_2,mux_3,mux_4;
+//Mux				mux_0,mux_1,mux_2,mux_3,mux_4;
 Svf 			svf;
+
+MacroMux macro_mux;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
@@ -63,7 +65,7 @@ char enc_cnt_buf[8];
 bool LCD_FLAG = false;
 //#define DEBUG_MUX_ADC_0
 //#define DEBUG_MUX_ADC_1
-//#define DEBUG_MUX_GPIOS
+#define DEBUG_MUX_GPIOS
 uint16_t exti_trigger_cnt = 0;
 
 bool touch_keys[12];
@@ -85,7 +87,7 @@ int main(void)
 	object_pool.out_buffer = 	&out_buffer;
 	object_pool.midi = 			&midi;
 	object_pool.adsr = 			&adsr;
-	object_pool.mux = 			&mux_0;
+	object_pool.mux = 			NULL;
 	object_pool.svf =			&svf;
 
 	/** Link output frame ponter to global structure */
@@ -97,11 +99,7 @@ int main(void)
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
 
-	mux_0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0, MUX_ADC_0);
-	mux_1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1);
-	mux_2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12,  MUX_GPIO_0);
-	mux_3.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8,  MUX_GPIO_1);
-	mux_4.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_GPIO_2);
+	macro_mux.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_GPIO_2);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -224,22 +222,14 @@ static void update_touch_keys(uint8_t exti_line){
  */
 void low_rate_tasks(void){
 
-
+	macro_mux.update(&synth_params);
 //	/** Read inputs */
 //	KIN1_ResetCycleCounter();
 //
-	BitAction sb;
 
-	/** BIT 0 */
-	((mux_0.seq_x & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(mux_0.MUX_PORT_CTRL,mux_0.MUX_A,sb);
-
-	/** BIT 1 */
-	(((mux_0.seq_x>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(mux_0.MUX_PORT_CTRL,mux_0.MUX_B,sb);
 //
-	mux_0.adc_update(&synth_params);
-	mux_1.adc_update(&synth_params);
+//	mux_0.adc_update(&synth_params);
+//	mux_1.adc_update(&synth_params);
 //	mux_2.gpio_update(&synth_params);
 //	mux_3.gpio_update(&synth_params);
 //	mux_4.gpio_update(&synth_params);
@@ -449,10 +439,8 @@ void EXTI0_IRQHandler(void)
     {
     	if(GPIOB->IDR & 0x01){
     		touch_key_on = true;
-    		touch_keys[mux_1.seq_x] = true;
     	}else{
     		touch_key_on = false;
-    		touch_keys[mux_1.seq_x] = false;
     	}
     }
     //we need to clear line pending bit manually
