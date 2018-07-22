@@ -14,6 +14,10 @@ class RatatechTest(object):
     def __init__(self,prjName,board):
         print('TODO:do something at init')
         
+        # Remove backslash if project names contains it. Typically added with auto-completion
+        if prjName.endswith('/'):
+            prjName = prjName.split('/')[0]
+        
         self.utils = RatatechUtils()
         self.build = RatatechBuild(prjName)
         
