@@ -36,6 +36,8 @@ class RatatechTest(object):
         test_result = True
         start_printing = False
         newUsartOutLines = []
+        
+        print('\n\n-----------------------\n')
         for line in usartOutLines:
             
             # Wait until the first line does not appear
