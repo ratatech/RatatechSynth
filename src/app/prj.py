@@ -38,4 +38,4 @@ status = ratatechUtil.checkStm32()
 if status == 'CONNECTED':
     
     # Program stm32
-    ratatechBuild.flash_openocd()
+    ratatechBuild.flashOpenocd()

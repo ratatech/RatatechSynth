@@ -58,7 +58,7 @@ class RatatechBuild(object):
         # Execute command
         os.system(cmd)
 
-    def flash_openocd(self):
+    def flashOpenocd(self):
         
         # Binary name
         tst_bin = self.prjName +'.bin'
@@ -79,50 +79,6 @@ class RatatechBuild(object):
         cmd = self.openocd + openocd_cmd
 
         # Execute command
-        os.system(cmd)       
-
-    
-    def parseUsart(self,usartOutLines):
-        # Print the usart output    
-        test_result = True
-        start_printing = False
-        newUsartOutLines = []
-        for line in usartOutLines:
-            
-            # Wait until the first line does not appear
-            if 'TEST:' in line:
-                start_printing = True
-            
-            # Print line 
-            if start_printing:
-                print line
-                newUsartOutLines.append(line)
-                
-            # Check for a failed result    
-            if 'FAIL' in line:
-                test_result = False
-                
-        return test_result,newUsartOutLines
-               
-    def testUsart(self,port="ttyUSB0",printConsole=False):    
-        
-        # Open serial port to read test output
-        ratatech_serial = RatatechSerial(port)       
-        ratatech_serial.ser.printConsole = printConsole
-        ratatech_serial.open()       
-        
-        print 'Serial port open success!'
-     
-        time.sleep(0.1)    
-        print 'Wait usart and read'
-
-        # Start reading usart
-        usartOutLines = ratatech_serial.readLines("1")
-        
-        # Parse lines and check for fails
-        test_result,usartOutLines = self.parseUsart(usartOutLines)
-
-        return usartOutLines, test_result
-    
+        os.system(cmd)          
         
         
