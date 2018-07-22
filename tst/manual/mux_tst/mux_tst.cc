@@ -46,9 +46,20 @@ synth_params_t synth_params;
 MacroMux macro_mux;
 
 
-#define DEBUG_MUX_ADC_0
+//#define DEBUG_MUX_ADC_0
+//#define DEBUG_MUX_ADC_1
 
 static void print_mux_adc(void){
+
+
+	iprintf("pot0 =%.4i pot2 =%.4i pot4 =%.4i pot6 =%.4i\r",
+			macro_mux.am_0->pMux_x[0] ,
+			macro_mux.am_0->pMux_x[1] ,
+			macro_mux.am_0->pMux_x[2] ,
+			macro_mux.am_0->pMux_x[3] );
+
+
+
 
 #ifdef DEBUG_MUX_ADC_0
 		iprintf("m0_x0 =%.4i m0_x1 =%.4i m0_x2 =%.4i m0_x3 =%.4i m0_y0 =%.4i m0_y1 =%.4i m0_y2 =%.4i m0_y3 =%.4i \r",
@@ -57,9 +68,9 @@ static void print_mux_adc(void){
 #endif
 
 #ifdef DEBUG_MUX_ADC_1
-		iprintf("m1_x0 =%.4i m1_x1 =%.4i m1_x2 =%.4i m1_x3 =%.4i m1_y0 =%.4i m1_y1 =%.4i m1_y2 =%.4i y3 =%.4i \r",
-		synth_params.mux_1_out.mux_x[0],synth_params.mux_1_out.mux_x[1],synth_params.mux_1_out.mux_x[2],synth_params.mux_1_out.mux_x[3],
-		synth_params.mux_1_out.mux_y[0],synth_params.mux_1_out.mux_y[1],synth_params.mux_1_out.mux_y[2],synth_params.mux_1_out.mux_y[3]);
+		iprintf("m1_x0 =%.4i m1_x1 =%.4i m1_x2 =%.4i m1_x3 =%.4i m1_y0 =%.4i m1_y1 =%.4i m1_y2 =%.4i m1_y3 =%.4i \r",
+		synth_params.mux_adc_1_out.mux_x[0],synth_params.mux_adc_1_out.mux_x[1],synth_params.mux_adc_1_out.mux_x[2],synth_params.mux_adc_1_out.mux_x[3],
+		synth_params.mux_adc_1_out.mux_y[0],synth_params.mux_adc_1_out.mux_y[1],synth_params.mux_adc_1_out.mux_y[2],synth_params.mux_adc_1_out.mux_y[3]);
 #endif
 
 }
@@ -77,13 +88,12 @@ void TIM2_IRQHandler(void)
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
-
 }
 
 int main(void)
 {
 
-	macro_mux.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_GPIO_2);
+	macro_mux.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_ADC_0);
 
 
 	/** Init system and peripherals */
@@ -110,7 +120,7 @@ int main(void)
 
 	while(1){
 
-		DelayMs(100);
+		DelayMs(10);
 		print_mux_adc();
 	}
 

@@ -41,7 +41,6 @@ class MacroMux{
 		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y;
 		MUX_ID_e MUX_ID;
 
-
 		uint16_t seq;
 		mux_out_t pMux;
 		uint16_t *pMux_x,*pMux_y;
@@ -51,7 +50,6 @@ class MacroMux{
 		GpioMux *gm_0;
 		GpioMux *gm_1;
 		GpioMux *gm_2;
-
 
 		/** Constructor
 		*/

@@ -29,7 +29,6 @@ This file is part of XXXXXXX
 #include <stdio.h>
 #include <stdlib.h>
 
-
 class GpioMux: public Mux{
 
 	public:
@@ -55,7 +54,7 @@ class GpioMux: public Mux{
 		 * Each multiplexed input is read every call to the update function.
 		 * @param synth_params_t	Synth global structure
 		 */
-		void update(synth_params_t* synth_params_t);
+		void update(synth_params_t* synth_params_t, uint16_t seq);
 
 };
 

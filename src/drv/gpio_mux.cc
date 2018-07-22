@@ -75,19 +75,15 @@ void GpioMux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint
  * @param synth_params_t	Synth global structure
  * @param pMux				Output buffer containing the mux read values
  */
-void GpioMux::update(synth_params_t* synth_params)
+void GpioMux::update(synth_params_t* synth_params, uint16_t seq)
 {
 
 	/** Read gpio pins and store the value corresponding to the selected bit */
 	uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
 	uint16_t pin_state_y = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_Y);
 
-	pMux_x[seq_x] = pin_state_x;
-	pMux_y[seq_x] = pin_state_y;
-
-	/** Increment buffer index and wrap around */
-	seq_x++;
-	seq_x %= MUX_INPUTS;
+	pMux_x[seq] = pin_state_x;
+	pMux_y[seq] = pin_state_y;
 
 }
 

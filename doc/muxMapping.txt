@@ -1,0 +1,51 @@
+- ADC MUXs- 
+
+m0_x0 ---> POT7
+m0_x1 ---> POT5
+m0_x2 ---> POT2
+m0_x3 ---> POT6
+m0_y0 ---> POT1
+m0_y1 ---> POT3
+m0_y2 ---> POT9
+m0_y3 ---> POT8
+
+m1_x0 ---> POT4
+m1_x1 ---> POT0
+m1_x2 ---> POT10
+m1_x3 ---> POT11
+m1_y0 ---> POT12
+m1_y1 ---> POT13
+m1_y2 ---> POT14
+m1_y3 ---> POT15
+
+- GPIO MUXs -
+
+m0_x0 ---> wk_3
+m0_x1 ---> bk_2
+m0_x2 ---> wk_4
+m0_x3 ---> wk_2
+m0_y0 ---> bk_1
+m0_y1 ---> wk_0
+m0_y2 ---> wk_1
+m0_y3 ---> bk_0
+
+m1_x0 ---> bk_5
+m1_x1 ---> wk_8
+m1_x2 ---> bk_6
+m1_x3 ---> wk_7
+m1_y0 ---> wk_6
+m1_y1 ---> bk_3
+m1_y2 ---> bk_4
+m1_y3 ---> wk_5
+
+m2_x0 ---> bk_7
+m2_x1 ---> wk_10
+m2_x2 ---> wk_9
+m2_x3 ---> wk_11
+m2_y0 ---> bk_8
+m2_y1 ---> wk_13
+m2_y2 ---> wk_12
+m2_y3 ---> wk_9
+
+
+

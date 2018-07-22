@@ -35,9 +35,7 @@ class Mux{
 		GPIO_TypeDef* MUX_PORT_CTRL, *MUX_PORT_READ;
 		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y;
 		MUX_ID_e MUX_ID;
-		uint16_t seq_x;
 		uint16_t *pMux_x,*pMux_y;
-
 
 		/** Constructor
 		*/
@@ -96,7 +94,7 @@ class Mux{
 		 * Update multiplexer states
 		 * @param synth_params_t	Synth global structure
 		 */
-		virtual void update(synth_params_t* synth_params_t);
+		virtual void update(synth_params_t* synth_params_t, uint16_t seq);
 
 
 };

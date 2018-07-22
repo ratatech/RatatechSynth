@@ -46,9 +46,9 @@ void MacroMux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uin
 	MUX_Y			= GPIO_Pin_Y;
 
 	am_0->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0, MUX_ADC_0);
-	am_1->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1);
+	am_1->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0, MUX_ADC_1);
 	gm_0->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12,  MUX_GPIO_0);
-	gm_1->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8,  MUX_GPIO_1);
+	gm_1->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8,  	MUX_GPIO_1);
 	gm_2->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_GPIO_2);
 
 
@@ -64,20 +64,25 @@ void MacroMux::update(synth_params_t* synth_params)
 
 	BitAction sb;
 
-	/** BIT 0 */
+	/** BIT 0 (MSB) */
 	((seq & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
-
-	/** BIT 1 */
-	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	//sb = Bit_SET;
 	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
 
-	am_0->update(synth_params);
-	am_1->update(synth_params);
-	gm_0->update(synth_params);
-	gm_1->update(synth_params);
-	gm_2->update(synth_params);
+	/** BIT 1 (LSB) */
+	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	//sb = Bit_SET;
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
+	am_0->update(synth_params, seq);
+//	am_1->update(synth_params, seq);
+//	gm_0->update(synth_params, seq);
+//	gm_1->update(synth_params, seq);
+//	gm_2->update(synth_params, seq);
+
+	/** Increment buffer index and wrap around */
+	seq++;
+	seq %= MUX_INPUTS;
 
 }
 

@@ -74,19 +74,14 @@ void AdcMux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint1
  * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
  */
-void AdcMux::update(synth_params_t* synth_params)
+void AdcMux::update(synth_params_t* synth_params, uint16_t seq)
 {
 
 	/** Read simultuaneously ADC1 and ADC2 and store the value corresponding to the selected bit.
 	 * ADC1 and ADC2 converted values are stored in a 32bit word and then splited in two 16bit samples.
 	 * */
-	pMux_x[seq_x] = (synth_params->adc_read[MUX_ID] >> 16) ;
-	pMux_y[seq_x] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
-
-
-	/** Increment buffer index and wrap around */
-	seq_x++;
-	seq_x %= MUX_INPUTS;
+	pMux_x[seq] = (synth_params->adc_read[MUX_ID] >> 16) ;
+	pMux_y[seq] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
 
 }
 
