@@ -17,6 +17,7 @@ class RatatechBuild(object):
 
         self.prjName = '_' + prjName
 
+
         # Build dir
         buildDir = os.path.join(os.path.dirname(__file__), '..',self.prjName+'/')
         self.buildDir = buildDir.replace(' ','\ ')

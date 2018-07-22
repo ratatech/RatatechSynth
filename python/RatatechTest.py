@@ -12,11 +12,14 @@ from RatatechBuild  import RatatechBuild
 
 class RatatechTest(object):
     def __init__(self,prjName,board):
-        print('TODO:do something at init')
         
-        # Remove backslash if project names contains it. Typically added with auto-completion
-        if prjName.endswith('/'):
-            prjName = prjName.split('/')[0]
+        # Throw error in case of fail
+        if not prjName.endswith('/'):
+            raise ValueError('Wrong project name. It should correspond to the directory containing the test ending with /')
+            
+        # Remove backslash
+        if prjName.count('/')>1:
+            prjName = prjName.split('/')[-2]
         
         self.utils = RatatechUtils()
         self.build = RatatechBuild(prjName)
