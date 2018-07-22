@@ -265,7 +265,7 @@ void low_rate_tasks(void){
 
 }
 
-//#define DEBUG_ADSR
+#define DEBUG_ADSR
 
 /**
  * Fill the main buffer containing the output audio samples

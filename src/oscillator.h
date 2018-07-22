@@ -8,12 +8,11 @@
 #ifndef INCLUDE_OSCILLATOR_H_
 #define INCLUDE_OSCILLATOR_H_
 
-#include "ratatechSynth.h"
+#include <math.h>
 #include "arm_math.h"
 #include "tables.h"
 #include "types.h"
-#include <math.h>
-#include "types.h"
+
 #include "Lutinterp.h"
 
 class Lut_interp;
