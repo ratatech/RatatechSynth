@@ -20,10 +20,10 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-
 #include <stdio.h>
 #include "unity.h"
-#include "ratatechSynth.h"
+#include "oscillator.h"
+#include "mov_avg.h"
 #include "tst_utils.h"
 
 /**
@@ -136,6 +136,7 @@ int main(void)
 
     /** Wait usart confirmation to start the test  */
     wait_usart_ready();
+
 	/** Ready to start test  */
     iprintf("\nTEST: Moving Average Filter\n-----------------------");
 
@@ -143,8 +144,6 @@ int main(void)
     UNITY_BEGIN();
     RUN_TEST(test_mov_avg_out);
 
-
     /** FInish unity */
     return UNITY_END();
 }
-

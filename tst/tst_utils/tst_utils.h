@@ -25,7 +25,6 @@ This file is part of XXXXXXX
 #include <string.h>
 #include <stdio.h>
 #include "unity.h"
-//#include "ratatechSynth.h"
 #include "tst_settings.h"
 #include "arm_math.h"
 #include "stm32f10x.h"

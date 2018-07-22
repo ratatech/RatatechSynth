@@ -11,4 +11,7 @@ def test(tst,usartOutLines):
     tst.utils.rawUsart2wav('buff_squ_out',usartOutLines,FS,debug)
     tst.utils.rawUsart2wav('buff_saw_out',usartOutLines,FS,debug)
     tst.utils.rawUsart2wav('buff_tri_out',usartOutLines,FS,debug)
-      
+
+    if debug:
+        raw_input("Press the <ENTER> to close plots and stop debugging...")
+          

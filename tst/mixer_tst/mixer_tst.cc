@@ -20,10 +20,9 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-
 #include <stdio.h>
 #include "unity.h"
-#include "ratatechSynth.h"
+#include "oscillator.h"
 #include "tst_utils.h"
 
 /**

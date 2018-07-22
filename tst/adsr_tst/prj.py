@@ -6,4 +6,6 @@ def test(tst,usartOutLines):
     FS = 1
     debug = False
     tst.utils.rawUsart2wav('buff_adsr_out',usartOutLines,FS,debug)
-     
+    if debug:
+        raw_input("Press the <ENTER> to close plots and stop debugging...")
+         

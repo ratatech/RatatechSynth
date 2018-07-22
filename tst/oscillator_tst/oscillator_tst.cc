@@ -25,7 +25,6 @@ This file is part of XXXXXXX
 #include "oscillator.h"
 #include "tst_utils.h"
 
-
 /**
  * Size of reference and output buffers
  */

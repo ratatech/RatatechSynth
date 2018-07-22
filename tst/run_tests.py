@@ -7,7 +7,7 @@ results = []
 tests = 'oscillator_tst','lfo_tst','adsr_tst','mixer_tst','mov_avg_tst','sound_gen_tst'
 
 for test_name in tests:
-    return_value = os.system("python " + test_name + "/prj.py")
+    return_value = os.system('python '+ ' mainPrj.py -b pcb -p '+ test_name)
     results.append([test_name,return_value])
     
 print '\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n'

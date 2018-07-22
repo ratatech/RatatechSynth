@@ -22,7 +22,7 @@ This file is part of XXXXXXX
 
 #include <stdio.h>
 #include "unity.h"
-#include "ratatechSynth.h"
+#include "oscillator.h"
 #include "tst_utils.h"
 
 /**
@@ -271,12 +271,11 @@ void test_sound_gen_out(void){
 int main(void)
 {
 
-	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
-
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
 
+	/** Load initial default settings */
+	init_settings(&synth_params,object_pool);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
