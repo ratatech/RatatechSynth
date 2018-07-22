@@ -1,10 +1,10 @@
-import os,sys,time
-py_scripts_pth = os.path.join(os.path.dirname(__file__), '..','..','python')
-sys.path.append(py_scripts_pth)
-from RatatechSerial import RatatechSerial
+import os,sys,timefrom RatatechSerial import RatatechSerial
 from RatatechUtils import RatatechUtils
 from build import RatatechBuild
 import argparse
+
+py_scripts_pth = os.path.join(os.path.dirname(__file__), '..','..','python')
+sys.path.append(py_scripts_pth)
 
 parser = argparse.ArgumentParser(description='Build and flash the selected project')
 parser.add_argument('target_board',
