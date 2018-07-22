@@ -1,4 +1,5 @@
-import os,sys,timefrom RatatechSerial import RatatechSerial
+import os,sys,time
+from RatatechSerial import RatatechSerial
 from RatatechUtils import RatatechUtils
 from build import RatatechBuild
 import argparse
