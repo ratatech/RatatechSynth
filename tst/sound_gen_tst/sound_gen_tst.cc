@@ -167,7 +167,7 @@ object_pool_t object_pool;
 /**
  * Oscillator class instance
  */
-Oscillator osc1;
+Oscillator osc1,osc2,osc3,osc4;
 
 /**
  * Unit test output buffer
@@ -199,8 +199,14 @@ void test_sound_gen_out(void){
 
 	/** Put objects in the pool */
 	object_pool.osc1 = 			&osc1;
+	object_pool.osc2 = 			&osc2;
+	object_pool.osc3 = 			&osc3;
+	object_pool.osc4 = 			&osc4;
 	object_pool.lfo = 			&lfo;
 	object_pool.adsr = 			&adsr;
+
+	/** Load initial default settings */
+	init_settings(&synth_params,object_pool);
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
@@ -208,8 +214,12 @@ void test_sound_gen_out(void){
 
 	/** Init oscillator with default settings and few custom */
     synth_params.osc_params.mixAB = MAX_AMP>>1;
+
+	/** Init oscillator with default settings */
 	osc1.init(&synth_params.osc_params);
-	osc1.set_freq_frac(4000);
+	osc2.init(&synth_params.osc_params);
+	osc3.init(&synth_params.osc_params);
+	osc4.init(&synth_params.osc_params);
 
 	/** Configure lfo */
 	lfo.FM_synth = false;
@@ -283,7 +293,7 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
     /** Wait usart confirmation to start the test  */
-    wait_usart_ready();
+    //wait_usart_ready();
 
 	/** Ready to start test  */
     iprintf("\nTEST:  SOUND GEN\n-----------------------");

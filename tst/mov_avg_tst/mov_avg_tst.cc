@@ -119,7 +119,6 @@ void test_mov_avg_out(void){
 }
 
 
-
 int main(void)
 {
 
