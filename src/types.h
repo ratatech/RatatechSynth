@@ -141,7 +141,7 @@ struct synth_params_t{
 	mux_out_t mux_gpio_1_out;
 	mux_out_t mux_gpio_2_out;
 
-	uint32_t adc_read[ADC_ARRAY_SIZE];
+	uint16_t adc_read[ADC_ARRAY_SIZE];
 	bool DMA_ADC_transfer_complete;
 
 	/** DAC out sample*/

@@ -24,6 +24,7 @@ This file is part of XXXXXXX
 #include "unity.h"
 #include "drv/mux.h"
 #include "drv/macro_mux.h"
+#include "drv/adc_mux.h"
 #include "tst_utils.h"
 #include "system_init.h"
 #include "mux_tst.h"
@@ -44,6 +45,7 @@ object_pool_t object_pool;
 synth_params_t synth_params;
 
 MacroMux macro_mux;
+AdcMux adc_mux;
 
 
 //#define DEBUG_MUX_ADC_0
@@ -51,13 +53,25 @@ MacroMux macro_mux;
 
 static void print_mux_adc(void){
 
+//	iprintf("x0 =%.4i x1 =%.4i x2 =%.4i x3 =%.4i y0 =%.4i y1 =%.4i y2 =%.4i y3 =%.4i\r",
+//			adc_mux.pMux_x[0] ,
+//			adc_mux.pMux_x[1] ,
+//			adc_mux.pMux_x[2] ,
+//			adc_mux.pMux_x[3] ,
+//			adc_mux.pMux_y[0] ,
+//			adc_mux.pMux_y[1] ,
+//			adc_mux.pMux_y[2] ,
+//			adc_mux.pMux_y[3] );
 
-	iprintf("pot0 =%.4i pot2 =%.4i pot4 =%.4i pot6 =%.4i\r",
-			macro_mux.am_0->pMux_x[0] ,
-			macro_mux.am_0->pMux_x[1] ,
-			macro_mux.am_0->pMux_x[2] ,
-			macro_mux.am_0->pMux_x[3] );
-
+	iprintf("P4 =%.4i P0 =%.4i P10 =%.4i P11 =%.4i P12 =%.4i P13 =%.4i P14 =%.4i P15 =%.4i\r",
+			synth_params.mux_adc_1_out.mux_x[0] ,
+			adc_mux.pMux_x[1] ,
+			adc_mux.pMux_x[2] ,
+			adc_mux.pMux_x[3] ,
+			adc_mux.pMux_y[0] ,
+			adc_mux.pMux_y[1] ,
+			adc_mux.pMux_y[2] ,
+			adc_mux.pMux_y[3] );
 
 
 
@@ -84,8 +98,11 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		macro_mux.update(&synth_params);
+		static uint seq = 0;
+		adc_mux.update(&synth_params,seq);
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+		seq++;
+		seq %= MUX_INPUTS;
 	}
 
 }
@@ -93,8 +110,7 @@ void TIM2_IRQHandler(void)
 int main(void)
 {
 
-	macro_mux.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_ADC_0);
-
+	adc_mux.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -120,7 +136,7 @@ int main(void)
 
 	while(1){
 
-		DelayMs(10);
+		DelayMs(100);
 		print_mux_adc();
 	}
 

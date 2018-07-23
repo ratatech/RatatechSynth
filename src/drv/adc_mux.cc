@@ -23,53 +23,6 @@ This file is part of XXXXXXX
 #include "adc_mux.h"
 
 /**
- * Configure multiplexer input port and pins
- * @param synth_params	Synth global structure
- * @param GPIO_CTRL		GPIO port used for swtiching states of the MUX
- * @param GPIO_Pin_A	Specifies the port bit to be written. Control input A of the multiplexer
- * @param GPIO_Pin_B	Specifies the port bit to be written. Control input B of the multiplexer
- * @param GPIO_READ		GPIO port used for reading GPIO pins connected to the MUX output
- * @param GPIO_Pin_X	GPIO pin connected to MUX output X
- * @param GPIO_Pin_Y	GPIO pin connected to MUX output Y
- * @param _MUX_ID		Specifies the selected multiplexer ID
- */
-void AdcMux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, GPIO_TypeDef* GPIO_READ, uint16_t GPIO_Pin_X, uint16_t GPIO_Pin_Y,MUX_ID_e _MUX_ID){
-
-	/** Asign main config parameters */
-	MUX_PORT_CTRL	= GPIO_CTRL;
-	MUX_A 			= GPIO_Pin_A;
-	MUX_B 			= GPIO_Pin_B;
-	MUX_ID 			= _MUX_ID;
-	MUX_PORT_READ	= GPIO_READ;
-	MUX_X			= GPIO_Pin_X;
-	MUX_Y			= GPIO_Pin_Y;
-
-	switch(MUX_ID){
-		case MUX_ADC_0:
-			pMux_x = synth_params->mux_adc_0_out.mux_x;
-			pMux_y = synth_params->mux_adc_0_out.mux_y;
-		break;
-		case MUX_ADC_1:
-			pMux_x = synth_params->mux_adc_1_out.mux_x;
-			pMux_y = synth_params->mux_adc_1_out.mux_y;
-		break;
-		case MUX_GPIO_0:
-			pMux_x = synth_params->mux_gpio_0_out.mux_x;
-			pMux_y = synth_params->mux_gpio_0_out.mux_y;
-		break;
-		case MUX_GPIO_1:
-			pMux_x = synth_params->mux_gpio_1_out.mux_x;
-			pMux_y = synth_params->mux_gpio_1_out.mux_y;
-		break;
-		case MUX_GPIO_2:
-			pMux_x = synth_params->mux_gpio_2_out.mux_x;
-			pMux_y = synth_params->mux_gpio_2_out.mux_y;
-		break;
-	}
-
-}
-
-/**
  * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
  * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
@@ -77,11 +30,27 @@ void AdcMux::config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint1
 void AdcMux::update(synth_params_t* synth_params, uint16_t seq)
 {
 
+	BitAction sb;
+
+	/** BIT 0 (MSB) */
+	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	//sb = Bit_RESET;
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
+
+	/** BIT 1 (LSB) */
+	((seq & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	//sb = Bit_SET;
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
+
+
 	/** Read simultuaneously ADC1 and ADC2 and store the value corresponding to the selected bit.
 	 * ADC1 and ADC2 converted values are stored in a 32bit word and then splited in two 16bit samples.
 	 * */
-	pMux_x[seq] = (synth_params->adc_read[MUX_ID] >> 16) ;
-	pMux_y[seq] = (synth_params->adc_read[MUX_ID] & 0xFFFF);
+//	pMux_x[seq] = (synth_params->adc_read[0] >> 16) ;
+//	pMux_y[seq] = (synth_params->adc_read[1] & 0xFFFF);
+
+	pMux_x[seq] = (synth_params->adc_read[0]) ;
+	pMux_y[seq] = (synth_params->adc_read[1]);
 
 }
 
