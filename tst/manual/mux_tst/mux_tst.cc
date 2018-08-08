@@ -44,37 +44,50 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-MacroMux macro_mux;
-AdcMux adc_mux_0,adc_mux_1;
-
+AdcMux adcMux0,adcMux1;
+GpioMux gpioMux0,gpioMux1,gpioMux2;
 
 //#define DEBUG_MUX_ADC_0
-#define DEBUG_MUX_ADC_1
+//#define DEBUG_MUX_ADC_1
+#define DEBUG_MUX_GPIOS
 
-static void print_mux_adc(void){
+static void print_mux(void){
 
 #ifdef DEBUG_MUX_ADC_0
 	iprintf("P7 =%.4i P5 =%.4i P2 =%.4i P6 =%.4i P1 =%.4i P3 =%.4i P9 =%.4i P8 =%.4i\r",
-			adc_mux_0.pMux_x[0],
-			adc_mux_0.pMux_x[1] ,
-			adc_mux_0.pMux_x[2] ,
-			adc_mux_0.pMux_x[3] ,
-			adc_mux_0.pMux_y[0] ,
-			adc_mux_0.pMux_y[1] ,
-			adc_mux_0.pMux_y[2] ,
-			adc_mux_0.pMux_y[3] );
+			adcMux0.pMux_x[0],
+			adcMux0.pMux_x[1] ,
+			adcMux0.pMux_x[2] ,
+			adcMux0.pMux_x[3] ,
+			adcMux0.pMux_y[0] ,
+			adcMux0.pMux_y[1] ,
+			adcMux0.pMux_y[2] ,
+			adcMux0.pMux_y[3] );
 #endif
 
 #ifdef DEBUG_MUX_ADC_1
 	iprintf("P4 =%.4i P0 =%.4i P10 =%.4i P11 =%.4i P12 =%.4i P13 =%.4i P14 =%.4i P15 =%.4i\r",
-			adc_mux_1.pMux_x[0],
-			adc_mux_1.pMux_x[1] ,
-			adc_mux_1.pMux_x[2] ,
-			adc_mux_1.pMux_x[3] ,
-			adc_mux_1.pMux_y[0] ,
-			adc_mux_1.pMux_y[1] ,
-			adc_mux_1.pMux_y[2] ,
-			adc_mux_1.pMux_y[3] );
+			adcMux1.pMux_x[0],
+			adcMux1.pMux_x[1] ,
+			adcMux1.pMux_x[2] ,
+			adcMux1.pMux_x[3] ,
+			adcMux1.pMux_y[0] ,
+			adcMux1.pMux_y[1] ,
+			adcMux1.pMux_y[2] ,
+			adcMux1.pMux_y[3] );
+#endif
+
+
+#ifdef DEBUG_MUX_GPIOS
+		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
+		gpioMux0.pMux_x[0],
+		gpioMux0.pMux_x[1],
+		gpioMux0.pMux_x[2],
+		gpioMux0.pMux_x[3],
+		gpioMux0.pMux_y[0],
+		gpioMux0.pMux_y[1],
+		gpioMux0.pMux_y[2],
+		gpioMux0.pMux_y[3] );
 #endif
 
 
@@ -89,8 +102,9 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		adc_mux_0.update(&synth_params);
-		adc_mux_1.update(&synth_params);
+		adcMux0.update(&synth_params);
+		adcMux1.update(&synth_params);
+		gpioMux0.update(&synth_params);
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
@@ -99,8 +113,9 @@ void TIM2_IRQHandler(void)
 int main(void)
 {
 
-	adc_mux_0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
-	adc_mux_1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
+	adcMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
+	adcMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
+	gpioMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -124,16 +139,13 @@ int main(void)
 
 	DelayInit();
 
-
 	while(1){
-		print_mux_adc();
+		print_mux();
 		DelayMs(100);
 	}
 
 	/** Nothing to verify */
 	TEST_PASS();
-
-
 
     /** FInish unity */
     return UNITY_END();
