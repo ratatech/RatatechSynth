@@ -27,30 +27,29 @@ This file is part of XXXXXXX
  * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
  */
-void AdcMux::update(synth_params_t* synth_params, uint16_t seq)
+void AdcMux::update(synth_params_t* synth_params)
 {
-
 	BitAction sb;
+	volatile uint16_t adcRead;
+	volatile uint16_t seqCopy;
+
+	/** Read first then switch the state of the multiplxer. This way we can avoid
+	 * to introduce some delay between the storage of the values and the multiplexer
+	 * state switching.
+	 * */
+	pMux_x[seq] = (synth_params->adc_read[MUX_CHANNEL_X]) ;
+	pMux_y[seq] = (synth_params->adc_read[MUX_CHANNEL_Y]);
+
+	seq++;
+	seq %= MUX_INPUTS;
 
 	/** BIT 0 (MSB) */
 	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	//sb = Bit_RESET;
 	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
 
 	/** BIT 1 (LSB) */
-	((seq & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	//sb = Bit_SET;
+	((seq & 0x01) > 0) 		? sb = Bit_SET : sb = Bit_RESET;
 	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
-
-
-	/** Read simultuaneously ADC1 and ADC2 and store the value corresponding to the selected bit.
-	 * ADC1 and ADC2 converted values are stored in a 32bit word and then splited in two 16bit samples.
-	 * */
-//	pMux_x[seq] = (synth_params->adc_read[0] >> 16) ;
-//	pMux_y[seq] = (synth_params->adc_read[1] & 0xFFFF);
-
-	pMux_x[seq] = (synth_params->adc_read[0]) ;
-	pMux_y[seq] = (synth_params->adc_read[1]);
 
 }
 

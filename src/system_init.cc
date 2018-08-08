@@ -323,9 +323,11 @@ void ADC_Conf_Init(void){
 	ADC_InitStructure.ADC_NbrOfChannel = ADC_CHANNELS;
 	ADC_Init(ADC1, &ADC_InitStructure);
 
-	/* ADC1 regular channel0, channel1 configurations */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 1, ADC_SampleTime_7Cycles5);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 2, ADC_SampleTime_7Cycles5);
+	/* ADC1 channel configurations */
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 2, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 3, ADC_SampleTime_7Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 4, ADC_SampleTime_7Cycles5);
 
 	/* Enable ADC1 DMA */
 	ADC_DMACmd(ADC1, ENABLE);

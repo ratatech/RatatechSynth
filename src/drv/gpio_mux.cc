@@ -22,14 +22,13 @@ This file is part of XXXXXXX
 
 #include "gpio_mux.h"
 
-
 /**
  * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
  * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
  * @param pMux				Output buffer containing the mux read values
  */
-void GpioMux::update(synth_params_t* synth_params, uint16_t seq)
+void GpioMux::update(synth_params_t* synth_params)
 {
 
 	/** Read gpio pins and store the value corresponding to the selected bit */

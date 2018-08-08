@@ -37,24 +37,11 @@ class GpioMux: public Mux{
 		GpioMux(){}
 
 		/**
-		 * Configure multiplexer input port and pins
-		 * @param synth_params	Synth global structure
-		 * @param GPIO_CTRL		GPIO port used for swtiching states of the MUX
-		 * @param GPIO_Pin_A	Specifies the port bit to be written. Control input A of the multiplexer
-		 * @param GPIO_Pin_B	Specifies the port bit to be written. Control input B of the multiplexer
-		 * @param GPIO_READ		GPIO port used for reading GPIO pins connected to the MUX output
-		 * @param GPIO_Pin_X	GPIO pin connected to MUX output X
-		 * @param GPIO_Pin_Y	GPIO pin connected to MUX output Y
-		 * @param _MUX_ID		Specifies the selected multiplexer ID
-		 */
-		void config(synth_params_t* synth_params, GPIO_TypeDef* GPIO_CTRL, uint16_t GPIO_Pin_A, uint16_t GPIO_Pin_B, GPIO_TypeDef* GPIO_READ, uint16_t GPIO_Pin_X, uint16_t GPIO_Pin_Y,MUX_ID_e _MUX_ID);
-
-		/**
 		 * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
 		 * Each multiplexed input is read every call to the update function.
 		 * @param synth_params_t	Synth global structure
 		 */
-		void update(synth_params_t* synth_params_t, uint16_t seq);
+		void update(synth_params_t* synth_params_t);
 
 };
 

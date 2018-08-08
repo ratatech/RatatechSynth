@@ -29,6 +29,16 @@ This file is part of XXXXXXX
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * Multiplexer IDs
+ */
+typedef enum {
+	MUX_ADC_0_CH0, //!< MUX_ADC_0
+	MUX_ADC_0_CH1, //!< MUX_ADC_0
+	MUX_ADC_1_CH0, //!< MUX_ADC_0
+	MUX_ADC_1_CH1, //!< MUX_ADC_0
+}MUX_ID_CH_e;
+
 class AdcMux: public Mux{
 
 	public:
@@ -41,7 +51,7 @@ class AdcMux: public Mux{
 		 * Each multiplexed input is read every call to the update function.
 		 * @param synth_params_t	Synth global structure
 		 */
-		void update(synth_params_t* synth_params_t, uint16_t seq);
+		void update(synth_params_t* synth_params_t);
 
 };
 
