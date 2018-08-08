@@ -49,7 +49,9 @@ GpioMux gpioMux0,gpioMux1,gpioMux2;
 
 //#define DEBUG_MUX_ADC_0
 //#define DEBUG_MUX_ADC_1
-#define DEBUG_MUX_GPIOS
+//#define DEBUG_MUX_GPIO0
+//#define DEBUG_MUX_GPIO1
+#define DEBUG_MUX_GPIO2
 
 static void print_mux(void){
 
@@ -78,7 +80,7 @@ static void print_mux(void){
 #endif
 
 
-#ifdef DEBUG_MUX_GPIOS
+#ifdef DEBUG_MUX_GPIO0
 		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
 		gpioMux0.pMux_x[0],
 		gpioMux0.pMux_x[1],
@@ -90,6 +92,29 @@ static void print_mux(void){
 		gpioMux0.pMux_y[3] );
 #endif
 
+#ifdef DEBUG_MUX_GPIO1
+		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
+		gpioMux1.pMux_x[0],
+		gpioMux1.pMux_x[1],
+		gpioMux1.pMux_x[2],
+		gpioMux1.pMux_x[3],
+		gpioMux1.pMux_y[0],
+		gpioMux1.pMux_y[1],
+		gpioMux1.pMux_y[2],
+		gpioMux1.pMux_y[3] );
+#endif
+
+#ifdef DEBUG_MUX_GPIO2
+		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
+		gpioMux2.pMux_x[0],
+		gpioMux2.pMux_x[1],
+		gpioMux2.pMux_x[2],
+		gpioMux2.pMux_x[3],
+		gpioMux2.pMux_y[0],
+		gpioMux2.pMux_y[1],
+		gpioMux2.pMux_y[2],
+		gpioMux2.pMux_y[3] );
+#endif
 
 }
 
@@ -105,6 +130,8 @@ void TIM2_IRQHandler(void)
 		adcMux0.update(&synth_params);
 		adcMux1.update(&synth_params);
 		gpioMux0.update(&synth_params);
+		gpioMux1.update(&synth_params);
+		gpioMux2.update(&synth_params);
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
@@ -116,6 +143,9 @@ int main(void)
 	adcMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
 	adcMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
 	gpioMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
+	gpioMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8, 0, 0);
+	gpioMux2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14, 0, 0);
+
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -141,7 +171,7 @@ int main(void)
 
 	while(1){
 		print_mux();
-		DelayMs(100);
+		DelayMs(10);
 	}
 
 	/** Nothing to verify */

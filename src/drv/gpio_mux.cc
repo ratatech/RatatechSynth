@@ -30,6 +30,7 @@ This file is part of XXXXXXX
  */
 void GpioMux::update(synth_params_t* synth_params)
 {
+	BitAction sb;
 
 	/** Read gpio pins and store the value corresponding to the selected bit */
 	uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
@@ -37,6 +38,17 @@ void GpioMux::update(synth_params_t* synth_params)
 
 	pMux_x[seq] = pin_state_x;
 	pMux_y[seq] = pin_state_y;
+
+	seq++;
+	seq %= MUX_INPUTS;
+
+	/** BIT 0 (MSB) */
+	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
+
+	/** BIT 1 (LSB) */
+	((seq & 0x01) > 0) 		? sb = Bit_SET : sb = Bit_RESET;
+	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
 }
 

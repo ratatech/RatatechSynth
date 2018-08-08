@@ -30,8 +30,6 @@ This file is part of XXXXXXX
 void AdcMux::update(synth_params_t* synth_params)
 {
 	BitAction sb;
-	volatile uint16_t adcRead;
-	volatile uint16_t seqCopy;
 
 	/** Read first then switch the state of the multiplxer. This way we can avoid
 	 * to introduce some delay between the storage of the values and the multiplexer
