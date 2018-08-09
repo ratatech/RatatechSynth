@@ -39,7 +39,7 @@ ADSR			adsr;
 //Mux				mux_0,mux_1,mux_2,mux_3,mux_4;
 Svf 			svf;
 
-MacroMux macro_mux;
+MacroMux macroMux;
 
 /** Pointer to main output frame buffer  **/
 q15_t pOut[FRAME_SIZE];
@@ -99,7 +99,7 @@ int main(void)
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
 
-	macro_mux.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14,  MUX_GPIO_2);
+	macroMux.config(&synth_params);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -222,18 +222,11 @@ static void update_touch_keys(uint8_t exti_line){
  */
 void low_rate_tasks(void){
 
-	macro_mux.update(&synth_params);
+
 //	/** Read inputs */
 //	KIN1_ResetCycleCounter();
 //
-
-//
-//	mux_0.adc_update(&synth_params);
-//	mux_1.adc_update(&synth_params);
-//	mux_2.gpio_update(&synth_params);
-//	mux_3.gpio_update(&synth_params);
-//	mux_4.gpio_update(&synth_params);
-//
+	macroMux.read(&synth_params);
 //	cycles = KIN1_GetCycleCounter();
 //	update_touch_keys(0);
 
@@ -245,11 +238,12 @@ void low_rate_tasks(void){
 	print_mux_adc();
 #endif
 
-//	svf.set_fc(&synth_params);
-//	svf.set_q(&synth_params);
-//	adsr.set_params(&synth_params);
-//	lfo.set_freq_lut(synth_params.pMux[5]);
-//	lfo.lfo_amo = (uint32_t)(synth_params.pMux[4]*MAX_AMP)>>12;
+	svf.set_fc(&synth_params);
+	svf.set_q(&synth_params);
+	adsr.set_params(&synth_params);
+
+	lfo.set_freq_lut(macroMux.am0->pMux_x[2]);
+	lfo.lfo_amo = (uint32_t)(macroMux.am0->pMux_y[1]*MAX_AMP)>>12;
 
 	LCD_FLAG = true;
 

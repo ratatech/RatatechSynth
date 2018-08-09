@@ -22,7 +22,6 @@
 #include "types.h"
 #include "mov_avg.h"
 #include "sound_generator.h"
-#include "drv/mux.h"
 #include "drv/macro_mux.h"
 
 

@@ -4,7 +4,7 @@ print py_scripts_pth
 sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
 from RatatechUtils import RatatechUtils
-from build import RatatechBuild
+from RatatechBuild import RatatechBuild
 import argparse
 
 
