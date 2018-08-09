@@ -37,11 +37,10 @@ class GpioMux: public Mux{
 		GpioMux(){}
 
 		/**
-		 * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
-		 * Each multiplexed input is read every call to the update function.
+		 * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
 		 * @param synth_params_t	Synth global structure
 		 */
-		void update(synth_params_t* synth_params_t);
+		void read(synth_params_t* synth_params);
 
 };
 

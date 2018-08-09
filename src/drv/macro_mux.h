@@ -34,41 +34,48 @@ This file is part of XXXXXXX
 #define MUX_BITS 8
 #define MUX_CHANNELS 4
 
+/***
+ * MACROMUX
+ *
+ * This class creates instances of adc and gpio class objects and handles them together.
+ * It is really coupled with teh HW architecture, then, pins, channels and other configuration
+ * parameters are directly hardcoded in the config method.
+ */
 class MacroMux{
 
 	public:
-		GPIO_TypeDef* MUX_PORT_CTRL, *MUX_PORT_READ;
-		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y;
-		MUX_ID_e MUX_ID;
 
-		uint16_t seq;
-		mux_out_t pMux;
-		uint16_t *pMux_x,*pMux_y;
-
-		AdcMux 	*am_0;
-		AdcMux 	*am_1;
-		GpioMux *gm_0;
-		GpioMux *gm_1;
-		GpioMux *gm_2;
+		AdcMux 	*am0;
+		AdcMux 	*am1;
+		GpioMux *gm0;
+		GpioMux *gm1;
+		GpioMux *gm2;
 
 		/** Constructor
 		*/
 		MacroMux(){
 
 			/** Instantiate mux objects*/
-			am_0 = new AdcMux();
-			am_1 = new AdcMux();
-			gm_0 = new GpioMux();
-			gm_1 = new GpioMux();
-			gm_2 = new GpioMux();
+			am0 = new AdcMux();
+			am1 = new AdcMux();
+			gm0 = new GpioMux();
+			gm1 = new GpioMux();
+			gm2 = new GpioMux();
 
 		}
 
 		/**
-		 * Update the macro mutliplexer states
+		 * Configure multiplexers input port and pins
 		 * @param synth_params	Synth global structure
 		 */
-		void update(synth_params_t* synth_params);
+		void config(synth_params_t* synth_params);
+
+		/**
+		 * Iterate over the possible multiplexer inputs and store the values of each mux object
+		 * @param synth_params_t	Synth global structure
+		 */
+		void read(synth_params_t* synth_params);
+
 };
 
 

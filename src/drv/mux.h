@@ -93,8 +93,18 @@ class Mux{
 		 * Update multiplexer states
 		 * @param synth_params_t	Synth global structure
 		 */
-		virtual void update(synth_params_t* synth_params_t);
+		virtual void update(synth_params_t* synth_params_t){
 
+			BitAction sb;
+
+			/** BIT 0 (MSB) */
+			(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
+			GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
+
+			/** BIT 1 (LSB) */
+			((seq & 0x01) > 0) 		? sb = Bit_SET : sb = Bit_RESET;
+			GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
+		}
 
 };
 

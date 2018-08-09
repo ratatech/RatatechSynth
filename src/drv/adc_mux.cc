@@ -24,12 +24,10 @@ This file is part of XXXXXXX
 
 /**
  * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
- * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
  */
-void AdcMux::update(synth_params_t* synth_params)
+void AdcMux::read(synth_params_t* synth_params)
 {
-	BitAction sb;
 
 	/** Read first then switch the state of the multiplxer. This way we can avoid
 	 * to introduce some delay between the storage of the values and the multiplexer
@@ -40,14 +38,6 @@ void AdcMux::update(synth_params_t* synth_params)
 
 	seq++;
 	seq %= MUX_INPUTS;
-
-	/** BIT 0 (MSB) */
-	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
-
-	/** BIT 1 (LSB) */
-	((seq & 0x01) > 0) 		? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
 }
 

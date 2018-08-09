@@ -46,6 +46,7 @@ synth_params_t synth_params;
 
 AdcMux adcMux0,adcMux1;
 GpioMux gpioMux0,gpioMux1,gpioMux2;
+MacroMux macroMux;
 
 //#define DEBUG_MUX_ADC_0
 //#define DEBUG_MUX_ADC_1
@@ -57,63 +58,63 @@ static void print_mux(void){
 
 #ifdef DEBUG_MUX_ADC_0
 	iprintf("P7 =%.4i P5 =%.4i P2 =%.4i P6 =%.4i P1 =%.4i P3 =%.4i P9 =%.4i P8 =%.4i\r",
-			adcMux0.pMux_x[0],
-			adcMux0.pMux_x[1] ,
-			adcMux0.pMux_x[2] ,
-			adcMux0.pMux_x[3] ,
-			adcMux0.pMux_y[0] ,
-			adcMux0.pMux_y[1] ,
-			adcMux0.pMux_y[2] ,
-			adcMux0.pMux_y[3] );
+		macroMux.am0->pMux_x[0],
+		macroMux.am0->pMux_x[1] ,
+		macroMux.am0->pMux_x[2] ,
+		macroMux.am0->pMux_x[3] ,
+		macroMux.am0->pMux_y[0] ,
+		macroMux.am0->pMux_y[1] ,
+		macroMux.am0->pMux_y[2] ,
+		macroMux.am0->pMux_y[3] );
 #endif
 
 #ifdef DEBUG_MUX_ADC_1
 	iprintf("P4 =%.4i P0 =%.4i P10 =%.4i P11 =%.4i P12 =%.4i P13 =%.4i P14 =%.4i P15 =%.4i\r",
-			adcMux1.pMux_x[0],
-			adcMux1.pMux_x[1] ,
-			adcMux1.pMux_x[2] ,
-			adcMux1.pMux_x[3] ,
-			adcMux1.pMux_y[0] ,
-			adcMux1.pMux_y[1] ,
-			adcMux1.pMux_y[2] ,
-			adcMux1.pMux_y[3] );
+		macroMux.am1->pMux_x[0],
+		macroMux.am1->pMux_x[1] ,
+		macroMux.am1->pMux_x[2] ,
+		macroMux.am1->pMux_x[3] ,
+		macroMux.am1->pMux_y[0] ,
+		macroMux.am1->pMux_y[1] ,
+		macroMux.am1->pMux_y[2] ,
+		macroMux.am1->pMux_y[3] );
 #endif
 
 
 #ifdef DEBUG_MUX_GPIO0
-		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
-		gpioMux0.pMux_x[0],
-		gpioMux0.pMux_x[1],
-		gpioMux0.pMux_x[2],
-		gpioMux0.pMux_x[3],
-		gpioMux0.pMux_y[0],
-		gpioMux0.pMux_y[1],
-		gpioMux0.pMux_y[2],
-		gpioMux0.pMux_y[3] );
+	iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
+		macroMux.gm0->pMux_x[0],
+		macroMux.gm0->pMux_x[1],
+		macroMux.gm0->pMux_x[2],
+		macroMux.gm0->pMux_x[3],
+		macroMux.gm0->pMux_y[0],
+		macroMux.gm0->pMux_y[1],
+		macroMux.gm0->pMux_y[2],
+		macroMux.gm0->pMux_y[3] );
 #endif
 
 #ifdef DEBUG_MUX_GPIO1
-		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
-		gpioMux1.pMux_x[0],
-		gpioMux1.pMux_x[1],
-		gpioMux1.pMux_x[2],
-		gpioMux1.pMux_x[3],
-		gpioMux1.pMux_y[0],
-		gpioMux1.pMux_y[1],
-		gpioMux1.pMux_y[2],
-		gpioMux1.pMux_y[3] );
+	iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
+		macroMux.gm1->pMux_x[0],
+		macroMux.gm1->pMux_x[1],
+		macroMux.gm1->pMux_x[2],
+		macroMux.gm1->pMux_x[3],
+		macroMux.gm1->pMux_y[0],
+		macroMux.gm1->pMux_y[1],
+		macroMux.gm1->pMux_y[2],
+		macroMux.gm1->pMux_y[3] );
 #endif
 
 #ifdef DEBUG_MUX_GPIO2
-		iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
-		gpioMux2.pMux_x[0],
-		gpioMux2.pMux_x[1],
-		gpioMux2.pMux_x[2],
-		gpioMux2.pMux_x[3],
-		gpioMux2.pMux_y[0],
-		gpioMux2.pMux_y[1],
-		gpioMux2.pMux_y[2],
-		gpioMux2.pMux_y[3] );
+	iprintf("x0=%i x1=%i x2=%i x3=%i y0=%i y1=%i y2=%i y3=%i\r",
+		macroMux.gm2->pMux_x[0],
+		macroMux.gm2->pMux_x[1],
+		macroMux.gm2->pMux_x[2],
+		macroMux.gm2->pMux_x[3],
+		macroMux.gm2->pMux_y[0],
+		macroMux.gm2->pMux_y[1],
+		macroMux.gm2->pMux_y[2],
+		macroMux.gm2->pMux_y[3] );
 #endif
 
 }
@@ -127,11 +128,14 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		adcMux0.update(&synth_params);
-		adcMux1.update(&synth_params);
-		gpioMux0.update(&synth_params);
-		gpioMux1.update(&synth_params);
-		gpioMux2.update(&synth_params);
+		macroMux.read(&synth_params);
+
+//		adcMux0.read(&synth_params);
+//		adcMux1.read(&synth_params);
+//		gpioMux0.read(&synth_params);
+//		gpioMux1.read(&synth_params);
+//		gpioMux2.read(&synth_params);
+//		adcMux0.update(&synth_params);
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
@@ -140,12 +144,12 @@ void TIM2_IRQHandler(void)
 int main(void)
 {
 
-	adcMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
-	adcMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
-	gpioMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
-	gpioMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8, 0, 0);
-	gpioMux2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14, 0, 0);
-
+//	adcMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
+//	adcMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
+//	gpioMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
+//	gpioMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8, 0, 0);
+//	gpioMux2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14, 0, 0);
+	macroMux.config(&synth_params);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -171,7 +175,7 @@ int main(void)
 
 	while(1){
 		print_mux();
-		DelayMs(10);
+		DelayMs(100);
 	}
 
 	/** Nothing to verify */

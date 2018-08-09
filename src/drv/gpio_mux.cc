@@ -24,13 +24,11 @@ This file is part of XXXXXXX
 
 /**
  * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
- * Each multiplexed input is read every call to the update function.
  * @param synth_params_t	Synth global structure
- * @param pMux				Output buffer containing the mux read values
  */
-void GpioMux::update(synth_params_t* synth_params)
+void GpioMux::read(synth_params_t* synth_params)
 {
-	BitAction sb;
+
 
 	/** Read gpio pins and store the value corresponding to the selected bit */
 	uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
@@ -41,14 +39,6 @@ void GpioMux::update(synth_params_t* synth_params)
 
 	seq++;
 	seq %= MUX_INPUTS;
-
-	/** BIT 0 (MSB) */
-	(((seq>>1) & 0x01) > 0) ? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_B,sb);
-
-	/** BIT 1 (LSB) */
-	((seq & 0x01) > 0) 		? sb = Bit_SET : sb = Bit_RESET;
-	GPIO_WriteBit(MUX_PORT_CTRL,MUX_A,sb);
 
 }
 
