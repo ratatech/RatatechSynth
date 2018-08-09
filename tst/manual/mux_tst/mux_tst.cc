@@ -44,8 +44,9 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-AdcMux adcMux0,adcMux1;
-GpioMux gpioMux0,gpioMux1,gpioMux2;
+/*
+ * MacroMux object
+ */
 MacroMux macroMux;
 
 //#define DEBUG_MUX_ADC_0
@@ -130,12 +131,6 @@ void TIM2_IRQHandler(void)
 	{
 		macroMux.read(&synth_params);
 
-//		adcMux0.read(&synth_params);
-//		adcMux1.read(&synth_params);
-//		gpioMux0.read(&synth_params);
-//		gpioMux1.read(&synth_params);
-//		gpioMux2.read(&synth_params);
-//		adcMux0.update(&synth_params);
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
@@ -143,12 +138,7 @@ void TIM2_IRQHandler(void)
 
 int main(void)
 {
-
-//	adcMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
-//	adcMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
-//	gpioMux0.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
-//	gpioMux1.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8, 0, 0);
-//	gpioMux2.config(&synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14, 0, 0);
+	/** Configure macromux*/
 	macroMux.config(&synth_params);
 
 	/** Init system and peripherals */
@@ -161,9 +151,6 @@ int main(void)
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-
-    /** Wait usart confirmation to start the test  */
-    //wait_usart_ready();
 
 	/** Ready to start test  */
     iprintf("\nTEST: MUX\n-----------------------");
