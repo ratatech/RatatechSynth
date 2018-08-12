@@ -30,10 +30,9 @@ This file is part of XXXXXXX
 #include "lcd_tst.h"
 
 /**
- * Size of reference and output buffers
+ * Max shift size
  */
-#define BUFF_SIZE 256
-
+#define MAX_SHIFT 16
 /**
  * Dummy object pool
  */
@@ -49,21 +48,17 @@ synth_params_t synth_params;
  */
 MacroMux macroMux;
 
-//#define DEBUG_MUX_ADC_0
-#define DEBUG_MUX_ADC_1
-//#define DEBUG_MUX_GPIO0
-//#define DEBUG_MUX_GPIO1
-//#define DEBUG_MUX_GPIO2
-
 /** Define possible tests */
 enum lcd_test_e{
 	LCD_ENC,
 	LCD_STR,
 	LCD_POT,
+	LCD_CUR,
+	LCD_TMV,
 };
 
 /** Select test */
-lcd_test_e lcd_test = LCD_POT;
+lcd_test_e lcd_test = LCD_TMV;
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -144,7 +139,58 @@ void test_lcd_pots(void){
 		sprintf(enc_cnt_buf, "FC:%.2i Q:%.2i LF:%.2i\nVO:%.2i V:%.2i AC:%.2i", fc,q,lfo_amo,vcof,vcom,adsrt);
 		lcd16x2_clrscr();
 		lcd16x2_puts(enc_cnt_buf);
-		lcd16x2_display_shift_left();
+
+		DelayMs(100);
+
+	}
+}
+
+/**
+ * LCD cursor interaction
+ */
+void test_lcd_cursor(void){
+
+	char stringBuff[8];
+	lcd16x2_cursor_on();
+	lcd16x2_blink_on();
+
+	uint16_t shift_x = 0,shift_y = 0;
+
+	uint8_t speed = 4;
+	while(1){
+
+		/** Pot controls how fast the cursor is moved through the screen */
+		speed = ((uint32_t)macroMux.am1->pMux_y[3]*8)>>12;
+
+		// Print encoder value
+		sprintf(stringBuff, "%s", "RATATECH");
+		lcd16x2_clrscr();
+		lcd16x2_puts(stringBuff);
+		lcd16x2_cursor_shift_right();
+		lcd16x2_gotoxy(shift_x,shift_y>>4);
+		shift_x+=speed;
+		shift_x%=MAX_SHIFT;
+		shift_y+=speed;
+		shift_y%=(MAX_SHIFT*2);
+		DelayMs(100);
+	}
+}
+
+/**
+ * LCD text movement
+ */
+void test_lcd_text_mov(void){
+
+	char stringBuff[8];
+
+	while(1){
+
+		// Print encoder value
+		sprintf(stringBuff, "%s", "RATATECH");
+		lcd16x2_clrscr();
+		lcd16x2_puts(stringBuff);
+		lcd16x2_display_shift_right();
+		lcd16x2_display_shift_right();
 
 		DelayMs(100);
 
@@ -192,7 +238,17 @@ int main(void)
     	 	RUN_TEST(test_lcd_pots);
     	 	break;
 
+    	case LCD_CUR:
+    	 	RUN_TEST(test_lcd_cursor);
+    	 	break;
+
+    	case LCD_TMV:
+    	 	RUN_TEST(test_lcd_text_mov);
+    	 	break;
+
+
     }
+
 
 
 	/** Nothing to verify */
