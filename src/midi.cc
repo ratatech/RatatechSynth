@@ -41,31 +41,28 @@ void MIDI::parseMsg(uint16_t byte){
 				midi_msg_type = STATUS;
 				note_ON = true;
 
-
 			break;
-
 			case note_off:
-
 				midi_buffer[0] = note_off;
 				midi_msg_type = STATUS;
 				note_ON = false;
-
 			break;
 		}
-
 
 	}else{
 
 		/** If not Status, classify between note or velocity data */
 		switch(midi_msg_type){
-
+					/** If last message type was the status(MIDI first byte), now it
+					should be the note byte */
 					case STATUS:
 
 						midi_buffer[1] = byte;
 						midi_msg_type = DATA_NOTE;
 
 					break;
-
+					/** Expecting note byte to parse the last byte with velocity or
+					 * additional data */
 					case DATA_NOTE:
 
 						midi_buffer[2] = byte;
@@ -78,12 +75,13 @@ void MIDI::parseMsg(uint16_t byte){
 
 	/** Trigger a new event just after reading the three bytes */
 	if(midi_msg_type == DATA_VEL){
+
 		if(midi_buffer[2]>0){
 			new_event = true;
+			iprintf("MIDI:NOTE_ON\r");
 		}else{
-			new_event = false;
+			iprintf("MIDI:NOTE_OFF\r");
 		}
-
 	}
 
 

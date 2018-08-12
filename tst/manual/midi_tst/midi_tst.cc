@@ -78,30 +78,15 @@ void USART1_IRQHandler(void)
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {
     	uint16_t midi_in = USART_ReceiveData(USART1);
+
     	midi.parseMsg(midi_in);
 
-    	/** Update midi information */
-    	midi.update(&synth_params);
-
-    	if(midi.new_event){
-			/** If a new note is received reset ADSR */
-
-			midi.new_event = false;
-
-		}else{
-			iprintf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],midi.midi_buffer[2]);
-			synth_params.note_ON = false;
-		}
-
-    	if(midi.note_ON && (synth_params.vel == 0)){
-    		synth_params.note_ON = false;
+    	if(midi.midi_msg_type == DATA_VEL){
+    		iprintf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r\r",midi.midi_buffer[0],midi.midi_buffer[1],midi.midi_buffer[2]);
     	}
-
     }
 
 }
-
-
 
 /**
   * @brief  This function handles External lines 9 to 5 interrupt request.
@@ -146,7 +131,7 @@ void test_midi(void){
 		}
 
 		enc_cnt_mem = enc_cnt;
-		DelayUs(250);
+		DelayUs(100);
 
 	}
 }

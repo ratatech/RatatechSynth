@@ -43,7 +43,7 @@ class MIDI {
 
 	public:
 
-		uint16_t midi_buffer[3];
+		uint16_t midi_buffer[4];
 		midi_msg_type_e midi_msg_type;
 		bool attack_trigger,new_event;
 		bool note_ON;

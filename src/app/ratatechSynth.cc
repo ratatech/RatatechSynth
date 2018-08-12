@@ -155,8 +155,8 @@ int main(void)
 
         // Print encoder value
         sprintf(enc_cnt_buf, "%i", enc_cnt);
-        lcd16x2_clrscr();
-        lcd16x2_puts(enc_cnt_buf);
+//        lcd16x2_clrscr();
+//        lcd16x2_puts(enc_cnt_buf);
 
         // Get encoder value
         iprintf("ENCODER = %i\n",enc_cnt);
@@ -173,7 +173,7 @@ int main(void)
 		 * TO BE REMOVED
 		 * */
 
-		DelayMs(10);
+//		DelayMs(10);
 
 
 
@@ -230,7 +230,7 @@ void low_rate_tasks(void){
 //	/** Read inputs */
 //	KIN1_ResetCycleCounter();
 //
-	macroMux.read(&synth_params);
+//	macroMux.read(&synth_params);
 //	cycles = KIN1_GetCycleCounter();
 //	update_touch_keys(0);
 
@@ -248,8 +248,6 @@ void low_rate_tasks(void){
 
 	lfo.set_freq_lut(macroMux.am0->pMux_x[2]);
 	lfo.lfo_amo = (uint32_t)(macroMux.am0->pMux_y[1]*MAX_AMP)>>12;
-
-	LCD_FLAG = true;
 
 }
 

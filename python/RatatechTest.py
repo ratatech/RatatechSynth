@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, sys, serial, time
+import os, sys, serial, time, pyudev, pprint
 from termcolor import colored
 py_scripts_pth = os.path.join(os.path.dirname(__file__), '.')
 sys.path.append(py_scripts_pth)
@@ -33,12 +33,23 @@ class RatatechTest(object):
         self.utils = RatatechUtils()
         self.build = RatatechBuild(prjName)
         
-         # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, 
-         # ttyUSB0 used for synth pcb debugging and testing    
+        
+        # Create iterator with USB devices
+        context = pyudev.Context()      
+        
+        # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, 
+        # ttyUSB0 used for synth pcb debugging and testing    
         if 'nucleo' in board:
-            self.port="ttyACM0"
+            for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
+                if 'ttyACM' in device.sys_name:
+                    #self.port="ttyACM0"
+                    self.port=device.sys_name
         else:
-            self.port="ttyUSB1"
+            for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
+                if 'ttyUSB' in device.sys_name:
+                    #self.port="ttyUSB1"
+                    self.port=device.sys_name
+           
                         
     def parseUsart(self,usartOutLines):
         # Print the usart output    
