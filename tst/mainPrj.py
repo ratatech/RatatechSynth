@@ -48,8 +48,6 @@ if tst.utils.isStlinkConnected():
         
     test(tst,usartOutLines)
     
-    
-    
     # Throw error in case of fail
     if not test_result:
         raise ValueError('Test Failed!') 

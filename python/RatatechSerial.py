@@ -5,7 +5,7 @@ import serial, time
 
 class RatatechSerial(object):
 
-    def __init__(self,port="ttyUSB0"):
+    def __init__(self,port="ttyUSB0",waitForConfirmation=True):
         #initialization and open the port
 
         #possible timeout values:
@@ -14,18 +14,19 @@ class RatatechSerial(object):
         #    3. x, x is bigger than 0, float allowed, timeout block call
         
         self.ser = serial.Serial()
-        self.ser.port = "/dev/"+port
-        self.ser.baudrate = 115200
-        self.ser.bytesize = serial.EIGHTBITS #number of bits per bytes
-        self.ser.parity = serial.PARITY_NONE #set parity check: no parity
-        self.ser.stopbits = serial.STOPBITS_ONE #number of stop bits
-        self.ser.timeout = 1            #non-block read
-        self.ser.xonxoff = False        #disable software flow control
-        self.ser.rtscts = False         #disable hardware (RTS/CTS) flow control
-        self.ser.dsrdtr = False         #disable hardware (DSR/DTR) flow control
-        self.ser.writeTimeout = 2       #timeout for write
-        self.ser.printConsole = False
-        self.timeoutIter = 20
+        self.ser.port               = "/dev/"+port
+        self.ser.baudrate           = 115200
+        self.ser.bytesize           = serial.EIGHTBITS #number of bits per bytes
+        self.ser.parity             = serial.PARITY_NONE #set parity check: no parity
+        self.ser.stopbits           = serial.STOPBITS_ONE #number of stop bits
+        self.ser.timeout            = 1            #non-block read
+        self.ser.xonxoff            = False        #disable software flow control
+        self.ser.rtscts             = False         #disable hardware (RTS/CTS) flow control
+        self.ser.dsrdtr             = False         #disable hardware (DSR/DTR) flow control
+        self.ser.writeTimeout       = 2       #timeout for write
+        self.ser.printConsole       = False
+        self.timeoutIter            = 20
+        self.waitForConfirmation    = waitForConfirmation
 
     def open(self):
         waitTime = 0.5
@@ -99,7 +100,7 @@ class RatatechSerial(object):
             numOfLines = 0
             usartLines = []
             serialWait = 0
-            while True:  
+            while self.waitForConfirmation:  
                 
                 # Don't stay forever waiting...       
                 if (serialWait) >= self.timeoutIter:
@@ -124,6 +125,10 @@ class RatatechSerial(object):
                     self.status = "CLOSED"
                     self.ser.close()
                     return usartLines
+            
+            # If this point is reached, just return the empty buffer
+            usartLines = ['0']
+            return usartLines
         else:
             print "Serial port not open!"                    
     

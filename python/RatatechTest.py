@@ -13,6 +13,15 @@ from RatatechBuild  import RatatechBuild
 class RatatechTest(object):
     def __init__(self,prjName,board):
         
+        # Keep project name internally
+        self.prjName = prjName
+        
+        # Check if we are executing a manual test
+        if 'manual' in (self.prjName):
+            self.isManualTst = True
+        else:
+            self.isManualTst = False
+        
         # Throw error in case of fail
         if not prjName.endswith('/'):
             raise ValueError('Wrong project name. It should correspond to the directory containing the test ending with /')
@@ -29,7 +38,7 @@ class RatatechTest(object):
         if 'nucleo' in board:
             self.port="ttyACM0"
         else:
-            self.port="ttyUSB0"
+            self.port="ttyUSB1"
                         
     def parseUsart(self,usartOutLines):
         # Print the usart output    
@@ -57,8 +66,10 @@ class RatatechTest(object):
                
     def testUsart(self,printConsole=False):    
         
+#         import pdb
+#         pdb.set_trace()
         # Open serial port to read test output
-        ratatech_serial = RatatechSerial(self.port)       
+        ratatech_serial = RatatechSerial(self.port,not self.isManualTst)       
         ratatech_serial.ser.printConsole = printConsole
         ratatech_serial.open()       
         

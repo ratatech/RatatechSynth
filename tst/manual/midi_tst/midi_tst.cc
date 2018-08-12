@@ -1,5 +1,5 @@
 /*
-@file lcd_tst.cc
+@file midi_tst.cc
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
@@ -27,7 +27,7 @@ This file is part of XXXXXXX
 #include "drv/adc_mux.h"
 #include "tst_utils.h"
 #include "system_init.h"
-#include "lcd_tst.h"
+#include "midi_tst.h"
 
 /**
  * Max shift size
@@ -43,22 +43,15 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-/*
+/**
  * MacroMux object
  */
 MacroMux macroMux;
 
-/** Define possible tests */
-enum lcd_test_e{
-	LCD_ENC,
-	LCD_STR,
-	LCD_POT,
-	LCD_CUR,
-	LCD_TMV,
-};
-
-/** Select test */
-lcd_test_e lcd_test = LCD_TMV;
+/**
+ * MIDI object
+ */
+MIDI midi;
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -75,6 +68,40 @@ void TIM2_IRQHandler(void)
 	}
 
 }
+
+/**
+* USART1 interrupt handler
+*/
+void USART1_IRQHandler(void)
+{
+
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
+    	uint16_t midi_in = USART_ReceiveData(USART1);
+    	midi.parseMsg(midi_in);
+
+    	/** Update midi information */
+    	midi.update(&synth_params);
+
+    	if(midi.new_event){
+			/** If a new note is received reset ADSR */
+
+			midi.new_event = false;
+
+		}else{
+			iprintf("MIDI STATUS = %i MIDI NOTE = %i MIDI VEL = %i\r",midi.midi_buffer[0],midi.midi_buffer[1],midi.midi_buffer[2]);
+			synth_params.note_ON = false;
+		}
+
+    	if(midi.note_ON && (synth_params.vel == 0)){
+    		synth_params.note_ON = false;
+    	}
+
+    }
+
+}
+
+
 
 /**
   * @brief  This function handles External lines 9 to 5 interrupt request.
@@ -94,110 +121,9 @@ void EXTI9_5_IRQHandler(void)
 
 
 /**
- * LCD print string
- */
-void test_lcd_string(void){
-
-	char stringBuff[8];
-
-	while(1){
-
-		// Print encoder value
-		sprintf(stringBuff, "%s", "RATATECH");
-		lcd16x2_clrscr();
-		lcd16x2_puts(stringBuff);
-
-		DelayMs(100);
-
-	}
-}
-
-/**
- * LCD + Encoder
- */
-void test_lcd_enc(void){
-
-	int16_t enc_cnt;
-	char enc_cnt_buf[8];
-
-	while(1){
-
-		// Get encoder value
-		enc_cnt = (int16_t)(TIM_GetCounter(TIM4)>>2);
-
-
-		// Print encoder value
-		sprintf(enc_cnt_buf, "%i", enc_cnt);
-		lcd16x2_clrscr();
-		lcd16x2_puts(enc_cnt_buf);
-
-		DelayMs(100);
-
-	}
-}
-
-/**
- * LCD + POTS
- */
-void test_lcd_pots(void){
-
-	uint16_t fc,q,lfo_amo,vcof,vcom,adsrt;
-	char enc_cnt_buf[16];
-
-	while(1){
-
-		vcof	= ((uint32_t)macroMux.am1->pMux_x[2]*100)>>12;
-		vcom 	= ((uint32_t)macroMux.am1->pMux_x[3]*100)>>12;
-		adsrt 	= ((uint32_t)macroMux.am1->pMux_y[0]*100)>>12;
-		fc		= ((uint32_t)macroMux.am1->pMux_y[1]*100)>>12;
-		q 		= ((uint32_t)macroMux.am1->pMux_y[2]*100)>>12;
-		lfo_amo = ((uint32_t)macroMux.am1->pMux_y[3]*100)>>12;
-
-		// Print encoder value
-		sprintf(enc_cnt_buf, "FC:%.2i Q:%.2i LF:%.2i\nVO:%.2i V:%.2i AC:%.2i", fc,q,lfo_amo,vcof,vcom,adsrt);
-		lcd16x2_clrscr();
-		lcd16x2_puts(enc_cnt_buf);
-
-		DelayMs(100);
-
-	}
-}
-
-/**
- * LCD cursor interaction
- */
-void test_lcd_cursor(void){
-
-	char stringBuff[8];
-	lcd16x2_cursor_on();
-	lcd16x2_blink_on();
-
-	uint16_t shift_x = 0,shift_y = 0;
-
-	uint8_t speed = 4;
-	while(1){
-
-		/** Pot controls how fast the cursor is moved through the screen */
-		speed = ((uint32_t)macroMux.am1->pMux_y[3]*8)>>12;
-
-		// Print encoder value
-		sprintf(stringBuff, "%s", "RATATECH");
-		lcd16x2_clrscr();
-		lcd16x2_puts(stringBuff);
-		lcd16x2_cursor_shift_right();
-		lcd16x2_gotoxy(shift_x,shift_y>>4);
-		shift_x+=speed;
-		shift_x%=MAX_SHIFT;
-		shift_y+=speed;
-		shift_y%=(MAX_SHIFT*2);
-		DelayMs(100);
-	}
-}
-
-/**
  * LCD text movement
  */
-void test_lcd_text_mov(void){
+void test_midi(void){
 
 	char stringBuff[8];
 	// Print encoder value
@@ -243,7 +169,7 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
 	/** Ready to start test  */
-    iprintf("\nTEST: LCD\n-----------------------");
+    iprintf("\nTEST: MIDI\n-----------------------");
 
     /** Start unity and trigger tests */
     UNITY_BEGIN();
@@ -253,27 +179,7 @@ int main(void)
     /** Start unity and trigger tests */
     UNITY_BEGIN();
 
-    switch(lcd_test){
-    	case LCD_ENC:
-    		RUN_TEST(test_lcd_enc);
-    		break;
-
-    	case LCD_STR:
-    	 	RUN_TEST(test_lcd_string);
-    	 	break;
-
-    	case LCD_POT:
-    	 	RUN_TEST(test_lcd_pots);
-    	 	break;
-
-    	case LCD_CUR:
-    	 	RUN_TEST(test_lcd_cursor);
-    	 	break;
-
-    	case LCD_TMV:
-    	 	RUN_TEST(test_lcd_text_mov);
-    	 	break;
-    }
+    RUN_TEST(test_midi);
 
 	/** Nothing to verify */
 	TEST_PASS();
