@@ -22,8 +22,8 @@ This file is part of XXXXXXX
 
 #include <stdio.h>
 #include "unity.h"
-#include "adsr.h"
 #include "tst_utils.h"
+#include "system_init.h"
 
 /**
  * Structure holding the main synth parameters
@@ -47,21 +47,22 @@ char enc_cnt_buf[8];
 void rotary_encoder_tst(void){
 
     // Delayinitialization
-    DelayInit();
+    //DelayInit();
 
     // Create custom char
-    lcd16x2_create_custom_char(0, custom_char);
+    //lcd16x2_create_custom_char(0, custom_char);
 
     while (1)
     {
         // Get encoder value
         enc_cnt = TIM_GetCounter(TIM4)>>2;
+        iprintf("ENCODER = %i\n",enc_cnt);
 
-        // Print encoder value
-        sprintf(enc_cnt_buf, "%i", enc_cnt);
-        lcd16x2_clrscr();
-        lcd16x2_puts(enc_cnt_buf);
-        DelayMs(250);
+//        // Print encoder value
+//        sprintf(enc_cnt_buf, "%i", enc_cnt);
+//        lcd16x2_clrscr();
+//        lcd16x2_puts(enc_cnt_buf);
+//        DelayMs(250);
 
     }
 }
@@ -71,7 +72,7 @@ void rotary_encoder_tst(void){
   * @param  None
   * @retval None
   */
-void EXTI0_IRQHandler(void)
+void EXTI5_IRQHandler(void)
 {
 
     //Check if EXTI_Line0 is asserted
@@ -96,9 +97,6 @@ int main(void)
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-
-    /** Wait usart confirmation to start the test  */
-    wait_usart_ready();
 
 	/** Ready to start test  */
     iprintf("\nTEST:  ROTARY ENCODER\n-----------------------");

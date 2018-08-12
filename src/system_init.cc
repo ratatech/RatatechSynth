@@ -585,7 +585,7 @@ void ratatech_init(synth_params_t* synth_params){
 	/** Configure and init HW */
 	init_rotary_encoder();
     // LCD initialization
-    lcd16x2_init(LCD16X2_DISPLAY_ON_CURSOR_OFF_BLINK_OFF);
+    //lcd16x2_init(LCD16X2_DISPLAY_ON_CURSOR_OFF_BLINK_OFF);
 
 }
 

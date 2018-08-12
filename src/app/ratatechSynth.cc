@@ -158,6 +158,10 @@ int main(void)
         lcd16x2_clrscr();
         lcd16x2_puts(enc_cnt_buf);
 
+        // Get encoder value
+        iprintf("ENCODER = %i\n",enc_cnt);
+
+
 
 		// Print encoder value
 //		sprintf(enc_cnt_buf, "%i %i %i %i %i %i %i %i", synth_params.mux_adc_0_out.mux_x[0]>>3,synth_params.mux_adc_0_out.mux_x[1]>>3, synth_params.mux_adc_0_out.mux_x[2]>>3,synth_params.mux_adc_0_out.mux_x[3]>>3

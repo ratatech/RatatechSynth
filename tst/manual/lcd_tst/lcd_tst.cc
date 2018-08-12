@@ -58,7 +58,7 @@ enum lcd_test_e{
 };
 
 /** Select test */
-lcd_test_e lcd_test = LCD_TMV;
+lcd_test_e lcd_test = LCD_ENC;
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -106,7 +106,7 @@ void test_lcd_enc(void){
 	while(1){
 
 		// Get encoder value
-		enc_cnt = TIM_GetCounter(TIM4)>>2;
+		enc_cnt = (int16_t)(TIM_GetCounter(TIM4));
 
 		// Print encoder value
 		sprintf(enc_cnt_buf, "%i", enc_cnt);
@@ -182,17 +182,21 @@ void test_lcd_cursor(void){
 void test_lcd_text_mov(void){
 
 	char stringBuff[8];
+	// Print encoder value
+	sprintf(stringBuff, "%s", "RATATECH");
+	lcd16x2_clrscr();
+	lcd16x2_puts(stringBuff);
+
+	uint16_t enc_cnt;
 
 	while(1){
 
-		// Print encoder value
-		sprintf(stringBuff, "%s", "RATATECH");
-		lcd16x2_clrscr();
-		lcd16x2_puts(stringBuff);
-		lcd16x2_display_shift_right();
-		lcd16x2_display_shift_right();
+		// Get encoder value
+		enc_cnt = (int16_t)TIM_GetCounter(TIM4)>>2;
 
-		DelayMs(100);
+		lcd16x2_display_shift_right();
+		lcd16x2_display_shift_right();
+		DelayMs(1000);
 
 	}
 }
