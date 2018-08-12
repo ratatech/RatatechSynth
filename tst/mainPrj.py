@@ -3,10 +3,13 @@ import argparse
 import pdb
 
 # Parse input arguments
-parser = argparse.ArgumentParser(description='Build and flash the selected project',prefix_chars='-+')
-parser.add_argument('-board',help='Select target board to flash the program. Valid options: [nucleo,pcb]')
+parser = argparse.ArgumentParser(description='Build and flash the selected project')
+#parser.add_argument('-board',nargs=1,help='Select target board to flash the program. Valid options: [nucleo,pcb]')
+parser.add_argument('-board', nargs='+', default='pcb',help='Select target board to flash the program. Valid options: [nucleo,pcb]')
 parser.add_argument('-project',help='Select project with target test')
 args = parser.parse_args()
+
+
 
 # Get project name. Note that the test project directory name
 # should match with the build directory name. 
@@ -41,9 +44,11 @@ if tst.utils.isStlinkConnected():
     tst.build.flash()
  
     # Start usart communication and get test results
-    usartOutLines, test_result = tst.testUsart(printConsole=False) 
-    
+    usartOutLines, test_result = tst.testUsart(printConsole=False)
+        
     test(tst,usartOutLines)
+    
+    
     
     # Throw error in case of fail
     if not test_result:

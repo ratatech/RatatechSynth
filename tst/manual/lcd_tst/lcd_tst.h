@@ -1,5 +1,5 @@
 /*
-@file mux_tst.h
+@file LCD_tst.h
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
@@ -19,8 +19,8 @@ This file is part of XXXXXXX
     You should have received a copy of the GNU General Public License
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef TST_MANUAL_MUX_TST_MUX_TST_H_
-#define TST_MANUAL_MUX_TST_MUX_TST_H_
+#ifndef TST_MANUAL_LCD_TST_LCD_TST_H_
+#define TST_MANUAL_LCD_TST_LCD_TST_H_
 
 extern "C" {
 
@@ -32,4 +32,4 @@ void TIM2_IRQHandler(void);
 
 
 
-#endif /* TST_MANUAL_MUX_TST_H_ */
+#endif /* TST_MANUAL_LCD_TST_H_ */

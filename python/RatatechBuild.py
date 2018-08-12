@@ -31,6 +31,11 @@ class RatatechBuild(object):
 
     def buildPrj(self):
 
+        # Check that the project has been compiled at least once manually, otherwise throw error.
+        # TODO(JoH): Automatically generate Make files in order not to depend on manually generating them with eclipse
+        if not os.path.isdir(self.buildDir):
+            raise ValueError('Make file for project %s does not exist. You need to manually compile it first!'%self.buildDir)        
+        
         # Put together all command line arguements
         cmd = 'make all -C ' + self.buildDir
 
@@ -41,7 +46,7 @@ class RatatechBuild(object):
         if return_value:
             print colored(cmd,'red')
             
-            raise ValueError('Can not compile, Test Failed!')  
+            raise ValueError("Compilation error, Test Failed!")  
     
     def flash(self):
         

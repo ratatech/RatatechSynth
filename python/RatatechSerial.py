@@ -25,13 +25,13 @@ class RatatechSerial(object):
         self.ser.dsrdtr = False         #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout = 2       #timeout for write
         self.ser.printConsole = False
+        self.timeoutIter = 20
 
     def open(self):
-        TIMEOUT = 20
         waitTime = 0.5
         serialWait = 0
         while True:
-            if (serialWait/waitTime) >= TIMEOUT:
+            if (serialWait/waitTime) >= self.timeoutIter:
                 print "Timeout expired!"
                 print "error open serial port: " + str(e)
                 raise ValueError('Test Failed!')
@@ -98,7 +98,15 @@ class RatatechSerial(object):
             
             numOfLines = 0
             usartLines = []
-            while True:    
+            serialWait = 0
+            while True:  
+                
+                # Don't stay forever waiting...       
+                if (serialWait) >= self.timeoutIter:
+                    print "Timeout expired! Either test failed or just nothing to test .i.e manual tests"
+                    exit()
+                serialWait = serialWait + 1
+                          
                 # Read line
                 response = self.ser.readline()
                 
