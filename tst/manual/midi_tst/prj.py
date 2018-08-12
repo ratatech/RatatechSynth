@@ -11,6 +11,9 @@ def test(tst,usartOutLines):
     
     port.send(msg)
     port.send(msg)
+    port.send(msg)
+    port.send(msg)
+            
         
 #     while True:
 #         msg = mido.Message('note_on', note=_note)
