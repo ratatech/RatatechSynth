@@ -58,7 +58,7 @@ enum lcd_test_e{
 };
 
 /** Select test */
-lcd_test_e lcd_test = LCD_ENC;
+lcd_test_e lcd_test = LCD_TMV;
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -75,6 +75,23 @@ void TIM2_IRQHandler(void)
 	}
 
 }
+
+/**
+  * @brief  This function handles External lines 9 to 5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI9_5_IRQHandler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
+	{
+        iprintf("ENCODER SWITCH ON!!!\n");
+
+		/* Clear the  EXTI line 9 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line5);
+	}
+}
+
 
 /**
  * LCD print string
@@ -100,13 +117,14 @@ void test_lcd_string(void){
  */
 void test_lcd_enc(void){
 
-	uint16_t enc_cnt;
+	int16_t enc_cnt;
 	char enc_cnt_buf[8];
 
 	while(1){
 
 		// Get encoder value
-		enc_cnt = (int16_t)(TIM_GetCounter(TIM4));
+		enc_cnt = (int16_t)(TIM_GetCounter(TIM4)>>2);
+
 
 		// Print encoder value
 		sprintf(enc_cnt_buf, "%i", enc_cnt);
@@ -187,16 +205,22 @@ void test_lcd_text_mov(void){
 	lcd16x2_clrscr();
 	lcd16x2_puts(stringBuff);
 
-	uint16_t enc_cnt;
+	uint16_t enc_cnt,enc_cnt_mem = 0;
 
 	while(1){
 
 		// Get encoder value
 		enc_cnt = (int16_t)TIM_GetCounter(TIM4)>>2;
 
-		lcd16x2_display_shift_right();
-		lcd16x2_display_shift_right();
-		DelayMs(1000);
+		if((enc_cnt - enc_cnt_mem)<0 || (enc_cnt - enc_cnt_mem)>1000){
+			lcd16x2_display_shift_left();
+		}
+		if( (enc_cnt - enc_cnt_mem)==1){
+			lcd16x2_display_shift_right();
+		}
+
+		enc_cnt_mem = enc_cnt;
+		DelayUs(250);
 
 	}
 }
@@ -249,16 +273,12 @@ int main(void)
     	case LCD_TMV:
     	 	RUN_TEST(test_lcd_text_mov);
     	 	break;
-
-
     }
-
-
 
 	/** Nothing to verify */
 	TEST_PASS();
 
-    /** FInish unity */
+    /** Finish unity */
     return UNITY_END();
 }
 

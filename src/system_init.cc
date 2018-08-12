@@ -553,7 +553,7 @@ void init_rotary_encoder(void)
     // Step 2: Setup TIM4 for encoder input
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
     TIM_EncoderInterfaceConfig(TIM4, TIM_EncoderMode_TI12,
-        TIM_ICPolarity_Rising, TIM_ICPolarity_Falling);
+        TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
     TIM_Cmd(TIM4, ENABLE);
 }
 
@@ -585,7 +585,7 @@ void ratatech_init(synth_params_t* synth_params){
 	/** Configure and init HW */
 	init_rotary_encoder();
     // LCD initialization
-    //lcd16x2_init(LCD16X2_DISPLAY_ON_CURSOR_OFF_BLINK_OFF);
+    lcd16x2_init(LCD16X2_DISPLAY_ON_CURSOR_OFF_BLINK_OFF);
 
 }
 

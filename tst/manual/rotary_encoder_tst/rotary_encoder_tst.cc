@@ -50,7 +50,7 @@ void EXTI9_5_IRQHandler(void)
 {
 	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
 	{
-        iprintf("ISNOTAHARDWAREISSUE!!!\n");
+        iprintf("ENCODER SWITCH ON!!!\n");
 
 		/* Clear the  EXTI line 9 pending bit */
 		EXTI_ClearITPendingBit(EXTI_Line5);
@@ -64,10 +64,10 @@ void EXTI9_5_IRQHandler(void)
 void rotary_encoder_tst(void){
 
     // Delayinitialization
-    //DelayInit();
+    DelayInit();
 
     // Create custom char
-    //lcd16x2_create_custom_char(0, custom_char);
+    lcd16x2_create_custom_char(0, custom_char);
 
     while (1)
     {
@@ -75,11 +75,11 @@ void rotary_encoder_tst(void){
         enc_cnt = TIM_GetCounter(TIM4)>>2;
         iprintf("ENCODER = %i\n",enc_cnt);
 
-//        // Print encoder value
-//        sprintf(enc_cnt_buf, "%i", enc_cnt);
-//        lcd16x2_clrscr();
-//        lcd16x2_puts(enc_cnt_buf);
-//        DelayMs(250);
+        // Print encoder value
+        sprintf(enc_cnt_buf, "%i", enc_cnt);
+        lcd16x2_clrscr();
+        lcd16x2_puts(enc_cnt_buf);
+        DelayMs(250);
 
     }
 }
