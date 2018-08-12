@@ -55,6 +55,15 @@ MacroMux macroMux;
 //#define DEBUG_MUX_GPIO1
 //#define DEBUG_MUX_GPIO2
 
+/** Define possible tests */
+enum lcd_test_e{
+	LCD_ENC,
+	LCD_STR,
+	LCD_POT,
+};
+
+/** Select test */
+lcd_test_e lcd_test = LCD_POT;
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -71,6 +80,76 @@ void TIM2_IRQHandler(void)
 	}
 
 }
+
+/**
+ * LCD print string
+ */
+void test_lcd_string(void){
+
+	char stringBuff[8];
+
+	while(1){
+
+		// Print encoder value
+		sprintf(stringBuff, "%s", "RATATECH");
+		lcd16x2_clrscr();
+		lcd16x2_puts(stringBuff);
+
+		DelayMs(100);
+
+	}
+}
+
+/**
+ * LCD + Encoder
+ */
+void test_lcd_enc(void){
+
+	uint16_t enc_cnt;
+	char enc_cnt_buf[8];
+
+	while(1){
+
+		// Get encoder value
+		enc_cnt = TIM_GetCounter(TIM4)>>2;
+
+		// Print encoder value
+		sprintf(enc_cnt_buf, "%i", enc_cnt);
+		lcd16x2_clrscr();
+		lcd16x2_puts(enc_cnt_buf);
+
+		DelayMs(100);
+
+	}
+}
+
+/**
+ * LCD + POTS
+ */
+void test_lcd_pots(void){
+
+	uint16_t fc,q,lfo_amo,vcof,vcom,adsrt;
+	char enc_cnt_buf[16];
+
+	while(1){
+
+		vcof	= ((uint32_t)macroMux.am1->pMux_x[2]*100)>>12;
+		vcom 	= ((uint32_t)macroMux.am1->pMux_x[3]*100)>>12;
+		adsrt 	= ((uint32_t)macroMux.am1->pMux_y[0]*100)>>12;
+		fc		= ((uint32_t)macroMux.am1->pMux_y[1]*100)>>12;
+		q 		= ((uint32_t)macroMux.am1->pMux_y[2]*100)>>12;
+		lfo_amo = ((uint32_t)macroMux.am1->pMux_y[3]*100)>>12;
+
+		// Print encoder value
+		sprintf(enc_cnt_buf, "FC:%.2i Q:%.2i LF:%.2i\nVO:%.2i V:%.2i AC:%.2i", fc,q,lfo_amo,vcof,vcom,adsrt);
+		lcd16x2_clrscr();
+		lcd16x2_puts(enc_cnt_buf);
+
+		DelayMs(100);
+
+	}
+}
+
 
 int main(void)
 {
@@ -96,10 +175,24 @@ int main(void)
 
 	DelayInit();
 
-//	while(1){
-//		print_mux();
-//		DelayMs(100);
-//	}
+    /** Start unity and trigger tests */
+    UNITY_BEGIN();
+
+    switch(lcd_test){
+    	case LCD_ENC:
+    		RUN_TEST(test_lcd_enc);
+    		break;
+
+    	case LCD_STR:
+    	 	RUN_TEST(test_lcd_string);
+    	 	break;
+
+    	case LCD_POT:
+    	 	RUN_TEST(test_lcd_pots);
+    	 	break;
+
+    }
+
 
 	/** Nothing to verify */
 	TEST_PASS();
