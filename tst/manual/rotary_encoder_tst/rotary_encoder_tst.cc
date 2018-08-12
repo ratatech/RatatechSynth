@@ -42,6 +42,23 @@ uint16_t enc_cnt;
 char enc_cnt_buf[8];
 
 /**
+  * @brief  This function handles External lines 9 to 5 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI9_5_IRQHandler(void)
+{
+	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
+	{
+        iprintf("ISNOTAHARDWAREISSUE!!!\n");
+
+		/* Clear the  EXTI line 9 pending bit */
+		EXTI_ClearITPendingBit(EXTI_Line5);
+	}
+}
+
+
+/**
  * Rotary encoder test
  */
 void rotary_encoder_tst(void){
@@ -67,22 +84,7 @@ void rotary_encoder_tst(void){
     }
 }
 
-/**
-  * @brief  This function handles External Interrupt 0 Handler.
-  * @param  None
-  * @retval None
-  */
-void EXTI5_IRQHandler(void)
-{
 
-    //Check if EXTI_Line0 is asserted
-    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
-    {
-    	printf("PANIC, PANIC!!!!!\r");
-    }
-    //we need to clear line pending bit manually
-    EXTI_ClearITPendingBit(EXTI_Line0);
-}
 
 int main(void)
 {
