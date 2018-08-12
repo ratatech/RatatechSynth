@@ -144,6 +144,7 @@ void test_lcd_pots(void){
 		sprintf(enc_cnt_buf, "FC:%.2i Q:%.2i LF:%.2i\nVO:%.2i V:%.2i AC:%.2i", fc,q,lfo_amo,vcof,vcom,adsrt);
 		lcd16x2_clrscr();
 		lcd16x2_puts(enc_cnt_buf);
+		lcd16x2_display_shift_left();
 
 		DelayMs(100);
 
