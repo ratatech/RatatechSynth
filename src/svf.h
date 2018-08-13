@@ -92,8 +92,7 @@ class Svf {
 		}
 
 		if(SVF_order_msk == 0x08){
-			PWM_SVF = PWM_PERIOD - (PWM_PERIOD>>2);
-			PWM_SVF = PWM_PERIOD;
+			PWM_SVF = (PWM_PERIOD>>1);
 
 		}else{
 			PWM_SVF = PWM_PERIOD;
