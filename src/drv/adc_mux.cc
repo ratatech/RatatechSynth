@@ -33,8 +33,31 @@ void AdcMux::read(synth_params_t* synth_params)
 	 * to introduce some delay between the storage of the values and the multiplexer
 	 * state switching.
 	 * */
-	pMux_x[seq] = (synth_params->adc_read[MUX_CHANNEL_X]) ;
-	pMux_y[seq] = (synth_params->adc_read[MUX_CHANNEL_Y]);
+	switch(seq){
+		case 0:
+			pMux_x[0] = movAvg_x0->update(synth_params->adc_read[MUX_CHANNEL_X]);
+			pMux_y[0] = movAvg_y0->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+		break;
+
+		case 1:
+			pMux_x[1] = movAvg_x1->update(synth_params->adc_read[MUX_CHANNEL_X]);
+			pMux_y[1] = movAvg_y1->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+		break;
+
+		case 2:
+			pMux_x[2] = movAvg_x2->update(synth_params->adc_read[MUX_CHANNEL_X]);
+			pMux_y[2] = movAvg_y2->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+		break;
+
+		case 3:
+			pMux_x[3] = movAvg_x3->update(synth_params->adc_read[MUX_CHANNEL_X]);
+			pMux_y[3] = movAvg_y3->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+		break;
+	}
+
+
+
+
 
 	seq++;
 	seq %= MUX_INPUTS;

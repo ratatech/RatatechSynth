@@ -22,11 +22,12 @@ This file is part of XXXXXXX
 #ifndef INCLUDE_MUX_H_
 #define INCLUDE_MUX_H_
 
-#include "types.h"
-#include "stm32f10x_gpio.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "types.h"
+#include "stm32f10x_gpio.h"
+#include "mov_avg.h"
 
 /**
  * Multiplexer IDs
@@ -49,11 +50,30 @@ class Mux{
 		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y,MUX_CHANNEL_X,MUX_CHANNEL_Y;
 		MUX_ID_e MUX_ID;
 		uint16_t pMux_x[4]={0,0,0,0},pMux_y[4]={0,0,0,0};
+		MovAvg 	*movAvg_x0;
+		MovAvg 	*movAvg_x1;
+		MovAvg 	*movAvg_x2;
+		MovAvg 	*movAvg_x3;
+		MovAvg 	*movAvg_y0;
+		MovAvg 	*movAvg_y1;
+		MovAvg 	*movAvg_y2;
+		MovAvg 	*movAvg_y3;
 
 		/** Constructor
 		*/
 		Mux(){
 			seq = 0;
+
+			/** Instantiate moving average objects*/
+			movAvg_x0 = new MovAvg();
+			movAvg_x1 = new MovAvg();
+			movAvg_x2 = new MovAvg();
+			movAvg_x3 = new MovAvg();
+			movAvg_y0 = new MovAvg();
+			movAvg_y1 = new MovAvg();
+			movAvg_y2 = new MovAvg();
+			movAvg_y3 = new MovAvg();
+
 		}
 
 		/**
@@ -87,6 +107,23 @@ class Mux{
 			MUX_Y				= GPIO_Pin_Y;
 			this->MUX_CHANNEL_X = MUX_CHANNEL_X;
 			this->MUX_CHANNEL_Y = MUX_CHANNEL_Y;
+
+			/** Init moving averagers */
+			/** Moving average filter settings */
+			mov_avg_params_t mov_avg_params;
+			mov_avg_params.beta = 2094462088;
+			mov_avg_params.state = 0 ;
+			mov_avg_params.init_state = 0;
+
+			movAvg_x0->init(&mov_avg_params);
+			movAvg_x1->init(&mov_avg_params);
+			movAvg_x2->init(&mov_avg_params);
+			movAvg_x3->init(&mov_avg_params);
+			movAvg_y0->init(&mov_avg_params);
+			movAvg_y1->init(&mov_avg_params);
+			movAvg_y2->init(&mov_avg_params);
+			movAvg_y3->init(&mov_avg_params);
+
 		};
 
 		/**

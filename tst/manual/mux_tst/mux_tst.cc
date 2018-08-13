@@ -49,11 +49,11 @@ synth_params_t synth_params;
  */
 MacroMux macroMux;
 
-//#define DEBUG_MUX_ADC_0
+#define DEBUG_MUX_ADC_0
 //#define DEBUG_MUX_ADC_1
 //#define DEBUG_MUX_GPIO0
 //#define DEBUG_MUX_GPIO1
-#define DEBUG_MUX_GPIO2
+//#define DEBUG_MUX_GPIO2
 
 static void print_mux(void){
 
