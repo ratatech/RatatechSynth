@@ -401,10 +401,10 @@ LUT_LENGHT = (2**bits_lut)
 SHIFT_PHASE = (2**23)
 FS = AUDIO_FS
 FRAME_SIZE = 32
-min_time_exp = 0.001
-max_time_exp = 0.01
-min_time_lin = 0.01
-max_time_lin = 3
+min_time_exp = 0.01
+max_time_exp = 1
+min_time_lin = 1
+max_time_lin = 5
 adsr_ph_table = []
  
 times_exp = np.linspace(min_time_exp,max_time_exp,N/2)

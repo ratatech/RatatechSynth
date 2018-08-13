@@ -48,7 +48,7 @@ class Mux{
 		GPIO_TypeDef* MUX_PORT_CTRL, *MUX_PORT_READ;
 		uint16_t MUX_A,MUX_B,MUX_X,MUX_Y,MUX_CHANNEL_X,MUX_CHANNEL_Y;
 		MUX_ID_e MUX_ID;
-		uint16_t pMux_x[4],pMux_y[4];
+		uint16_t pMux_x[4]={0,0,0,0},pMux_y[4]={0,0,0,0};
 
 		/** Constructor
 		*/

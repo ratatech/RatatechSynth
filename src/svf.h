@@ -63,7 +63,7 @@ class Svf {
 		 * 12 = 0x10
 		 * 24 = 0x08
 		 */
-		SVF_order_msk = 0x10;
+		SVF_order_msk = 0x08;
 
 		// Add order to select filter order
 		sreg_byte += SVF_order_msk;
@@ -93,7 +93,7 @@ class Svf {
 
 		if(SVF_order_msk == 0x08){
 			PWM_SVF = PWM_PERIOD - (PWM_PERIOD>>2);
-			//PWM_SVF = PWM_PERIOD;
+			PWM_SVF = PWM_PERIOD;
 
 		}else{
 			PWM_SVF = PWM_PERIOD;
@@ -107,7 +107,7 @@ class Svf {
 	 */
 	void set_q(synth_params_t* synth_params){
 		uint32_t q = (uint32_t)(synth_params->mux_adc_0_out.mux_y[0]*PWM_SVF)>>12;
-		TIM3->CCR2 = q;
+		TIM3->CCR2 =q;
 	}
 
 	/**
@@ -124,11 +124,11 @@ class Svf {
 		// Scale ADSR envelope with the adc knob fc selection.
 		//fc_adc = ((uint32_t)fc_adc * fc_env)>>15;
 		//fc_adc = (fc_adc * ((uint32_t)(synth_params->lfo_amp*PWM_PERIOD)>>15) )>>15;
-		//TIM3->CCR4 = PWM_PERIOD - (fc_adc-fc_env);
+		TIM3->CCR4 = PWM_PERIOD - (fc_adc-fc_env);
 		//TIM3->CCR4 = PWM_PERIOD-fc_env;
 //		TIM3->CCR4 = PWM_PERIOD - fc_adc;
-		TIM3->CCR4 = fc_env;
-		//TIM3->CCR4 = fc_adc;
+//		TIM3->CCR4 = PWM_PERIOD;
+//		TIM3->CCR4 = PWM_PERIOD-fc_env;
 //		TIM3->CCR4 = PWM_PERIOD - ((fc_adc * fc_lfo)>>15);
 		//TIM3->CCR4 = PWM_PERIOD - (fc_lfo);
 
