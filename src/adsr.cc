@@ -99,12 +99,18 @@ void ADSR::reset(void)
  */
 void ADSR::set_params(synth_params_t *synth_params) {
 
-	ph_inc_att = adsr_time_phinc_lut[synth_params->mux_adc_0_out.mux_x[0]];
-	ph_inc_dec = adsr_time_phinc_lut[synth_params->mux_adc_0_out.mux_x[0]];
-	ph_inc_rel = adsr_time_phinc_lut[synth_params->mux_adc_0_out.mux_x[0]];
+	ph_inc_att = adsr_time_phinc_lut[4095 - synth_params->mux_adc_1_out.mux_y[0]];
+	ph_inc_dec = adsr_time_phinc_lut[4095 - synth_params->mux_adc_1_out.mux_y[1]];
+	ph_inc_rel = adsr_time_phinc_lut[4095 - synth_params->mux_adc_1_out.mux_y[3]];
 
-	sustain_level = (q15_t) (synth_params->mux_adc_0_out.mux_x[0] * MAX_AMP) >> 12;
-	sustain_level = (q15_t) ((int32_t) (synth_params->mux_adc_0_out.mux_x[0] * MAX_AMP) >> 12);
+//	sustain_level = (q15_t) (4095 - synth_params->mux_adc_1_out.mux_y[2] * MAX_AMP) >> 12;
+	sustain_level = (q15_t) ((int32_t) ((4095 - synth_params->mux_adc_1_out.mux_y[2]) * MAX_AMP) >> 12);
+
+//	printf("ADSR ATT = %i ADSR DEC = %i ADSR SUS = %i ADSR REL = %i\r",
+//			4095 - synth_params->mux_adc_1_out.mux_y[0],
+//			4095 - synth_params->mux_adc_1_out.mux_y[1],
+//			sustain_level,
+//			4095 - synth_params->mux_adc_1_out.mux_y[3]);
 
 }
 

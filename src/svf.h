@@ -63,7 +63,7 @@ class Svf {
 		 * 12 = 0x10
 		 * 24 = 0x08
 		 */
-		SVF_order_msk = 0x08;
+		SVF_order_msk = 0x10;
 
 		// Add order to select filter order
 		sreg_byte += SVF_order_msk;
@@ -92,8 +92,8 @@ class Svf {
 		}
 
 		if(SVF_order_msk == 0x08){
-			//PWM_SVF = PWM_PERIOD - (PWM_PERIOD>>2);
-			PWM_SVF = PWM_PERIOD;
+			PWM_SVF = PWM_PERIOD - (PWM_PERIOD>>2);
+			//PWM_SVF = PWM_PERIOD;
 
 		}else{
 			PWM_SVF = PWM_PERIOD;
@@ -106,8 +106,8 @@ class Svf {
 	 * @param q Filter resonance [0..PWM_PERIOD]
 	 */
 	void set_q(synth_params_t* synth_params){
-		uint32_t q = (uint32_t)(synth_params->mux_adc_0_out.mux_x[0]*PWM_SVF)>>12;
-		//TIM3->CCR2 = q;
+		uint32_t q = (uint32_t)(synth_params->mux_adc_0_out.mux_y[0]*PWM_SVF)>>12;
+		TIM3->CCR2 = q;
 	}
 
 	/**
@@ -115,20 +115,21 @@ class Svf {
 	 * @param fc Cutoff frequency  [0..PWM_PERIOD]
 	 */
 	void set_fc(synth_params_t* synth_params){
-		uint32_t fc_adc = (uint32_t)(synth_params->mux_adc_0_out.mux_x[0]*PWM_PERIOD)>>12;
+		uint32_t fc_adc = (uint32_t)(synth_params->mux_adc_1_out.mux_x[1]*PWM_PERIOD)>>12;
+
 		uint32_t fc_env = (uint32_t)(synth_params->adsr_vol_amp*PWM_PERIOD)>>15;
 
 		uint32_t fc_lfo = (uint32_t)((*(synth_params->lfo_amp))*(PWM_PERIOD))>>15;
 
 		// Scale ADSR envelope with the adc knob fc selection.
-		fc_adc = (fc_adc * fc_env)>>15;
+		//fc_adc = ((uint32_t)fc_adc * fc_env)>>15;
 		//fc_adc = (fc_adc * ((uint32_t)(synth_params->lfo_amp*PWM_PERIOD)>>15) )>>15;
-		//TIM3->CCR4 = PWM_PERIOD - (fc_env-fc_adc);
+		//TIM3->CCR4 = PWM_PERIOD - (fc_adc-fc_env);
 		//TIM3->CCR4 = PWM_PERIOD-fc_env;
-		TIM3->CCR2 = PWM_PERIOD - fc_adc;
-		//TIM3->CCR2 = PWM_PERIOD-fc_env;
+//		TIM3->CCR4 = PWM_PERIOD - fc_adc;
+		TIM3->CCR4 = fc_env;
 		//TIM3->CCR4 = fc_adc;
-		//TIM3->CCR4 = PWM_PERIOD - ((fc_adc * fc_lfo)>>15);
+//		TIM3->CCR4 = PWM_PERIOD - ((fc_adc * fc_lfo)>>15);
 		//TIM3->CCR4 = PWM_PERIOD - (fc_lfo);
 
 	}

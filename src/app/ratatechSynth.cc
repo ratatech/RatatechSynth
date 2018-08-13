@@ -111,7 +111,7 @@ int main(void)
 	osc4.init(&synth_params.osc_params);
 
 	/** Configure oscillator*/
-	osc1.set_shape(SAW);
+	osc1.set_shape(SQU);
 	osc2.set_shape(SAW);
 	osc3.set_shape(SAW);
 	osc4.set_shape(TRI);
@@ -126,12 +126,16 @@ int main(void)
 
 	/** Init SVF filter params*/
 	svf.init(&synth_params);
+	svf.configure(&synth_params);
+	svf.configure(&synth_params);
+	svf.configure(&synth_params);
+
 
 
 	/** Pre-fill the output buffer */
 	fill_buffer();
 
-    DelayInit();
+    //DelayInit();
 
 	/*******************************************************************************************
 	 * Main Loop
@@ -159,7 +163,7 @@ int main(void)
 //        lcd16x2_puts(enc_cnt_buf);
 
         // Get encoder value
-        iprintf("ENCODER = %i\n",enc_cnt);
+        //iprintf("ENCODER = %i\n",enc_cnt);
 
 
 
@@ -201,26 +205,6 @@ static void print_mux_adc(void){
 
 }
 
-static void update_touch_keys(uint8_t exti_line){
-
-#ifdef DEBUG_MUX_GPIOS
-		iprintf("x0=%i x1=%i x2=%i x3=%i	y0=%i y1=%i y2=%i y3=%i	y0=%i y1=%i y2=%i y3=%i	x0=%i x1=%i x2=%i x3=%i	x0=%i x1=%i x2=%i x3=%i	y0=%i y1=%i y2=%i y3=%i\r",
-		synth_params.mux_gpio_0_out.mux_x[0],synth_params.mux_gpio_0_out.mux_x[1],
-		synth_params.mux_gpio_0_out.mux_x[2],synth_params.mux_gpio_0_out.mux_x[3],
-		synth_params.mux_gpio_0_out.mux_y[0],synth_params.mux_gpio_0_out.mux_y[1],
-		synth_params.mux_gpio_0_out.mux_y[2],synth_params.mux_gpio_0_out.mux_y[3],
-		synth_params.mux_gpio_1_out.mux_y[0],synth_params.mux_gpio_1_out.mux_y[1],
-		synth_params.mux_gpio_1_out.mux_y[2],synth_params.mux_gpio_1_out.mux_y[3],
-		synth_params.mux_gpio_1_out.mux_x[0],synth_params.mux_gpio_1_out.mux_x[1],
-		synth_params.mux_gpio_1_out.mux_x[2],synth_params.mux_gpio_1_out.mux_x[3],
-		synth_params.mux_gpio_2_out.mux_x[0],synth_params.mux_gpio_2_out.mux_x[1],
-		synth_params.mux_gpio_2_out.mux_x[2],synth_params.mux_gpio_2_out.mux_x[3],
-		synth_params.mux_gpio_2_out.mux_y[0],synth_params.mux_gpio_2_out.mux_y[1],
-		synth_params.mux_gpio_2_out.mux_y[2],synth_params.mux_gpio_2_out.mux_y[3]);
-#endif
-
-}
-
 /**
  * Execute all tasks running at CONTROL_RATE
  */
@@ -230,7 +214,7 @@ void low_rate_tasks(void){
 //	/** Read inputs */
 //	KIN1_ResetCycleCounter();
 //
-//	macroMux.read(&synth_params);
+	macroMux.read(&synth_params);
 //	cycles = KIN1_GetCycleCounter();
 //	update_touch_keys(0);
 
@@ -242,16 +226,30 @@ void low_rate_tasks(void){
 	print_mux_adc();
 #endif
 
+	synth_params.mux_adc_1_out.mux_x[1] = macroMux.am1->pMux_x[1];
+	synth_params.mux_adc_0_out.mux_y[0] = macroMux.am0->pMux_y[0];
+
+
+//	iprintf("SVF FC = %i SVF Q = %i\r",
+//			synth_params.mux_adc_1_out.mux_x[1],
+//			synth_params.mux_adc_0_out.mux_y[0]);
+
 	svf.set_fc(&synth_params);
 	svf.set_q(&synth_params);
+
+
+	synth_params.mux_adc_1_out.mux_y[0] = macroMux.am1->pMux_y[0];
+	synth_params.mux_adc_1_out.mux_y[1] = macroMux.am1->pMux_y[1];
+	synth_params.mux_adc_1_out.mux_y[2] = macroMux.am1->pMux_y[2];
+	synth_params.mux_adc_1_out.mux_y[3] = macroMux.am1->pMux_y[3];
 	adsr.set_params(&synth_params);
 
-	lfo.set_freq_lut(macroMux.am0->pMux_x[2]);
-	lfo.lfo_amo = (uint32_t)(macroMux.am0->pMux_y[1]*MAX_AMP)>>12;
+//	lfo.set_freq_lut(macroMux.am0->pMux_x[2]);
+//	lfo.lfo_amo = (uint32_t)(macroMux.am0->pMux_y[1]*MAX_AMP)>>12;
 
 }
 
-#define DEBUG_ADSR
+//#define DEBUG_ADSR
 
 /**
  * Fill the main buffer containing the output audio samples

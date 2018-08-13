@@ -78,9 +78,9 @@ void MIDI::parseMsg(uint16_t byte){
 
 		if(midi_buffer[2]>0){
 			new_event = true;
-			iprintf("MIDI:NOTE_ON\r");
+			//iprintf("MIDI:NOTE_ON\r");
 		}else{
-			iprintf("MIDI:NOTE_OFF\r");
+			//iprintf("MIDI:NOTE_OFF\r");
 		}
 	}
 
