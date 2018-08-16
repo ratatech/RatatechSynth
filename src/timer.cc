@@ -27,6 +27,8 @@ This file is part of XXXXXXX
 void TIM_Config(void)
 {
 
+#ifndef LOCAL_TIMER_CFG
+
 	TIM_TimeBaseInitTypeDef timerInitStructure;
 	TIM_OCInitTypeDef timeOCInitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -109,8 +111,6 @@ void TIM_Config(void)
 	TIM_TimeBaseInit(TIM3, &timerInitStructure);
 	/* TIM3 Main Output Enable */
 
-	TIM_ARRPreloadConfig(TIM3, ENABLE);
-	TIM_Cmd( TIM3, ENABLE );
 
 	TIM_OCStructInit( &timeOCInitStructure );
 	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -131,7 +131,11 @@ void TIM_Config(void)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
+	TIM_ARRPreloadConfig(TIM3, ENABLE);
+	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+	TIM_Cmd( TIM3, ENABLE );
 
+#endif
 
 
 }
