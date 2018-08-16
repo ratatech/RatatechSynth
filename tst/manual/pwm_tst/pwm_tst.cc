@@ -28,6 +28,7 @@ This file is part of XXXXXXX
 #include "tst_utils.h"
 #include "system_init.h"
 #include "pwm_tst.h"
+#include "tables.h"
 
 /**
  * Max shift size
@@ -48,23 +49,54 @@ synth_params_t synth_params;
  */
 MacroMux macroMux;
 
+/** Dithering resolution, 2^N bits of enhancement */
+#define DITHER_RES 16
+
+/** Dithering LSB mask used to determine the pattern */
+#define DITHER_LSB_MASK 0xF
+
 /** Diethering table */
-uint16_t ditherTable[4] = {100,200,300,400};
+uint8_t ditheringLut[DITHER_RES][DITHER_RES] = {
+				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+				{0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1},
+				{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+				{0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1},
+				{0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
+				{0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1},
+				{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
+				{0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1},
+				{0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1},
+				{0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1},
+				{0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1},
+				{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1},
+				{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+				{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+};
+
+uint8_t ditheringPattern[DITHER_RES] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 /** Diether value */
 uint16_t ditherVal = 0;
 uint8_t ditherIdx = 0;
+uint8_t lutInd = 0;
+volatile uint8_t selectedPattern = 0;
 
 /* Private variables ---------------------------------------------------------*/
-#define DITHER_TABLE_FIRST_PART         ((uint16_t*) aDitherTable)
-#define DITHER_TABLE_SECOND_PART        ((uint16_t*)(aDitherTable + 8))
-/* 3-bit dithering resolution implies 2x8 values table */
-uint32_t aDitherTable[16];
-uint32_t DitherIndex = 0;
-uint32_t DCycleIndex = 0;
-uint32_t UpCounting = 1;
-void UpdateDitherTable(uint16_t *pDitherTable, uint16_t dutyCycle, uint32_t ditherV);
-void UpdateIndex(void);
+#define PWM_TEST_PERIOD 1024
+
+uint32_t duCyValHigRes 	= 0;
+uint32_t duCyValLowRes 	= 0;
+uint8_t ditherIndex	= 0;
+
+volatile void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
+	selectedPattern = duCyValHigRes & DITHER_LSB_MASK;
+	for(int i=0;i<DITHER_RES-1;i++){
+		ditheringPattern[i] = ditheringLut[selectedPattern][i];
+	}
+
+}
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -75,7 +107,13 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		macroMux.read(&synth_params);
+		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd]);
+		updateDitherPattern(duCyValHigRes,ditheringPattern);
+//		selectedPattern = duCyValHigRes & DITHER_LSB_MASK;
+//		ditheringPattern = ditheringLut[14];
+		duCyValLowRes = duCyValHigRes>>6;
+		lutInd++;
+		lutInd%=LUT_8_BIT;
 
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
@@ -91,17 +129,10 @@ void TIM3_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
-		 /* Update the Dither generation table */
-		    if(UpCounting == 1)
-		    {
-		      UpdateDitherTable(DITHER_TABLE_FIRST_PART, DCycleIndex, DitherIndex);
-		    }
-		    else
-		    {
-		      UpdateDitherTable(DITHER_TABLE_FIRST_PART, DCycleIndex, 0);
-		    }
-		    UpdateIndex();
-		TIM3->CCR4 = ditherVal;
+		volatile uint8_t ditheringVal = ditheringPattern[ditherIndex];
+		TIM3->CCR4 = duCyValLowRes ;//+ ditheringVal;
+		ditherIndex++;
+		ditherIndex%=DITHER_RES;
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 
@@ -123,59 +154,131 @@ void EXTI9_5_IRQHandler(void)
 	}
 }
 
-/**
-  * @brief  Update Dither Table
-  * @param  None
-  * @retval None
-  */
-void UpdateDitherTable(uint16_t *pDitherTable, uint16_t DutyCycle, uint32_t DitherV)
-{
-	uint32_t table_index;
+///**
+//  * @brief  Update Dither Table
+//  * @param  None
+//  * @retval None
+//  */
+//void UpdateDitherTable(uint16_t *pDitherTable, uint16_t DutyCycle, uint32_t DitherV)
+//{
+//	uint32_t table_index;
+//
+//	if (DitherV > 7){
+//		DitherV = 7;
+//	}
+//
+//	for (table_index = 0; table_index <= 7; table_index++)
+//	{
+//		if(table_index < DitherV){
+//			pDitherTable[table_index] = DutyCycle + 1;
+//		}
+//		else{
+//			pDitherTable[table_index] = DutyCycle;
+//		}
+//	}
+//}
+//ditheringPatternDbg
+//
+///**
+//  * @brief  Update Indexes
+//  * @param  None
+//  * @retval None
+//  */
+//void UpdateIndex(void){
+//
+//	if(DitherIndex < 7){
+//		DitherIndex++;
+//	}else{
+//		DitherIndex = 0;
+//
+//		if(UpCounting == 1){
+//			if(DCycleIndex < PWM_PERIOD){
+//				DCycleIndex++;
+//			}else{
+//				UpCounting = 0;
+//			}
+//		}else{
+//			if(DCycleIndex > 0){
+//				DCycleIndex--;
+//			}else{
+//				UpCounting = 1;
+//			}
+//		}
+//	}
+//}
 
-	if (DitherV > 7){
-		DitherV = 7;
-	}
 
-	for (table_index = 0; table_index <= 7; table_index++)
-	{
-		if(table_index < DitherV){
-			pDitherTable[table_index] = DutyCycle + 1;
-		}
-		else{
-			pDitherTable[table_index] = DutyCycle;
-		}
-	}
+
+void timer_cfg(void){
+
+	TIM_TimeBaseInitTypeDef timerInitStructure;
+	TIM_OCInitTypeDef timeOCInitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	//*************************************************************************************
+	/* PWM Timer2 configuration*/
+	//*************************************************************************************
+
+
+	/* TIM2 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	/* TIM2 configuration
+	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = PWM_TEST_PERIOD<<4;
+	timerInitStructure.TIM_Prescaler = 0;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM2, &timerInitStructure);
+
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM2, ENABLE);
+
+
+
+	//*************************************************************************************
+	/* PWM Timer3 configuration*/
+	//*************************************************************************************
+	/*
+	 * PWM_frequency = timer_tick_frequency / (TIM_Period + 1)
+	*/
+	TIM_TimeBaseStructInit( &timerInitStructure );
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = PWM_TEST_PERIOD;   // 0..999
+	timerInitStructure.TIM_Prescaler = 0; // Div 240
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM3, &timerInitStructure);
+	/* TIM3 Main Output Enable */
+
+
+	TIM_OCStructInit( &timeOCInitStructure );
+	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	timeOCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+	timeOCInitStructure.TIM_Pulse = 0;
+	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+    TIM_OC1Init( TIM3, &timeOCInitStructure );
+    TIM_OC2Init( TIM3, &timeOCInitStructure );
+    TIM_OC3Init( TIM3, &timeOCInitStructure );
+    TIM_OC4Init( TIM3, &timeOCInitStructure );
+
+	/* TIM3 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	TIM_ARRPreloadConfig(TIM3, ENABLE);
+	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+	TIM_Cmd( TIM3, ENABLE );
+
 }
-
-
-/**
-  * @brief  Update Indexes
-  * @param  None
-  * @retval None
-  */
-void UpdateIndex(void){
-
-	if(DitherIndex < 7){
-		DitherIndex++;
-	}else{
-		DitherIndex = 0;
-
-		if(UpCounting == 1){
-			if(DCycleIndex < PWM_PERIOD){
-				DCycleIndex++;
-			}else{
-				UpCounting = 0;
-			}
-		}else{
-			if(DCycleIndex > 0){
-				DCycleIndex--;
-			}else{
-				UpCounting = 1;
-			}
-		}
-	}
-}
-
 
 /**
  * PWM test
@@ -193,14 +296,6 @@ void test_pwm(void){
 	while(1){
 
 
-		//pwmDuCy = (uint16_t)((uint32_t)macroMux.am1->pMux_x[1]*PWM_PERIOD)>>12;
-
-//		pwmDuCy =
-		ditherIdx++;
-		ditherIdx%=4;
-		ditherVal = ditherTable[ditherIdx];
-		DelayMs(100);
-
 	}
 }
 
@@ -210,12 +305,11 @@ int main(void)
 	/** Configure macromux*/
 	macroMux.config(&synth_params);
 
-	/** Initialize the first part of the DitherTable with the needed duty cycle and
-	dithering value */
-	UpdateDitherTable(DITHER_TABLE_FIRST_PART, 0, 0);
-
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
+
+	/** Init timers locally */
+	timer_cfg();
 
 	/** Load initial default settings */
 	init_settings(&synth_params,object_pool);
