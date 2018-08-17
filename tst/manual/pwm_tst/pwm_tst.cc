@@ -50,7 +50,8 @@ synth_params_t synth_params;
 MacroMux macroMux;
 
 /** Dithering resolution, 2^N bits of enhancement */
-#define DITHER_RES 16
+#define DITHER_BITS 4
+#define DITHER_RES 1 << DITHER_BITS
 
 /** Dithering LSB mask used to determine the pattern */
 #define DITHER_LSB_MASK 0xF
@@ -84,7 +85,10 @@ uint8_t lutInd = 0;
 volatile uint8_t selectedPattern = 0;
 
 /* Private variables ---------------------------------------------------------*/
-#define PWM_TEST_PERIOD 1024
+#define PWM_BITS 4
+#define PWM_TEST_PERIOD 1 << PWM_BITS
+#define HI_RES_BITS 16
+#define RES_DIFF HI_RES_BITS - PWM_BITS
 
 uint32_t duCyValHigRes 	= 0;
 uint32_t duCyValLowRes 	= 0;
@@ -92,7 +96,7 @@ uint8_t ditherIndex	= 0;
 
 volatile void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
 	selectedPattern = duCyValHigRes & DITHER_LSB_MASK;
-	for(int i=0;i<DITHER_RES-1;i++){
+	for(int i=0;i<DITHER_RES;i++){
 		ditheringPattern[i] = ditheringLut[selectedPattern][i];
 	}
 
@@ -109,9 +113,7 @@ void TIM2_IRQHandler(void)
 	{
 		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd]);
 		updateDitherPattern(duCyValHigRes,ditheringPattern);
-//		selectedPattern = duCyValHigRes & DITHER_LSB_MASK;
-//		ditheringPattern = ditheringLut[14];
-		duCyValLowRes = duCyValHigRes>>6;
+		duCyValLowRes = duCyValHigRes>>RES_DIFF;
 		lutInd++;
 		lutInd%=LUT_8_BIT;
 
@@ -130,84 +132,13 @@ void TIM3_IRQHandler(void)
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
 		volatile uint8_t ditheringVal = ditheringPattern[ditherIndex];
-		TIM3->CCR4 = duCyValLowRes ;//+ ditheringVal;
+		TIM3->CCR4 = duCyValLowRes;// + ditheringVal;
 		ditherIndex++;
 		ditherIndex%=DITHER_RES;
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 
 }
-
-/**
-  * @brief  This function handles External lines 9 to 5 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void EXTI9_5_IRQHandler(void)
-{
-	if(EXTI_GetITStatus(EXTI_Line5) != RESET)
-	{
-        iprintf("ENCODER SWITCH ON!!!\n");
-
-		/* Clear the  EXTI line 9 pending bit */
-		EXTI_ClearITPendingBit(EXTI_Line5);
-	}
-}
-
-///**
-//  * @brief  Update Dither Table
-//  * @param  None
-//  * @retval None
-//  */
-//void UpdateDitherTable(uint16_t *pDitherTable, uint16_t DutyCycle, uint32_t DitherV)
-//{
-//	uint32_t table_index;
-//
-//	if (DitherV > 7){
-//		DitherV = 7;
-//	}
-//
-//	for (table_index = 0; table_index <= 7; table_index++)
-//	{
-//		if(table_index < DitherV){
-//			pDitherTable[table_index] = DutyCycle + 1;
-//		}
-//		else{
-//			pDitherTable[table_index] = DutyCycle;
-//		}
-//	}
-//}
-//ditheringPatternDbg
-//
-///**
-//  * @brief  Update Indexes
-//  * @param  None
-//  * @retval None
-//  */
-//void UpdateIndex(void){
-//
-//	if(DitherIndex < 7){
-//		DitherIndex++;
-//	}else{
-//		DitherIndex = 0;
-//
-//		if(UpCounting == 1){
-//			if(DCycleIndex < PWM_PERIOD){
-//				DCycleIndex++;
-//			}else{
-//				UpCounting = 0;
-//			}
-//		}else{
-//			if(DCycleIndex > 0){
-//				DCycleIndex--;
-//			}else{
-//				UpCounting = 1;
-//			}
-//		}
-//	}
-//}
-
-
 
 void timer_cfg(void){
 
@@ -231,7 +162,7 @@ void timer_cfg(void){
 	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = PWM_TEST_PERIOD<<4;
+	timerInitStructure.TIM_Period = PWM_TEST_PERIOD<<DITHER_BITS;
 	timerInitStructure.TIM_Prescaler = 0;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
@@ -293,9 +224,8 @@ void test_pwm(void){
 	lcd16x2_clrscr();
 	lcd16x2_puts(stringBuff);
 
+	TIM3->CCR4 = 32768;
 	while(1){
-
-
 	}
 }
 
