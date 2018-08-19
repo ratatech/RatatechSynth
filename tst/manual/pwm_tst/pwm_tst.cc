@@ -132,7 +132,7 @@ void TIM3_IRQHandler(void)
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
 		volatile uint8_t ditheringVal = ditheringPattern[ditherIndex];
-		TIM3->CCR4 = duCyValLowRes + ditheringVal;
+		TIM3->CCR4 = duCyValLowRes;// + ditheringVal;
 		ditherIndex++;
 		ditherIndex%=DITHER_RES;
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
@@ -163,7 +163,7 @@ void timer_cfg(void){
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	timerInitStructure.TIM_Period = 32768>>10;
-	timerInitStructure.TIM_Prescaler = 2197>>1;
+	timerInitStructure.TIM_Prescaler = 2197>>2;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
