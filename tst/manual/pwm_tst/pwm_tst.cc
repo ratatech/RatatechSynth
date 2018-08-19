@@ -49,6 +49,12 @@ synth_params_t synth_params;
  */
 MacroMux macroMux;
 
+#define PWM_BITS 4
+#define PWM_TEST_PERIOD 1 << PWM_BITS
+#define HI_RES_BITS 8
+#define RES_DIFF (HI_RES_BITS - PWM_BITS)
+#define WAVETABLE_SCL (16 - HI_RES_BITS)
+
 /** Dithering resolution, 2^N bits of enhancement */
 #define DITHER_BITS 4
 #define DITHER_RES 1 << DITHER_BITS
@@ -76,30 +82,24 @@ uint8_t ditheringLut[DITHER_RES][DITHER_RES] = {
 				{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
+/** Diethering pattern */
 uint8_t ditheringPattern[DITHER_RES] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-/** Diether value */
-uint16_t ditherVal = 0;
-uint8_t ditherIdx = 0;
-uint8_t lutInd = 0;
-volatile uint8_t selectedPattern = 0;
-
-/* Private variables ---------------------------------------------------------*/
-#define PWM_BITS 4
-#define PWM_TEST_PERIOD 1 << PWM_BITS
-#define HI_RES_BITS 8
-#define RES_DIFF HI_RES_BITS - PWM_BITS
-
-uint32_t duCyValHigRes 	= 0;
-uint32_t duCyValLowRes 	= 0;
-uint8_t ditherIndex	= 0;
+/** Diether variables */
+uint16_t ditherVal 					= 0;
+uint8_t ditherIdx	 				= 0;
+uint8_t lutInd 						= 0;
+volatile uint8_t selectedPattern 	= 0;
+bool ditheringEnable 				= false;
+uint32_t duCyValHigRes 				= 0;
+uint32_t duCyValLowRes 				= 0;
+uint8_t ditherIndex					= 0;
 
 volatile void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
 	selectedPattern = duCyValHigRes & DITHER_LSB_MASK;
 	for(int i=0;i<DITHER_RES;i++){
 		ditheringPattern[i] = ditheringLut[selectedPattern][i];
 	}
-
 }
 
 /**
@@ -111,12 +111,11 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd])>>8;
+		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd])>>WAVETABLE_SCL;
 		updateDitherPattern(duCyValHigRes,ditheringPattern);
 		duCyValLowRes = duCyValHigRes>>RES_DIFF;
 		lutInd++;
 		lutInd%=LUT_8_BIT;
-
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 
@@ -132,7 +131,7 @@ void TIM3_IRQHandler(void)
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
 		volatile uint8_t ditheringVal = ditheringPattern[ditherIndex];
-		TIM3->CCR4 = duCyValLowRes;// + ditheringVal;
+		TIM3->CCR4 = duCyValLowRes + ditheringEnable*ditheringVal;
 		ditherIndex++;
 		ditherIndex%=DITHER_RES;
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
@@ -150,7 +149,6 @@ void timer_cfg(void){
 	/* PWM Timer2 configuration*/
 	//*************************************************************************************
 
-
 	/* TIM2 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
@@ -163,7 +161,7 @@ void timer_cfg(void){
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	timerInitStructure.TIM_Period = 32768>>10;
-	timerInitStructure.TIM_Prescaler = 2197>>2;
+	timerInitStructure.TIM_Prescaler = 2197>>1;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
@@ -213,6 +211,28 @@ void timer_cfg(void){
 
 /**
  * PWM test
+ *
+ * The idea of this test is to verify how the resolution of the PWM generated signal is improved
+ * by using dithering. As example, we start by using a PWM generated sine wave by means of a wavetable.
+ * The PWM frequency is set to 4 bits only intentionally to better observe later the low resolution
+ * stair like signal when dithering is not enabled. By enabling the dithering, 4 additional bits are
+ * added to the output signal, generating a much more smooth response. This thest requires additional
+ * HW setup in order to LPF the output PWM signal. A single pole RC filter is used with values C=1uF,
+ * R=560 providing a rough fc of 284Hz.
+ *
+ *   _____________________________
+ * |                            |
+ * |                            |
+ * |                            |
+ * |                            |     __R___
+ * |     STM32F302   PWM output |-----|_____|---|---> low-pass filter's output
+ * |                            |               |
+ * |                            |              _|_
+ * |                            |              ___ C
+ * |______________________GND___|               |
+ *                         |                    |
+ *                         |____________________|
+ *
  */
 void test_pwm(void){
 
@@ -224,7 +244,6 @@ void test_pwm(void){
 	lcd16x2_clrscr();
 	lcd16x2_puts(stringBuff);
 
-//	TIM3->CCR4 = 32768;
 	while(1){
 	}
 }
