@@ -30,10 +30,14 @@ This file is part of XXXXXXX
 #include "pwm_tst.h"
 #include "dither_generator.h"
 
-/**
- * Max shift size
- */
+
 #define MAX_SHIFT 16
+#define PWM_BITS 4
+#define PWM_TEST_PERIOD 1 << PWM_BITS
+#define HI_RES_BITS 8
+#define RES_DIFF (HI_RES_BITS - PWM_BITS)
+#define WAVETABLE_SCL (16 - HI_RES_BITS)
+
 /**
  * Dummy object pool
  */
@@ -44,13 +48,13 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-/** Dither generator object */
-DitherGen ditherGen2,ditherGen4;
+/** Dither generator objects */
+DitherGen ditherGenA,ditherGenB,ditherGenC,ditherGenD;
 
 /** Diether variables */
-uint8_t lutInd 						= 0;
-uint32_t duCyValHigRes 				= 0;
-uint32_t duCyValLowRes 				= 0;
+uint8_t lutInd			= 0;
+uint32_t duCyValHigRes 	= 0;
+uint32_t duCyValLowRes 	= 0;
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -62,7 +66,10 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd])>>WAVETABLE_SCL;
-		ditherGen2.updatePattern(duCyValHigRes);
+		ditherGenA.updatePattern(duCyValHigRes);
+		ditherGenB.updatePattern(duCyValHigRes>>1);
+		ditherGenC.updatePattern(duCyValHigRes>>2);
+		ditherGenD.updatePattern(duCyValHigRes>>3);
 		duCyValLowRes = duCyValHigRes>>RES_DIFF;
 		lutInd++;
 		lutInd%=LUT_8_BIT;
@@ -77,7 +84,10 @@ void TIM3_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
-		ditherGen2.setDuCy2(duCyValLowRes,TIM3);
+		ditherGenA.setDuCy1(duCyValLowRes,TIM3);
+		ditherGenB.setDuCy2(duCyValLowRes>>1,TIM3);
+		ditherGenC.setDuCy3(duCyValLowRes>>2,TIM3);
+		ditherGenD.setDuCy4(duCyValLowRes>>3,TIM3);
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 }
@@ -110,8 +120,6 @@ static void timer_cfg(void){
 
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
-
-
 
 	//*************************************************************************************
 	/* PWM Timer3 configuration*/
