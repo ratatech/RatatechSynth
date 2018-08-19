@@ -28,7 +28,7 @@ This file is part of XXXXXXX
 #include "tst_utils.h"
 #include "system_init.h"
 #include "pwm_tst.h"
-#include "tables.h"
+#include "dither_generator.h"
 
 /**
  * Max shift size
@@ -44,67 +44,13 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-/*
- * MacroMux object
- */
-MacroMux macroMux;
-
-#define PWM_BITS 4
-#define PWM_TEST_PERIOD 1 << PWM_BITS
-#define HI_RES_BITS 8
-#define RES_DIFF (HI_RES_BITS - PWM_BITS)
-#define WAVETABLE_SCL (16 - HI_RES_BITS)
-
-/** Dithering resolution, 2^N bits of enhancement */
-#define DITHER_BITS 4
-#define DITHER_RES 1 << DITHER_BITS
-
-/** Dithering LSB mask used to determine the pattern */
-#define DITHER_LSB_MASK 0xF
-
-/** Diethering pattern */
-uint8_t ditheringPattern[DITHER_RES] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+/** Dither generator object */
+DitherGen ditherGen;
 
 /** Diether variables */
-uint16_t ditherVal 					= 0;
-uint8_t ditherIdx	 				= 0;
 uint8_t lutInd 						= 0;
-volatile uint8_t selectedPattern 	= 0;
-bool ditheringEnable 				= true;
 uint32_t duCyValHigRes 				= 0;
 uint32_t duCyValLowRes 				= 0;
-uint8_t ditherIndex					= 0;
-
-/**
- * @brief Update dithering pattern
- * @param duCy High resolution duty cicle (matching PWM resolution + DITHER_BITS)
- * @param pPat Pointer to pattern buffer
- */
-static void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
-	selectedPattern = duCy & DITHER_LSB_MASK;
-	for(int i=0;i<DITHER_RES;i++){
-		pPat[i] = dithering_lut[selectedPattern][i];
-	}
-}
-
-/**
- * @brief Update dithering duty cycle
- * @param duCy Low resolution duty cycle (matching PWM resolution)
- * @param TIMx where x can be 1 to 17 to select the TIM peripheral.
- */
-static void updateDitherDuCy(uint16_t duCy, TIM_TypeDef* TIMx){
-	/** Get new dithering value */
-	uint8_t ditheringVal = ditheringPattern[ditherIndex];
-
-	/** Update timer OC value with dithered duty cycle */
-	TIMx->CCR1 = duCy + ditheringEnable*ditheringVal;
-	TIMx->CCR3 = duCy + ditheringEnable*ditheringVal;
-	TIMx->CCR2 = duCy + ditheringEnable*ditheringVal;
-
-	/** Increase dithering table index */
-	ditherIndex++;
-	ditherIndex%=DITHER_RES;
-}
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -116,16 +62,13 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd])>>WAVETABLE_SCL;
-		updateDitherPattern(duCyValHigRes,ditheringPattern);
+		ditherGen.updatePattern(duCyValHigRes);
 		duCyValLowRes = duCyValHigRes>>RES_DIFF;
 		lutInd++;
 		lutInd%=LUT_8_BIT;
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 }
-
-//TIM_TypeDef* TIMx
-
 
 /**
   * @brief  This function handles Timer 3Handler.
@@ -134,10 +77,9 @@ void TIM3_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
-		updateDitherDuCy(duCyValLowRes,TIM3);
+		ditherGen.setDuCy2(duCyValLowRes,TIM3);
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
-
 }
 
 static void timer_cfg(void){
@@ -237,22 +179,17 @@ static void timer_cfg(void){
 static void test_pwm(void){
 
 	char stringBuff[8];
-
 	// Print encoder value
 	sprintf(stringBuff, "%s", "PWM TEST");
 	lcd16x2_clrscr();
 	lcd16x2_puts(stringBuff);
 
-	while(1){
-		DelayUs(100);
-	}
+	while(1);
 }
 
 
 int main(void)
 {
-	/** Configure macromux*/
-	macroMux.config(&synth_params);
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -280,7 +217,6 @@ int main(void)
     UNITY_BEGIN();
 
 	RUN_TEST(test_pwm);
-
 
 	/** Nothing to verify */
 	TEST_PASS();
