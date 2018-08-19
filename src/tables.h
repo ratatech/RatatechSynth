@@ -24,6 +24,7 @@
 #define N_BANDLIM 10
 #define MIDI_BANDLIM_INDS_LUT_SIZE 128
 #define ADSR_TIME_PHINC_LUT_SIZE LUT_12_BIT
+#define DITHERING_LUT_SIZE 16
 
 extern const q15_t sin_lut_q15[LUT_8_BIT];
 extern const q15_t squ_bandlim_lut_q15[N_BANDLIM][LUT_8_BIT];
@@ -39,5 +40,6 @@ extern const uint32_t midi_phinc_lut[MIDI_PHINC_LUT_SIZE];
 extern const uint32_t lfo_phinc_lut[LFO_PHINC_LUT_SIZE];
 extern const uint8_t  midi_bandlim_inds_lut[MIDI_BANDLIM_INDS_LUT_SIZE];
 extern const uint32_t adsr_time_phinc_lut[ADSR_TIME_PHINC_LUT_SIZE];
+extern const uint8_t  dithering_lut[DITHERING_LUT_SIZE][DITHERING_LUT_SIZE];
 
 #endif /* TABLES_H_ */

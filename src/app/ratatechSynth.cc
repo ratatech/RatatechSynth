@@ -300,7 +300,6 @@ void TIM1_UP_IRQHandler(void)
 
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
-
 		audio_gen();
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
@@ -319,8 +318,6 @@ void TIM2_IRQHandler(void)
 		low_rate_tasks();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
-
-
 }
 
 

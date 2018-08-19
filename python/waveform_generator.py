@@ -5,6 +5,7 @@ import os,sys
 from FourierSeries import FourierSeries
 from ADSR import ADSR
 
+
 def writeTableContent(data,tableStr,isMultDim):
     
     lineBreakCtr = 0
@@ -27,7 +28,7 @@ def writeTableContent(data,tableStr,isMultDim):
             
     return tableStr
     
-def writeTable(name,N,data,type,isMultDim=False,isConst=True):
+def writeTable(name,N,data,type,isConst=True,macro_M=[]):
     
     lineBreakCtr = 0
     if isConst:
@@ -35,10 +36,13 @@ def writeTable(name,N,data,type,isMultDim=False,isConst=True):
     else:
         constType = ''
         
-    if isMultDim:      
-        outstring =  constType + str(type) + ' ' + str(name) + '[N_BANDLIM]' + '[' + str(N) + '] = {\n'
+    if len(macro_M):
+        isMultDim=True      
+        outstring =  constType + str(type) + ' ' + str(name) + '[' + str(macro_M) + ']' + '[' + str(N) + '] = {\n'
     else:
+        isMultDim=False 
         outstring = constType + str(type) + ' ' + str(name) + '[' + str(N) + '] = {\n'
+    
     outstring = writeTableContent(data,outstring,isMultDim)
         
     outstring = outstring + '};'
@@ -146,7 +150,8 @@ if USE_BANDLIMITED :
         name = mode + '_bandlim_lut_q15' 
         table_ind = table_ind + 1
         macro_N = 'LUT_' + str(bits) + '_BIT'
-        table = writeTable(name, macro_N, wavetables, 'q15_t',isMultDim=True)
+        macro_M = 'N_BANDLIM'
+        table = writeTable(name, macro_N, wavetables, 'q15_t',macro_M=macro_M)
          
         # Write to output file
         fp.writelines(table)
@@ -521,5 +526,46 @@ table = writeTable(name,macro_N,midi2inc,'uint8_t')
 fp.writelines(table)
 fp.writelines('\n\n')
 
- 
+'''-------------------------------------------------------------------------------
+ DITHERING 
+------------------------------------------------------------------------------'''
+# bits = 7
+# N = (2**bits)
+# SHIFT_PHASE = (2**23)
+# N_TABLES = 10;
+# fs = AUDIO_FS
+# freqs = []
+#  
+# for midi_num in range(0,N):
+#     freq = np.floor(np.power(2,(midi_num-69)/12.0)*440*10000)/10000
+#     freqs.append(freq)
+#     
+# midi2inc = (np.ceil(np.log2(np.ceil((freqs)/octaves[0]))))
+# midi2inc = np.array(midi2inc)
+# midi2inc = midi2inc.astype(int)
+
+# Number of bits to be enhanced by the dithering
+M = 4
+
+for i in np.arange(0,2**M):
+    pattern = np.concatenate((np.zeros(2**M - i,int),np.ones(i,int)),0); 
+    if not i:
+        ditheringPatterns = pattern
+    else:
+        ditheringPatterns = np.vstack((ditheringPatterns,pattern))
+
+name = ' dithering_lut' 
+macro_N = 'DITHERING_LUT_SIZE'
+table = writeTable(name, macro_N, ditheringPatterns, 'uint8_t',macro_M=macro_N)
+
+# Write to output file
+fp.writelines(table)
+fp.writelines('\n\n')
+
+
+'''-------------------------------------------------------------------------------
+ FILE END. Do not intend to write anything after this... 
+------------------------------------------------------------------------------'''
 fp.close()
+
+print('Table generation successful!!!')

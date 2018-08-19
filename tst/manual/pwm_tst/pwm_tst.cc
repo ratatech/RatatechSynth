@@ -62,26 +62,6 @@ MacroMux macroMux;
 /** Dithering LSB mask used to determine the pattern */
 #define DITHER_LSB_MASK 0xF
 
-/** Diethering table */
-uint8_t ditheringLut[DITHER_RES][DITHER_RES] = {
-				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-				{0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
-				{0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1},
-				{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
-				{0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1},
-				{0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-				{0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1},
-				{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1},
-				{0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1},
-				{0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1},
-				{0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1},
-				{0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1},
-				{0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1},
-				{0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-				{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-};
-
 /** Diethering pattern */
 uint8_t ditheringPattern[DITHER_RES] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
@@ -103,20 +83,23 @@ uint8_t ditherIndex					= 0;
 static void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
 	selectedPattern = duCy & DITHER_LSB_MASK;
 	for(int i=0;i<DITHER_RES;i++){
-		pPat[i] = ditheringLut[selectedPattern][i];
+		pPat[i] = dithering_lut[selectedPattern][i];
 	}
 }
 
 /**
  * @brief Update dithering duty cycle
  * @param duCy Low resolution duty cycle (matching PWM resolution)
+ * @param TIMx where x can be 1 to 17 to select the TIM peripheral.
  */
-static void updateDitherDuCy(uint16_t duCy){
+static void updateDitherDuCy(uint16_t duCy, TIM_TypeDef* TIMx){
 	/** Get new dithering value */
 	uint8_t ditheringVal = ditheringPattern[ditherIndex];
 
 	/** Update timer OC value with dithered duty cycle */
-	TIM3->CCR4 = duCy + ditheringEnable*ditheringVal;
+	TIMx->CCR1 = duCy + ditheringEnable*ditheringVal;
+	TIMx->CCR3 = duCy + ditheringEnable*ditheringVal;
+	TIMx->CCR2 = duCy + ditheringEnable*ditheringVal;
 
 	/** Increase dithering table index */
 	ditherIndex++;
@@ -141,6 +124,9 @@ void TIM2_IRQHandler(void)
 	}
 }
 
+//TIM_TypeDef* TIMx
+
+
 /**
   * @brief  This function handles Timer 3Handler.
   */
@@ -148,7 +134,7 @@ void TIM3_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
-		updateDitherDuCy(duCyValLowRes);
+		updateDitherDuCy(duCyValLowRes,TIM3);
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 
@@ -199,7 +185,6 @@ static void timer_cfg(void){
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM3, &timerInitStructure);
 	/* TIM3 Main Output Enable */
-
 
 	TIM_OCStructInit( &timeOCInitStructure );
 	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -259,6 +244,7 @@ static void test_pwm(void){
 	lcd16x2_puts(stringBuff);
 
 	while(1){
+		DelayUs(100);
 	}
 }
 
