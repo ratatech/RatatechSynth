@@ -95,11 +95,32 @@ uint32_t duCyValHigRes 				= 0;
 uint32_t duCyValLowRes 				= 0;
 uint8_t ditherIndex					= 0;
 
-volatile void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
-	selectedPattern = duCyValHigRes & DITHER_LSB_MASK;
+/**
+ * @brief Update dithering pattern
+ * @param duCy High resolution duty cicle (matching PWM resolution + DITHER_BITS)
+ * @param pPat Pointer to pattern buffer
+ */
+static void updateDitherPattern(uint16_t duCy, uint8_t* pPat){
+	selectedPattern = duCy & DITHER_LSB_MASK;
 	for(int i=0;i<DITHER_RES;i++){
-		ditheringPattern[i] = ditheringLut[selectedPattern][i];
+		pPat[i] = ditheringLut[selectedPattern][i];
 	}
+}
+
+/**
+ * @brief Update dithering duty cycle
+ * @param duCy Low resolution duty cycle (matching PWM resolution)
+ */
+static void updateDitherDuCy(uint16_t duCy){
+	/** Get new dithering value */
+	uint8_t ditheringVal = ditheringPattern[ditherIndex];
+
+	/** Update timer OC value with dithered duty cycle */
+	TIM3->CCR4 = duCy + ditheringEnable*ditheringVal;
+
+	/** Increase dithering table index */
+	ditherIndex++;
+	ditherIndex%=DITHER_RES;
 }
 
 /**
@@ -118,28 +139,22 @@ void TIM2_IRQHandler(void)
 		lutInd%=LUT_8_BIT;
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
-
 }
 
 /**
-  * @brief  This function handles Timer 2 Handler.
-  * @param  None
-  * @retval None
+  * @brief  This function handles Timer 3Handler.
   */
 void TIM3_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
-		volatile uint8_t ditheringVal = ditheringPattern[ditherIndex];
-		TIM3->CCR4 = duCyValLowRes + ditheringEnable*ditheringVal;
-		ditherIndex++;
-		ditherIndex%=DITHER_RES;
+		updateDitherDuCy(duCyValLowRes);
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 
 }
 
-void timer_cfg(void){
+static void timer_cfg(void){
 
 	TIM_TimeBaseInitTypeDef timerInitStructure;
 	TIM_OCInitTypeDef timeOCInitStructure;
@@ -234,10 +249,9 @@ void timer_cfg(void){
  *                         |____________________|
  *
  */
-void test_pwm(void){
+static void test_pwm(void){
 
 	char stringBuff[8];
-	uint16_t pwmDuCy;
 
 	// Print encoder value
 	sprintf(stringBuff, "%s", "PWM TEST");
