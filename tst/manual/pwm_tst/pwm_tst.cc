@@ -45,7 +45,7 @@ object_pool_t object_pool;
 synth_params_t synth_params;
 
 /** Dither generator object */
-DitherGen ditherGen;
+DitherGen ditherGen2,ditherGen4;
 
 /** Diether variables */
 uint8_t lutInd 						= 0;
@@ -62,7 +62,7 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd])>>WAVETABLE_SCL;
-		ditherGen.updatePattern(duCyValHigRes);
+		ditherGen2.updatePattern(duCyValHigRes);
 		duCyValLowRes = duCyValHigRes>>RES_DIFF;
 		lutInd++;
 		lutInd%=LUT_8_BIT;
@@ -77,7 +77,7 @@ void TIM3_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
-		ditherGen.setDuCy2(duCyValLowRes,TIM3);
+		ditherGen2.setDuCy2(duCyValLowRes,TIM3);
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 }
