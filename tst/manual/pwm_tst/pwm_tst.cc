@@ -32,10 +32,9 @@ This file is part of XXXXXXX
 
 
 #define MAX_SHIFT 16
-#define PWM_BITS 4
+#define PWM_BITS 7
 #define PWM_TEST_PERIOD 1 << PWM_BITS
-#define HI_RES_BITS 8
-#define RES_DIFF (HI_RES_BITS - PWM_BITS)
+#define HI_RES_BITS (PWM_BITS + DITHER_BITS)
 #define WAVETABLE_SCL (16 - HI_RES_BITS)
 
 /**
@@ -70,7 +69,7 @@ void TIM2_IRQHandler(void)
 		ditherGenB.updatePattern(duCyValHigRes>>1);
 		ditherGenC.updatePattern(duCyValHigRes>>2);
 		ditherGenD.updatePattern(duCyValHigRes>>3);
-		duCyValLowRes = duCyValHigRes>>RES_DIFF;
+		duCyValLowRes = duCyValHigRes>>DITHER_BITS;
 		lutInd++;
 		lutInd%=LUT_8_BIT;
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
