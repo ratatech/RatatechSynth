@@ -87,7 +87,7 @@ volatile uint8_t selectedPattern = 0;
 /* Private variables ---------------------------------------------------------*/
 #define PWM_BITS 4
 #define PWM_TEST_PERIOD 1 << PWM_BITS
-#define HI_RES_BITS 16
+#define HI_RES_BITS 8
 #define RES_DIFF HI_RES_BITS - PWM_BITS
 
 uint32_t duCyValHigRes 	= 0;
@@ -111,7 +111,7 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd]);
+		duCyValHigRes = int16_2_uint16(sin_lut_q15[lutInd])>>8;
 		updateDitherPattern(duCyValHigRes,ditheringPattern);
 		duCyValLowRes = duCyValHigRes>>RES_DIFF;
 		lutInd++;
@@ -132,7 +132,7 @@ void TIM3_IRQHandler(void)
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
 	{
 		volatile uint8_t ditheringVal = ditheringPattern[ditherIndex];
-		TIM3->CCR4 = duCyValLowRes;// + ditheringVal;
+		TIM3->CCR4 = duCyValLowRes + ditheringVal;
 		ditherIndex++;
 		ditherIndex%=DITHER_RES;
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
@@ -162,8 +162,8 @@ void timer_cfg(void){
 	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = PWM_TEST_PERIOD<<DITHER_BITS;
-	timerInitStructure.TIM_Prescaler = 0;
+	timerInitStructure.TIM_Period = 32768>>10;
+	timerInitStructure.TIM_Prescaler = 2197>>1;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
@@ -224,7 +224,7 @@ void test_pwm(void){
 	lcd16x2_clrscr();
 	lcd16x2_puts(stringBuff);
 
-	TIM3->CCR4 = 32768;
+//	TIM3->CCR4 = 32768;
 	while(1){
 	}
 }
