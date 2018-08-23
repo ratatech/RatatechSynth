@@ -51,8 +51,8 @@ class RatatechBuild(object):
     def flash(self):
         
         # Binary name
-        tst_bin = self.prjName+'.bin'
-        
+        tst_bin = self.prjName +'.bin'
+                   
         # ST-link arguments
         stlink_cmd = '--reset write ' + self.buildDir + tst_bin + ' 0x8000000'
            

@@ -3,7 +3,7 @@ def test(tst,usartOutLines):
     # Each of the corresponding substrings should match the name of the output buffers used in
     # oscillator_tst.cc otherwise the parsing won't work.
     FS = 4000
-    debug = True
+    debug = False
     tst.utils.rawUsart2wav('buff_mov_avg_out',usartOutLines,FS,debug)
 
     if debug:

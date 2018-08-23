@@ -44,7 +44,7 @@ if tst.utils.isStlinkConnected():
     tst.build.flash()
  
     # Start usart communication and get test results
-    usartOutLines, test_result = tst.testUsart(printConsole=False)
+    usartOutLines, test_result = tst.testUsart(printConsole=True)   
         
     test(tst,usartOutLines)
     

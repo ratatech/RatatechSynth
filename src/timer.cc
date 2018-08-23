@@ -69,32 +69,33 @@ void TIM_Config(void)
 
 #endif
 
+#ifdef USE_LOW_RATE_TIMER
+
 	//*************************************************************************************
 	/* PWM Timer2 configuration*/
 	//*************************************************************************************
 
-#ifdef USE_LOW_RATE_TIMER
+	/* TIM2 NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
-		/* TIM2 NVIC configuration */
-		NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStructure);
+	/* TIM2 configuration
+	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
+	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	timerInitStructure.TIM_Period = CONTROL_RATE;
+	timerInitStructure.TIM_Prescaler = 1;
+	timerInitStructure.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
-		/* TIM2 configuration
-		 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
-		timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-		timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-		timerInitStructure.TIM_Period = CONTROL_RATE;
-		timerInitStructure.TIM_Prescaler = 1;
-		timerInitStructure.TIM_RepetitionCounter = 0;
-		TIM_TimeBaseInit(TIM2, &timerInitStructure);
-
-		TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-		TIM_Cmd(TIM2, ENABLE);
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM2, ENABLE);
 #endif
 
+#ifdef USE_PWM_TIMER
 
 	//*************************************************************************************
 	/* PWM Timer3 configuration*/
@@ -134,6 +135,8 @@ void TIM_Config(void)
 	TIM_ARRPreloadConfig(TIM3, ENABLE);
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 	TIM_Cmd( TIM3, ENABLE );
+
+#endif
 
 #endif
 

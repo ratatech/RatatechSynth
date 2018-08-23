@@ -24,7 +24,7 @@ class RatatechSerial(object):
         self.ser.rtscts             = False         #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr             = False         #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout       = 2       #timeout for write
-        self.ser.printConsole       = False
+        self.ser.printConsole       = True
         self.timeoutIter            = 20
         self.waitForConfirmation    = waitForConfirmation
 
@@ -90,6 +90,7 @@ class RatatechSerial(object):
         print 'Port ' + self.ser.port + ' is '+ self.status
         if self.status == "OPEN": 
             
+            
             # Send usart confirmation and then start reading 
             self.ser.write(confStr)
             
@@ -100,6 +101,9 @@ class RatatechSerial(object):
             numOfLines = 0
             usartLines = []
             serialWait = 0
+            
+           
+            
             while self.waitForConfirmation:  
                 
                 # Don't stay forever waiting...       
@@ -115,6 +119,7 @@ class RatatechSerial(object):
                 usartLines.append(response)
 
                 if self.ser.printConsole:
+                    
                     if len(response)>0:
                         print(response)
                     else:

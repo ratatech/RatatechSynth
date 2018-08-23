@@ -27,8 +27,7 @@ class RatatechTest(object):
             raise ValueError('Wrong project name. It should correspond to the directory containing the test ending with /')
             
         # Remove backslash
-        if prjName.count('/')>1:
-            prjName = prjName.split('/')[-2]
+        prjName = prjName.split('/')[-2]
         
         self.utils = RatatechUtils()
         self.build = RatatechBuild(prjName)
@@ -36,20 +35,24 @@ class RatatechTest(object):
         
         # Create iterator with USB devices
         context = pyudev.Context()      
-        
+                
         # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, 
         # ttyUSB0 used for synth pcb debugging and testing    
         if 'nucleo' in board:
+            print 'nucleo'
             for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
                 if 'ttyACM' in device.sys_name:
                     #self.port="ttyACM0"
                     self.port=device.sys_name
+                else:
+                    raise ValueError('ttyACM not found in the list of devices. Are you sure you are working with the nucleo board? Try to specify the board properly')                 
         else:
             for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
                 if 'ttyUSB' in device.sys_name:
                     #self.port="ttyUSB1"
                     self.port=device.sys_name
-           
+                else:
+                    raise ValueError('ttyUSB not found in the list of devices. Are you sure you are working with the pcb? Try to specify the board properly')
                         
     def parseUsart(self,usartOutLines):
         # Print the usart output    
@@ -77,8 +80,6 @@ class RatatechTest(object):
                
     def testUsart(self,printConsole=False):    
         
-#         import pdb
-#         pdb.set_trace()
         # Open serial port to read test output
         ratatech_serial = RatatechSerial(self.port,not self.isManualTst)       
         ratatech_serial.ser.printConsole = printConsole
