@@ -53,7 +53,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs.1212488195" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.assembler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="OS_USE_TRACE_SEMIHOSTING_STDOUT"/>
@@ -72,7 +72,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.803234305" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -94,7 +94,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions.1398554640" name="Do not use exceptions (-fno-exceptions)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.noexceptions" useByScannerDiscovery="true" value="true" valueType="boolean"/>
@@ -158,9 +158,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/sound_gen_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -240,7 +240,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -264,7 +264,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -337,6 +337,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -414,7 +415,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -437,7 +438,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -509,6 +510,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -586,7 +588,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -607,7 +609,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -677,7 +679,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/adsr_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -756,7 +758,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -777,7 +779,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -847,7 +849,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -925,7 +927,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -946,7 +948,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1016,7 +1018,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/lfo_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -1096,7 +1098,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1117,7 +1119,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1187,7 +1189,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/mov_avg_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -1266,7 +1268,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1287,7 +1289,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1357,7 +1359,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/mixer_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -1436,7 +1438,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1457,7 +1459,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1527,7 +1529,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/oscillator_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -1606,7 +1608,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1627,7 +1629,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1697,7 +1699,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/sound_gen_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -1776,7 +1778,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1797,7 +1799,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1867,7 +1869,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/manual/rotary_encoder_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -1946,7 +1948,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -1968,7 +1970,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2039,7 +2041,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/manual/mux_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -2118,7 +2120,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2140,7 +2142,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2211,7 +2213,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/manual/lcd_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -2290,7 +2292,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2312,7 +2314,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2383,7 +2385,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/manual/midi_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
@@ -2462,7 +2464,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2484,7 +2486,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/CMSIS/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Drivers/STM32F10x_StdPeriph_Driver/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/tst/tst_utils}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Unity/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/Frameworks/Unity/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src/system/include/cmsis}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RatatechSynth/src}&quot;"/>
@@ -2556,7 +2558,7 @@
 						<entry excluding="arm_scale_q7.c|arm_mult_f32.c|arm_add_f32.c|arm_offset_f32.c|arm_abs_q15.c|arm_sub_f32.c|arm_mult_q7.c|arm_sub_q15.c|arm_negate_q15.c|arm_shift_q31.c|arm_dot_prod_f32.c|arm_abs_q31.c|arm_sub_q7.c|arm_offset_q31.c|arm_negate_q31.c|arm_scale_q31.c|arm_abs_q7.c|arm_dot_prod_q31.c|arm_offset_q7.c|arm_abs_f32.c|arm_offset_q15.c|arm_shift_q7.c|arm_negate_f32.c|arm_scale_f32.c|arm_add_q7.c|arm_mult_q31.c|arm_negate_q7.c|arm_dot_prod_q15.c|arm_dot_prod_q7.c|arm_sub_q31.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/BasicMathFunctions"/>
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Unity/src"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
 						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/manual/pwm_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
