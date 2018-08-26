@@ -112,18 +112,19 @@ void TIM_Config(void)
 	TIM_TimeBaseInit(TIM3, &timerInitStructure);
 	/* TIM3 Main Output Enable */
 
+	TIM_ARRPreloadConfig(TIM3, ENABLE);
+	TIM_Cmd( TIM3, ENABLE );
+
 
 	TIM_OCStructInit( &timeOCInitStructure );
 	timeOCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	timeOCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	timeOCInitStructure.TIM_Pulse = 0;
 	timeOCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-	//timeOCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
     TIM_OC1Init( TIM3, &timeOCInitStructure );
     TIM_OC2Init( TIM3, &timeOCInitStructure );
     TIM_OC3Init( TIM3, &timeOCInitStructure );
     TIM_OC4Init( TIM3, &timeOCInitStructure );
-    //TIM_OC3PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
 	/* TIM3 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
@@ -131,10 +132,6 @@ void TIM_Config(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-
-	TIM_ARRPreloadConfig(TIM3, ENABLE);
-	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
-	TIM_Cmd( TIM3, ENABLE );
 
 #endif
 

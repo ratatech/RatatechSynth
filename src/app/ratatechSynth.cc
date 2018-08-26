@@ -321,6 +321,24 @@ void TIM2_IRQHandler(void)
 }
 
 
+/**
+  * @brief  This function handles Timer 3 Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+	/**
+	 * Do nothing for now. Still the function needs to be define when enabling the timer interrupt.
+	 *  Dithering mechanism to be included here...
+	if (TIM_GetITStatus(TIM3, TIM_IT_Update))
+	{
+		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+	}
+	*/
+}
+
+
 /*****************************************************************************************************************************
 ******************* USART INTERRUPTS *****************************************************************************************
 ******************************************************************************************************************************/

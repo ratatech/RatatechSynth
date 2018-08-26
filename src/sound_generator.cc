@@ -70,6 +70,7 @@ void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
 		mod_adsr_interp = adsr->interp(synth_params,mod_adsr,i);
 		mix_out = mul_q15_q15(sample_a, mod_adsr_interp);
 
+
 		/** Store output sample */
 		*pSndGen++ = mix_out;
 
