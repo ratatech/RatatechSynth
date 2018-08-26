@@ -9,12 +9,16 @@
  <framework name="qpcpp"/>
  <package name="AOs" stereotype="0x02">
   <class name="Blinky" superclass="qpcpp::QActive">
-   <attribute name="timeEvt" type="QP::QTimeEvt" visibility="0x00" properties="0x00"/>
+   <attribute name="m_timeEvt" type="QP::QTimeEvt" visibility="0x02" properties="0x00"/>
+   <operation name="Blinky" type="" visibility="0x00" properties="0x00">
+    <code>  : QActive(Q_STATE_CAST(&amp;Blinky::initial)),
+    m_timeEvt(this, TIMEOUT_SIG, 0U)</code>
+   </operation>
    <statechart>
     <initial target="../1">
-     <action>QTimeEvt_armX(&amp;me-&gt;timeEvt, BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
+     <action>me-&gt;m_timeEvt.armX(BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
      <initial_glyph conn="11,6,4,1,3,21,5,-2">
-      <action box="0,-2,28,4"/>
+      <action box="0,-3,54,6"/>
      </initial_glyph>
     </initial>
     <state name="off">
@@ -51,6 +55,9 @@
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt; /* for exit() */
 
+using namespace QP;
+
+Q_DEFINE_THIS_FILE
 
 //*============== ask QM to declare the Blinky class ================*/
 $declare${AOs::Blinky}
@@ -61,17 +68,11 @@ Blinky l_blinky;
 // global objects ------------------------------------------------------------
 QActive * const AO_Blinky = &amp;l_blinky; // opaque pointer
 
-//............................................................................
-Blinky::Blinky()
-  : QActive(Q_STATE_CAST(&amp;Blinky::initial)),
-    m_timeEvt(this, TIMEOUT_SIG, 0U)
-{
-    // empty
-}
-
-
 /*================ ask QM to define the Blinky class ================*/
-$define${AOs::Blinky}</text>
+$define${AOs::Blinky}
+
+
+</text>
   </file>
   <file name="blinky.h">
    <text>

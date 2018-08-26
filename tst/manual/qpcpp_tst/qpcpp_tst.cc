@@ -31,6 +31,9 @@ This file is part of XXXXXXX
 #include "stm32f10x.h"
 #include "bsp.h"
 
+using namespace QP;
+Q_DEFINE_THIS_FILE
+
 /**
  * Dummy object pool
  */
