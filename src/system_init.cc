@@ -157,11 +157,11 @@ void GPIO_Conf_Init(void)
 	GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
 
 	/* TIM3 PWM PINS */
-	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
-	GPIO_Init( GPIOC, &GPIO_InitStructure );
-	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
+//	GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;            // Alt Function - Push Pull
+//	GPIO_Init( GPIOC, &GPIO_InitStructure );
+//	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
 
 
 	/* Configure PB5/6/9 as OUTPUT for multiplexing */

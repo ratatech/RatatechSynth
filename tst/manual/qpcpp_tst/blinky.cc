@@ -32,11 +32,10 @@
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
-#include "blinky.h"
 #include "bsp.h"
+#include "blinky.h"
 
 //Q_DEFINE_THIS_FILE
-#define BSP_TICKS_PER_SEC 200
 
 //............................................................................
 class Blinky : public QActive {

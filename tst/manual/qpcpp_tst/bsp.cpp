@@ -91,26 +91,29 @@ void SysTick_Handler(void) {
 // BSP functions =============================================================
 void BSP_init(void) {
 
+	GPIO_InitTypeDef  GPIO_InitStructure;
+
+	/* LED (PA5) */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
-    // configure the Buttons
-    //...
 }
 //............................................................................
 void BSP_ledOff(void) {
 	iprintf("\nBLINKY: LED -----------------------> OFF");
-    //GPIO_PinOutClear(LED0_PORT, LED0_PIN);
-    //GPIO->P[LED0_PORT].DOUT &= ~(1U << LED0_PIN);
+
+	// Set LED2 on nucleo board OFF
+	GPIOA->BRR = GPIO_Pin_5;
 }
 //............................................................................
 void BSP_ledOn(void) {
 	iprintf("\nBLINKY: LED -----------------------> ON");
-    // exercise the FPU with some floating point computations
-    float volatile x = 3.1415926F;
-    x = x + 2.7182818F;
 
-    //GPIO_PinOutSet(LED0_PORT, LED0_PIN);
-    //GPIO->P[LED0_PORT].DOUT |= (1U << LED0_PIN);
+	// Set LED2 on nucleo board ON
+	GPIOA->BSRR = GPIO_Pin_5;
 }
 
 
