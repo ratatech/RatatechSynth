@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="4.3.0" links="0">
+ <documentation>Simple model template for QP/C++</documentation>
+ <framework name="qpcpp"/>
+ <package name="Events" stereotype="0x01" namespace="ADSRHSM::">
+  <class name="noteOnEvt" superclass="qpcpp::QEvt"/>
+  <class name="noteOffEvt" superclass="qpcpp::QEvt"/>
+ </package>
+ <package name="AOs" stereotype="0x02" namespace="ADSRHSM::">
+  <class name="Adsr" superclass="qpcpp::QActive">
+   <documentation>Adsr active object</documentation>
+   <operation name="Adsr" type="" visibility="0x00" properties="0x00">
+    <documentation>constructor</documentation>
+    <code>  : QActive(Q_STATE_CAST(&amp;Adsr::initial))
+
+// body</code>
+   </operation>
+   <statechart>
+    <initial target="../1">
+     <initial_glyph conn="6,2,5,1,28,6,-2">
+      <action box="0,-2,10,2"/>
+     </initial_glyph>
+    </initial>
+    <state name="idle">
+     <tran trig="NOTE_ON" target="../../2">
+      <tran_glyph conn="4,13,3,1,30,14,-2">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="4,6,28,10"/>
+    </state>
+    <state name="attack">
+     <tran trig="ATTACK_END" target="../../3">
+      <tran_glyph conn="4,28,3,1,30,13,-2">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="4,19,28,11"/>
+    </state>
+    <state name="decay">
+     <tran trig="DECAY_END" target="../../4">
+      <tran_glyph conn="4,42,3,1,30,12,-2">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="4,34,28,10"/>
+    </state>
+    <state name="sustain">
+     <tran trig="NOTE_OFF" target="../../5">
+      <tran_glyph conn="4,56,3,1,30,12,-2">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="4,48,28,10"/>
+    </state>
+    <state name="release">
+     <tran trig="RELEASE_END" target="../../1">
+      <tran_glyph conn="4,69,3,3,-2,-59,2">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="4,61,28,11"/>
+    </state>
+    <state_diagram size="81,81"/>
+   </statechart>
+  </class>
+  <attribute name="AO_Adsr" type="QP::QActive *const" visibility="0x00" properties="0x00">
+   <code>= &amp;l_adsr;</code>
+  </attribute>
+ </package>
+ <directory name=".">
+  <file name="adsrHsm.h">
+   <text>#ifndef adsr_hsm_h
+#define adsr_hsm_h
+
+namespace ADSRHSM {
+
+enum AdsrSignals { // signals used in the ADSR
+    TIME_TICK_SIG = QP::Q_USER_SIG, // published from tick ISR
+    NOTE_ON,            // A MIDI note on message is received
+    NOTE_OFF,           // A MIDI note off message is received
+    ATTACK_END,         // The attach level reaches its maximum
+    DECAY_END,          // The decay level reaches its minimum
+    RELEASE_END,        // The release level reaches its minimum
+
+    MAX_SIG,             // the last signal (keep always last)
+};
+
+
+} // namespace ADSRHSM
+
+$declare${Events::noteOnEvt}
+$declare${Events::noteOffEvt}
+
+// opaque pointers to active objects in the application
+$declare${AOs::AO_Adsr}
+
+#endif // adsr_hsm_h</text>
+  </file>
+  <file name="adsrHsm.cc">
+   <text>#include &quot;qpcpp.h&quot;
+#include &quot;adsrHsm.h&quot;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt; /* for exit() */
+
+//Q_DEFINE_THIS_FILE
+
+$declare${AOs::Adsr}
+
+namespace ADSRHSM {
+
+// local objects -------------------------------------------------------------
+static Adsr l_adsr; // the sole instance of the Adsr active object
+
+} // namespace ADSRHSM
+
+// Public-scope objects ------------------------------------------------------
+$define${AOs::AO_Adsr}
+
+// Active object definition --------------------------------------------------
+$define${AOs::Adsr}</text>
+  </file>
+ </directory>
+</model>
