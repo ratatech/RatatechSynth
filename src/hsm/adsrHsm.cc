@@ -18,6 +18,7 @@
 //$endhead${.::adsrHsm.cc} ###################################################
 #include "qpcpp.h"
 #include "adsrHsm.h"
+#include "bsp.h"
 #include <stdio.h>
 #include <stdlib.h> /* for exit() */
 
@@ -28,6 +29,9 @@ namespace ADSRHSM {
 
 //${AOs::Adsr} ...............................................................
 class Adsr : public QP::QActive {
+private:
+    QP::QTimeEvt m_timeEvt;
+
 public:
     Adsr();
 
@@ -72,7 +76,8 @@ namespace ADSRHSM {
 //${AOs::Adsr} ...............................................................
 //${AOs::Adsr::Adsr} .........................................................
 Adsr::Adsr()
-  : QActive(Q_STATE_CAST(&Adsr::initial))
+  : QActive(Q_STATE_CAST(&Adsr::initial)),
+    m_timeEvt(this, TIMEOUT_SIG, 0U)
 {
     // body
 }
@@ -80,14 +85,21 @@ Adsr::Adsr()
 //${AOs::Adsr::SM} ...........................................................
 QP::QState Adsr::initial(Adsr * const me, QP::QEvt const * const e) {
     //${AOs::Adsr::SM::initial}
+    me->m_timeEvt.armX(BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);
     return Q_TRAN(&idle);
 }
 //${AOs::Adsr::SM::idle} .....................................................
 QP::QState Adsr::idle(Adsr * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::Adsr::SM::idle::NOTE_ON}
-        case NOTE_ON_SIG: {
+        //${AOs::Adsr::SM::idle}
+        case Q_ENTRY_SIG: {
+            iprintf("\nADSR_HSM ---------------------> IDLE STATE");
+            status_ = Q_HANDLED();
+            break;
+        }
+        //${AOs::Adsr::SM::idle::TIMEOUT}
+        case TIMEOUT_SIG: {
             status_ = Q_TRAN(&attack);
             break;
         }
@@ -102,8 +114,14 @@ QP::QState Adsr::idle(Adsr * const me, QP::QEvt const * const e) {
 QP::QState Adsr::attack(Adsr * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::Adsr::SM::attack::ATTACK_END}
-        case ATTACK_END_SIG: {
+        //${AOs::Adsr::SM::attack}
+        case Q_ENTRY_SIG: {
+            iprintf("\nADSR_HSM ---------------------> ATTACK STATE");
+            status_ = Q_HANDLED();
+            break;
+        }
+        //${AOs::Adsr::SM::attack::TIMEOUT}
+        case TIMEOUT_SIG: {
             status_ = Q_TRAN(&decay);
             break;
         }
@@ -118,8 +136,14 @@ QP::QState Adsr::attack(Adsr * const me, QP::QEvt const * const e) {
 QP::QState Adsr::decay(Adsr * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::Adsr::SM::decay::DECAY_END}
-        case DECAY_END_SIG: {
+        //${AOs::Adsr::SM::decay}
+        case Q_ENTRY_SIG: {
+            iprintf("\nADSR_HSM ---------------------> DECAY STATE");
+            status_ = Q_HANDLED();
+            break;
+        }
+        //${AOs::Adsr::SM::decay::TIMEOUT}
+        case TIMEOUT_SIG: {
             status_ = Q_TRAN(&sustain);
             break;
         }
@@ -134,8 +158,14 @@ QP::QState Adsr::decay(Adsr * const me, QP::QEvt const * const e) {
 QP::QState Adsr::sustain(Adsr * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::Adsr::SM::sustain::NOTE_OFF}
-        case NOTE_OFF_SIG: {
+        //${AOs::Adsr::SM::sustain}
+        case Q_ENTRY_SIG: {
+            iprintf("\nADSR_HSM ---------------------> SUSTAIN STATE");
+            status_ = Q_HANDLED();
+            break;
+        }
+        //${AOs::Adsr::SM::sustain::TIMEOUT}
+        case TIMEOUT_SIG: {
             status_ = Q_TRAN(&release);
             break;
         }
@@ -150,8 +180,14 @@ QP::QState Adsr::sustain(Adsr * const me, QP::QEvt const * const e) {
 QP::QState Adsr::release(Adsr * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::Adsr::SM::release::RELEASE_END}
-        case RELEASE_END_SIG: {
+        //${AOs::Adsr::SM::release}
+        case Q_ENTRY_SIG: {
+            iprintf("\nADSR_HSM ---------------------> RELEASE STATE");
+            status_ = Q_HANDLED();
+            break;
+        }
+        //${AOs::Adsr::SM::release::TIMEOUT}
+        case TIMEOUT_SIG: {
             status_ = Q_TRAN(&idle);
             break;
         }

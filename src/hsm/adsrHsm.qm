@@ -9,57 +9,75 @@
  <package name="AOs" stereotype="0x02" namespace="ADSRHSM::">
   <class name="Adsr" superclass="qpcpp::QActive">
    <documentation>Adsr active object</documentation>
+   <attribute name="m_timeEvt" type="QP::QTimeEvt" visibility="0x02" properties="0x00"/>
    <operation name="Adsr" type="" visibility="0x00" properties="0x00">
     <documentation>constructor</documentation>
-    <code>  : QActive(Q_STATE_CAST(&amp;Adsr::initial))
+    <code>  : QActive(Q_STATE_CAST(&amp;Adsr::initial)),
+    m_timeEvt(this, TIMEOUT_SIG, 0U)
 
 // body</code>
    </operation>
    <statechart>
     <initial target="../1">
-     <initial_glyph conn="6,2,5,1,28,6,-2">
-      <action box="0,-2,10,2"/>
+     <action>me-&gt;m_timeEvt.armX(BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
+     <initial_glyph conn="6,2,4,1,3,38,3,-4">
+      <action box="1,-2,67,5"/>
      </initial_glyph>
     </initial>
     <state name="idle">
-     <tran trig="NOTE_ON" target="../../2">
-      <tran_glyph conn="4,13,3,1,30,14,-2">
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; IDLE STATE&quot;);</entry>
+     <tran trig="TIMEOUT" target="../../2">
+      <tran_glyph conn="4,15,3,1,40,12,-4">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
-     <state_glyph node="4,6,28,10"/>
+     <state_glyph node="4,6,36,11">
+      <entry box="1,2,31,4"/>
+     </state_glyph>
     </state>
     <state name="attack">
-     <tran trig="ATTACK_END" target="../../3">
-      <tran_glyph conn="4,28,3,1,30,13,-2">
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; ATTACK STATE&quot;);</entry>
+     <tran trig="TIMEOUT" target="../../3">
+      <tran_glyph conn="4,28,3,1,40,11,-4">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
-     <state_glyph node="4,19,28,11"/>
+     <state_glyph node="4,19,36,11">
+      <entry box="1,2,31,4"/>
+     </state_glyph>
     </state>
     <state name="decay">
-     <tran trig="DECAY_END" target="../../4">
-      <tran_glyph conn="4,42,3,1,30,12,-2">
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; DECAY STATE&quot;);</entry>
+     <tran trig="TIMEOUT" target="../../4">
+      <tran_glyph conn="4,40,3,1,40,10,-4">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
-     <state_glyph node="4,34,28,10"/>
+     <state_glyph node="4,32,36,10">
+      <entry box="1,2,35,4"/>
+     </state_glyph>
     </state>
     <state name="sustain">
-     <tran trig="NOTE_OFF" target="../../5">
-      <tran_glyph conn="4,56,3,1,30,12,-2">
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; SUSTAIN STATE&quot;);</entry>
+     <tran trig="TIMEOUT" target="../../5">
+      <tran_glyph conn="4,52,3,1,40,12,-4">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
-     <state_glyph node="4,48,28,10"/>
+     <state_glyph node="4,44,36,10">
+      <entry box="1,2,33,4"/>
+     </state_glyph>
     </state>
     <state name="release">
-     <tran trig="RELEASE_END" target="../../1">
-      <tran_glyph conn="4,69,3,3,-2,-59,2">
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; RELEASE STATE&quot;);</entry>
+     <tran trig="TIMEOUT" target="../../1">
+      <tran_glyph conn="4,65,3,3,-2,-55,2">
        <action box="0,-2,10,2"/>
       </tran_glyph>
      </tran>
-     <state_glyph node="4,61,28,11"/>
+     <state_glyph node="4,57,36,11">
+      <entry box="1,2,34,4"/>
+     </state_glyph>
     </state>
     <state_diagram size="81,81"/>
    </statechart>
@@ -77,13 +95,14 @@ namespace ADSRHSM {
 
 enum AdsrSignals { // signals used in the ADSR
     TIME_TICK_SIG = QP::Q_USER_SIG, // published from tick ISR
-    NOTE_ON,            // A MIDI note on message is received
-    NOTE_OFF,           // A MIDI note off message is received
-    ATTACK_END,         // The attach level reaches its maximum
-    DECAY_END,          // The decay level reaches its minimum
-    RELEASE_END,        // The release level reaches its minimum
+    NOTE_ON_SIG,                    // A MIDI note on message is received
+    NOTE_OFF_SIG,                   // A MIDI note off message is received
+    ATTACK_END_SIG,                 // The attach level reaches its maximum
+    DECAY_END_SIG,                  // The decay level reaches its minimum
+    RELEASE_END_SIG,                // The release level reaches its minimum
+    TIMEOUT_SIG,
 
-    MAX_SIG,             // the last signal (keep always last)
+    MAX_SIG,                        // the last signal (keep always last)
 };
 
 
@@ -91,6 +110,7 @@ enum AdsrSignals { // signals used in the ADSR
 
 $declare${Events::noteOnEvt}
 $declare${Events::noteOffEvt}
+
 
 // opaque pointers to active objects in the application
 $declare${AOs::AO_Adsr}
@@ -100,6 +120,7 @@ $declare${AOs::AO_Adsr}
   <file name="adsrHsm.cc">
    <text>#include &quot;qpcpp.h&quot;
 #include &quot;adsrHsm.h&quot;
+#include &quot;bsp.h&quot;
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt; /* for exit() */
 

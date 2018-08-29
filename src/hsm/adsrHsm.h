@@ -23,13 +23,14 @@ namespace ADSRHSM {
 
 enum AdsrSignals { // signals used in the ADSR
     TIME_TICK_SIG = QP::Q_USER_SIG, // published from tick ISR
-    NOTE_ON,            // A MIDI note on message is received
-    NOTE_OFF,           // A MIDI note off message is received
-    ATTACK_END,         // The attach level reaches its maximum
-    DECAY_END,          // The decay level reaches its minimum
-    RELEASE_END,        // The release level reaches its minimum
+    NOTE_ON_SIG,                    // A MIDI note on message is received
+    NOTE_OFF_SIG,                   // A MIDI note off message is received
+    ATTACK_END_SIG,                 // The attach level reaches its maximum
+    DECAY_END_SIG,                  // The decay level reaches its minimum
+    RELEASE_END_SIG,                // The release level reaches its minimum
+    TIMEOUT_SIG,
 
-    MAX_SIG,             // the last signal (keep always last)
+    MAX_SIG,                        // the last signal (keep always last)
 };
 
 
@@ -51,6 +52,7 @@ class noteOffEvt : public QP::QEvt {};
 
 } // namespace ADSRHSM
 //$enddecl${Events::noteOffEvt} ##############################################
+
 
 // opaque pointers to active objects in the application
 //$declare${AOs::AO_Adsr} ####################################################

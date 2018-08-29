@@ -32,9 +32,9 @@
 // mailto:info@state-machine.com
 //****************************************************************************
 #include "qpcpp.h"
-#include "blinky.h"
 #include "bsp.h"
 #include "stdio.h"
+#include "hsm/adsrHsm.h"
 
 //#include "em_device.h"  // the device specific header (SiLabs)
 //#include "em_cmu.h"     // Clock Management Unit (SiLabs)
@@ -42,9 +42,8 @@
 // add other drivers if necessary...
 #include "stm32f10x.h"
 
-#ifdef Q_SPY
-    #error Simple Blinky Application does not provide Spy build configuration
-#endif
+using namespace QP;
+using namespace ADSRHSM;
 
 Q_DEFINE_THIS_FILE
 

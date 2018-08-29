@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model version="4.3.0" links="0">
+ <documentation>Simple Blinky example for QP/C++, which demonstrates:
+- Active object (Blinky) with state machine
+- Board Support Package abstraction for portability
+- BSP implementation for desktop OS (Windows, Linux, Mac)
+- Platform-independent main() function
+- make.bat batch file for Windows</documentation>
+ <framework name="qpcpp"/>
+ <package name="AOs" stereotype="0x02">
+  <class name="Blinky" superclass="qpcpp::QActive">
+   <operation name="Blinky" type="" visibility="0x00" properties="0x00">
+    <code>  : QActive(Q_STATE_CAST(&amp;Blinky::initial))</code>
+   </operation>
+   <statechart>
+    <initial target="../1">
+     <initial_glyph conn="11,6,4,1,3,21,5,-2">
+      <action box="0,-3,54,6"/>
+     </initial_glyph>
+    </initial>
+    <state name="off">
+     <entry>BSP_ledOff();</entry>
+     <tran trig="TIMEOUT" target="../../2">
+      <tran_glyph conn="11,23,3,1,21,12,-2">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="11,12,19,14">
+      <entry box="1,2,13,7"/>
+     </state_glyph>
+    </state>
+    <state name="on">
+     <entry>BSP_ledOn();</entry>
+     <tran trig="TIMEOUT" target="../../1">
+      <tran_glyph conn="11,42,3,1,24,-26,-5">
+       <action box="0,-2,10,2"/>
+      </tran_glyph>
+     </tran>
+     <state_glyph node="11,31,19,13">
+      <entry box="1,2,12,6"/>
+     </state_glyph>
+    </state>
+    <state_diagram size="80,50"/>
+   </statechart>
+  </class>
+ </package>
+ <directory name=".">
+  <file name="blinky.cc">
+   <text>#include &quot;qpcpp.h&quot;
+#include &quot;hsm/bsp.h&quot;
+#include &quot;blinky.h&quot;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt; /* for exit() */
+
+using namespace QP;
+
+Q_DEFINE_THIS_FILE
+
+//*============== ask QM to declare the Blinky class ================*/
+$declare${AOs::Blinky}
+
+// local objects --------------------------------------------------------------
+Blinky l_blinky;
+
+// global objects ------------------------------------------------------------
+QActive * const AO_Blinky = &amp;l_blinky; // opaque pointer
+
+/*================ ask QM to define the Blinky class ================*/
+$define${AOs::Blinky}
+
+
+</text>
+  </file>
+  <file name="blinky.h">
+   <text>
+#ifndef blinky_h
+#define blinky_h
+
+using namespace QP;
+
+enum BlinkySignals {
+    DUMMY_SIG = Q_USER_SIG,
+    MAX_PUB_SIG,  // the last published signal
+
+    TIMEOUT_SIG,
+    MAX_SIG       // the last signal
+};
+
+extern QActive * const AO_Blinky; // opaque pointer
+
+#endif // blinky_h</text>
+  </file>
+ </directory>
+</model>

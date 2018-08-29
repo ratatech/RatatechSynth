@@ -26,9 +26,9 @@ This file is part of XXXXXXX
 #include "system_init.h"
 #include "qpcpp.h"
 #include "stm32f10x_conf.h"
-#include "system_init.h"
 #include "stm32f10x.h"
 #include "hsm/adsrHsm.h"
+#include "bsp.h"
 
 using namespace QP;
 using namespace ADSRHSM;
