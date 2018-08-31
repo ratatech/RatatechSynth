@@ -32,6 +32,7 @@ This file is part of XXXXXXX
 #include "hsm/bsp.h"
 
 using namespace QP;
+
 Q_DEFINE_THIS_FILE
 
 /**
@@ -62,36 +63,36 @@ int main(int argc, char *argv[]) {
 	/** Ready to start test  */
 
     iprintf("\n\nTEST: QUTEST\n-----------------------\n");
+    BSP_init(); // initialize the Board Support Package
 
     static QF_MPOOL_EL(QEvt) smlPoolSto[10]; // storage for small pool
-    static QEvt const *blinkyQSto[10]; // event queue storage for Blinky
+	static QEvt const *blinkyQSto[10]; // event queue storage for Blinky
 
-    BSP_init(); // initialize the Board Support Package
-    QF::init();  // initialize the framework
+	QF::init();  // initialize the framework
 
-    // initialize the QS software tracing
-    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
+	// initialize the QS software tracing
+	Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
 
-    // dictionaries...
-    QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(blinkyQSto);
+	// dictionaries...
+	QS_OBJ_DICTIONARY(smlPoolSto);
+	QS_OBJ_DICTIONARY(blinkyQSto);
 
-    QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
+	QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
 
-    // pause execution of the test and wait for the test script to continue
-    QS_TEST_PAUSE();
+	// pause execution of the test and wait for the test script to continue
+	QS_TEST_PAUSE();
 
-    // publish-subscribe not used, no call to QF_psInit()
+	// publish-subscribe not used, no call to QF_psInit()
 
-    // initialize event pools...
-    QF::poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
+	// initialize event pools...
+	QF::poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    // start the active objects...
-    AO_Blinky->start(1U,
-                     blinkyQSto, Q_DIM(blinkyQSto),
-                     (void *)0, 0U, (QEvt *)0);
+	// start the active objects...
+	AO_Blinky->start(1U,
+					 blinkyQSto, Q_DIM(blinkyQSto),
+					 (void *)0, 0U, (QEvt *)0);
 
-    return QF::run();
+	return QF::run();
 }
 
 //----------------------------------------------------------------------------
@@ -102,31 +103,26 @@ void QS::onTestTeardown(void) {
 }
 //............................................................................
 void QS::onCommand(uint8_t cmdId,
-                  uint32_t param1, uint32_t param2, uint32_t param3)
+				  uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    (void)param1;
-    (void)param2;
-    (void)param3;
+	(void)param1;
+	(void)param2;
+	(void)param3;
 
-    switch (cmdId) {
-       case 0U: {
-           break;
-       }
-       default:
-           break;
-    }
+	switch (cmdId) {
+	   case 0U: {
+		   break;
+	   }
+	   default:
+		   break;
+	}
 }
 
 //............................................................................
 // host callback function to "massage" the event, if necessary
 void QS::onTestEvt(QEvt *e) {
-    (void)e;
+	(void)e;
 #ifdef Q_HOST  // is this test compiled for a desktop Host computer?
 #else // this test is compiled for an embedded Target system
 #endif
 }
-
-
-
-
-

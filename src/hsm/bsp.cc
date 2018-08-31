@@ -172,16 +172,16 @@ void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
 #endif
 }
 
-//............................................................................
-extern "C" void Q_onAssert(char const *module, int loc) {
-    //
-    // NOTE: add here your application-specific error handling
-    //
-    (void)module;
-    (void)loc;
-    QS_ASSERTION(module, loc, static_cast<uint32_t>(10000U));
-    NVIC_SystemReset();
-}
+////............................................................................
+//extern "C" void Q_onAssert(char const *module, int loc) {
+//    //
+//    // NOTE: add here your application-specific error handling
+//    //
+//    (void)module;
+//    (void)loc;
+//    QS_ASSERTION(module, loc, static_cast<uint32_t>(10000U));
+//    NVIC_SystemReset();
+//}
 
 //****************************************************************************
 // NOTE00:
