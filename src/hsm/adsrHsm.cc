@@ -18,9 +18,9 @@
 //$endhead${.::adsrHsm.cc} ###################################################
 #include "qpcpp.h"
 #include "adsrHsm.h"
-#include "bsp.h"
 #include <stdio.h>
 #include <stdlib.h> /* for exit() */
+#include "../../tst/manual/qpcpp_tst/bsp.h"
 
 //Q_DEFINE_THIS_FILE
 

@@ -31,8 +31,9 @@
 // https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
-#include "qpcpp.h"
+
 #include "bsp.h"
+#include "qpcpp.h"
 #include "stdio.h"
 #include "hsm/adsrHsm.h"
 
@@ -172,16 +173,16 @@ void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
 #endif
 }
 
-////............................................................................
-//extern "C" void Q_onAssert(char const *module, int loc) {
-//    //
-//    // NOTE: add here your application-specific error handling
-//    //
-//    (void)module;
-//    (void)loc;
-//    QS_ASSERTION(module, loc, static_cast<uint32_t>(10000U));
-//    NVIC_SystemReset();
-//}
+//............................................................................
+extern "C" void Q_onAssert(char const *module, int loc) {
+    //
+    // NOTE: add here your application-specific error handling
+    //
+    (void)module;
+    (void)loc;
+    QS_ASSERTION(module, loc, static_cast<uint32_t>(10000U));
+    NVIC_SystemReset();
+}
 
 //****************************************************************************
 // NOTE00:

@@ -45,7 +45,6 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-
 //............................................................................
 int main(int argc, char *argv[]) {
 

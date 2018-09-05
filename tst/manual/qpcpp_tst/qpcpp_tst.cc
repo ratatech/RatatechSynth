@@ -29,6 +29,7 @@ This file is part of XXXXXXX
 #include "stm32f10x_conf.h"
 #include "system_init.h"
 #include "stm32f10x.h"
+
 #include "bsp.h"
 
 using namespace QP;

@@ -17,10 +17,10 @@
 //
 //$endhead${.::blinky.cc} ####################################################
 #include "qpcpp.h"
-#include "bsp.h"
 #include "blinky.h"
 #include <stdio.h>
 #include <stdlib.h> /* for exit() */
+#include "bsp.h"
 
 using namespace QP;
 
