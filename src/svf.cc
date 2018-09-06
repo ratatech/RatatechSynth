@@ -67,7 +67,7 @@ void Svf::configure(synth_params_t* synth_params){
 	}
 
 	if(SVF_order_msk == 0x08){
-		PWM_SVF = (PWM_PERIOD>>1);
+		PWM_SVF = (PWM_PERIOD);
 	}else{
 		PWM_SVF = PWM_PERIOD;
 	}
