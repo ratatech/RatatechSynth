@@ -13,5 +13,6 @@ matlab/octave-workspace
 /tst/**/*.wav
 /_*/
 doc/doxygen/html/*
+*.pytest_cache/
 
 

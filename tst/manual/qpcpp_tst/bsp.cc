@@ -35,7 +35,6 @@
 #include "bsp.h"
 #include "qpcpp.h"
 #include "stdio.h"
-#include "hsm/adsrHsm.h"
 
 //#include "em_device.h"  // the device specific header (SiLabs)
 //#include "em_cmu.h"     // Clock Management Unit (SiLabs)
@@ -44,7 +43,7 @@
 #include "stm32f10x.h"
 
 using namespace QP;
-using namespace ADSRHSM;
+
 
 Q_DEFINE_THIS_FILE
 
