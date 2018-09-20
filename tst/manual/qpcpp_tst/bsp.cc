@@ -93,10 +93,10 @@ void BSP_init(void) {
 	GPIO_InitTypeDef  GPIO_InitStructure;
 
 	/* LED (PA5) */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 
 }
@@ -104,15 +104,21 @@ void BSP_init(void) {
 void BSP_ledOff(void) {
 	iprintf("\nBLINKY: LED -----------------------> OFF");
 
-	// Set LED2 on nucleo board OFF
+	// Set LED2 on nucleo board ---> OFF
 	GPIOA->BRR = GPIO_Pin_5;
+
+	// Set LED/D3 on PCB ---> OFF
+	GPIOB->BRR = GPIO_Pin_11;
 }
 //............................................................................
 void BSP_ledOn(void) {
 	iprintf("\nBLINKY: LED -----------------------> ON");
 
-	// Set LED2 on nucleo board ON
+	// Set LED2 on nucleo board --->  ON
 	GPIOA->BSRR = GPIO_Pin_5;
+
+	// Set LED/D3 on PCB ---> ON
+	GPIOB->BSRR = GPIO_Pin_11;
 }
 
 
