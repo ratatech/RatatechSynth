@@ -16,11 +16,11 @@
 // for more details.
 //
 //$endhead${.::adsrHsm.cc} ###################################################
-#include "qpcpp.h"
-#include "adsrHsm.h"
 #include <stdio.h>
 #include <stdlib.h> /* for exit() */
-#include "../../tst/manual/qpcpp_tst/bsp.h"
+#include "qpcpp.h"
+#include "adsrHsm.h"
+#include "bsp.h"
 
 //Q_DEFINE_THIS_FILE
 
@@ -95,6 +95,9 @@ QP::QState Adsr::idle(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::idle}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> IDLE STATE");
+
+            // Set LED/D3 on PCB ---> ON
+            BSP_ledOn();
             status_ = Q_HANDLED();
             break;
         }
@@ -183,6 +186,9 @@ QP::QState Adsr::release(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::release}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> RELEASE STATE");
+
+            // Set LED/D3 on PCB ---> OFF
+            BSP_ledOff();
             status_ = Q_HANDLED();
             break;
         }

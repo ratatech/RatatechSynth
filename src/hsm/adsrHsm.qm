@@ -25,7 +25,10 @@
      </initial_glyph>
     </initial>
     <state name="idle">
-     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; IDLE STATE&quot;);</entry>
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; IDLE STATE&quot;);
+
+// Set LED/D3 on PCB ---&gt; ON
+BSP_ledOn();</entry>
      <tran trig="TIMEOUT" target="../../2">
       <tran_glyph conn="4,15,3,1,40,12,-4">
        <action box="0,-2,10,2"/>
@@ -69,7 +72,10 @@
      </state_glyph>
     </state>
     <state name="release">
-     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; RELEASE STATE&quot;);</entry>
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; RELEASE STATE&quot;);
+
+// Set LED/D3 on PCB ---&gt; OFF
+BSP_ledOff();</entry>
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="4,65,3,3,-2,-55,2">
        <action box="0,-2,10,2"/>
@@ -118,11 +124,11 @@ $declare${AOs::AO_Adsr}
 #endif // adsr_hsm_h</text>
   </file>
   <file name="adsrHsm.cc">
-   <text>#include &quot;qpcpp.h&quot;
+   <text>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt; /* for exit() */
+#include &quot;qpcpp.h&quot;
 #include &quot;adsrHsm.h&quot;
 #include &quot;bsp.h&quot;
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt; /* for exit() */
 
 //Q_DEFINE_THIS_FILE
 

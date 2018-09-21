@@ -62,7 +62,7 @@ int main(void)
 
 	/** Ready to start test  */
 
-    iprintf("\n\nTEST: QPC\n-----------------------\n");
+    iprintf("\n\nTEST: QSPY\n-----------------------\n");
 
     static QEvt const *blinkyQSto[10]; // Event queue storage for Blinky
 

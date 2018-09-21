@@ -32,7 +32,7 @@
 // mailto:info@state-machine.com
 //****************************************************************************
 
-#include "bsp.h"
+#include <hsm/bsp.h>
 #include "qpcpp.h"
 #include "stdio.h"
 
