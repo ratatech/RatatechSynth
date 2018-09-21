@@ -64,7 +64,7 @@
 #include "qf_port.h"      // QF/C++ port from the port directory
 #include "qassert.h"      // QP assertions
 #ifdef Q_SPY              // software tracing enabled?
-    #include "qs_port.h"  // QS/C++ port from the port directory
+    #include "qs/qs_port.h"  // QS/C++ port from the port directory
 #else
     #include "qs/qs_dummy.h" // QS/C++ dummy (inactive) interface
 #endif

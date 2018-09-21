@@ -9,9 +9,9 @@
   <item name="backups">0</item>
  </group>
  <group name="windows">
-  <item id=".::adsrHsm.h">0,0,712,375</item>
-  <item id=".::adsrHsm.cc">0,0,712,375</item>
-  <item id="AOs::Adsr::SM">0,0,712,375,*</item>
+  <item id=".::adsrHsm.h">-320,0,712,375</item>
+  <item id=".::adsrHsm.cc">0,0,715,648,*</item>
+  <item id="AOs::Adsr::SM">0,0,712,375</item>
  </group>
  <group name="search">
   <item name="options">2032128</item>

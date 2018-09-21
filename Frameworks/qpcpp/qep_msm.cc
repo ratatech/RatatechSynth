@@ -39,7 +39,7 @@
 #define QP_IMPL           // this is QP implementation
 #include "qep_port.h"     // QEP port
 #ifdef Q_SPY              // QS software tracing enabled?
-    #include "qs_port.h"  // include QS port
+    #include "qs/qs_port.h"  // include QS port
 #else
     #include "qs/qs_dummy.h" // disable the QS software tracing
 #endif // Q_SPY
