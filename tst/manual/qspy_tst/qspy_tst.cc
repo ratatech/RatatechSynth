@@ -20,7 +20,7 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include <hsm/bsp.h>
+
 #include <stdio.h>
 #include "unity.h"
 #include "tst_utils.h"
@@ -30,6 +30,7 @@ This file is part of XXXXXXX
 #include "stm32f10x_conf.h"
 #include "system_init.h"
 #include "stm32f10x.h"
+#include "_bsp.h"
 
 
 using namespace QP;
@@ -46,7 +47,7 @@ object_pool_t object_pool;
 synth_params_t synth_params;
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
 
 	/** Init system and peripherals */
@@ -64,10 +65,26 @@ int main(void)
 
     iprintf("\n\nTEST: QSPY\n-----------------------\n");
 
+    static QF_MPOOL_EL(QEvt) smlPoolSto[10]; // storage for small pool
     static QEvt const *blinkyQSto[10]; // Event queue storage for Blinky
 
-    BSP_init(); // initialize the Board Support Package
     QF::init(); // initialize the framework and the underlying RT kernel
+
+    // initialize the QS software tracing
+    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
+
+    BSP_init(); // initialize the Board Support Package
+
+    // dictionaries...
+    QS_OBJ_DICTIONARY(smlPoolSto);
+    QS_OBJ_DICTIONARY(blinkyQSto);
+
+    QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
+
+    // pause execution of the test and wait for the test script to continue
+    QS_TEST_PAUSE();
+
+
 
     // publish-subscribe not used, no call to QF::psInit()
     // dynamic event allocation not used, no call to QF::poolInit()

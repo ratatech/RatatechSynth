@@ -66,7 +66,14 @@ Blinky::Blinky()
 //${AOs::Blinky::SM} .........................................................
 QP::QState Blinky::initial(Blinky * const me, QP::QEvt const * const e) {
     //${AOs::Blinky::SM::initial}
+    QS_OBJ_DICTIONARY(&l_blinky);
+    QS_OBJ_DICTIONARY(&l_blinky.m_timeEvt);
+
     me->m_timeEvt.armX(BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);
+
+    QS_FUN_DICTIONARY(&off);
+    QS_FUN_DICTIONARY(&on);
+
     return Q_TRAN(&off);
 }
 //${AOs::Blinky::SM::off} ....................................................
