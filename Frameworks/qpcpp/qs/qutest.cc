@@ -52,6 +52,8 @@ Q_DEFINE_THIS_MODULE("qutest")
 // Global objects ============================================================
 uint8_t volatile QF_intNest;
 
+
+#ifndef Q_SPY
 // QF functions ==============================================================
 void QF::init(void) {
     QF_maxPool_      = static_cast<uint_fast8_t>(0);
@@ -80,6 +82,7 @@ int_t QF::run(void) {
 }
 
 //............................................................................
+
 void QActive::start(uint_fast8_t const prio,
                     QEvt const *qSto[], uint_fast16_t const qLen,
                     void * const, uint_fast16_t const,
@@ -96,11 +99,12 @@ void QActive::start(uint_fast8_t const prio,
     this->init(ie); // take the top-most initial tran. (virtual)
     QS_FLUSH();     // flush the trace buffer to the host
 }
+
 //............................................................................
 void QActive::stop(void) {
     QF::remove_(this); // remove this active object from the framework
 }
-
+#endif
 //****************************************************************************
 // The following flags and bitmasks are for the fields of the @c refCtr_
 // attribute of the QP::QTimeEvt class (inherited from QEvt). This attribute
@@ -114,6 +118,7 @@ enum {
 };
 
 //............................................................................
+#ifndef Q_SPY
 QTimeEvtCtr QTimeEvt::ctr(void) const {
     QTimeEvtCtr ret;
     QF_CRIT_STAT_
@@ -125,6 +130,7 @@ QTimeEvtCtr QTimeEvt::ctr(void) const {
     return ret;
 }
 //............................................................................
+
 QTimeEvt::QTimeEvt(QActive * const act,
                    enum_t const sgnl, uint_fast8_t const tickRate)
     :
@@ -155,6 +161,7 @@ QTimeEvt::QTimeEvt(QActive * const act,
     //
     refCtr_ = static_cast<uint8_t>(tickRate);
 }
+
 //............................................................................
 void QTimeEvt::armX(QTimeEvtCtr const nTicks, QTimeEvtCtr const interval) {
     uint_fast8_t tickRate = static_cast<uint_fast8_t>(refCtr_)
@@ -186,6 +193,7 @@ void QTimeEvt::armX(QTimeEvtCtr const nTicks, QTimeEvtCtr const interval) {
 
     QF_CRIT_EXIT_();
 }
+
 //............................................................................
 bool QTimeEvt::disarm(void) {
     QF_CRIT_STAT_
@@ -290,7 +298,9 @@ bool QTimeEvt::wasDisarmed(void) {
     refCtr_ |= static_cast<uint8_t>(TE_WAS_DISARMED); // set the flag
     return isDisarmed != static_cast<uint8_t>(0);
 }
+#endif
 //............................................................................
+#ifndef Q_SPY
 void QF::tickX_(uint_fast8_t const tickRate, void const * const sender) {
     QF_CRIT_STAT_
 
@@ -329,6 +339,7 @@ void QF::tickX_(uint_fast8_t const tickRate, void const * const sender) {
         QF_CRIT_EXIT_();
     }
 }
+#endif
 //............................................................................
 void QS::processTestEvts_(void) {
     QS_TEST_PROBE_DEF(&QS::processTestEvts_)
@@ -358,6 +369,7 @@ void QS::processTestEvts_(void) {
 
 } // namespace QP
 
+
 //****************************************************************************
 void Q_onAssert(char const * const module, int_t loc) {
     QS_BEGIN_NOCRIT_(QP::QS_ASSERT_FAIL,
@@ -366,10 +378,13 @@ void Q_onAssert(char const * const module, int_t loc) {
         QS_U16_(static_cast<uint16_t>(loc));
         QS_STR_((module != static_cast<char_t *>(0)) ? module : "?");
     QS_END_NOCRIT_()
-    QP::QS::onFlush(); // flush the assertion record to the host
-    QP::QS::onTestLoop(); // loop to wait for commands (typically reset)
-    QP::QS::onReset(); // in case the QUTEST loop ever returns, reset manually
+    QP::QS::onFlush();
+//    QP::QS::onFlush(); // flush the assertion record to the host
+//    QP::QS::onTestLoop(); // loop to wait for commands (typically reset)
+//    QP::QS::onReset(); // in case the QUTEST loop ever returns, reset manually
+
 }
+
 
 #endif // Q_UTEST
 

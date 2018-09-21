@@ -98,9 +98,6 @@ QP::QState Blinky::on(Blinky * const me, QP::QEvt const * const e) {
         //${AOs::Blinky::SM::on}
         case Q_ENTRY_SIG: {
             BSP_ledOn();
-            QS_BEGIN(BLINKY, AO_Blinky)
-                QS_STR("safadfadfadfdfadf");
-            QS_END()
             status_ = Q_HANDLED();
             break;
         }

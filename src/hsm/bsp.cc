@@ -142,13 +142,13 @@ void QF::onStartup(void) {
     // enable IRQs...
 }
 //............................................................................
-void QF::onCleanup(void) {
+void QS::onCleanup(void) {
 }
 //............................................................................
-//void QS::onFlush(void) {
-//    uint16_t b;
+void QS::onFlush(void) {
+    uint16_t b;
 
-//    QF_INT_DISABLE();
+    QF_INT_DISABLE();
 //    while ((b = getByte()) != QS_EOD) { // while not End-Of-Data...
 //        QF_INT_ENABLE();
 //        // while TXE not empty
@@ -157,8 +157,8 @@ void QF::onCleanup(void) {
 //        DPP::l_USART0->TXDATA  = (b & 0xFFU); // put into the DR register
 //        QF_INT_DISABLE();
 //    }
-//    QF_INT_ENABLE();
-//}
+    QF_INT_ENABLE();
+}
 //............................................................................
 void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
     // toggle LED1 on and then off, see NOTE02
@@ -177,6 +177,7 @@ void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
     QF_INT_ENABLE(); // just enable interrupts
 #endif
 }
+
 
 //............................................................................
 extern "C" void Q_onAssert(char const *module, int loc) {
