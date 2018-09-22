@@ -347,13 +347,13 @@ bool QS::onStartup(void const *arg) {
 //    GPIOA->MODER  &= ~(( 3U << 2*3) | ( 3U << 2*2));
 //    GPIOA->MODER  |=  (( 2U << 2*3) | ( 2U << 2*2));
 
-    USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U); // baud rate
-    USART2->CR3  = 0x0000U;        // no flow control
-    USART2->CR2  = 0x0000U;        // 1 stop bit
-    USART2->CR1  = ((1U <<  2) |   // enable RX
-                    (1U <<  3) |   // enable TX
-                    (0U << 12) |   // 1 start bit, 8 data bits
-                    (1U << 13));   // enable USART
+//    USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U); // baud rate
+//    USART2->CR3  = 0x0000U;        // no flow control
+//    USART2->CR2  = 0x0000U;        // 1 stop bit
+//    USART2->CR1  = ((1U <<  2) |   // enable RX
+//                    (1U <<  3) |   // enable TX
+//                    (0U << 12) |   // 1 start bit, 8 data bits
+//                    (1U << 13));   // enable USART
 
     DPP::QS_tickPeriod_ = SystemCoreClock / DPP::BSP::TICKS_PER_SEC;
     DPP::QS_tickTime_ = DPP::QS_tickPeriod_; // to start the timestamp at zero
