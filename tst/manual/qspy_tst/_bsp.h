@@ -31,8 +31,8 @@
 // https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
-#ifndef bsp_h
-#define bsp_h
+#ifndef _bsp_h
+#define _bsp_h
 
 namespace DPP {
 
@@ -52,8 +52,9 @@ public:
     static void wait4SW1(void);
     static void ledOn(void);
     static void ledOff(void);
+
 };
 
 } // namespace DPP
 
-#endif // bsp_h
+#endif // _bsp_h

@@ -35,8 +35,10 @@
 #include "dpp.h"
 #include "_bsp.h"
 
-#include "stm32l1xx.h"  // CMSIS-compliant header file for the MCU used
 // add other drivers if necessary...
+#include "stm32f10x_conf.h"
+#include "system_init.h"
+#include "stm32f10x.h"
 
 Q_DEFINE_THIS_FILE
 
@@ -142,31 +144,53 @@ void EXTI0_IRQHandler(void) {
 } // extern "C"
 
 // BSP functions =============================================================
+
+void BSP::ledOff(void) {
+	iprintf("\nBLINKY: LED -----------------------> OFF");
+
+	// Set LED2 on nucleo board ---> OFF
+	GPIOA->BRR = GPIO_Pin_5;
+
+	// Set LED/D3 on PCB ---> OFF
+	GPIOB->BRR = GPIO_Pin_11;
+}
+//............................................................................
+void BSP::ledOn(void) {
+	iprintf("\nBLINKY: LED -----------------------> ON");
+
+	// Set LED2 on nucleo board --->  ON
+	GPIOA->BSRR = GPIO_Pin_5;
+
+	// Set LED/D3 on PCB ---> ON
+	GPIOB->BSRR = GPIO_Pin_11;
+
+}
+
 void BSP::init(void) {
     // NOTE: SystemInit() already called from the startup code
     //  but SystemCoreClock needs to be updated
     //
-    SystemCoreClockUpdate();
+//    SystemCoreClockUpdate();
 
     // enable GPIOA clock port for the LED LD2
-    RCC->AHBENR |= (1U << 0);
+//    RCC->AHBENR |= (1U << 0);
 
     // configure LED (PA.5) pin as push-pull output, no pull-up, pull-down
-    GPIOA->MODER   &= ~((3U << 2*5));
-    GPIOA->MODER   |=  ((1U << 2*5));
-    GPIOA->OTYPER  &= ~((1U <<   5));
-    GPIOA->OSPEEDR &= ~((3U << 2*5));
-    GPIOA->OSPEEDR |=  ((1U << 2*5));
-    GPIOA->PUPDR   &= ~((3U << 2*5));
+//    GPIOA->MODER   &= ~((3U << 2*5));
+//    GPIOA->MODER   |=  ((1U << 2*5));
+//    GPIOA->OTYPER  &= ~((1U <<   5));
+//    GPIOA->OSPEEDR &= ~((3U << 2*5));
+//    GPIOA->OSPEEDR |=  ((1U << 2*5));
+//    GPIOA->PUPDR   &= ~((3U << 2*5));
 
     // enable GPIOC clock port for the Button B1
-    RCC->AHBENR |=  (1U << 2);
+//    RCC->AHBENR |=  (1U << 2);
 
     // configure Button (PC.13) pins as input, no pull-up, pull-down
-    GPIOC->MODER   &= ~(3U << 2*13);
-    GPIOC->OSPEEDR &= ~(3U << 2*13);
-    GPIOC->OSPEEDR |=  (1U << 2*13);
-    GPIOC->PUPDR   &= ~(3U << 2*13);
+//    GPIOC->MODER   &= ~(3U << 2*13);
+//    GPIOC->OSPEEDR &= ~(3U << 2*13);
+//    GPIOC->OSPEEDR |=  (1U << 2*13);
+//    GPIOC->PUPDR   &= ~(3U << 2*13);
 
     BSP::randomSeed(1234U);
 
@@ -180,10 +204,10 @@ void BSP::init(void) {
 //............................................................................
 void BSP::displayPhilStat(uint8_t n, char const *stat) {
     if (stat[0] == 'h') {
-        GPIOA->BSRRL |= LED_LD2;  // turn LED on
+        //GPIOA->BSRRL |= LED_LD2;  // turn LED on
     }
     else {
-        GPIOA->BSRRH |= LED_LD2;  // turn LED off
+        //GPIOA->BSRRH |= LED_LD2;  // turn LED off
     }
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) // application-specific record begin
@@ -318,10 +342,10 @@ bool QS::onStartup(void const *arg) {
     RCC->APB1ENR  |=  (1U << 17);   // Enable USART#2 clock
 
     // Configure PA3 to USART2_RX, PA2 to USART2_TX
-    GPIOA->AFR[0] &= ~((15U << 4*3) | (15U << 4*2));
-    GPIOA->AFR[0] |=  (( 7U << 4*3) | ( 7U << 4*2));
-    GPIOA->MODER  &= ~(( 3U << 2*3) | ( 3U << 2*2));
-    GPIOA->MODER  |=  (( 2U << 2*3) | ( 2U << 2*2));
+//    GPIOA->AFR[0] &= ~((15U << 4*3) | (15U << 4*2));
+//    GPIOA->AFR[0] |=  (( 7U << 4*3) | ( 7U << 4*2));
+//    GPIOA->MODER  &= ~(( 3U << 2*3) | ( 3U << 2*2));
+//    GPIOA->MODER  |=  (( 2U << 2*3) | ( 2U << 2*2));
 
     USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U); // baud rate
     USART2->CR3  = 0x0000U;        // no flow control
