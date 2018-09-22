@@ -46,7 +46,7 @@ object_pool_t object_pool;
 synth_params_t synth_params;
 
 //............................................................................
-int main() {
+int main(void) {
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);

@@ -87,10 +87,6 @@ void SysTick_Handler(void) {
 
 } // extern "C"
 
-enum {
-   LED = QS_USER
-};
-
 // BSP functions =============================================================
 void BSP_init(void) {
 
@@ -146,6 +142,7 @@ void QF::onStartup(void) {
     // enable IRQs...
 }
 //............................................................................
+#ifdef Q_SPY
 void QS::onCleanup(void) {
 }
 //............................................................................
@@ -163,6 +160,8 @@ void QS::onFlush(void) {
 //    }
     QF_INT_ENABLE();
 }
+#endif
+
 //............................................................................
 void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
     // toggle LED1 on and then off, see NOTE02
