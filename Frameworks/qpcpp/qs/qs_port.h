@@ -54,6 +54,6 @@
 // the other QP component, by simply including "qf_port.h" *before* "qs.h".
 //
 #include "qf_port.h" // use QS with QF
-#include "qs/qs.h"      // QS platform-independent public interface
+#include "qs.h"      // QS platform-independent public interface
 
 #endif // qs_port_h

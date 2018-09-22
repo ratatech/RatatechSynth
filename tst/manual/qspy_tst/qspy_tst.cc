@@ -26,12 +26,11 @@ This file is part of XXXXXXX
 #include "tst_utils.h"
 #include "system_init.h"
 #include "qpcpp.h"
-#include "blinky.h"
 #include "stm32f10x_conf.h"
 #include "system_init.h"
 #include "stm32f10x.h"
 #include "_bsp.h"
-
+#include "dpp.h"
 
 using namespace QP;
 Q_DEFINE_THIS_FILE
@@ -46,9 +45,8 @@ object_pool_t object_pool;
  */
 synth_params_t synth_params;
 
-
-int main(int argc, char *argv[])
-{
+//............................................................................
+int main() {
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -65,39 +63,52 @@ int main(int argc, char *argv[])
 
     iprintf("\n\nTEST: QSPY\n-----------------------\n");
 
-    static QF_MPOOL_EL(QEvt) smlPoolSto[10]; // storage for small pool
-    static QEvt const *blinkyQSto[10]; // Event queue storage for Blinky
+    static QP::QEvt const *tableQueueSto[N_PHILO];
+    static QP::QEvt const *philoQueueSto[N_PHILO][N_PHILO];
+    static QP::QSubscrList subscrSto[DPP::MAX_PUB_SIG];
 
-    QF::init(); // initialize the framework and the underlying RT kernel
+    static QF_MPOOL_EL(DPP::TableEvt) smlPoolSto[2*N_PHILO];
 
-    // initialize the QS software tracing
-    Q_ALLEGE(QS_INIT(argc > 1 ? argv[1] : (void *)0));
 
-    BSP_init(); // initialize the Board Support Package
+    QP::QF::init();  // initialize the framework and the underlying RT kernel
 
-    // dictionaries...
+    DPP::BSP::init(); // initialize the BSP
+
+    // object dictionaries...
+    QS_OBJ_DICTIONARY(DPP::AO_Table);
+    QS_OBJ_DICTIONARY(DPP::AO_Philo[0]);
+    QS_OBJ_DICTIONARY(DPP::AO_Philo[1]);
+    QS_OBJ_DICTIONARY(DPP::AO_Philo[2]);
+    QS_OBJ_DICTIONARY(DPP::AO_Philo[3]);
+    QS_OBJ_DICTIONARY(DPP::AO_Philo[4]);
+
+    // object dictionaries...
     QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(blinkyQSto);
+    QS_OBJ_DICTIONARY(tableQueueSto);
+    QS_OBJ_DICTIONARY(philoQueueSto[0]);
+    QS_OBJ_DICTIONARY(philoQueueSto[1]);
+    QS_OBJ_DICTIONARY(philoQueueSto[2]);
+    QS_OBJ_DICTIONARY(philoQueueSto[3]);
+    QS_OBJ_DICTIONARY(philoQueueSto[4]);
 
-    QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
+    QP::QF::psInit(subscrSto, Q_DIM(subscrSto)); // init publish-subscribe
 
-    // pause execution of the test and wait for the test script to continue
-    QS_TEST_PAUSE();
+    // initialize event pools...
+    QP::QF::poolInit(smlPoolSto,
+                     sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
+    // start the active objects...
+    for (uint8_t n = 0U; n < N_PHILO; ++n) {
+        DPP::AO_Philo[n]->start((uint8_t)(n + 1U),
+                           philoQueueSto[n], Q_DIM(philoQueueSto[n]),
+                           (void *)0, 0U);
+    }
+    DPP::AO_Table->start((uint8_t)(N_PHILO + 1U),
+                    tableQueueSto, Q_DIM(tableQueueSto),
+                    (void *)0, 0U);
 
-
-    // publish-subscribe not used, no call to QF::psInit()
-    // dynamic event allocation not used, no call to QF::poolInit()
-
-    // instantiate and start the active objects...
-    AO_Blinky->start(1U,                            // priority
-                     blinkyQSto, Q_DIM(blinkyQSto), // event queue
-                     (void *)0, 0U);                // stack (unused)
-
-    return QF::run(); // run the QF application
-
+    return QP::QF::run(); // run the QF application
 }
-
 
 
 

@@ -37,8 +37,8 @@
 /// @endcond
 
 #define QP_IMPL           // this is QP implementation
-#include <qs/qs_port.h>      // QS port
-#include "qs/qs_pkg.h"       // QS package-scope internal interface
+#include <qs_port.h>      // QS port
+#include "qs_pkg.h"       // QS package-scope internal interface
 #include "qf_pkg.h"       // QF package-scope internal interface
 #include "qassert.h"      // QP assertions
 

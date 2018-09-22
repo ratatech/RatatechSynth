@@ -37,8 +37,8 @@
 /// @endcond
 
 #define QP_IMPL           // this is QF/QK implementation
-#include <qs/qs_port.h>      // QS port
-#include "qs/qs_pkg.h"       // QS package-scope internal interface
+#include <qs_port.h>      // QS port
+#include "qs_pkg.h"       // QS package-scope internal interface
 
 namespace QP {
 
