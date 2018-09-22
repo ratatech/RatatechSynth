@@ -122,23 +122,23 @@ void SysTick_Handler(void) {
     buttons.depressed &= (buttons.previous | current); // clear released
     buttons.previous   = current; // update the history
     tmp ^= buttons.depressed;     // changed debounced depressed
-    if ((tmp & BTN_B1) != 0U) {  // debounced BTN_B1 state changed?
-        if ((buttons.depressed & BTN_B1) != 0U) { // is BTN_B1 depressed?
-            static QP::QEvt const pauseEvt = { DPP::PAUSE_SIG, 0U, 0U};
-            QP::QF::PUBLISH(&pauseEvt, &l_SysTick_Handler);
-        }
-        else {            // the button is released
-            static QP::QEvt const serveEvt = { DPP::SERVE_SIG, 0U, 0U};
-            QP::QF::PUBLISH(&serveEvt, &l_SysTick_Handler);
-        }
-    }
+//    if ((tmp & BTN_B1) != 0U) {  // debounced BTN_B1 state changed?
+//        if ((buttons.depressed & BTN_B1) != 0U) { // is BTN_B1 depressed?
+//            //static QP::QEvt const pauseEvt = { DPP::PAUSE_SIG, 0U, 0U};
+//            QP::QF::PUBLISH(&pauseEvt, &l_SysTick_Handler);
+//        }
+//        else {            // the button is released
+//            //static QP::QEvt const serveEvt = { DPP::SERVE_SIG, 0U, 0U};
+//            QP::QF::PUBLISH(&serveEvt, &l_SysTick_Handler);
+//        }
+//    }
 }
 //............................................................................
 void EXTI0_IRQHandler(void); // prototype
 void EXTI0_IRQHandler(void) {
-    // for testing..
-    DPP::AO_Table->POST(Q_NEW(QP::QEvt, DPP::MAX_PUB_SIG),
-                        &l_EXTI0_IRQHandler);
+//    // for testing..
+//    DPP::AO_Table->POST(Q_NEW(QP::QEvt, DPP::MAX_PUB_SIG),
+//                        &l_EXTI0_IRQHandler);
 }
 
 } // extern "C"
