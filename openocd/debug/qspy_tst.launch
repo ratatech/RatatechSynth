@@ -47,7 +47,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="_qspy_tst/_qspy_tst.elf"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="RatatechSynth"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588.2027273781.158086908.983275184"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588.2027273781.158086908.1885657257"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/RatatechSynth"/>
 </listAttribute>
