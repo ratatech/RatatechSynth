@@ -167,30 +167,6 @@ void BSP::ledOn(void) {
 }
 
 void BSP::init(void) {
-    // NOTE: SystemInit() already called from the startup code
-    //  but SystemCoreClock needs to be updated
-    //
-//    SystemCoreClockUpdate();
-
-    // enable GPIOA clock port for the LED LD2
-//    RCC->AHBENR |= (1U << 0);
-
-    // configure LED (PA.5) pin as push-pull output, no pull-up, pull-down
-//    GPIOA->MODER   &= ~((3U << 2*5));
-//    GPIOA->MODER   |=  ((1U << 2*5));
-//    GPIOA->OTYPER  &= ~((1U <<   5));
-//    GPIOA->OSPEEDR &= ~((3U << 2*5));
-//    GPIOA->OSPEEDR |=  ((1U << 2*5));
-//    GPIOA->PUPDR   &= ~((3U << 2*5));
-
-    // enable GPIOC clock port for the Button B1
-//    RCC->AHBENR |=  (1U << 2);
-
-    // configure Button (PC.13) pins as input, no pull-up, pull-down
-//    GPIOC->MODER   &= ~(3U << 2*13);
-//    GPIOC->OSPEEDR &= ~(3U << 2*13);
-//    GPIOC->OSPEEDR |=  (1U << 2*13);
-//    GPIOC->PUPDR   &= ~(3U << 2*13);
 
     BSP::randomSeed(1234U);
 
@@ -204,10 +180,10 @@ void BSP::init(void) {
 //............................................................................
 void BSP::displayPhilStat(uint8_t n, char const *stat) {
     if (stat[0] == 'h') {
-        //GPIOA->BSRRL |= LED_LD2;  // turn LED on
+    	GPIOB->BSRR = GPIO_Pin_11;  // turn LED on
     }
     else {
-        //GPIOA->BSRRH |= LED_LD2;  // turn LED off
+    	GPIOB->BRR = GPIO_Pin_11;  // turn LED off
     }
 
     QS_BEGIN(PHILO_STAT, AO_Philo[n]) // application-specific record begin
@@ -219,10 +195,10 @@ void BSP::displayPhilStat(uint8_t n, char const *stat) {
 void BSP::displayPaused(uint8_t paused) {
     // not enough LEDs to implement this feature
     if (paused != (uint8_t)0) {
-        //GPIOA->BSRRL |= LED_LD2;  // turn LED on
+    	GPIOB->BSRR = GPIO_Pin_11;  // turn LED on
     }
     else {
-        //GPIOA->BSRRH |= LED_LD2;  // turn LED off
+    	GPIOB->BRR = GPIO_Pin_11;  // turn LED off
     }
 }
 //............................................................................
@@ -273,8 +249,8 @@ void QF::onCleanup(void) {
 //............................................................................
 void QV::onIdle(void) { // called with interrupts disabled, see NOTE01
     // toggle the User LED on and then off (not enough LEDs, see NOTE02)
-    //GPIOA->BSRRL |= LED_LD2;  // turn LED on
-    //GPIOA->BSRRH |= LED_LD2;  // turn LED off
+	GPIOB->BSRR |= GPIO_Pin_11;  // turn LED on
+	GPIOB->BRR |= GPIO_Pin_11;  // turn LED off
 
 #ifdef Q_SPY
     QF_INT_ENABLE();
