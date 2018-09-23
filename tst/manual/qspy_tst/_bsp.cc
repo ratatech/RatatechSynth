@@ -337,24 +337,6 @@ bool QS::onStartup(void const *arg) {
     static uint8_t qsBuf[2*1024]; // buffer for Quantum Spy
     initBuf(qsBuf, sizeof(qsBuf));
 
-    // enable peripheral clock for USART2
-    RCC->AHBENR   |=  (1U <<  0);   // Enable GPIOA clock
-    RCC->APB1ENR  |=  (1U << 17);   // Enable USART#2 clock
-
-    // Configure PA3 to USART2_RX, PA2 to USART2_TX
-//    GPIOA->AFR[0] &= ~((15U << 4*3) | (15U << 4*2));
-//    GPIOA->AFR[0] |=  (( 7U << 4*3) | ( 7U << 4*2));
-//    GPIOA->MODER  &= ~(( 3U << 2*3) | ( 3U << 2*2));
-//    GPIOA->MODER  |=  (( 2U << 2*3) | ( 2U << 2*2));
-
-//    USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U); // baud rate
-//    USART2->CR3  = 0x0000U;        // no flow control
-//    USART2->CR2  = 0x0000U;        // 1 stop bit
-//    USART2->CR1  = ((1U <<  2) |   // enable RX
-//                    (1U <<  3) |   // enable TX
-//                    (0U << 12) |   // 1 start bit, 8 data bits
-//                    (1U << 13));   // enable USART
-
     DPP::QS_tickPeriod_ = SystemCoreClock / DPP::BSP::TICKS_PER_SEC;
     DPP::QS_tickTime_ = DPP::QS_tickPeriod_; // to start the timestamp at zero
 
