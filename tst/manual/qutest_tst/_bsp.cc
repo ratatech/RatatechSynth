@@ -84,7 +84,7 @@ static unsigned  l_rnd;  // random seed
     static uint8_t const l_EXTI0_IRQHandler = 0U;
 
     enum AppRecords { // application-specific trace records
-        PHILO_STAT = QP::QS_USER
+        BSP_CALL = QP::QS_USER
     };
 
 #endif
@@ -175,7 +175,7 @@ void BSP::init(int argc, char **argv) {
     QS_FUN_DICTIONARY(&BSP::randomSeed);
     QS_FUN_DICTIONARY(&QP::QHsm::top);
 
-    QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(BSP_CALL);
 
     BSP::randomSeed(1234U);
 }
@@ -186,14 +186,14 @@ void BSP::displayPaused(uint8_t paused) {
     QS_TEST_PROBE(
         Q_ASSERT_ID(100, 0);
     )
-    QS_BEGIN(PHILO_STAT, 0) // application-specific record
+    QS_BEGIN(BSP_CALL, 0) // application-specific record
         QS_FUN(&BSP::displayPaused);
         QS_U8(0, paused);
     QS_END()
 }
 //............................................................................
 void BSP::displayPhilStat(uint8_t n, char const *stat) {
-    QS_BEGIN(PHILO_STAT, 0) // application-specific record
+    QS_BEGIN(BSP_CALL, 0) // application-specific record
         QS_FUN(&BSP::displayPhilStat);
         QS_U8(0, n);
         QS_STR(stat);
@@ -207,7 +207,7 @@ uint32_t BSP::random(void) {
     QS_TEST_PROBE(
         rnd = qs_tp_;
     )
-    QS_BEGIN(PHILO_STAT, 0) // application-specific record
+    QS_BEGIN(BSP_CALL, 0) // application-specific record
         QS_FUN(&BSP::random);
         QS_U32(0, rnd);
     QS_END()
@@ -221,7 +221,7 @@ void BSP::randomSeed(uint32_t seed) {
         seed = qs_tp_;
     )
     l_rnd = seed;
-    QS_BEGIN(PHILO_STAT, 0) // application-specific record
+    QS_BEGIN(BSP_CALL, 0) // application-specific record
         QS_FUN(&BSP::randomSeed);
         QS_U32(0, seed);
     QS_END()
@@ -339,7 +339,7 @@ bool QS::onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_DISPATCH);
     QS_FILTER_ON(QS_QEP_UNHANDLED);
 
-    QS_FILTER_ON(DPP::PHILO_STAT);
+    QS_FILTER_ON(DPP::BSP_CALL);
 
     return true; // return success
 }
@@ -373,19 +373,34 @@ void QS::onFlush(void) {
 //............................................................................
 //! callback function to reset the target (to be implemented in the BSP)
 void QS::onReset(void) {
-    //TBD
+	NVIC_SystemReset();
 }
 //............................................................................
-//! callback function to execute a uesr command (to be implemented in BSP)
-void QS::onCommand(uint8_t cmdId, uint32_t param1,
-                   uint32_t param2, uint32_t param3)
+// callback function to execute user commands
+void QS::onCommand(uint8_t cmdId,
+                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
     (void)cmdId;
     (void)param1;
     (void)param2;
     (void)param3;
-    //TBD
+
+    switch (cmdId) {
+       case 0U: {
+           QEvt const e = { DPP::PAUSE_SIG, 0U, 0U };
+           DPP::AO_Table->dispatch(&e);
+           break;
+       }
+       case 1U: {
+           QEvt const e = { DPP::SERVE_SIG, 0U, 0U };
+           DPP::AO_Table->dispatch(&e);
+           break;
+       }
+       default:
+           break;
+    }
 }
+
 
 void QS::onTestLoop() {
 //    rxPriv_.inTestLoop = true;
