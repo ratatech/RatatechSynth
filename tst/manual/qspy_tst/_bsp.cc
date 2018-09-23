@@ -124,11 +124,11 @@ void SysTick_Handler(void) {
     tmp ^= buttons.depressed;     // changed debounced depressed
 //    if ((tmp & BTN_B1) != 0U) {  // debounced BTN_B1 state changed?
 //        if ((buttons.depressed & BTN_B1) != 0U) { // is BTN_B1 depressed?
-//            //static QP::QEvt const pauseEvt = { DPP::PAUSE_SIG, 0U, 0U};
+//            static QP::QEvt const pauseEvt = { DPP::PAUSE_SIG, 0U, 0U};
 //            QP::QF::PUBLISH(&pauseEvt, &l_SysTick_Handler);
 //        }
 //        else {            // the button is released
-//            //static QP::QEvt const serveEvt = { DPP::SERVE_SIG, 0U, 0U};
+//            static QP::QEvt const serveEvt = { DPP::SERVE_SIG, 0U, 0U};
 //            QP::QF::PUBLISH(&serveEvt, &l_SysTick_Handler);
 //        }
 //    }
