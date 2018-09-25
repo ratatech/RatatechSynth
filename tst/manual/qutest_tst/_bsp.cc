@@ -376,52 +376,40 @@ void QS::onReset(void) {
 	NVIC_SystemReset();
 }
 //............................................................................
-// callback function to execute user commands
-void QS::onCommand(uint8_t cmdId,
-                   uint32_t param1, uint32_t param2, uint32_t param3)
-{
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
-
-    switch (cmdId) {
-       case 0U: {
-           QEvt const e = { DPP::PAUSE_SIG, 0U, 0U };
-           DPP::AO_Table->dispatch(&e);
-           break;
-       }
-       case 1U: {
-           QEvt const e = { DPP::SERVE_SIG, 0U, 0U };
-           DPP::AO_Table->dispatch(&e);
-           break;
-       }
-       default:
-           break;
-    }
-}
-
 
 void QS::onTestLoop() {
-//    rxPriv_.inTestLoop = true;
-//    while (rxPriv_.inTestLoop) {
-//
+    rxPriv_.inTestLoop = true;
+    while (rxPriv_.inTestLoop) {
+
 //        // turn the LED1 on and off (glow)
 //        GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
 //        GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
-//
-//        rxParse();  // parse all the received bytes
-//
+
+        rxParse();  // parse all the received bytes
+
+        if ((USART2->SR & 0x0080U) != 0) {  // is TXE empty?
+            QF_INT_DISABLE();
+            uint16_t b = QS::getByte();
+            QF_INT_ENABLE();
+
+            if (b != QS_EOD) {  // not End-Of-Data?
+                USART2->DR  = (b & 0xFFU);  // put into the DR register
+            }
+        }
+
+
+
 //        if ((l_USART0->STATUS & USART_STATUS_TXBL) != 0) { // is TXE empty?
 //            uint16_t b = getByte();
 //            if (b != QS_EOD) {  // not End-Of-Data?
 //                l_USART0->TXDATA = (b & 0xFFU); // put into the DR register
 //            }
 //        }
-//    }
-//    // set inTestLoop to true in case calls to QS_onTestLoop() nest,
-//    // which can happen through the calls to QS_TEST_WAIT().
-//    rxPriv_.inTestLoop = true;
+    }
+
+    // set inTestLoop to true in case calls to QS_onTestLoop() nest,
+    // which can happen through the calls to QS_TEST_WAIT().
+    rxPriv_.inTestLoop = true;
 }
 #endif // Q_SPY
 //--------------------------------------------------------------------------*/
