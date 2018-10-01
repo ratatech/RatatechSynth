@@ -339,8 +339,11 @@ void QV::onIdle(void) { // called with interrupts disabled, see NOTE01
 
 //............................................................................
 bool QS::onStartup(void const *arg) {
-    static uint8_t qsBuf[2*1024]; // buffer for Quantum Spy
-    initBuf(qsBuf, sizeof(qsBuf));
+    static uint8_t qsTxBuf[2*1024]; // buffer for QS transmit channel
+    static uint8_t qsRxBuf[100];    // buffer for QS receive channel
+
+    initBuf  (qsTxBuf, sizeof(qsTxBuf));
+    rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
 //    // enable peripheral clock for USART2
 //    RCC->AHBENR   |=  (1U <<  0);   // Enable GPIOA clock
