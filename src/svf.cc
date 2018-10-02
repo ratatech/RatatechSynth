@@ -38,7 +38,7 @@ void Svf::configure(synth_params_t* synth_params){
 	 * 12 = 0x10
 	 * 24 = 0x08
 	 */
-	SVF_order_msk = 0x08;
+	SVF_order_msk = 0x10;
 
 	// Add order to select filter order
 	sreg_byte += SVF_order_msk;
@@ -97,12 +97,13 @@ void Svf::set_fc(synth_params_t* synth_params){
 	// Scale ADSR envelope with the adc knob fc selection.
 	//fc_adc = ((uint32_t)fc_adc * fc_env)>>15;
 	//fc_adc = (fc_adc * ((uint32_t)(synth_params->lfo_amp*PWM_PERIOD)>>15) )>>15;
-	TIM3->CCR4 = PWM_PERIOD - (fc_adc-fc_env);
+	//TIM3->CCR4 = PWM_PERIOD - (fc_adc-fc_env);
 	//TIM3->CCR4 = PWM_PERIOD-fc_env;
 //		TIM3->CCR4 = PWM_PERIOD - fc_adc;
 //		TIM3->CCR4 = PWM_PERIOD - fc_adc;
 //		TIM3->CCR4 = PWM_PERIOD-fc_env;
 //		TIM3->CCR4 = PWM_PERIOD - ((fc_adc * fc_lfo)>>15);
 	//TIM3->CCR4 = PWM_PERIOD - (fc_lfo);
+	TIM3->CCR4 = fc_adc;
 
 }

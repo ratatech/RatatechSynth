@@ -26,11 +26,11 @@ This file is part of XXXXXXX
 #include "arm_math.h"
 
 #define FS 48000
-#define CONTROL_RATE 16000
+#define CONTROL_RATE 4000
 #define SHIFT_20_BIT 0x100000
 #define SHIFT_31_BIT 0x7FFFFFFF
 #define SHIFT_15_BIT 0x7FFF
-#define PWM_PERIOD   0x4000
+#define PWM_PERIOD   0x7FFF
 #define FRAME_SIZE 32
 #define ADSR_BLOCK_SIZE 1
 #define LFO_BLOCK_SIZE 1
