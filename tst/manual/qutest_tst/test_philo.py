@@ -33,7 +33,7 @@ def test_TIMEOUT_Philo_post(qutest):
     qutest.expect("===RTC===> St-Entry Obj=AO_Philo<2>,State=hungry")
     qutest.expect("%timestamp ===>Tran Obj=AO_Philo<2>,Sig=TIMEOUT_SIG,State=thinking->hungry")
     qutest.expect("%timestamp Trg-Done QS_RX_EVENT")
- 
+  
 def test_publish_EAT_2(qutest_noreset):
     qutest = qutest_noreset # Rename for consistancy
     qutest.loc_filter(QS_OBJ_KIND.SM_AO, 'AO_Philo<2>')
@@ -46,7 +46,7 @@ def test_publish_EAT_2(qutest_noreset):
     qutest.expect("===RTC===> St-Entry Obj=AO_Philo<2>,State=eating")
     qutest.expect("%timestamp ===>Tran Obj=AO_Philo<2>,Sig=EAT_SIG,State=hungry->eating")
     qutest.expect("%timestamp Trg-Done QS_RX_EVENT")
-   
+    
 def test_TIMEOUT_Philo_thinking_ASSERT(qutest):
     qutest.probe('QActive::post_', 1)
     qutest.dispatch('TIMEOUT_SIG')
@@ -54,7 +54,7 @@ def test_TIMEOUT_Philo_thinking_ASSERT(qutest):
     qutest.expect("===RTC===> St-Exit  Obj=AO_Philo<2>,State=thinking")
     qutest.expect("%timestamp TstProbe Fun=QActive::post_,Data=1")
     qutest.expect("%timestamp =ASSERT= Mod=qf_actq,Loc=110")
-   
+     
 def test_TIMEOUT_Philo_eating_PUBLISH_from_AO(qutest):
     qutest.glb_filter(FILTER.OFF)
     qutest.dispatch('TIMEOUT_SIG')
@@ -73,7 +73,8 @@ def test_TIMEOUT_Philo_eating_PUBLISH_from_AO(qutest):
     qutest.expect("%timestamp ===>Tran Obj=AO_Philo<2>,Sig=TIMEOUT_SIG,State=eating->thinking")
     qutest.expect("%timestamp QF-gc    Evt<Sig=TIMEOUT_SIG,Pool=1,Ref=1>")
     qutest.expect("%timestamp Trg-Done QS_RX_EVENT")
-   
+    
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_timeEvt_Philo_tick(qutest):
     qutest.glb_filter(FILTER.SM, FILTER.AO, FILTER.TE)
     qutest.current_obj(QS_OBJ_KIND.TE, 'l_philo<2>.m_timeEvt')

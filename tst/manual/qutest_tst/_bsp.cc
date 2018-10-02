@@ -349,19 +349,6 @@ bool QS::onStartup(void const *arg) {
     DPP::QS_tickPeriod_ = SystemCoreClock / DPP::BSP::TICKS_PER_SEC;
     DPP::QS_tickTime_ = DPP::QS_tickPeriod_; // to start the timestamp at zero
 
-//    // setup the QS filters...
-//    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-//    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-//    QS_FILTER_ON(QS_QEP_STATE_INIT);
-//    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-//    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-//    QS_FILTER_ON(QS_QEP_TRAN);
-//    QS_FILTER_ON(QS_QEP_IGNORED);
-//    QS_FILTER_ON(QS_QEP_DISPATCH);
-//    QS_FILTER_ON(QS_QEP_UNHANDLED);
-//
-//    QS_FILTER_ON(DPP::BSP_CALL);
-
     return true; // return success
 }
 
