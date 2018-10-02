@@ -33,6 +33,8 @@ This file is part of XXXXXXX
 #include "dpp.h"
 
 using namespace QP;
+using namespace DPP;
+
 Q_DEFINE_THIS_FILE
 
 /**
@@ -64,46 +66,45 @@ int main(int argc, char *argv[]) {
     iprintf("\n\nTEST: QSPY\n-----------------------\n");
 
     static QP::QEvt const *tableQueueSto[N_PHILO];
-    static QP::QEvt const *philoQueueSto[N_PHILO][N_PHILO];
-    static QP::QSubscrList subscrSto[DPP::MAX_PUB_SIG];
+	static QP::QEvt const *philoQueueSto[N_PHILO][N_PHILO];
+	static QP::QSubscrList subscrSto[MAX_PUB_SIG];
+	static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO];
 
-    static QF_MPOOL_EL(DPP::TableEvt) smlPoolSto[2*N_PHILO];
+	QP::QF::init();  // initialize the framework and the underlying RT kernel
 
+	BSP::init(argc, argv); // initialize the BSP
 
-    QP::QF::init();  // initialize the framework and the underlying RT kernel
+	// object dictionaries...
+	QS_OBJ_DICTIONARY(AO_Table);
+	QS_OBJ_DICTIONARY(AO_Philo[0]);
+	QS_OBJ_DICTIONARY(AO_Philo[1]);
+	QS_OBJ_DICTIONARY(AO_Philo[2]);
+	QS_OBJ_DICTIONARY(AO_Philo[3]);
+	QS_OBJ_DICTIONARY(AO_Philo[4]);
+	QS_OBJ_DICTIONARY(smlPoolSto);
 
-    DPP::BSP::init(argc, argv); // initialize the BSP
+	// pause execution of the test and wait for the test script to continue
+	QS_TEST_PAUSE();
 
+	// initialize publish-subscribe...
+	QP::QF::psInit(subscrSto, Q_DIM(subscrSto));
 
-    // object dictionaries...
-    QS_OBJ_DICTIONARY(DPP::AO_Table);
-    QS_OBJ_DICTIONARY(DPP::AO_Philo[0]);
-    QS_OBJ_DICTIONARY(DPP::AO_Philo[1]);
-    QS_OBJ_DICTIONARY(DPP::AO_Philo[2]);
-    QS_OBJ_DICTIONARY(DPP::AO_Philo[3]);
-    QS_OBJ_DICTIONARY(DPP::AO_Philo[4]);
-    QS_OBJ_DICTIONARY(smlPoolSto);
+	// initialize event pools...
+	QP::QF::poolInit(smlPoolSto,
+				  sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
-    // pause execution of the test and wait for the test script to continue
-    QS_TEST_PAUSE();
+	// start the active objects...
+	for (uint8_t n = 0U; n < N_PHILO; ++n) {
+	 AO_Philo[n]->start((uint_fast8_t)(n + 1U), // priority
+						philoQueueSto[n], Q_DIM(philoQueueSto[n]),
+						(void *)0, 0U);
+	}
 
-    QP::QF::psInit(subscrSto, Q_DIM(subscrSto)); // init publish-subscribe
+	AO_Table->start((uint_fast8_t)(N_PHILO + 1U), // priority
+				 tableQueueSto, Q_DIM(tableQueueSto),
+				 (void *)0, 0U);
 
-    // initialize event pools...
-    QP::QF::poolInit(smlPoolSto,
-                     sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
-
-    // start the active objects...
-    for (uint8_t n = 0U; n < N_PHILO; ++n) {
-        DPP::AO_Philo[n]->start((uint8_t)(n + 1U),
-                           philoQueueSto[n], Q_DIM(philoQueueSto[n]),
-                           (void *)0, 0U);
-    }
-    DPP::AO_Table->start((uint8_t)(N_PHILO + 1U),
-                    tableQueueSto, Q_DIM(tableQueueSto),
-                    (void *)0, 0U);
-
-    return QP::QF::run(); // run the QF application
+	return QP::QF::run(); // run the QF application
 }
 
 

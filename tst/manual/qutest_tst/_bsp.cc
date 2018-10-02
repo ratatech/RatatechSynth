@@ -72,20 +72,20 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 // Button pins available on the board (just one user Button B1 on PC.13)
 #define BTN_B1   (1U << 13)
 
-static unsigned  l_rnd;  // random seed
+static uint32_t l_rnd; // random seed
+
+enum {
+	BSP_CALL = QP::QS_USER,
+};
 
 #ifdef Q_SPY
 
-    QP::QSTimeCtr QS_tickTime_;
-    QP::QSTimeCtr QS_tickPeriod_;
+QP::QSTimeCtr QS_tickTime_;
+QP::QSTimeCtr QS_tickPeriod_;
 
-    // event-source identifiers used for tracing
-    static uint8_t const l_SysTick_Handler    = 0U;
-    static uint8_t const l_EXTI0_IRQHandler = 0U;
-
-    enum AppRecords { // application-specific trace records
-        BSP_CALL = QP::QS_USER
-    };
+// event-source identifiers used for tracing
+static uint8_t const l_SysTick_Handler    = 0U;
+static uint8_t const l_EXTI0_IRQHandler = 0U;
 
 #endif
 
@@ -182,6 +182,7 @@ void BSP::ledOn(void) {
 
 }
 
+// BSP functions =============================================================
 void BSP::init(int argc, char **argv) {
     Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]));
 
@@ -242,6 +243,7 @@ void BSP::randomSeed(uint32_t seed) {
         QS_U32(0, seed);
     QS_END()
 }
+
 //............................................................................
 void BSP::terminate(int16_t result) {
     (void)result;
@@ -249,28 +251,27 @@ void BSP::terminate(int16_t result) {
 
 } // namespace DPP
 
-
 // namespace QP **************************************************************
 namespace QP {
 
-// QF callbacks ==============================================================
-void QF::onStartup(void) {
-    // set up the SysTick timer to fire at BSP::TICKS_PER_SEC rate
-    SysTick_Config(SystemCoreClock / DPP::BSP::TICKS_PER_SEC);
-
-    // set priorities of ALL ISRs used in the system, see NOTE00
-    //
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-    // DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-    //
-    NVIC_SetPriority(SysTick_IRQn, DPP::SYSTICK_PRIO);
-    NVIC_SetPriority(EXTI0_IRQn,   DPP::EXTI0_PRIO);
-    // ...
-
-    // enable IRQs...
-    NVIC_EnableIRQ(EXTI0_IRQn);
-}
+//// QF callbacks ==============================================================
+//void QF::onStartup(void) {
+//    // set up the SysTick timer to fire at BSP::TICKS_PER_SEC rate
+//    SysTick_Config(SystemCoreClock / DPP::BSP::TICKS_PER_SEC);
+//
+//    // set priorities of ALL ISRs used in the system, see NOTE00
+//    //
+//    // !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//    // Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
+//    // DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
+//    //
+//    NVIC_SetPriority(SysTick_IRQn, DPP::SYSTICK_PRIO);
+//    NVIC_SetPriority(EXTI0_IRQn,   DPP::EXTI0_PRIO);
+//    // ...
+//
+//    // enable IRQs...
+//    NVIC_EnableIRQ(EXTI0_IRQn);
+//}
 //............................................................................
 void QF::onCleanup(void) {
 }
@@ -345,39 +346,21 @@ bool QS::onStartup(void const *arg) {
     initBuf  (qsTxBuf, sizeof(qsTxBuf));
     rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
-//    // enable peripheral clock for USART2
-//    RCC->AHBENR   |=  (1U <<  0);   // Enable GPIOA clock
-//    RCC->APB1ENR  |=  (1U << 17);   // Enable USART#2 clock
-//
-//    // Configure PA3 to USART2_RX, PA2 to USART2_TX
-//    GPIOA->AFR[0] &= ~((15U << 4*3) | (15U << 4*2));
-//    GPIOA->AFR[0] |=  (( 7U << 4*3) | ( 7U << 4*2));
-//    GPIOA->MODER  &= ~(( 3U << 2*3) | ( 3U << 2*2));
-//    GPIOA->MODER  |=  (( 2U << 2*3) | ( 2U << 2*2));
-//
-//    USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U); // baud rate
-//    USART2->CR3  = 0x0000U;        // no flow control
-//    USART2->CR2  = 0x0000U;        // 1 stop bit
-//    USART2->CR1  = ((1U <<  2) |   // enable RX
-//                    (1U <<  3) |   // enable TX
-//                    (0U << 12) |   // 1 start bit, 8 data bits
-//                    (1U << 13));   // enable USART
-
     DPP::QS_tickPeriod_ = SystemCoreClock / DPP::BSP::TICKS_PER_SEC;
     DPP::QS_tickTime_ = DPP::QS_tickPeriod_; // to start the timestamp at zero
 
-    // setup the QS filters...
-    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
-    QS_FILTER_ON(QS_QEP_STATE_EXIT);
-    QS_FILTER_ON(QS_QEP_STATE_INIT);
-    QS_FILTER_ON(QS_QEP_INIT_TRAN);
-    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
-    QS_FILTER_ON(QS_QEP_TRAN);
-    QS_FILTER_ON(QS_QEP_IGNORED);
-    QS_FILTER_ON(QS_QEP_DISPATCH);
-    QS_FILTER_ON(QS_QEP_UNHANDLED);
-
-    QS_FILTER_ON(DPP::BSP_CALL);
+//    // setup the QS filters...
+//    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
+//    QS_FILTER_ON(QS_QEP_STATE_EXIT);
+//    QS_FILTER_ON(QS_QEP_STATE_INIT);
+//    QS_FILTER_ON(QS_QEP_INIT_TRAN);
+//    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
+//    QS_FILTER_ON(QS_QEP_TRAN);
+//    QS_FILTER_ON(QS_QEP_IGNORED);
+//    QS_FILTER_ON(QS_QEP_DISPATCH);
+//    QS_FILTER_ON(QS_QEP_UNHANDLED);
+//
+//    QS_FILTER_ON(DPP::BSP_CALL);
 
     return true; // return success
 }
@@ -386,16 +369,7 @@ bool QS::onStartup(void const *arg) {
 //............................................................................
 void QS::onCleanup(void) {
 }
-////............................................................................
-//QSTimeCtr QS::onGetTime(void) {  // NOTE: invoked with interrupts DISABLED
-//    if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { // not set?
-//        return DPP::QS_tickTime_ - static_cast<QSTimeCtr>(SysTick->VAL);
-//    }
-//    else { // the rollover occured, but the SysTick_ISR did not run yet
-//        return DPP::QS_tickTime_ + DPP::QS_tickPeriod_
-//               - static_cast<QSTimeCtr>(SysTick->VAL);
-//    }
-//}
+
 //............................................................................
 void QS::onFlush(void) {
     uint16_t b;
@@ -421,10 +395,6 @@ void QS::onTestLoop() {
     rxPriv_.inTestLoop = true;
     while (rxPriv_.inTestLoop) {
 
-//        // turn the LED1 on and off (glow)
-//        GPIO->P[LED_PORT].DOUT |=  (1U << LED1_PIN);
-//        GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
-
         rxParse();  // parse all the received bytes
 
         if ((USART2->SR & 0x0080U) != 0) {  // is TXE empty?
@@ -436,15 +406,6 @@ void QS::onTestLoop() {
                 USART2->DR  = (b & 0xFFU);  // put into the DR register
             }
         }
-
-
-
-//        if ((l_USART0->STATUS & USART_STATUS_TXBL) != 0) { // is TXE empty?
-//            uint16_t b = getByte();
-//            if (b != QS_EOD) {  // not End-Of-Data?
-//                l_USART0->TXDATA = (b & 0xFFU); // put into the DR register
-//            }
-//        }
     }
 
     // set inTestLoop to true in case calls to QS_onTestLoop() nest,
@@ -456,33 +417,3 @@ void QS::onTestLoop() {
 
 } // namespace QP
 
-//****************************************************************************
-// NOTE00:
-// The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
-// ISR priority that is disabled by the QF framework. The value is suitable
-// for the NVIC_SetPriority() CMSIS function.
-//
-// Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
-// with the numerical values of priorities equal or higher than
-// QF_AWARE_ISR_CMSIS_PRI) are allowed to call any QF services. These ISRs
-// are "QF-aware".
-//
-// Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
-// level (i.e., with the numerical values of priorities less than
-// QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-// Such "QF-unaware" ISRs cannot call any QF services. The only mechanism
-// by which a "QF-unaware" ISR can communicate with the QF framework is by
-// triggering a "QF-aware" ISR, which can post/publish events.
-//
-// NOTE01:
-// The QV_onIdle() callback is called with interrupts disabled, because the
-// determination of the idle condition might change by any interrupt posting
-// an event. QV_onIdle() must internally enable interrupts, ideally
-// atomically with putting the CPU to the power-saving mode.
-//
-// NOTE02:
-// The User LED is used to visualize the idle loop activity. The brightness
-// of the LED is proportional to the frequency of invcations of the idle loop.
-// Please note that the LED is toggled with interrupts locked, so no interrupt
-// execution time contributes to the brightness of the User LED.
-//

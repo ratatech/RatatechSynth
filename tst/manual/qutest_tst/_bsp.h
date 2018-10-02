@@ -55,6 +55,8 @@ public:
 
 };
 
+extern QP::QActive *the_Ticker0;
+
 } // namespace DPP
 
 #endif // _bsp_h
