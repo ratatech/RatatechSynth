@@ -74,7 +74,7 @@ def test_TIMEOUT_Philo_eating_PUBLISH_from_AO(qutest):
     qutest.expect("%timestamp QF-gc    Evt<Sig=TIMEOUT_SIG,Pool=1,Ref=1>")
     qutest.expect("%timestamp Trg-Done QS_RX_EVENT")
     
-@pytest.mark.skip(reason="no way of currently testing this")
+@pytest.mark.skip(reason="Stuck with this test, to be debugged when having a better knowledge of the 'ticking' itself")
 def test_timeEvt_Philo_tick(qutest):
     qutest.glb_filter(FILTER.SM, FILTER.AO, FILTER.TE)
     qutest.current_obj(QS_OBJ_KIND.TE, 'l_philo<2>.m_timeEvt')
