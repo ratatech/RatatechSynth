@@ -31,9 +31,9 @@
 // https://state-machine.com
 // mailto:info@state-machine.com
 //****************************************************************************
+
+#include <hsm/bsp.h>
 #include "qpcpp.h"
-#include "blinky.h"
-#include "bsp.h"
 #include "stdio.h"
 
 //#include "em_device.h"  // the device specific header (SiLabs)
@@ -42,11 +42,10 @@
 // add other drivers if necessary...
 #include "stm32f10x.h"
 
-#ifdef Q_SPY
-    #error Simple Blinky Application does not provide Spy build configuration
-#endif
+using namespace QP;
 
-//Q_DEFINE_THIS_FILE
+
+Q_DEFINE_THIS_FILE
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
@@ -91,26 +90,35 @@ void SysTick_Handler(void) {
 // BSP functions =============================================================
 void BSP_init(void) {
 
+	GPIO_InitTypeDef  GPIO_InitStructure;
 
+	/* LED (PA5) */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-    // configure the Buttons
-    //...
 }
 //............................................................................
 void BSP_ledOff(void) {
 	iprintf("\nBLINKY: LED -----------------------> OFF");
-    //GPIO_PinOutClear(LED0_PORT, LED0_PIN);
-    //GPIO->P[LED0_PORT].DOUT &= ~(1U << LED0_PIN);
+
+	// Set LED2 on nucleo board ---> OFF
+	GPIOA->BRR = GPIO_Pin_5;
+
+	// Set LED/D3 on PCB ---> OFF
+	GPIOB->BRR = GPIO_Pin_11;
 }
 //............................................................................
 void BSP_ledOn(void) {
 	iprintf("\nBLINKY: LED -----------------------> ON");
-    // exercise the FPU with some floating point computations
-    float volatile x = 3.1415926F;
-    x = x + 2.7182818F;
 
-    //GPIO_PinOutSet(LED0_PORT, LED0_PIN);
-    //GPIO->P[LED0_PORT].DOUT |= (1U << LED0_PIN);
+	// Set LED2 on nucleo board --->  ON
+	GPIOA->BSRR = GPIO_Pin_5;
+
+	// Set LED/D3 on PCB ---> ON
+	GPIOB->BSRR = GPIO_Pin_11;
+
 }
 
 
@@ -134,13 +142,14 @@ void QF::onStartup(void) {
     // enable IRQs...
 }
 //............................................................................
-void QF::onCleanup(void) {
+#ifdef Q_SPY
+void QS::onCleanup(void) {
 }
 //............................................................................
-//void QS::onFlush(void) {
-//    uint16_t b;
+void QS::onFlush(void) {
+    uint16_t b;
 
-//    QF_INT_DISABLE();
+    QF_INT_DISABLE();
 //    while ((b = getByte()) != QS_EOD) { // while not End-Of-Data...
 //        QF_INT_ENABLE();
 //        // while TXE not empty
@@ -149,8 +158,10 @@ void QF::onCleanup(void) {
 //        DPP::l_USART0->TXDATA  = (b & 0xFFU); // put into the DR register
 //        QF_INT_DISABLE();
 //    }
-//    QF_INT_ENABLE();
-//}
+    QF_INT_ENABLE();
+}
+#endif
+
 //............................................................................
 void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
     // toggle LED1 on and then off, see NOTE02
@@ -169,6 +180,7 @@ void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
     QF_INT_ENABLE(); // just enable interrupts
 #endif
 }
+
 
 //............................................................................
 extern "C" void Q_onAssert(char const *module, int loc) {

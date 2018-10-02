@@ -20,6 +20,7 @@ This file is part of XXXXXXX
     along with XXXXXXX.  If not, see <http://www.gnu.org/licenses/>
 */
 
+#include <hsm/bsp.h>
 #include <stdio.h>
 #include "unity.h"
 #include "tst_utils.h"
@@ -29,7 +30,10 @@ This file is part of XXXXXXX
 #include "stm32f10x_conf.h"
 #include "system_init.h"
 #include "stm32f10x.h"
-#include "bsp.h"
+
+
+using namespace QP;
+Q_DEFINE_THIS_FILE
 
 /**
  * Dummy object pool

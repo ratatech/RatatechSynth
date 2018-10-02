@@ -34,6 +34,8 @@
 #ifndef bsp_h
 #define bsp_h
 
+#include <stdio.h>
+
 uint32_t const BSP_TICKS_PER_SEC = static_cast<uint32_t>(100);
 
 void BSP_init(void);

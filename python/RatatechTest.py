@@ -44,6 +44,7 @@ class RatatechTest(object):
                 if 'ttyACM' in device.sys_name:
                     #self.port="ttyACM0"
                     self.port=device.sys_name
+                    break
                 else:
                     raise ValueError('ttyACM not found in the list of devices. Are you sure you are working with the nucleo board? Try to specify the board properly')                 
         else:
@@ -51,6 +52,7 @@ class RatatechTest(object):
                 if 'ttyUSB' in device.sys_name:
                     #self.port="ttyUSB1"
                     self.port=device.sys_name
+                    break
                 else:
                     raise ValueError('ttyUSB not found in the list of devices. Are you sure you are working with the pcb? Try to specify the board properly')
                         

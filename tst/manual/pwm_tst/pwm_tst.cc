@@ -30,7 +30,6 @@ This file is part of XXXXXXX
 #include "pwm_tst.h"
 #include "dither_generator.h"
 
-
 #define MAX_SHIFT 16
 #define PWM_BITS 7
 #define PWM_TEST_PERIOD 1 << PWM_BITS
