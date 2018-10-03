@@ -530,7 +530,9 @@ void USART_Conf_Init(void){
     /* Configure USART3 */
     USART_Init(USART3, &usart_InitStructure);
     /* Enable USART3 Receive and Transmit interrupts */
-    //USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+#ifdef Q_UTEST
+    USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+#endif
     //USART_ITConfig(USART3, USART_IT_TXE, ENABLE);
     /* Enable USART3 global interrupt */
     NVIC_EnableIRQ(USART3_IRQn);
