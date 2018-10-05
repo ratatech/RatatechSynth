@@ -514,7 +514,7 @@
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
-						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="app/ratatechSynth.cc|hsm/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/adsr_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -853,7 +853,7 @@
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
-						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="app/ratatechSynth.cc|hsm/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/lfo_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -1024,7 +1024,7 @@
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
-						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="app/ratatechSynth.cc|hsm/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/mov_avg_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -1194,7 +1194,7 @@
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
-						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="app/ratatechSynth.cc|hsm/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/mixer_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -1364,7 +1364,7 @@
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
-						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="app/ratatechSynth.cc|hsm/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/oscillator_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -1534,7 +1534,7 @@
 						<entry excluding="arm_q15_to_q7.c|arm_fill_q7.c|arm_copy_f32.c|arm_fill_f32.c|arm_float_to_q15.c|arm_q15_to_float.c|arm_q7_to_q31.c|arm_q7_to_float.c|arm_float_to_q31.c|arm_copy_q31.c|arm_q15_to_q31.c|arm_q31_to_q7.c|arm_fill_q31.c|arm_float_to_q7.c|arm_q7_to_q15.c|arm_q31_to_float.c|arm_copy_q7.c|arm_q31_to_q15.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/CMSIS/DSP_Lib/Source/SupportFunctions"/>
 						<entry excluding="stm32f10x_cec.c|stm32f10x_dbgmcu.c|stm32f10x_rtc.c|stm32f10x_i2c.c|stm32f10x_wwdg.c|stm32f10x_iwdg.c|stm32f10x_bkp.c|stm32f10x_crc.c|stm32f10x_dac.c|stm32f10x_can.c|stm32f10x_pwr.c|stm32f10x_fsmc.c|stm32f10x_sdio.c" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Drivers/STM32F10x_StdPeriph_Driver/src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Frameworks/Unity/src"/>
-						<entry excluding="app/ratatechSynth.cc" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
+						<entry excluding="app/ratatechSynth.cc|hsm/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/sound_gen_tst"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tst/tst_utils"/>
 					</sourceEntries>
@@ -3200,6 +3200,9 @@
 		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588.2027273781.158086908.1468545105;ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588.2027273781.158086908.1468545105.;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.1681729953;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1831995778">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588;ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588.;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.1420566261;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1350868086">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119;ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.549326248;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.348136126">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
@@ -3318,6 +3321,9 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1882290845.1833851950.2078591798.1426238120.182250833;ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1882290845.1833851950.2078591798.1426238120.182250833.;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.1703775016;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.1155026780">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588;ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1767422243.265181119.957949760.1415834588.;ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.1803244662;ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.1309855142">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1882290845.1833851950.2078591798.1426238120.1980057393;ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.1723472060.1882290845.1833851950.2078591798.1426238120.1980057393.;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.1905617740;ilg.gnuarmeclipse.managedbuild.cross.tool.cpp.compiler.input.386241703">

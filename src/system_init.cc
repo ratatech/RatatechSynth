@@ -499,7 +499,9 @@ void USART_Conf_Init(void){
     /* Configure USART2 */
     USART_Init(USART2, &usart_InitStructure);
     /* Enable RXNE interrupt */
+#ifdef Q_SPY
     USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+#endif
     //USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
     /* Enable USART2 global interrupt */
     NVIC_EnableIRQ(USART2_IRQn);
