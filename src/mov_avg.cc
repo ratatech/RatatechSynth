@@ -36,7 +36,7 @@ q15_t MovAvg::update(q15_t x)
 	q31_t 	 _x32,x32;
 	int64_t x64;
 
-	_x32 = (q31_t)(x<<16); 						// Shift input data(q15) 16 bit to match the state type(q31)
+	_x32 = (q31_t)(x<<16);						// Shift input data(q15) 16 bit to match the state type(q31)
     x32 = state - _x32; 						// x32 = s0.31 - s0.31 = s0.31
     x64 = ((int64_t)x32) * ((int64_t)beta);		// x64 = s0.31 * s0.31 = s0.62
     x32 = x64>>31;								// x32 = s0.31 >> 31   = s0.31
