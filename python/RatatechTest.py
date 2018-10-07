@@ -34,8 +34,6 @@ class RatatechTest(object):
         
         # Create iterator with USB devices
         context = pyudev.Context() 
-        for device in context.list_devices(subsystem='tty', ID_BUS='usb'):     
-            print(device)
         
         # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, 
         # ttyUSB0 used for synth pcb debugging and testing    
