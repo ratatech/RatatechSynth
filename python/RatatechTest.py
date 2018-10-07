@@ -29,7 +29,7 @@ class RatatechTest(object):
         # Remove backslash
         prjName = prjName.split('/')[-2]
         
-        self.utils = RatatechUtils()
+        self.utils = RatatechUtils(prjName)
         self.build = RatatechBuild(prjName)
         
         # Create iterator with USB devices

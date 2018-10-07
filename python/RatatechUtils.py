@@ -8,9 +8,12 @@ import matplotlib.pyplot as plt
 
 class RatatechUtils(object):
     
-    def __init__(self):
+    def __init__(self,prjName):
         # ST-link dir
         self.stlinkDir = '/usr/local/bin/'
+        
+        # Keep project name internally
+        self.prjName = prjName
 
         
     def __cmdline(self,command):        
@@ -57,7 +60,13 @@ class RatatechUtils(object):
         raw_audio = buff_out[0].split(sub)[1].split('[')[1].split(']')[0]
         raw_audio = np.fromstring(raw_audio, dtype=np.int32, sep=',')
         raw_audio = np.asarray(raw_audio, dtype=np.int16)
-        scipy.io.wavfile.write(sub.replace('buff','test')+'.wav',fs,raw_audio)
+        
+        # Define output test dir
+        outDir = 'tst/' + self.prjName + '/_out/'
+        if not os.path.isdir(outDir):
+            os.mkdir(outDir)
+                        
+        scipy.io.wavfile.write(outDir + sub.replace('buff','test')+'.wav',fs,raw_audio)
         t = np.arange(0,float(len(raw_audio))/fs,float(1)/fs)
         if debug:
             plt.figure()

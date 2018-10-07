@@ -24,7 +24,7 @@ class RatatechSerial(object):
         self.ser.rtscts             = False         #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr             = False         #disable hardware (DSR/DTR) flow control
         self.ser.writeTimeout       = 2       #timeout for write
-        self.ser.printConsole       = True
+        self.ser.printConsole       = False
         self.timeoutIter            = 20
         self.waitForConfirmation    = waitForConfirmation
 
@@ -89,8 +89,6 @@ class RatatechSerial(object):
     def readLines(self,confStr):
         print 'Port ' + self.ser.port + ' is '+ self.status
         if self.status == "OPEN": 
-            
-            
             # Send usart confirmation and then start reading 
             self.ser.write(confStr)
             
@@ -98,19 +96,17 @@ class RatatechSerial(object):
             self.ser.flushInput() #flush input buffer, discarding all its contents
             self.ser.flushOutput()#flush output buffer, aborting current output 
             
+            # Init variables
             numOfLines = 0
             usartLines = []
             serialWait = 0
-            
-           
-            
+
             while self.waitForConfirmation:  
                 
-                # Don't stay forever waiting...       
+                # Don't stay forever waiting when not receiving data properly...       
                 if (serialWait) >= self.timeoutIter:
                     print "Timeout expired! Either test failed or just nothing to test .i.e manual tests"
                     exit()
-                serialWait = serialWait + 1
                           
                 # Read line
                 response = self.ser.readline()
@@ -118,12 +114,13 @@ class RatatechSerial(object):
                 # Store received line
                 usartLines.append(response)
 
-                if self.ser.printConsole:
-                    
-                    if len(response)>0:
+                # Check if efectively received data properly   
+                if len(response)>0:
+                    if self.ser.printConsole:         
                         print(response)
-                    else:
-                        print('Shit, no response!')
+                else:
+                    serialWait = serialWait + 1
+                    print('Shit, no response!')
                 
                 # When line "exit" is received, close the serial communication and return the received lines
                 if(response == 'exit'):

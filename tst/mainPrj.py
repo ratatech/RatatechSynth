@@ -9,8 +9,6 @@ parser.add_argument('-board', nargs='+', default='pcb',help='Select target board
 parser.add_argument('-project',help='Select project with target test')
 args = parser.parse_args()
 
-
-
 # Get project name. Note that the test project directory name
 # should match with the build directory name. 
 prjName = args.project
@@ -24,9 +22,6 @@ sys.path.append(py_scripts_pth)
 sys.path.append(prjName)
 
 # Add custom classes
-from RatatechSerial import RatatechSerial
-from RatatechUtils  import RatatechUtils
-from RatatechBuild  import RatatechBuild
 from RatatechTest   import RatatechTest
 
 # Main test object
@@ -44,7 +39,7 @@ if tst.utils.isStlinkConnected():
     tst.build.flash()
  
     # Start usart communication and get test results
-    usartOutLines, test_result = tst.testUsart(printConsole=True)   
+    usartOutLines, test_result = tst.testUsart(printConsole=False)   
         
     test(tst,usartOutLines)
     
