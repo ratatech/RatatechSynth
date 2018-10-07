@@ -94,6 +94,13 @@ Adsr::Adsr()
 QP::QState Adsr::initial(Adsr * const me, QP::QEvt const * const e) {
     //${AOs::Adsr::SM::initial}
     me->m_timeEvt.armX(BSP::TICKS_PER_SEC/2, BSP::TICKS_PER_SEC/2);
+
+    QS_FUN_DICTIONARY(&idle);
+    QS_FUN_DICTIONARY(&attack);
+    QS_FUN_DICTIONARY(&decay);
+    QS_FUN_DICTIONARY(&sustain);
+    QS_FUN_DICTIONARY(&release);
+
     return Q_TRAN(&idle);
 }
 //${AOs::Adsr::SM::idle} .....................................................
@@ -102,7 +109,6 @@ QP::QState Adsr::idle(Adsr * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         //${AOs::Adsr::SM::idle}
         case Q_ENTRY_SIG: {
-            iprintf("\nADSR_HSM ---------------------> IDLE STATE");
             BSP::displayAdsrStat(IDLE);
             status_ = Q_HANDLED();
             break;
@@ -125,7 +131,6 @@ QP::QState Adsr::attack(Adsr * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         //${AOs::Adsr::SM::attack}
         case Q_ENTRY_SIG: {
-            iprintf("\nADSR_HSM ---------------------> ATTACK STATE");
             BSP::ledOn();
             BSP::displayAdsrStat(ATTACK);
             status_ = Q_HANDLED();
@@ -149,7 +154,6 @@ QP::QState Adsr::decay(Adsr * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         //${AOs::Adsr::SM::decay}
         case Q_ENTRY_SIG: {
-            iprintf("\nADSR_HSM ---------------------> DECAY STATE");
             BSP::displayAdsrStat(DECAY);
             status_ = Q_HANDLED();
             break;
@@ -172,7 +176,6 @@ QP::QState Adsr::sustain(Adsr * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         //${AOs::Adsr::SM::sustain}
         case Q_ENTRY_SIG: {
-            iprintf("\nADSR_HSM ---------------------> SUSTAIN STATE");
             BSP::displayAdsrStat(SUSTAIN);
             status_ = Q_HANDLED();
             break;
@@ -195,7 +198,6 @@ QP::QState Adsr::release(Adsr * const me, QP::QEvt const * const e) {
     switch (e->sig) {
         //${AOs::Adsr::SM::release}
         case Q_ENTRY_SIG: {
-            iprintf("\nADSR_HSM ---------------------> RELEASE STATE");
             BSP::ledOff();
             BSP::displayAdsrStat(RELEASE);
             status_ = Q_HANDLED();
