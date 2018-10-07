@@ -32,10 +32,11 @@ class RatatechTest(object):
         self.utils = RatatechUtils()
         self.build = RatatechBuild(prjName)
         
-        
         # Create iterator with USB devices
-        context = pyudev.Context()      
-                
+        context = pyudev.Context() 
+        for device in context.list_devices(subsystem='tty', ID_BUS='usb'):     
+            print(device)
+        
         # Select USART port, ttyACM0 used for Nucleo onboard debugging and testing, 
         # ttyUSB0 used for synth pcb debugging and testing    
         if 'nucleo' in board:
@@ -45,16 +46,17 @@ class RatatechTest(object):
                     #self.port="ttyACM0"
                     self.port=device.sys_name
                     break
-                else:
-                    raise ValueError('ttyACM not found in the list of devices. Are you sure you are working with the nucleo board? Try to specify the board properly')                 
+            if not self.port:
+                raise ValueError('ttyACM not found in the list of devices. Are you sure you are working with the nucleo board? Try to specify the board properly')                 
+        
         else:
             for device in context.list_devices(subsystem='tty', ID_BUS='usb'):
                 if 'ttyUSB' in device.sys_name:
                     #self.port="ttyUSB1"
                     self.port=device.sys_name
                     break
-                else:
-                    raise ValueError('ttyUSB not found in the list of devices. Are you sure you are working with the pcb? Try to specify the board properly')
+            if not self.port:
+                raise ValueError('ttyUSB not found in the list of devices. Are you sure you are working with the pcb? Try to specify the board properly')
                         
     def parseUsart(self,usartOutLines):
         # Print the usart output    
