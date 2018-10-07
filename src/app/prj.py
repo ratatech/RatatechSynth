@@ -26,7 +26,7 @@ prjName = 'release'
 
 
 # Create test objects
-ratatechUtil = RatatechUtils()
+ratatechUtil = RatatechUtils(prjName)
 ratatechBuild = RatatechBuild(prjName,target=args.target_board)
 
 # Build the project

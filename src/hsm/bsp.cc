@@ -32,9 +32,10 @@
 // mailto:info@state-machine.com
 //****************************************************************************
 
-#include <hsm/bsp.h>
+#include "bsp.h"
 #include "qpcpp.h"
 #include "stdio.h"
+#include "hsm/adsrHsm.h"
 
 //#include "em_device.h"  // the device specific header (SiLabs)
 //#include "em_cmu.h"     // Clock Management Unit (SiLabs)
@@ -44,8 +45,10 @@
 
 using namespace QP;
 
-
 Q_DEFINE_THIS_FILE
+
+// namespace DPP *************************************************************
+namespace MAINBSP {
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
@@ -59,7 +62,8 @@ enum KernelUnawareISRs { // see NOTE00
 Q_ASSERT_COMPILE(MAX_KERNEL_UNAWARE_CMSIS_PRI <= QF_AWARE_ISR_CMSIS_PRI);
 
 enum KernelAwareISRs {
-    SYSTICK_PRIO = QF_AWARE_ISR_CMSIS_PRI, // see NOTE00
+    EXTI0_PRIO = QF_AWARE_ISR_CMSIS_PRI, // see NOTE00
+    SYSTICK_PRIO,
     // ...
     MAX_KERNEL_AWARE_CMSIS_PRI // keep always last
 };
@@ -67,14 +71,28 @@ enum KernelAwareISRs {
 Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 // Local-scope objects -------------------------------------------------------
-#define LED0_PIN    4
-#define LED0_PORT   4
+// LED pins available on the board (just one user LED LD2--Green on PA.5)
+#define LED_LD2  (1U << 5)
 
-#define LED1_PIN    5
-#define LED1_PORT   5
+// Button pins available on the board (just one user Button B1 on PC.13)
+#define BTN_B1   (1U << 13)
 
-#define BTN_SW1     (1U << 4)
-#define BTN_SW2     (1U << 0)
+static uint32_t l_rnd; // random seed
+
+enum {
+	BSP_CALL = QP::QS_USER,
+};
+
+#ifdef Q_SPY
+
+QP::QSTimeCtr QS_tickTime_;
+QP::QSTimeCtr QS_tickPeriod_;
+
+// event-source identifiers used for tracing
+static uint8_t const l_SysTick_Handler    = 0U;
+static uint8_t const l_EXTI0_IRQHandler = 0U;
+
+#endif
 
 // ISRs used in this project =================================================
 extern "C" {
@@ -82,25 +100,45 @@ extern "C" {
 //............................................................................
 void SysTick_Handler(void); // prototype
 void SysTick_Handler(void) {
-    QF::TICK_X(0U, (void *)0); // process time events for rate 0
+    // state of the button debouncing, see below
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { ~0U, ~0U };
+    uint32_t current;
+    uint32_t tmp;
+
+#ifdef Q_SPY
+    {
+        tmp = SysTick->CTRL; // clear SysTick_CTRL_COUNTFLAG
+        QS_tickTime_ += QS_tickPeriod_; // account for the clock rollover
+    }
+#endif
+
+    QP::QF::TICK_X(0U, &l_SysTick_Handler); // process time events for rate 0
+
+}
+//............................................................................
+
+// ISR for receiving bytes from the QSPY Back-End
+// NOTE: This ISR is "QF-unaware" meaning that it does not interact with
+// the QF/QK and is not disabled. Such ISRs don't need to call QK_ISR_ENTRY/
+// QK_ISR_EXIT and they cannot post or publish events.
+//
+void USART2_IRQHandler(void)
+{
+    if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+    {
+    	uint16_t b = USART_ReceiveData(USART2);
+        QP::QS::rxPut(b);
+    }
 }
 
 } // extern "C"
 
 // BSP functions =============================================================
-void BSP_init(void) {
 
-	GPIO_InitTypeDef  GPIO_InitStructure;
-
-	/* LED (PA5) */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-}
-//............................................................................
-void BSP_ledOff(void) {
+void BSP::ledOff(void) {
 	iprintf("\nBLINKY: LED -----------------------> OFF");
 
 	// Set LED2 on nucleo board ---> OFF
@@ -110,7 +148,7 @@ void BSP_ledOff(void) {
 	GPIOB->BRR = GPIO_Pin_11;
 }
 //............................................................................
-void BSP_ledOn(void) {
+void BSP::ledOn(void) {
 	iprintf("\nBLINKY: LED -----------------------> ON");
 
 	// Set LED2 on nucleo board --->  ON
@@ -121,66 +159,128 @@ void BSP_ledOn(void) {
 
 }
 
+// BSP functions =============================================================
+void BSP::init(int argc, char **argv) {
+    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]));
 
-// QF callbacks ==============================================================
+    BSP::randomSeed(1234U);
+
+    if (QS_INIT((void *)0) == 0U) { // initialize the QS software tracing
+        Q_ERROR();
+    }
+    QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+    QS_OBJ_DICTIONARY(&l_EXTI0_IRQHandler);
+    QS_USR_DICTIONARY(BSP_CALL);
+}
+//............................................................................
+
+//............................................................................
+uint32_t BSP::random(void) {
+    QS_TEST_PROBE_DEF(&BSP::random)
+    uint32_t rnd = 123U;
+
+    QS_TEST_PROBE(
+        rnd = qs_tp_;
+    )
+    QS_BEGIN(BSP_CALL, 0) // application-specific record
+        QS_FUN(&BSP::random);
+        QS_U32(0, rnd);
+    QS_END()
+    return rnd;
+}
+//............................................................................
+void BSP::randomSeed(uint32_t seed) {
+    QS_TEST_PROBE_DEF(&BSP::randomSeed)
+
+    QS_TEST_PROBE(
+        seed = qs_tp_;
+    )
+    l_rnd = seed;
+    QS_BEGIN(BSP_CALL, 0) // application-specific record
+        QS_FUN(&BSP::randomSeed);
+        QS_U32(0, seed);
+    QS_END()
+}
+
+//............................................................................
+void BSP::terminate(int16_t result) {
+    (void)result;
+}
+
+void BSP::displayAdsrStat(char const *stat) {
+
+    QS_BEGIN(BSP_CALL, ADSRHSM::AO_Adsr) // application-specific record begin
+        QS_STR(stat); // Philosopher status
+    QS_END()
+}
+
+} // namespace MAINBSP
+
+
+// namespace QP **************************************************************
+namespace QP {
+
+//// QF callbacks ==============================================================
 void QF::onStartup(void) {
-    // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
-    SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
-
-    // assing all priority bits for preemption-prio. and none to sub-prio.
-    NVIC_SetPriorityGrouping(0U);
+    // set up the SysTick timer to fire at BSP::TICKS_PER_SEC rate
+    SysTick_Config(SystemCoreClock / MAINBSP::BSP::TICKS_PER_SEC);
 
     // set priorities of ALL ISRs used in the system, see NOTE00
     //
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
     // DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
     //
-    NVIC_SetPriority(SysTick_IRQn,   SYSTICK_PRIO);
+
+    NVIC_SetPriority(SysTick_IRQn, MAINBSP::SYSTICK_PRIO);
+    NVIC_SetPriority(EXTI0_IRQn,   MAINBSP::EXTI0_PRIO);
     // ...
 
     // enable IRQs...
+    NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+//............................................................................
+void QF::onCleanup(void) {
 }
 //............................................................................
+void QV::onIdle(void) { // called with interrupts disabled, see NOTE01
+    // toggle the User LED on and then off (not enough LEDs, see NOTE02)
+	//GPIOB->BSRR |= GPIO_Pin_11;  // turn LED on
+	//GPIOB->BRR |= GPIO_Pin_11;  // turn LED off
+
 #ifdef Q_SPY
-void QS::onCleanup(void) {
-}
-//............................................................................
-void QS::onFlush(void) {
-    uint16_t b;
-
-    QF_INT_DISABLE();
-//    while ((b = getByte()) != QS_EOD) { // while not End-Of-Data...
-//        QF_INT_ENABLE();
-//        // while TXE not empty
-//        while ((DPP::l_USART0->STATUS & USART_STATUS_TXBL) == 0U) {
-//        }
-//        DPP::l_USART0->TXDATA  = (b & 0xFFU); // put into the DR register
-//        QF_INT_DISABLE();
-//    }
     QF_INT_ENABLE();
-}
-#endif
+    if ((USART2->SR & 0x0080U) != 0) {  // is TXE empty?
+        QF_INT_DISABLE();
+        uint16_t b = QS::getByte();
+        QF_INT_ENABLE();
 
-//............................................................................
-void QV::onIdle(void) { // CATION: called with interrupts DISABLED, NOTE01
-    // toggle LED1 on and then off, see NOTE02
-    //GPIO_PinOutSet(LED1_PORT, LED1_PIN);
-    //GPIO->P[LED1_PORT].DOUT |= (1U << LED1_PIN);
-    //GPIO_PinOutClear(LED1_PORT, LED1_PIN);
-    //GPIO->P[LED1_PORT].DOUT &= ~(1U << LED1_PIN);
-
-#ifdef NDEBUG
+        if (b != QS_EOD) {  // not End-Of-Data?
+            USART2->DR  = (b & 0xFFU);  // put into the DR register
+        }
+    }
+#elif defined NDEBUG
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
-    // see the datasheet for your particular Cortex-M MCU.
+    // see the datasheet for your particular Cortex-M3 MCU.
     //
-    QV_CPU_SLEEP();  // atomically go to sleep and enable interrupts
+    // !!!CAUTION!!!
+    // The WFI instruction stops the CPU clock, which unfortunately disables
+    // the JTAG port, so the ST-Link debugger can no longer connect to the
+    // board. For that reason, the call to __WFI() has to be used with CAUTION.
+    //
+    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
+    // reset the board, then connect with ST-Link Utilities and erase the part.
+    // The trick with BOOT(0) is it gets the part to run the System Loader
+    // instead of your broken code. When done disconnect BOOT0, and start over.
+    //
+    //QV_CPU_SLEEP();  // atomically go to sleep and enable interrupts
+    QF_INT_ENABLE(); // for now, just enable interrupts
 #else
     QF_INT_ENABLE(); // just enable interrupts
 #endif
 }
-
 
 //............................................................................
 extern "C" void Q_onAssert(char const *module, int loc) {
@@ -193,33 +293,94 @@ extern "C" void Q_onAssert(char const *module, int loc) {
     NVIC_SystemReset();
 }
 
-//****************************************************************************
-// NOTE00:
-// The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
-// ISR priority that is disabled by the QF framework. The value is suitable
-// for the NVIC_SetPriority() CMSIS function.
+// QS callbacks ==============================================================
+#ifdef Q_SPY
+
+/*..........................................................................*/
+#define __DIV(__PCLK, __BAUD)       (((__PCLK / 4U) * 25U)/(__BAUD))
+#define __DIVMANT(__PCLK, __BAUD)   (__DIV(__PCLK, __BAUD)/100U)
+#define __DIVFRAQ(__PCLK, __BAUD)   \
+    (((__DIV(__PCLK, __BAUD) - (__DIVMANT(__PCLK, __BAUD) * 100U)) \
+        * 16U + 50U) / 100U)
+#define __USART_BRR(__PCLK, __BAUD) \
+    ((__DIVMANT(__PCLK, __BAUD) << 4)|(__DIVFRAQ(__PCLK, __BAUD) & 0x0FU))
+
+
+//............................................................................
+bool QS::onStartup(void const *arg) {
+    static uint8_t qsTxBuf[2*1024]; // buffer for QS transmit channel
+    static uint8_t qsRxBuf[100];    // buffer for QS receive channel
+
+    initBuf  (qsTxBuf, sizeof(qsTxBuf));
+    rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
+
+    MAINBSP::QS_tickPeriod_ = SystemCoreClock / MAINBSP::BSP::TICKS_PER_SEC;
+    MAINBSP::QS_tickTime_ = MAINBSP::QS_tickPeriod_; // to start the timestamp at zero
+
+    // setup the QS filters...
+    QS_FILTER_ON(QS_QEP_STATE_ENTRY);
+    QS_FILTER_ON(QS_QEP_STATE_EXIT);
+    QS_FILTER_ON(QS_QEP_STATE_INIT);
+    QS_FILTER_ON(QS_QEP_INIT_TRAN);
+    QS_FILTER_ON(QS_QEP_INTERN_TRAN);
+    QS_FILTER_ON(QS_QEP_TRAN);
+    QS_FILTER_ON(QS_QEP_IGNORED);
+    QS_FILTER_ON(QS_QEP_DISPATCH);
+    QS_FILTER_ON(QS_QEP_UNHANDLED);
+
+    QS_FILTER_ON(MAINBSP::BSP_CALL);
+
+    return true; // return success
+}
+
+
+//............................................................................
+void QS::onCleanup(void) {
+}
+
+//............................................................................
+void QS::onFlush(void) {
+    uint16_t b;
+
+    QF_INT_DISABLE();
+    while ((b = getByte()) != QS_EOD) { // while not End-Of-Data...
+        QF_INT_ENABLE();
+        while ((USART2->SR & 0x0080U) == 0U) { // while TXE not empty
+        }
+        USART2->DR  = (b & 0xFFU);  // put into the DR register
+        QF_INT_DISABLE();
+    }
+    QF_INT_ENABLE();
+}
+//............................................................................
+//! callback function to reset the target (to be implemented in the BSP)
+void QS::onReset(void) {
+	NVIC_SystemReset();
+}
+//............................................................................
+
+//void QS::onTestLoop() {
+//    rxPriv_.inTestLoop = true;
+//    while (rxPriv_.inTestLoop) {
 //
-// Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
-// with the numerical values of priorities equal or higher than
-// QF_AWARE_ISR_CMSIS_PRI) are allowed to call any QF services. These ISRs
-// are "QF-aware".
+//        rxParse();  // parse all the received bytes
 //
-// Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
-// level (i.e., with the numerical values of priorities less than
-// QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-// Such "QF-unaware" ISRs cannot call any QF services. The only mechanism
-// by which a "QF-unaware" ISR can communicate with the QF framework is by
-// triggering a "QF-aware" ISR, which can post/publish events.
+//        if ((USART2->SR & 0x0080U) != 0) {  // is TXE empty?
+//            QF_INT_DISABLE();
+//            uint16_t b = QS::getByte();
+//            QF_INT_ENABLE();
 //
-// NOTE01:
-// The QV::onIdle() callback is called with interrupts disabled, because the
-// determination of the idle condition might change by any interrupt posting
-// an event. QV::onIdle() must internally enable interrupts, ideally
-// atomically with putting the CPU to the power-saving mode.
+//            if (b != QS_EOD) {  // not End-Of-Data?
+//                USART2->DR  = (b & 0xFFU);  // put into the DR register
+//            }
+//        }
+//    }
 //
-// NOTE02:
-// One of the LEDs is used to visualize the idle loop activity. The brightness
-// of the LED is proportional to the frequency of invcations of the idle loop.
-// Please note that the LED is toggled with interrupts locked, so no interrupt
-// execution time contributes to the brightness of the User LED.
-//
+//    // set inTestLoop to true in case calls to QS_onTestLoop() nest,
+//    // which can happen through the calls to QS_TEST_WAIT().
+//    rxPriv_.inTestLoop = true;
+//}
+#endif // Q_SPY
+//--------------------------------------------------------------------------*/
+
+} // namespace QP

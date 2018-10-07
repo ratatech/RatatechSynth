@@ -28,9 +28,13 @@ This file is part of XXXXXXX
 #include "stm32f10x_conf.h"
 #include "stm32f10x.h"
 #include "hsm/adsrHsm.h"
+#include "hsm/bsp.h"
+#include "_bsp.h"
 
 using namespace QP;
 using namespace ADSRHSM;
+using namespace MAINBSP;
+
 Q_DEFINE_THIS_FILE
 
 /**
@@ -44,8 +48,8 @@ object_pool_t object_pool;
 synth_params_t synth_params;
 
 
-int main(void)
-{
+
+int main(int argc, char *argv[]) {
 
 	/** Init system and peripherals */
 	ratatech_init(&synth_params);
@@ -65,9 +69,17 @@ int main(void)
     static QEvt const *adsrQSto[10]; // Event queue storage for Adsr
 
     QF::init(); // initialize the framework and the underlying RT kernel
+    BSP::init(argc, argv); // initialize the BSP
+
+	// object dictionaries...
+	QS_OBJ_DICTIONARY(ADSRHSM::AO_Adsr);
+	QS_OBJ_DICTIONARY(adsrQSto);
 
     // publish-subscribe not used, no call to QF::psInit()
     // dynamic event allocation not used, no call to QF::poolInit()
+    // initialize event pools...
+    QP::QF::poolInit(adsrQSto,
+                     sizeof(adsrQSto), sizeof(adsrQSto[0]));
 
     // instantiate and start the active objects...
     ADSRHSM::AO_Adsr->start(1U,                            // priority

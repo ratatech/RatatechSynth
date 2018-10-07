@@ -19,16 +19,14 @@
    </operation>
    <statechart>
     <initial target="../1">
-     <action>me-&gt;m_timeEvt.armX(BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);</action>
+     <action>me-&gt;m_timeEvt.armX(BSP::TICKS_PER_SEC/2, BSP::TICKS_PER_SEC/2);</action>
      <initial_glyph conn="6,2,4,1,3,38,3,-4">
       <action box="1,-2,67,5"/>
      </initial_glyph>
     </initial>
     <state name="idle">
      <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; IDLE STATE&quot;);
-
-// Set LED/D3 on PCB ---&gt; ON
-BSP_ledOn();</entry>
+BSP::displayAdsrStat(IDLE);</entry>
      <tran trig="TIMEOUT" target="../../2">
       <tran_glyph conn="4,15,3,1,40,12,-4">
        <action box="0,-2,10,2"/>
@@ -39,7 +37,9 @@ BSP_ledOn();</entry>
      </state_glyph>
     </state>
     <state name="attack">
-     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; ATTACK STATE&quot;);</entry>
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; ATTACK STATE&quot;);
+BSP::ledOn();
+BSP::displayAdsrStat(ATTACK);</entry>
      <tran trig="TIMEOUT" target="../../3">
       <tran_glyph conn="4,28,3,1,40,11,-4">
        <action box="0,-2,10,2"/>
@@ -50,7 +50,8 @@ BSP_ledOn();</entry>
      </state_glyph>
     </state>
     <state name="decay">
-     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; DECAY STATE&quot;);</entry>
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; DECAY STATE&quot;);
+BSP::displayAdsrStat(DECAY);</entry>
      <tran trig="TIMEOUT" target="../../4">
       <tran_glyph conn="4,40,3,1,40,10,-4">
        <action box="0,-2,10,2"/>
@@ -61,7 +62,8 @@ BSP_ledOn();</entry>
      </state_glyph>
     </state>
     <state name="sustain">
-     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; SUSTAIN STATE&quot;);</entry>
+     <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; SUSTAIN STATE&quot;);
+BSP::displayAdsrStat(SUSTAIN);</entry>
      <tran trig="TIMEOUT" target="../../5">
       <tran_glyph conn="4,52,3,1,40,12,-4">
        <action box="0,-2,10,2"/>
@@ -73,9 +75,8 @@ BSP_ledOn();</entry>
     </state>
     <state name="release">
      <entry>iprintf(&quot;\nADSR_HSM ---------------------&gt; RELEASE STATE&quot;);
-
-// Set LED/D3 on PCB ---&gt; OFF
-BSP_ledOff();</entry>
+BSP::ledOff();
+BSP::displayAdsrStat(RELEASE);</entry>
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="4,65,3,3,-2,-55,2">
        <action box="0,-2,10,2"/>
@@ -131,10 +132,18 @@ $declare${AOs::AO_Adsr}
 #include &quot;bsp.h&quot;
 
 //Q_DEFINE_THIS_FILE
+using namespace MAINBSP;
 
 $declare${AOs::Adsr}
 
 namespace ADSRHSM {
+
+static char_t const * const IDLE = &amp;&quot;IDLE&quot;[0];
+static char_t const * const ATTACK = &amp;&quot;ATTACK&quot;[0];
+static char_t const * const DECAY = &amp;&quot;DECAY&quot;[0];
+static char_t const * const SUSTAIN = &amp;&quot;SUSTAIN&quot;[0];
+static char_t const * const RELEASE = &amp;&quot;RELEASE&quot;[0];
+
 
 // local objects -------------------------------------------------------------
 static Adsr l_adsr; // the sole instance of the Adsr active object

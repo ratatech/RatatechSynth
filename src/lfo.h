@@ -82,6 +82,9 @@ class LFO {
 					wavetable = saw_bandlim_lut_q15[0];
 				break;
 
+				case SQU:
+				break;
+
 			}
 		}
 

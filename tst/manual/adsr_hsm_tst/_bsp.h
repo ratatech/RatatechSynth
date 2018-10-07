@@ -1,13 +1,13 @@
 //****************************************************************************
-// Product: Simple Blinky example
-// Last Updated for Version: 5.4.0
-// Date of the Last Update:  2015-05-04
+// Product: DPP example
+// Last Updated for Version: 5.6.0
+// Date of the Last Update:  2015-12-28
 //
 //                    Q u a n t u m     L e a P s
 //                    ---------------------------
 //                    innovating embedded systems
 //
-// Copyright (C) 2002-2013 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) Quantum Leaps, LLC. All rights reserved.
 //
 // This program is open source software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as published
@@ -28,37 +28,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //
 // Contact information:
-// Web  : https://state-machine.com
-// Email: info@state-machine.com
+// https://state-machine.com
+// mailto:info@state-machine.com
 //****************************************************************************
-#ifndef bsp_h
-#define bsp_h
+#ifndef _bsp_h
+#define _bsp_h
 
-#include <stdio.h>
-#include "qpcpp.h"
 
-namespace MAINBSP {
 
-class BSP {
-public:
-    enum { TICKS_PER_SEC = 100 };
-
-    static void init(int argc, char **argv);
-    static void terminate(int16_t const result);
-    static void displayAdsrStat(char const *stat);
-
-    static void randomSeed(uint32_t const seed); // random seed
-    static uint32_t random(void);                // pseudo-random generator
-
-    // for testing...
-    static void wait4SW1(void);
-    static void ledOn(void);
-    static void ledOff(void);
-
-};
-
-extern QP::QActive *the_Ticker0;
-
-} // namespace MAINBSP
-
-#endif // bsp_h
+#endif // _bsp_h

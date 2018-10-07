@@ -23,6 +23,7 @@
 #include "bsp.h"
 
 //Q_DEFINE_THIS_FILE
+using namespace MAINBSP;
 
 //$declare${AOs::Adsr} #######################################################
 namespace ADSRHSM {
@@ -48,6 +49,13 @@ protected:
 //$enddecl${AOs::Adsr} #######################################################
 
 namespace ADSRHSM {
+
+static char_t const * const IDLE = &"IDLE"[0];
+static char_t const * const ATTACK = &"ATTACK"[0];
+static char_t const * const DECAY = &"DECAY"[0];
+static char_t const * const SUSTAIN = &"SUSTAIN"[0];
+static char_t const * const RELEASE = &"RELEASE"[0];
+
 
 // local objects -------------------------------------------------------------
 static Adsr l_adsr; // the sole instance of the Adsr active object
@@ -85,7 +93,7 @@ Adsr::Adsr()
 //${AOs::Adsr::SM} ...........................................................
 QP::QState Adsr::initial(Adsr * const me, QP::QEvt const * const e) {
     //${AOs::Adsr::SM::initial}
-    me->m_timeEvt.armX(BSP_TICKS_PER_SEC/2, BSP_TICKS_PER_SEC/2);
+    me->m_timeEvt.armX(BSP::TICKS_PER_SEC/2, BSP::TICKS_PER_SEC/2);
     return Q_TRAN(&idle);
 }
 //${AOs::Adsr::SM::idle} .....................................................
@@ -95,9 +103,7 @@ QP::QState Adsr::idle(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::idle}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> IDLE STATE");
-
-            // Set LED/D3 on PCB ---> ON
-            BSP_ledOn();
+            BSP::displayAdsrStat(IDLE);
             status_ = Q_HANDLED();
             break;
         }
@@ -120,6 +126,8 @@ QP::QState Adsr::attack(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::attack}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> ATTACK STATE");
+            BSP::ledOn();
+            BSP::displayAdsrStat(ATTACK);
             status_ = Q_HANDLED();
             break;
         }
@@ -142,6 +150,7 @@ QP::QState Adsr::decay(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::decay}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> DECAY STATE");
+            BSP::displayAdsrStat(DECAY);
             status_ = Q_HANDLED();
             break;
         }
@@ -164,6 +173,7 @@ QP::QState Adsr::sustain(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::sustain}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> SUSTAIN STATE");
+            BSP::displayAdsrStat(SUSTAIN);
             status_ = Q_HANDLED();
             break;
         }
@@ -186,9 +196,8 @@ QP::QState Adsr::release(Adsr * const me, QP::QEvt const * const e) {
         //${AOs::Adsr::SM::release}
         case Q_ENTRY_SIG: {
             iprintf("\nADSR_HSM ---------------------> RELEASE STATE");
-
-            // Set LED/D3 on PCB ---> OFF
-            BSP_ledOff();
+            BSP::ledOff();
+            BSP::displayAdsrStat(RELEASE);
             status_ = Q_HANDLED();
             break;
         }
