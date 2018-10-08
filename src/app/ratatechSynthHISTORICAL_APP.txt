@@ -158,7 +158,7 @@ int main(void)
 		FM_mod.lfo_amo = 0x5FFF;
 		synth_params.I = 3;
 		FM_mod.set_freq_frac(1000);
-	}
+	}fill_buffer
 
 	// Configure oscillator 1
 	osc_shape_t shape_osc1 = SQU;

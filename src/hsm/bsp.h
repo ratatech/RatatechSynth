@@ -43,7 +43,7 @@ class BSP {
 public:
     enum { TICKS_PER_SEC = 100 };
 
-    static void init(int argc, char **argv);
+    static void init();
     static void terminate(int16_t const result);
     static void displayAdsrStat(char const *stat);
 

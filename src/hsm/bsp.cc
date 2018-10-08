@@ -79,10 +79,6 @@ Q_ASSERT_COMPILE(MAX_KERNEL_AWARE_CMSIS_PRI <= (0xFF >>(8-__NVIC_PRIO_BITS)));
 
 static uint32_t l_rnd; // random seed
 
-enum {
-	BSP_CALL = QP::QS_USER,
-};
-
 #ifdef Q_SPY
 
 QP::QSTimeCtr QS_tickTime_;
@@ -91,6 +87,10 @@ QP::QSTimeCtr QS_tickPeriod_;
 // event-source identifiers used for tracing
 static uint8_t const l_SysTick_Handler    = 0U;
 static uint8_t const l_EXTI0_IRQHandler = 0U;
+
+enum AppRecords { // application-specific trace records
+	BSP_CALL = QP::QS_USER
+};
 
 #endif
 
@@ -160,16 +160,16 @@ void BSP::ledOn(void) {
 }
 
 // BSP functions =============================================================
-void BSP::init(int argc, char **argv) {
-    Q_ALLEGE(QS_INIT(argc <= 1 ? (void *)0 : argv[1]));
+void BSP::init(void) {
 
     BSP::randomSeed(1234U);
 
     if (QS_INIT((void *)0) == 0U) { // initialize the QS software tracing
         Q_ERROR();
     }
-    QS_OBJ_DICTIONARY(&l_SysTick_Handler);
-    QS_OBJ_DICTIONARY(&l_EXTI0_IRQHandler);
+//    QS_OBJ_DICTIONARY(&l_SysTick_Handler);
+//    QS_OBJ_DICTIONARY(&l_EXTI0_IRQHandler);
+    QS_FUN_DICTIONARY(&QHsm::top);
     QS_USR_DICTIONARY(BSP_CALL);
 }
 //............................................................................
@@ -305,14 +305,22 @@ extern "C" void Q_onAssert(char const *module, int loc) {
 #define __USART_BRR(__PCLK, __BAUD) \
     ((__DIVMANT(__PCLK, __BAUD) << 4)|(__DIVFRAQ(__PCLK, __BAUD) & 0x0FU))
 
+//............................................................................
+QSTimeCtr QS::onGetTime(void) {  // NOTE: invoked with interrupts DISABLED
+    if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { // not set?
+        return MAINBSP::QS_tickTime_ - static_cast<QSTimeCtr>(SysTick->VAL);
+    }
+    else { // the rollover occured, but the SysTick_ISR did not run yet
+        return MAINBSP::QS_tickTime_ + MAINBSP::QS_tickPeriod_
+               - static_cast<QSTimeCtr>(SysTick->VAL);
+    }
+}
 
 //............................................................................
 bool QS::onStartup(void const *arg) {
-    static uint8_t qsTxBuf[2*1024]; // buffer for QS transmit channel
-    static uint8_t qsRxBuf[100];    // buffer for QS receive channel
 
-    initBuf  (qsTxBuf, sizeof(qsTxBuf));
-    rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
+    static uint8_t qsBuf[2*1024]; // buffer for Quantum Spy
+    initBuf(qsBuf, sizeof(qsBuf));
 
     MAINBSP::QS_tickPeriod_ = SystemCoreClock / MAINBSP::BSP::TICKS_PER_SEC;
     MAINBSP::QS_tickTime_ = MAINBSP::QS_tickPeriod_; // to start the timestamp at zero
@@ -327,7 +335,9 @@ bool QS::onStartup(void const *arg) {
     QS_FILTER_ON(QS_QEP_IGNORED);
     QS_FILTER_ON(QS_QEP_DISPATCH);
     QS_FILTER_ON(QS_QEP_UNHANDLED);
-
+    QS_FILTER_ON(QS_QEP_TRAN_XP);
+    QS_FILTER_ON(QS_QEP_TRAN_EP);
+    QS_FILTER_ON(QS_QEP_TRAN_HIST);
     QS_FILTER_ON(MAINBSP::BSP_CALL);
 
     return true; // return success
