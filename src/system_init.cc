@@ -21,21 +21,15 @@ This file is part of Ratatech 3019
 */
 
 #include "system_init.h"
-#include "ratatechSynth.h"
-
 
 #define ADC1_DR_Address    ((uint32_t)0x4001244C)
-
 uint16_t adc_read_test;
-
 
 /****************************************************************************************
  *
  * STM32F01 PERIPHERALS
  *
  ***************************************************************************************/
-
-
 
 void RCC_Clocks_Init(void)
 {

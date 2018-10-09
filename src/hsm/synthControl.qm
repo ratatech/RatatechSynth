@@ -8,10 +8,10 @@
 - make.bat batch file for Windows</documentation>
  <framework name="qpcpp"/>
  <package name="AOs" stereotype="0x02">
-  <class name="Blinky" superclass="qpcpp::QActive">
+  <class name="SoundGenHSM" superclass="qpcpp::QActive">
    <attribute name="m_timeEvt" type="QP::QTimeEvt" visibility="0x02" properties="0x00"/>
-   <operation name="Blinky" type="" visibility="0x00" properties="0x00">
-    <code>  : QActive(Q_STATE_CAST(&amp;Blinky::initial)),
+   <operation name="SoundGenHSM" type="" visibility="0x00" properties="0x00">
+    <code>  : QActive(Q_STATE_CAST(&amp;SoundGenHSM::initial)),
     m_timeEvt(this, TIMEOUT_SIG, 0U)</code>
    </operation>
    <statechart properties="QS_FUN_DICT">
@@ -48,10 +48,10 @@
   </class>
  </package>
  <directory name=".">
-  <file name="blinky.cc">
+  <file name="soundGenHSM.cc">
    <text>#include &quot;qpcpp.h&quot;
 #include &quot;bsp.h&quot;
-#include &quot;blinky.h&quot;
+#include &quot;soundGenHSM.h&quot;
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt; /* for exit() */
 
@@ -61,28 +61,28 @@ using namespace MAINBSP;
 Q_DEFINE_THIS_FILE
 
 //*============== ask QM to declare the Blinky class ================*/
-$declare${AOs::Blinky}
+$declare${AOs::SoundGenHSM}
 
 // local objects --------------------------------------------------------------
-Blinky l_blinky;
+SoundGenHSM l_soundGenHSM;
 
 // global objects ------------------------------------------------------------
-QActive * const AO_Blinky = &amp;l_blinky; // opaque pointer
+QActive * const AO_SoundGenHSM = &amp;l_soundGenHSM; // opaque pointer
 
 /*================ ask QM to define the Blinky class ================*/
-$define${AOs::Blinky}
+$define${AOs::SoundGenHSM}
 
 
 </text>
   </file>
-  <file name="blinky.h">
+  <file name="soundGenHSM.h">
    <text>
-#ifndef blinky_h
-#define blinky_h
+#ifndef soundGenHSM_h
+#define soundGenHSM_h
 
 using namespace QP;
 
-enum BlinkySignals {
+enum SoundGenHSMignals {
     DUMMY_SIG = Q_USER_SIG,
     MAX_PUB_SIG,  // the last published signal
 
@@ -90,9 +90,9 @@ enum BlinkySignals {
     MAX_SIG       // the last signal
 };
 
-extern QActive * const AO_Blinky; // opaque pointer
+extern QActive * const AO_SoundGenHSM; // opaque pointer
 
-#endif // blinky_h</text>
+#endif // soundGenHSM_h</text>
   </file>
  </directory>
 </model>

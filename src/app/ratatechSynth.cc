@@ -26,7 +26,7 @@ This file is part of Ratatech 3019.
 #include "tst_utils.h"
 #include "system_init.h"
 #include "qpcpp.h"
-#include "hsm/blinky.h"
+#include "hsm/soundGenHSM.h"
 #include "stm32f10x_conf.h"
 #include "system_init.h"
 #include "stm32f10x.h"
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     iprintf("\n\nTEST: QPC\n-----------------------\n");
 
     static QF_MPOOL_EL(QEvt) smlPoolSto[10]; // storage for small pool
-    static QEvt const *blinkyQSto[10]; // event queue storage for Blinky
+    static QEvt const *soundGenHSMQSto[10]; // event queue storage for soundGenHSM
 
     QF::init();  // initialize the framework
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
     // dictionaries...
     QS_OBJ_DICTIONARY(smlPoolSto);
-    QS_OBJ_DICTIONARY(blinkyQSto);
+    QS_OBJ_DICTIONARY(soundGenHSMQSto);
 
     QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
 
@@ -87,8 +87,8 @@ int main(int argc, char *argv[])
     QF::poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     // start the active objects...
-    AO_Blinky->start(1U,
-                     blinkyQSto, Q_DIM(blinkyQSto),
+    AO_SoundGenHSM->start(1U,
+                     soundGenHSMQSto, Q_DIM(soundGenHSMQSto),
                      (void *)0, 0U, (QEvt *)0);
 
     return QF::run();

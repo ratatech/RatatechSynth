@@ -8,7 +8,7 @@
 #ifndef INCLUDE_LFO_H_
 #define INCLUDE_LFO_H_
 
-#include "ratatechSynth.h"
+#include "utils.h"
 #include "arm_math.h"
 #include "tables.h"
 

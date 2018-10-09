@@ -8,13 +8,15 @@
 #ifndef INCLUDE_ADSR_H_
 #define INCLUDE_ADSR_H_
 
-#include "tables.h"
-#include "mov_avg.h"
-#include "utils.h"
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "tables.h"
+#include "mov_avg.h"
+#include "utils.h"
+#include "Lutinterp.h"
+
 
 class Lut_interp;
 

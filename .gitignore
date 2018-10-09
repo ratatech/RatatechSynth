@@ -15,4 +15,5 @@ matlab/octave-workspace
 doc/doxygen/html/*
 *.pytest_cache/
 *.mat
-
+/tools/bin/*.txt
+/src/hsm/*.*

@@ -1,5 +1,5 @@
 /*
-@file system_init.h
+@file soundGen.h
 
 @brief Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
@@ -19,23 +19,23 @@ This file is part of Ratatech 3019.
     You should have received a copy of the GNU General Public License
     along with Ratatech 3019.  If not, see <http://www.gnu.org/licenses/>
 */
-#ifndef SYSTEM_INIT_H_
-#define SYSTEM_INIT_H_
+#ifndef SOUNDGEN_H_
+#define SOUNDGEN_H_
 
-#include "types.h"
-#include "lcd16x2.h"
-#include "stm32f10x_conf.h"
 #include "stm32f10x.h"
-#include "spi.h"
+#include "circular_buffer.h"
+#include "audio_out.h"
 
-void RCC_Clocks_Init(void);
-void GPIO_Conf_Init(void);
-void ButtonsInitEXTI(void);
-void ADC_Conf_Init(void);
-void USART_Conf_Init(void);
-void DMA_Conf_Init(synth_params_t* synth_params);
-void ratatech_init(synth_params_t* synth_params);
-void init_rotary_encoder(void);
+extern "C" {
+
+/**
+  * @brief  This function handles Timer 1 Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM1_UP_IRQHandler(void);
+
+}
 
 
-#endif /* SYSTEM_INIT_H_ */
+#endif /* SOUNDGEN_H_ */
