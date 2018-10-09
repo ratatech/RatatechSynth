@@ -9,11 +9,8 @@ from RatatechBuild import RatatechBuild
 import argparse
 
 parser = argparse.ArgumentParser(description='Build and flash the selected project')
-parser.add_argument('target_board',
-                   help='Select target board to flash the program')
-
+parser.add_argument('-board', nargs='+', default='nucleo',help='Select target board to flash the program. Valid options: [nucleo,pcb]')
 args = parser.parse_args()
-#print((args.target_board))
 
 # Ensure flashing from main dir
 assert 'RatatechSynth' in os.getcwd().split('/')[-1] , colored('All tests must be executed from main dir "RatatechSynth", change directory and try again','red')
@@ -26,7 +23,7 @@ prjName = 'release'
 
 # Create test objects
 ratatechUtil = RatatechUtils(prjName)
-ratatechBuild = RatatechBuild(prjName,target=args.target_board)
+ratatechBuild = RatatechBuild(prjName,target=args.board)
 
 # Build the project
 ratatechBuild.buildPrj()

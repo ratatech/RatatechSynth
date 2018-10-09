@@ -149,7 +149,6 @@ int main(void)
 			fill_buffer();
 		}
 
-
 		/** QUICK N DIRTY LCD + ENCODER
 		 * TO BE REMOVED
 		 * */

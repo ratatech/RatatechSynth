@@ -33,7 +33,9 @@
      </state_glyph>
     </state>
     <state name="on">
-     <entry>BSP::ledOn();</entry>
+     <entry>BSP::ledOn();
+//synth_params_t synth_params;
+//fillBuffer(&amp;synth_params);</entry>
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="11,42,3,1,24,-26,-5">
        <action box="0,-2,10,2"/>
@@ -49,14 +51,13 @@
  </package>
  <directory name=".">
   <file name="soundGenHSM.cc">
-   <text>#include &quot;qpcpp.h&quot;
-#include &quot;bsp.h&quot;
+   <text>
 #include &quot;soundGenHSM.h&quot;
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt; /* for exit() */
 
 using namespace QP;
 using namespace MAINBSP;
+
+//synth_params_t synth_params;
 
 Q_DEFINE_THIS_FILE
 
@@ -79,6 +80,13 @@ $define${AOs::SoundGenHSM}
    <text>
 #ifndef soundGenHSM_h
 #define soundGenHSM_h
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &quot;qpcpp.h&quot;
+#include &quot;bsp.h&quot;
+#include &quot;soundGen.h&quot;
+#include &quot;types.h&quot;
 
 using namespace QP;
 

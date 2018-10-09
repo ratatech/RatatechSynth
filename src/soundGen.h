@@ -25,6 +25,7 @@ This file is part of Ratatech 3019.
 #include "stm32f10x.h"
 #include "circular_buffer.h"
 #include "audio_out.h"
+#include "oscillator.h"
 
 extern "C" {
 
@@ -35,7 +36,17 @@ extern "C" {
   */
 void TIM1_UP_IRQHandler(void);
 
+/**
+ * @brief  This function handles DMA1 channel 2 Handler.
+ */
+void DMA1_Channel2_IRQHandler(void);
+
 }
 
+/**
+ * @brief Fill the main buffer containing the output audio samples
+ * @param synth_params	Synth global structure
+ */
+void fillBuffer(synth_params_t* synth_params);
 
 #endif /* SOUNDGEN_H_ */

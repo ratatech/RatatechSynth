@@ -23,7 +23,23 @@ This file is part of Ratatech 3019.
 #include "soundGen.h"
 
 static CircularBuffer out_buffer;
+static Oscillator osc;
 static q15_t out_sample;
+static q15_t* pOut;
+
+/**
+ * @brief Fill the main buffer containing the output audio samples
+ * @param synth_params	Synth global structure
+ */
+void fillBuffer(synth_params_t* synth_params)
+{
+	/** Sound generation */
+	osc.get_frame(synth_params, pOut, FRAME_SIZE);
+
+	/** Fill the output buffer with fresh frames */
+	out_buffer.write_frame(pOut);
+
+}
 
 /**
   * @brief  This function handles Timer 1 Handler.
@@ -36,13 +52,21 @@ void TIM1_UP_IRQHandler(void)
 	//trace_printf("READ\n");
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
-
-		bool status = out_buffer.read(&out_sample);
-		audio_out_write(out_sample);
-
+		out_buffer.read(&out_sample);
+		audio_out_write(int16_2_uint16(out_sample));
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-
 	}
 
+}
 
+/**
+ * @brief  This function handles DMA1 channel 2 Handler.
+ */
+void DMA1_Channel2_IRQHandler(void)
+{
+  if(DMA_GetITStatus(DMA1_IT_TC2))
+  {
+    out_buffer.dma_transfer_complete = true;
+    DMA_ClearITPendingBit(DMA1_IT_GL2);
+  }
 }

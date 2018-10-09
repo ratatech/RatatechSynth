@@ -33,11 +33,8 @@
 #include "hsm/bsp.h"
 #include "hsm/soundGenHSM.h"
 
-
 // Add debugging tools
 #include "tst_utils.h"
-
-
 
 void fill_buffer(void);
 void low_rate_tasks(void);
@@ -61,8 +58,6 @@ void EXTI9_5_IRQHandler(void);
 void EXTI6_IRQHandler(void);
 void USART1_IRQHandler(void);
 void USART2_IRQHandler(void);
-
-void DMA1_Channel2_IRQHandler(void);
 void DMA1_Channel1_IRQHandler(void);
 }
 

@@ -27,6 +27,7 @@ This file is part of Ratatech 3019.
 #include "stm32f10x_conf.h"
 #include "stm32f10x.h"
 #include "spi.h"
+#include "timer.h"
 
 void RCC_Clocks_Init(void);
 void GPIO_Conf_Init(void);

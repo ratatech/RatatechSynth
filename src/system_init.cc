@@ -584,7 +584,7 @@ void ratatech_init(synth_params_t* synth_params){
 	DMA_Conf_Init(synth_params);
 	ADC_Conf_Init();
 	USART_Conf_Init();
-	//TIM_Config();
+	TIM_Config();
 	init_rotary_encoder();
 #ifdef USE_LCD_DISPLAY
     lcd16x2_init(LCD16X2_DISPLAY_ON_CURSOR_OFF_BLINK_OFF);

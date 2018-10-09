@@ -20,6 +20,13 @@
 #ifndef soundGenHSM_h
 #define soundGenHSM_h
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "qpcpp.h"
+#include "bsp.h"
+#include "soundGen.h"
+#include "types.h"
+
 using namespace QP;
 
 enum SoundGenHSMignals {

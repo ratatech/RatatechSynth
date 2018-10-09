@@ -91,8 +91,10 @@ void TIM_Config(void)
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
+#if 0
 	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
+#endif
 #endif
 
 #ifdef USE_PWM_TIMER

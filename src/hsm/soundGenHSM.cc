@@ -16,14 +16,13 @@
 // for more details.
 //
 //$endhead${.::soundGenHSM.cc} ###############################################
-#include "qpcpp.h"
-#include "bsp.h"
+
 #include "soundGenHSM.h"
-#include <stdio.h>
-#include <stdlib.h> /* for exit() */
 
 using namespace QP;
 using namespace MAINBSP;
+
+//synth_params_t synth_params;
 
 Q_DEFINE_THIS_FILE
 
@@ -103,6 +102,8 @@ QP::QState SoundGenHSM::on(SoundGenHSM * const me, QP::QEvt const * const e) {
         //${AOs::SoundGenHSM::SM::on}
         case Q_ENTRY_SIG: {
             BSP::ledOn();
+            //synth_params_t synth_params;
+            //fillBuffer(&synth_params);
             status_ = Q_HANDLED();
             break;
         }
