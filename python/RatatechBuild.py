@@ -2,6 +2,7 @@
 
 import os, sys, serial, time
 from termcolor import colored
+import pdb
 py_scripts_pth = os.path.join(os.path.dirname(__file__), '.')
 sys.path.append(py_scripts_pth)
 from RatatechSerial import RatatechSerial
@@ -9,6 +10,9 @@ from RatatechSerial import RatatechSerial
 class RatatechBuild(object):
     def __init__(self,prjName,target='ratatech_board'):
         
+        # Ensure building from main dir
+        assert 'RatatechSynth' in os.getcwd().split('/')[-1] , colored('All tests must be executed from main dir "RatatechSynth", change directory and try again','red')
+
         # ST-link dir
         self.stlink = '/usr/local/bin/st-flash '
         
@@ -70,7 +74,7 @@ class RatatechBuild(object):
         tst_bin = self.prjName +'.bin'
 
         # Openocd flash script
-        openocd_scr = self.rootDir + '/openocd/scripts/' + self.prjName[1:] + '.cfg'
+        openocd_scr = 'openocd/scripts/' + self.prjName[1:] + '.cfg'
         
         # Set target board configuration file
         if 'nucleo' in self.target_board:
