@@ -27,20 +27,18 @@ using namespace std;
 
 /**
  * Compute a new oscillator sample
- * @param synth_params	Synth global structure
  * @return interp_lut	The computed oscillator sample
  */
-q15_t Oscillator::get_sample(synth_params_t *synth_params)
+q15_t Oscillator::get_sample(void)
 {
     return pLut_interp->get_sample(ph_inc_frac,wavetable);
 }
 
 /**
  * Compute a new dual oscillator sample
- * @param synth_params	Synth global structure
  * @return interp_lut	The computed oscillator sample
  */
-q15_t Oscillator::get_sample_dual(synth_params_t *synth_params)
+q15_t Oscillator::get_sample_dual(void)
 {
 
 	uint32_t interp_lut,interp_lut_temp,frac,ph_ind_frac_dual,ind_frac;
@@ -88,10 +86,9 @@ q15_t Oscillator::get_sample_dual(synth_params_t *synth_params)
 
 /**
  * Compute a new fm oscillator sample
- * @param synth_params	Synth global structure
  * @return interp_lut	The computed oscillator sample
  */
-int32_t Oscillator::get_sample_fm(synth_params_t *synth_params)
+int32_t Oscillator::get_sample_fm(void)
 {
 	int32_t interp_lut,interp_lut_temp,frac,mod;
 	int64_t ph_mod_index = 0;
@@ -142,7 +139,7 @@ int32_t Oscillator::get_sample_fm(synth_params_t *synth_params)
  * @param pOsc 			Pointer to store the oscillator samples
  * @param block_size 	Number of samples in the vector
  */
-void Oscillator::get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t block_size)
+void Oscillator::get_frame(, q15_t* pOsc, uint32_t block_size)
 {
 
 	 q15_t *pOut = pOsc;	/* output pointer */

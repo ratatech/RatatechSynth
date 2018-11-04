@@ -14,7 +14,7 @@
 //#include "stm32f10x.h"
 //#include "timer.h"
 //#include "spi.h"
-#include "settings.h"
+//#include "settings.h"
 //#include "oscillator.h"
 //#include "audio_out.h"
 //#include "circular_buffer.h"
@@ -32,6 +32,7 @@
 #include "qpcpp.h"
 #include "hsm/bsp.h"
 #include "hsm/soundGenHSM.h"
+#include "synthSettings.h"
 
 // Add debugging tools
 #include "tst_utils.h"

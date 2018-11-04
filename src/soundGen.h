@@ -45,8 +45,7 @@ void DMA1_Channel2_IRQHandler(void);
 
 /**
  * @brief Fill the main buffer containing the output audio samples
- * @param synth_params	Synth global structure
  */
-void fillBuffer(synth_params_t* synth_params);
+void fillBuffer(void);
 
 #endif /* SOUNDGEN_H_ */

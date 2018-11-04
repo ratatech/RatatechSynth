@@ -100,51 +100,51 @@ struct mux_out_t{
 	uint16_t mux_y[MUX_INPUTS];
 };
 
-struct synth_params_t{
-
-	/** Structs holding fixed or semi-fixed initial parameters */
-	osc_params_t osc_params;
-	lfo_params_t lfo_params;
-	mov_avg_params_t mov_avg_params;
-	adsr_params_t adsr_params;
-	object_pool_t object_pool;
-
-	/** LFO */
-	q15_t* lfo_amp;
-	q15_t lfo_amo;
-	dest_t lfo_dest;
-
-	/** ADSR  */
-	q15_t adsr_vol_amp;
-
-	/** MIDI */
-	dest_t midi_dest;
-	uint16_t pitch;
-	uint16_t vel;
-	bool note_ON;
-
-	/** MUX */
-	mux_out_t mux_adc_0_out;
-	mux_out_t mux_adc_1_out;
-	mux_out_t mux_gpio_0_out;
-	mux_out_t mux_gpio_1_out;
-	mux_out_t mux_gpio_2_out;
-
-	uint16_t adc_read[ADC_ARRAY_SIZE];
-	bool DMA_ADC_transfer_complete;
-
-	/** DAC out sample*/
-	uint16_t dac_write;
-
-	int16_t FM_mod_amp;
-	uint8_t I;
-	bool FM_synth;
-
-	/** Pointer to output frame*/
-	q15_t* pOut;
-
-
-};
+//struct synth_params_t{
+//
+//	/** Structs holding fixed or semi-fixed initial parameters */
+//	osc_params_t osc_params;
+//	lfo_params_t lfo_params;
+//	mov_avg_params_t mov_avg_params;
+//	adsr_params_t adsr_params;
+//	object_pool_t object_pool;
+//
+//	/** LFO */
+//	q15_t* lfo_amp;
+//	q15_t lfo_amo;
+//	dest_t lfo_dest;
+//
+//	/** ADSR  */
+//	q15_t adsr_vol_amp;
+//
+//	/** MIDI */
+//	dest_t midi_dest;
+//	uint16_t pitch;
+//	uint16_t vel;
+//	bool note_ON;
+//
+//	/** MUX */
+//	mux_out_t mux_adc_0_out;
+//	mux_out_t mux_adc_1_out;
+//	mux_out_t mux_gpio_0_out;
+//	mux_out_t mux_gpio_1_out;
+//	mux_out_t mux_gpio_2_out;
+//
+//	uint16_t adc_read[ADC_ARRAY_SIZE];
+//	bool DMA_ADC_transfer_complete;
+//
+//	/** DAC out sample*/
+//	uint16_t dac_write;
+//
+//	int16_t FM_mod_amp;
+//	uint8_t I;
+//	bool FM_synth;
+//
+//	/** Pointer to output frame*/
+//	q15_t* pOut;
+//
+//
+//};
 
 
 #endif /* INCLUDE_TYPES_H_ */

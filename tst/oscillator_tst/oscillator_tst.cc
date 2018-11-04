@@ -24,6 +24,7 @@ This file is part of Ratatech 3019
 #include "unity.h"
 #include "oscillator.h"
 #include "tst_utils.h"
+#include "synthSettings.h"
 
 /**
  * Size of reference and output buffers
@@ -101,16 +102,6 @@ q15_t buff_tri_ref[BUFF_SIZE] = { 29200, 26546, 23891, 21236, 18582, 15927, 1327
 
 
 /**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
-
-/**
- * Dummy object pool
- */
-object_pool_t object_pool;
-
-/**
  * Oscillator class instance
  */
 Oscillator osc;
@@ -125,11 +116,14 @@ q15_t pOscOut[BUFF_SIZE];
  */
 void test_sine_out(void){
 
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
+	osc.init(&s->osc_params);
 
 	/** Store frames in outuput buffer */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
@@ -138,7 +132,7 @@ void test_sine_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
+		osc.get_frame(pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -158,11 +152,14 @@ void test_sine_out(void){
  */
 void test_square_out(void){
 
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
+	osc.init(&s->osc_params);
 
 	/** Set shape */
 	osc.set_shape(SQU);
@@ -174,7 +171,7 @@ void test_square_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
+		osc.get_frame(pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -194,11 +191,14 @@ void test_square_out(void){
  */
 void test_saw_out(void){
 
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
+	osc.init(&s->osc_params);
 
 	/** Set shape */
 	osc.set_shape(SAW);
@@ -210,7 +210,7 @@ void test_saw_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
+		osc.get_frame(pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -230,11 +230,14 @@ void test_saw_out(void){
  */
 void test_triangle_out(void){
 
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	osc.init(&synth_params.osc_params);
+	osc.init(&s->osc_params);
 
 	/** Set shape */
 	osc.set_shape(TRI);
@@ -246,7 +249,7 @@ void test_triangle_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc.get_frame(&synth_params,pOsc,FRAME_SIZE);
+		osc.get_frame(pOsc,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pOsc,&pOscOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -264,11 +267,17 @@ void test_triangle_out(void){
 int main(void)
 {
 
-	/** Init system and peripherals */
-	ratatech_init(&synth_params);
+//	/** Init system and peripherals */
+//	ratatech_init(&synth_params);
+//
+//	/** Load initial default settings */
+//	init_settings(&synth_params,object_pool);
 
-	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
+    /** Init instance with default settings **/
+    s->intDefaultSettings();
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

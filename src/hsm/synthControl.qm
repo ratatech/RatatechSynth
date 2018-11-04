@@ -34,8 +34,7 @@
     </state>
     <state name="on">
      <entry>BSP::ledOn();
-//synth_params_t synth_params;
-//fillBuffer(&amp;synth_params);</entry>
+fillBuffer();</entry>
      <tran trig="TIMEOUT" target="../../1">
       <tran_glyph conn="11,42,3,1,24,-26,-5">
        <action box="0,-2,10,2"/>
@@ -48,6 +47,9 @@
     <state_diagram size="80,50"/>
    </statechart>
   </class>
+  <class name="paramsHandlerHSM" superclass="qpcpp::QActive">
+   <attribute name="attr1" type="" visibility="0x00" properties="0x00"/>
+  </class>
  </package>
  <directory name=".">
   <file name="soundGenHSM.cc">
@@ -56,8 +58,6 @@
 
 using namespace QP;
 using namespace MAINBSP;
-
-//synth_params_t synth_params;
 
 Q_DEFINE_THIS_FILE
 

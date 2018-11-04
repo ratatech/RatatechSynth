@@ -27,14 +27,20 @@ static Oscillator osc;
 static q15_t out_sample;
 static q15_t* pOut;
 
+
+object_pool_t object_pool;
+
+/** Make a local copy of the object instances */
+Oscillator 	osc1,osc2,osc3,osc4;
+
 /**
  * @brief Fill the main buffer containing the output audio samples
  * @param synth_params	Synth global structure
  */
-void fillBuffer(synth_params_t* synth_params)
+void fillBuffer(void)
 {
 	/** Sound generation */
-	osc.get_frame(synth_params, pOut, FRAME_SIZE);
+	//osc.get_frame(synth_params, pOut, FRAME_SIZE);
 
 	/** Fill the output buffer with fresh frames */
 	out_buffer.write_frame(pOut);

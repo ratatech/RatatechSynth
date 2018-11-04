@@ -22,8 +22,6 @@
 using namespace QP;
 using namespace MAINBSP;
 
-//synth_params_t synth_params;
-
 Q_DEFINE_THIS_FILE
 
 //*============== ask QM to declare the Blinky class ================*/
@@ -102,8 +100,7 @@ QP::QState SoundGenHSM::on(SoundGenHSM * const me, QP::QEvt const * const e) {
         //${AOs::SoundGenHSM::SM::on}
         case Q_ENTRY_SIG: {
             BSP::ledOn();
-            //synth_params_t synth_params;
-            //fillBuffer(&synth_params);
+            fillBuffer();
             status_ = Q_HANDLED();
             break;
         }

@@ -114,24 +114,23 @@ public:
 
 	/**
 	 * Compute a new oscillator sample
-	 * @param synth_params Synth global structure
 	 * @return interp_lut The computed oscillator sample
 	 */
-	q15_t get_sample(synth_params_t *synth_params);
+	q15_t get_sample(void);
 
 	/**
 	 * Compute a new dual oscillator sample
 	 * @param synth_params	Synth global structure
 	 * @return interp_lut	The computed oscillator sample
 	 */
-	q15_t get_sample_dual(synth_params_t *synth_params);
+	q15_t get_sample_dual(void);
 
 	/**
 	 * Compute a new fm oscillator sample
 	 * @param synth_params	Synth global structure
 	 * @return interp_lut	The computed oscillator sample
 	 */
-	int32_t get_sample_fm(synth_params_t *synth_params);
+	int32_t get_sample_fm(void);
 
 	/**
 	 * Compute a new oscillator frame
@@ -139,7 +138,7 @@ public:
 	 * @param pOsc 			Pointer to store the oscillator samples
 	 * @param block_size 	Number of samples in the vector
 	 */
-	void get_frame(synth_params_t *synth_params, q15_t* pOsc, uint32_t block_size);
+	void get_frame(q15_t* pOsc, uint32_t block_size);
 };
 
 

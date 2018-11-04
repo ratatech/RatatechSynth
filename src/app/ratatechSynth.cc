@@ -36,24 +36,20 @@ using namespace QP;
 using namespace MAINBSP;
 Q_DEFINE_THIS_FILE
 
-/**
- * Dummy object pool
- */
-object_pool_t object_pool;
-
-/**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
-
 int main(int argc, char *argv[])
 {
 
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
+    /** Init instance with default settings **/
+    s->intDefaultSettings();
+
 	/** Init system and peripherals */
-	ratatech_init(&synth_params);
+	//ratatech_init(&synth_params);
 
 	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
+	//init_settings(&synth_params,object_pool);
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
