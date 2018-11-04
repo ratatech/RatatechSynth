@@ -365,7 +365,10 @@ void ADC_Conf_Init(void){
 /**
  * Configure and initialize DMA Peripheral
  */
-void DMA_Conf_Init(synth_params_t* synth_params){
+void DMA_Conf_Init(void){
+
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
 
 	DMA_InitTypeDef DMA_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -376,7 +379,7 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 	 */
 	DMA_DeInit(DMA1_Channel1);
 	DMA_InitStructure.DMA_PeripheralBaseAddr = ADC1_DR_Address;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&synth_params->adc_read;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&s->adc_read;
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
 	DMA_InitStructure.DMA_BufferSize = ADC_ARRAY_SIZE;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -397,7 +400,7 @@ void DMA_Conf_Init(synth_params_t* synth_params){
 //    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 //    NVIC_Init(&NVIC_InitStructure);
 
-	q15_t* _pOut = synth_params->pOut;
+	q15_t* _pOut = s->pOut;
 	q15_t* _pBuff;
 
 	/* DMA1 channel2 configuration ----------------------------------------------*/
@@ -564,7 +567,7 @@ void init_rotary_encoder(void)
 /**
  * Init system related routines(STM32F1) and all prefipherals needed for the synthesizer
  */
-void ratatech_init(synth_params_t* synth_params){
+void ratatech_init(void){
 
 	RCC_ClocksTypeDef RCC_Clocks;
 	SystemInit();
@@ -581,7 +584,7 @@ void ratatech_init(synth_params_t* synth_params){
 	GPIO_Conf_Init();
 	SPI_Config();
 	ButtonsInitEXTI();
-	DMA_Conf_Init(synth_params);
+	DMA_Conf_Init();
 	ADC_Conf_Init();
 	USART_Conf_Init();
 	TIM_Config();

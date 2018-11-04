@@ -8,8 +8,6 @@
 #ifndef INCLUDE_TIMER_H_
 #define INCLUDE_TIMER_H_
 
-#include "ratatechSynth.h"
-
 void TIM_Config(void);
 void TIM_Init(void);
 

@@ -279,6 +279,9 @@ int main(void)
     /** Init instance with default settings **/
     s->intDefaultSettings();
 
+	/** Init system and peripherals */
+	ratatech_init();
+
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);

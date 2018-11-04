@@ -9,6 +9,9 @@
 #define INCLUDE_CIRCULAR_BUFFER_H_
 
 #include "utils.h"
+#include "types.h"
+#include "stm32f10x_conf.h"
+#include "stm32f10x.h"
 
 #define BUFFER_SIZE 128
 #define NFRAMES  BUFFER_SIZE/FRAME_SIZE

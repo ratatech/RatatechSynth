@@ -24,10 +24,11 @@ This file is part of Ratatech 3019
 
 /**
  * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
- * @param synth_params_t	Synth global structure
  */
-void AdcMux::read(synth_params_t* synth_params)
+void AdcMux::read(void)
 {
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
 
 	/** Read first then switch the state of the multiplxer. This way we can avoid
 	 * to introduce some delay between the storage of the values and the multiplexer
@@ -35,29 +36,25 @@ void AdcMux::read(synth_params_t* synth_params)
 	 * */
 	switch(seq){
 		case 0:
-			pMux_x[0] = movAvg_x0->update(synth_params->adc_read[MUX_CHANNEL_X]);
-			pMux_y[0] = movAvg_y0->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+			pMux_x[0] = movAvg_x0->update(s->adc_read[MUX_CHANNEL_X]);
+			pMux_y[0] = movAvg_y0->update(s->adc_read[MUX_CHANNEL_Y]);
 		break;
 
 		case 1:
-			pMux_x[1] = movAvg_x1->update(synth_params->adc_read[MUX_CHANNEL_X]);
-			pMux_y[1] = movAvg_y1->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+			pMux_x[1] = movAvg_x1->update(s->adc_read[MUX_CHANNEL_X]);
+			pMux_y[1] = movAvg_y1->update(s->adc_read[MUX_CHANNEL_Y]);
 		break;
 
 		case 2:
-			pMux_x[2] = movAvg_x2->update(synth_params->adc_read[MUX_CHANNEL_X]);
-			pMux_y[2] = movAvg_y2->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+			pMux_x[2] = movAvg_x2->update(s->adc_read[MUX_CHANNEL_X]);
+			pMux_y[2] = movAvg_y2->update(s->adc_read[MUX_CHANNEL_Y]);
 		break;
 
 		case 3:
-			pMux_x[3] = movAvg_x3->update(synth_params->adc_read[MUX_CHANNEL_X]);
-			pMux_y[3] = movAvg_y3->update(synth_params->adc_read[MUX_CHANNEL_Y]);
+			pMux_x[3] = movAvg_x3->update(s->adc_read[MUX_CHANNEL_X]);
+			pMux_y[3] = movAvg_y3->update(s->adc_read[MUX_CHANNEL_Y]);
 		break;
 	}
-
-
-
-
 
 	seq++;
 	seq %= MUX_INPUTS;

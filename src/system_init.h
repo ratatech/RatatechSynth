@@ -28,14 +28,15 @@ This file is part of Ratatech 3019.
 #include "stm32f10x.h"
 #include "spi.h"
 #include "timer.h"
+#include "synthSettings.h"
 
 void RCC_Clocks_Init(void);
 void GPIO_Conf_Init(void);
 void ButtonsInitEXTI(void);
 void ADC_Conf_Init(void);
 void USART_Conf_Init(void);
-void DMA_Conf_Init(synth_params_t* synth_params);
-void ratatech_init(synth_params_t* synth_params);
+void DMA_Conf_Init(void);
+void ratatech_init(void);
 void init_rotary_encoder(void);
 
 

@@ -22,7 +22,6 @@
 
 #include "oscillator.h"
 
-
 using namespace std;
 
 /**
@@ -40,6 +39,8 @@ q15_t Oscillator::get_sample(void)
  */
 q15_t Oscillator::get_sample_dual(void)
 {
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
 
 	uint32_t interp_lut,interp_lut_temp,frac,ph_ind_frac_dual,ind_frac;
 	q31_t sample_a,sample_b,sample_out,_y0,_y1,y;
@@ -63,7 +64,7 @@ q15_t Oscillator::get_sample_dual(void)
 
     /** ---------  OSC B (detuned) --------- */
 
-	ph_ind_frac_dual = ph_ind_frac*synth_params->osc_params.osc_detune;
+	ph_ind_frac_dual = ph_ind_frac*s->osc_params.osc_detune;
 	ph_ind_frac_dual %= WRAP_AROUND_LUT;
 
     /** 9 bits for the integer part, 23 bits for the fractional part */
@@ -78,7 +79,7 @@ q15_t Oscillator::get_sample_dual(void)
     sample_b = interp_q15(_y0,_y1,ind_frac,SHIFT_PHASE_INT);
 
     /** Mix the two oscillators in a single sample */
-    sample_out = mix(synth_params,(q15_t)sample_a,(q15_t)sample_b,synth_params->osc_params.mixAB);
+    sample_out = mix((q15_t)sample_a,(q15_t)sample_b,s->osc_params.mixAB);
 
 	return sample_out;
 
@@ -90,6 +91,9 @@ q15_t Oscillator::get_sample_dual(void)
  */
 int32_t Oscillator::get_sample_fm(void)
 {
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
 	int32_t interp_lut,interp_lut_temp,frac,mod;
 	int64_t ph_mod_index = 0;
 
@@ -115,7 +119,7 @@ int32_t Oscillator::get_sample_fm(void)
 	 * */
 
 	/** Get modulator increment scaled by the modulation index I */
-	ph_mod_index =((synth_params->I*synth_params->FM_mod_amp>>15));
+	ph_mod_index =((s->I*s->FM_mod_amp>>15));
 
 	/** Shift 20 bits as the fractional index of the carrier wave */
 	ph_mod_index <<= 20;
@@ -139,19 +143,18 @@ int32_t Oscillator::get_sample_fm(void)
  * @param pOsc 			Pointer to store the oscillator samples
  * @param block_size 	Number of samples in the vector
  */
-void Oscillator::get_frame(, q15_t* pOsc, uint32_t block_size)
+void Oscillator::get_frame(q15_t* pOsc, uint32_t block_size)
 {
+	q15_t *pOut = pOsc; /* output pointer */
 
-	 q15_t *pOut = pOsc;	/* output pointer */
+	/** Generate samples and store it in the output buffer */
+	for(uint8_t i=0;i<block_size;i++) {
+		*pOut++ = get_sample();
+	}
 
-	 /** Generate samples and store it in the output buffer */
-	 for(uint i=0;i<block_size;i++){
-		 *pOut++ = get_sample(synth_params);
-	 }
-
-	 /** Shift/Saturate to get a square wave */
-	 if(shape==SQU)
-		 arm_shift_q15(pOsc,16,pOsc,block_size);
+	/** Shift/Saturate to get a square wave */
+	if(shape==SQU)
+		arm_shift_q15(pOsc,16,pOsc,block_size);
 
 }
 

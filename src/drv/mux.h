@@ -78,7 +78,6 @@ class Mux{
 
 		/**
 		 * Configure multiplexer input port and pins
-		 * @param synth_params		Synth global structure
 		 * @param GPIO_CTRL			GPIO port used for swtiching states of the MUX
 		 * @param GPIO_Pin_A		Specifies the port bit to be written. Control input A of the multiplexer
 		 * @param GPIO_Pin_B		Specifies the port bit to be written. Control input B of the multiplexer
@@ -88,8 +87,7 @@ class Mux{
 		 * @param MUX_CHANNEL_X		ADC Channel used GPIO_Pin_X
 		 * @param MUX_CHANNEL_Y		ADC Channel used GPIO_Pin_Y
 		 */
-		void config(synth_params_t* synth_params,
-					GPIO_TypeDef* 	GPIO_CTRL,
+		void config(GPIO_TypeDef* 	GPIO_CTRL,
 					uint16_t 		GPIO_Pin_A,
 					uint16_t 		GPIO_Pin_B,
 					GPIO_TypeDef* 	GPIO_READ,
@@ -130,7 +128,7 @@ class Mux{
 		 * Update multiplexer states
 		 * @param synth_params_t	Synth global structure
 		 */
-		virtual void update(synth_params_t* synth_params_t){
+		virtual void update(void){
 
 			BitAction sb;
 

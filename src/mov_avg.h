@@ -26,7 +26,7 @@ This file is part of XXXXXXX
 #include "tables.h"
 #include "types.h"
 #include <math.h>
-#include "settings.h"
+#include "synthSettings.h"
 
 /**
  * Moving average filter class
@@ -63,10 +63,9 @@ class MovAvg {
 
 		/**
 		 * Process an input data frame through the moving average filter
-		 * @param synth_params Synth global structure
 		 * @param pMovAvg Pointer to store the filtered samples
 		 */
-		void process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut);
+		void process_frame(q15_t* pIn, q15_t* pOut);
 
 
 

@@ -24,12 +24,9 @@ This file is part of Ratatech 3019
 
 /**
  * Iterate over the possible multiplexer inputs and store the read GPIO values into the buffer.
- * @param synth_params_t	Synth global structure
  */
-void GpioMux::read(synth_params_t* synth_params)
+void GpioMux::read(void)
 {
-
-
 	/** Read gpio pins and store the value corresponding to the selected bit */
 	uint16_t pin_state_x = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_X);
 	uint16_t pin_state_y = GPIO_ReadInputDataBit(MUX_PORT_READ,MUX_Y);
@@ -39,6 +36,5 @@ void GpioMux::read(synth_params_t* synth_params)
 
 	seq++;
 	seq %= MUX_INPUTS;
-
 }
 

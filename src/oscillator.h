@@ -9,11 +9,13 @@
 #define INCLUDE_OSCILLATOR_H_
 
 #include <math.h>
+#include <stdint.h>
 #include "arm_math.h"
 #include "tables.h"
 #include "types.h"
-
+#include "synthSettings.h"
 #include "Lutinterp.h"
+#include "system_init.h"
 
 class Lut_interp;
 

@@ -48,9 +48,8 @@ class AdcMux: public Mux{
 
 		/**
 		 * Iterate over the possible multiplexer inputs and store the read ADC values into the buffer.
-		 * @param synth_params_t	Synth global structure
 		 */
-		void read(synth_params_t* synth_params);
+		void read(void);
 
 };
 

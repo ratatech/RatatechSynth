@@ -66,15 +66,13 @@ class MacroMux{
 
 		/**
 		 * Configure multiplexers input port and pins
-		 * @param synth_params	Synth global structure
 		 */
-		void config(synth_params_t* synth_params);
+		void config(void);
 
 		/**
 		 * Iterate over the possible multiplexer inputs and store the values of each mux object
-		 * @param synth_params_t	Synth global structure
 		 */
-		void read(synth_params_t* synth_params);
+		void read(void);
 
 };
 

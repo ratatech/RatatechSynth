@@ -28,17 +28,19 @@ using namespace std;
 
 /**
  * Set initial ADSR parameters
- * @param synth_params Synth global structure
  */
-void ADSR::init(synth_params_t* synth_params){
+void ADSR::init(void){
 
-	ph_inc_att = synth_params->adsr_params.ph_inc_att;
-	ph_inc_dec = synth_params->adsr_params.ph_inc_dec;
-	ph_inc_rel = synth_params->adsr_params.ph_inc_rel;
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
+	ph_inc_att = s->adsr_params.ph_inc_att;
+	ph_inc_dec = s->adsr_params.ph_inc_dec;
+	ph_inc_rel = s->adsr_params.ph_inc_rel;
 	ph_inc = ph_inc_att;
 
     adsr_state = IDLE_STATE;
-    sustain_level = synth_params->adsr_params.sustain_level;
+    sustain_level = s->adsr_params.sustain_level;
 
     interp_state = 0;
     ind = 0;
@@ -54,12 +56,12 @@ void ADSR::init(synth_params_t* synth_params){
  * @param synth_params 	Synth global structure
  * @return				ADSR sample
  */
-q15_t ADSR::get_sample(synth_params_t *synth_params)
+q15_t ADSR::get_sample(void)
 {
 
 	q15_t adsr_sample;		/** Temp var */
 
-	adsr_sample = update(synth_params);
+	adsr_sample = update();
 
 	return(adsr_sample);
 
@@ -70,12 +72,10 @@ q15_t ADSR::get_sample(synth_params_t *synth_params)
  * @param synth_params 	Synth global structure
  * @param y		 		Interpolated value
  */
-q15_t ADSR::interp(synth_params_t *synth_params, q15_t y1,uint8_t ind)
+q15_t ADSR::interp(q15_t y1,uint8_t ind)
 {
-
 	q63_t y = interp_q15(interp_state,y1,FRAME_INTERP_K*ind,SHIFT_FRAME_INTERP);
 	return (q15_t)y;
-
 }
 
 
@@ -90,27 +90,29 @@ void ADSR::reset(void)
 	adsr_table = adsr_att_exp_q15;
 	ph_inc = ph_inc_att;
 	pLut_interp->reset();
-
 }
 
 
 /** Get the newly read values from the ADC and set the coefficients
  * @param synth_params 	Synth global structure
  */
-void ADSR::set_params(synth_params_t *synth_params) {
+void ADSR::set_params(void) {
 
-	ph_inc_att = adsr_time_phinc_lut[4095 - synth_params->mux_adc_1_out.mux_y[0]];
-	ph_inc_dec = adsr_time_phinc_lut[4095 - synth_params->mux_adc_1_out.mux_y[1]];
-	ph_inc_rel = adsr_time_phinc_lut[4095 - synth_params->mux_adc_1_out.mux_y[3]];
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
 
-//	sustain_level = (q15_t) (4095 - synth_params->mux_adc_1_out.mux_y[2] * MAX_AMP) >> 12;
-	sustain_level = (q15_t) ((int32_t) ((4095 - synth_params->mux_adc_1_out.mux_y[2]) * MAX_AMP) >> 12);
+	ph_inc_att = adsr_time_phinc_lut[4095 - s->mux_adc_1_out.mux_y[0]];
+	ph_inc_dec = adsr_time_phinc_lut[4095 - s->mux_adc_1_out.mux_y[1]];
+	ph_inc_rel = adsr_time_phinc_lut[4095 - s->mux_adc_1_out.mux_y[3]];
+
+//	sustain_level = (q15_t) (4095 - s->mux_adc_1_out.mux_y[2] * MAX_AMP) >> 12;
+	sustain_level = (q15_t) ((int32_t) ((4095 - s->mux_adc_1_out.mux_y[2]) * MAX_AMP) >> 12);
 
 //	printf("ADSR ATT = %i ADSR DEC = %i ADSR SUS = %i ADSR REL = %i\r",
-//			4095 - synth_params->mux_adc_1_out.mux_y[0],
-//			4095 - synth_params->mux_adc_1_out.mux_y[1],
+//			4095 - s->mux_adc_1_out.mux_y[0],
+//			4095 - s->mux_adc_1_out.mux_y[1],
 //			sustain_level,
-//			4095 - synth_params->mux_adc_1_out.mux_y[3]);
+//			4095 - s->mux_adc_1_out.mux_y[3]);
 
 }
 
@@ -119,7 +121,10 @@ void ADSR::set_params(synth_params_t *synth_params) {
  *  Compute a new ADSR sample
  * @return ADSR sample
  */
-q15_t ADSR::update(synth_params_t *synth_params){
+q15_t ADSR::update(void){
+
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
 
 	q31_t x32;
 	int64_t x64;
@@ -157,7 +162,7 @@ q15_t ADSR::update(synth_params_t *synth_params){
 
 		}
 
-		if (synth_params->note_ON == false) {
+		if (s->note_ON == false) {
 			adsr_state = RELEASE_STATE;
 			ph_inc = ph_inc_rel;
 			adsr_table = adsr_dec_exp_q15;
@@ -179,7 +184,7 @@ q15_t ADSR::update(synth_params_t *synth_params){
 			ph_inc = ph_inc_rel;
 			pLut_interp->reset();
 		}
-		if (synth_params->note_ON == false) {
+		if (s->note_ON == false) {
 			adsr_state = RELEASE_STATE;
 			ph_inc = ph_inc_rel;
 			top_level_rel = adsr_sample;
@@ -190,7 +195,7 @@ q15_t ADSR::update(synth_params_t *synth_params){
 
 	case SUSTAIN_STATE:
 		adsr_sample = sustain_level;
-		if (synth_params->note_ON == false) {
+		if (s->note_ON == false) {
 			adsr_state = RELEASE_STATE;
 			ph_inc = ph_inc_rel;
 			pLut_interp->reset();
@@ -222,7 +227,7 @@ q15_t ADSR::update(synth_params_t *synth_params){
 	}
 
 	state = adsr_sample;
-	synth_params->adsr_vol_amp = adsr_sample;
+	s->adsr_vol_amp = adsr_sample;
 
 
 	return (adsr_sample);

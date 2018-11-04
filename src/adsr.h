@@ -45,16 +45,14 @@ class ADSR{
 
 		/**
 		 * Set initial ADSR parameters
-		 * @param synth_params Synth global structure
 		 */
-		void init(synth_params_t* synth_params);
+		void init(void);
 
 		/**
 		 * Get a new adsr envelope sample
-		 * @param synth_params 	Synth global structure
 		 * @return				ADSR sample
 		 */
-		q15_t get_sample(synth_params_t *synth_params);
+		q15_t get_sample(void);
 
 		/**
 		 * Reset internal variables and go back to attack state
@@ -62,28 +60,25 @@ class ADSR{
 		void reset(void);
 
 		/** Get the newly read values from the ADC and set the coefficients
-		 * @param synth_params 	Synth global structure
 		 */
-		void set_params(synth_params_t *synth_params);
+		void set_params(void);
 
 		/**
 		 *  Compute a new ADSR sample
 		 * @return ADSR sample
 		 */
-		q15_t update(synth_params_t *synth_params);
+		q15_t update(void);
 
 		/**
 		 * Set internal adsr coefficients
-		 * @param synth_params Synth global structure
 		 */
-		void set_base(synth_params_t *synth_params);
+		void set_base(void);
 
 		/**
 		 * Interpolate adsr samples
-		 * @param synth_params 	Synth global structure
 		 * @param y		 		Interpolated value
 		 */
-		q15_t interp(synth_params_t *synth_params, q15_t y1, uint8_t ind);
+		q15_t interp(q15_t y1, uint8_t ind);
 
 
 };

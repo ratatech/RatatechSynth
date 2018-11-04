@@ -25,33 +25,31 @@ This file is part of Ratatech 3019
 
 /**
  * Configure multiplexers input port and pins
- * @param synth_params	Synth global structure
  */
-void MacroMux::config(synth_params_t* synth_params){
+void MacroMux::config(void){
 
-	am0->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
-	am1->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
-	gm0->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
-	gm1->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8, 0, 0);
-	gm2->config(synth_params, GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14, 0, 0);
+	am0->config(GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_0_CH0, MUX_ADC_0_CH1);
+	am1->config(GPIOB, GPIO_Pin_1, GPIO_Pin_12, 0, 0, 0,  MUX_ADC_1_CH0, MUX_ADC_1_CH1);
+	gm0->config(GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOA, GPIO_Pin_8, GPIO_Pin_12, 0, 0);
+	gm1->config(GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_0, GPIO_Pin_8, 0, 0);
+	gm2->config(GPIOB, GPIO_Pin_1, GPIO_Pin_12, GPIOB, GPIO_Pin_9, GPIO_Pin_14, 0, 0);
 
 }
 
 /**
  * Iterate over the possible multiplexer inputs and store the values of each mux object
- * @param synth_params_t	Synth global structure
  */
-void MacroMux::read(synth_params_t* synth_params)
+void MacroMux::read(void)
 {
 
 	/** Read all mutiplexer instances */
-	am0->read(synth_params);
-	am1->read(synth_params);
-	gm0->read(synth_params);
-	gm1->read(synth_params);
-	gm2->read(synth_params);
+	am0->read();
+	am1->read();
+	gm0->read();
+	gm1->read();
+	gm2->read();
 
 	/** Update the multiplexer states just a single time which works for all instances */
-	am0->update(synth_params);
+	am0->update();
 }
 
