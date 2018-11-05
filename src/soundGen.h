@@ -44,6 +44,11 @@ void DMA1_Channel2_IRQHandler(void);
 }
 
 /**
+ * @brief Start the sound generator
+ */
+void soundGenStart(void);
+
+/**
  * @brief Fill the main buffer containing the output audio samples
  */
 void fillBuffer(void);

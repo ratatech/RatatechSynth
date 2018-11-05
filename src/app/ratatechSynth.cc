@@ -36,14 +36,19 @@ using namespace QP;
 using namespace MAINBSP;
 Q_DEFINE_THIS_FILE
 
+
 int main(int argc, char *argv[])
 {
-
     /** Unique instance of SynthSettings **/
     SynthSettings* s = SynthSettings::getInstance();
 
     /** Init instance with default settings **/
     s->intDefaultSettings();
+
+	/** Init system and peripherals */
+	ratatech_init();
+
+	soundGenStart();
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

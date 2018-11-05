@@ -27,8 +27,20 @@ static Oscillator osc;
 static q15_t out_sample;
 static q15_t* pOut;
 
-/** Make a local copy of the object instances */
-Oscillator 	osc1,osc2,osc3,osc4;
+/** Unique instance of SynthSettings **/
+SynthSettings* s = SynthSettings::getInstance();
+
+/**
+ * @brief Start the sound generator
+ */
+void soundGenStart(void){
+
+	/** Init oscillator with default settings */
+	osc.init(&s->osc_params);
+
+	/** Configure oscillator*/
+	osc.set_shape(SAW);
+}
 
 /**
  * @brief Fill the main buffer containing the output audio samples
