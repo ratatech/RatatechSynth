@@ -23,6 +23,7 @@ This file is part of Ratatech 3019
 #include <stdio.h>
 #include "unity.h"
 #include "adsr.h"
+#include "oscillator.h"
 #include "tst_utils.h"
 
 /**
@@ -45,16 +46,8 @@ q15_t buff_adsr_out[BUFF_SIZE] = {207,238,269,299,330,361,392,423,454,485,516,54
 6550,6578,6606,6633,6661,6689,6717,6744,6772,6800,6828,6855,6883,6911,6939,6966,6994,7022,7050,7077,7105,7133,7160,7188,7215,7243,7270,7298,7326,7353,7381,
 7408,7436,7463,7490,7518,7545,7573,7600,7627,};
 
-
-/**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
-
-/**
- * Dummy object pool
- */
-object_pool_t object_pool;
+/** Unique instance of SynthSettings **/
+SynthSettings* s = SynthSettings::getInstance();
 
 /**
  * Oscillator class instance
@@ -85,15 +78,15 @@ void test_adsr_out(void){
 	int8_t sustain_timeout = 30;
 
 	/** Init adsr */
-	synth_params.adsr_params.sustain_level = (q15_t)(float(MAX_AMP)*0.5);
-	adsr.init(&synth_params);
+	s->adsr_params.sustain_level = (q15_t)(float(MAX_AMP)*0.5);
+	adsr.init();
 
 	/** ADSR time params*/
 	adsr.adsr_state = ATTACK_STATE;
 	adsr.ph_inc_att = adsr_time_phinc_lut[2000];
 	adsr.ph_inc_dec = adsr_time_phinc_lut[100];
 	adsr.ph_inc_rel = adsr_time_phinc_lut[2300];
-	synth_params.note_ON = true;
+	s->note_ON = true;
 	adsr.ph_inc = adsr.ph_inc_att;
 	adsr.pLut_interp->reset();
 
@@ -104,11 +97,11 @@ void test_adsr_out(void){
 			sustain_timeout--;
 		}
 		if(sustain_timeout<=0){
-			synth_params.note_ON = false;
+			s->note_ON = false;
 		}
 
 		/** Get ADSR envelope frames */
-		adsr_sample = adsr.get_sample(&synth_params);
+		adsr_sample = adsr.get_sample();
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(&adsr_sample,&pAdsr_out[i],1);
@@ -125,12 +118,11 @@ void test_adsr_out(void){
 
 int main(void)
 {
-
-	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
+    /** Init instance with default settings **/
+    s->intDefaultSettings();
 
 	/** Init system and peripherals */
-	ratatech_init(&synth_params);
+	ratatech_init();
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

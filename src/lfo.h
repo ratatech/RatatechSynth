@@ -32,8 +32,6 @@ class LFO {
 
 	public:
 
-
-
 	    osc_shape_t shape;
 		uint32_t ph_inc_frac,ph_ind_frac,ph_inc,ph_ind;
 		q15_t lfo_amp,interp_state;
@@ -96,7 +94,7 @@ class LFO {
 		 *
 		 * @param lfo_param Structure holding init parameters
 		 */
-		void init(lfo_params_t* lfo_param);
+		void init(lfo_params_t* lfo_params);
 
 		/**
 		 * Compute a new lfo sample

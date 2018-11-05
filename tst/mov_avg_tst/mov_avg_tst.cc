@@ -58,15 +58,8 @@ q15_t pIn[FRAME_SIZE] = { 	0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7f
 							0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,0x7fff,
 };
 
-/**
- * Dummy object pool
- */
-object_pool_t object_pool;
-
-/**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
+/** Unique instance of SynthSettings **/
+SynthSettings* s = SynthSettings::getInstance();
 
 /**
  * Moving average filter class instance
@@ -92,7 +85,7 @@ void test_mov_avg_out(void){
 	q15_t pMovAvg[FRAME_SIZE];
 
 	/** Init moving average filter with default settings */
-	mov_avg.init(&synth_params.mov_avg_params);
+	mov_avg.init(&s->mov_avg_params);
 
 	/** Specify the total number of frames */
 	uint8_t _NFRAMES = BUFF_SIZE/FRAME_SIZE;
@@ -103,7 +96,7 @@ void test_mov_avg_out(void){
 	/** Get moving average frames */
 	for(int i=0; i< _NFRAMES; i++){
 
-		mov_avg.process_frame(&synth_params,pIn,pMovAvg);
+		mov_avg.process_frame(pIn,pMovAvg);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pMovAvg,&pMovAvgOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -121,12 +114,11 @@ void test_mov_avg_out(void){
 
 int main(void)
 {
+    /** Init instance with default settings **/
+    s->intDefaultSettings();
 
 	/** Init system and peripherals */
-	ratatech_init(&synth_params);
-
-	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
+	ratatech_init();
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

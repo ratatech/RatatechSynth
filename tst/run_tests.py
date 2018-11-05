@@ -15,7 +15,7 @@ board = args.board[0]
 results = []
 
 # Define here list of tests
-tests = 'oscillator_tst','lfo_tst','adsr_tst','mixer_tst','mov_avg_tst','sound_gen_tst'
+tests = 'oscillator_tst','lfo_tst','adsr_tst','mixer_tst','mov_avg_tst'
 
 # Ensure testing from main dir
 assert 'RatatechSynth' in os.getcwd().split('/')[-1] , colored('All tests must be executed from main dir "RatatechSynth", change directory and try again','red')

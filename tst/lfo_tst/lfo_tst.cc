@@ -22,7 +22,8 @@ This file is part of Ratatech 3019
 
 #include <stdio.h>
 #include "unity.h"
-#include "ratatechSynth.h"
+#include "lfo.h"
+#include "oscillator.h"
 #include "tst_utils.h"
 
 /**
@@ -79,15 +80,8 @@ q15_t buff_lfo_tri_ref[BUFF_SIZE] = { 6031, 5234, 4438, 3642, 2845, 2049, 1252, 
 		6031, 5234, 4438, 3642, 2845, 2049, 1252, 476, 1252, 2049, 2845, 3642, 4438, 5234, 6031, 6827, };
 
 
-/**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
-
-/**
- * Dummy object pool
- */
-object_pool_t object_pool;
+/** Unique instance of SynthSettings **/
+SynthSettings* s = SynthSettings::getInstance();
 
 /**
  * LFO class instance
@@ -113,7 +107,7 @@ void test_lfo_sine_out(void){
 	q15_t pLfo[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	lfo.init(&synth_params.lfo_params);
+	lfo.init(&s->lfo_params);
 
 	/** Set lfo freq */
 	lfo.set_freq_frac(600);
@@ -125,7 +119,7 @@ void test_lfo_sine_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
+		lfo.get_frame(pLfo,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pLfo,&pLfoOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -150,7 +144,7 @@ void test_lfo_saw_out(void){
 	q15_t pLfo[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	lfo.init(&synth_params.lfo_params);
+	lfo.init(&s->lfo_params);
 
 	/** Set the lfo shape */
 	lfo.set_shape(SAW);
@@ -165,7 +159,7 @@ void test_lfo_saw_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
+		lfo.get_frame(pLfo,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pLfo,&pLfoOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -185,12 +179,11 @@ void test_lfo_saw_out(void){
  */
 void test_lfo_tri_out(void){
 
-
 	/** Pointer to oscillator frame  **/
 	q15_t pLfo[FRAME_SIZE];
 
 	/** Init oscillator with default settings */
-	lfo.init(&synth_params.lfo_params);
+	lfo.init(&s->lfo_params);
 
 	/** Set the lfo shape */
 	lfo.set_shape(TRI);
@@ -205,7 +198,7 @@ void test_lfo_tri_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		lfo.get_frame(&synth_params,pLfo,FRAME_SIZE);
+		lfo.get_frame(pLfo,FRAME_SIZE);
 
 		/** Store frames in outuput buffer */
 		arm_copy_q15(pLfo,&pLfoOut[i*FRAME_SIZE],FRAME_SIZE);
@@ -223,12 +216,11 @@ void test_lfo_tri_out(void){
 
 int main(void)
 {
+    /** Init instance with default settings **/
+    s->intDefaultSettings();
 
 	/** Init system and peripherals */
-	ratatech_init(&synth_params);
-
-	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
+	ratatech_init();
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);

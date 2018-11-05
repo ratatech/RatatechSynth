@@ -99,7 +99,8 @@ q15_t buff_tri_ref[BUFF_SIZE] = { 29200, 26546, 23891, 21236, 18582, 15927, 1327
 		5308, 7963, 10617, 13272, 15926, 18581, 21236, 23890, 26545, 29199, 31814, 29200, 26546, 23891, 21236, 18582, 15927, 13273, 10618, 7964, 5309, 2654, 0,
 		-2655, -5309, -7964, -10618, };
 
-
+/** Unique instance of SynthSettings **/
+SynthSettings* s = SynthSettings::getInstance();
 
 /**
  * Oscillator class instance
@@ -115,9 +116,6 @@ q15_t pOscOut[BUFF_SIZE];
  * Sine oscillator unit test
  */
 void test_sine_out(void){
-
-    /** Unique instance of SynthSettings **/
-    SynthSettings* s = SynthSettings::getInstance();
 
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
@@ -151,9 +149,6 @@ void test_sine_out(void){
  * Square oscillator unit test
  */
 void test_square_out(void){
-
-    /** Unique instance of SynthSettings **/
-    SynthSettings* s = SynthSettings::getInstance();
 
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
@@ -191,9 +186,6 @@ void test_square_out(void){
  */
 void test_saw_out(void){
 
-    /** Unique instance of SynthSettings **/
-    SynthSettings* s = SynthSettings::getInstance();
-
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
 
@@ -230,9 +222,6 @@ void test_saw_out(void){
  */
 void test_triangle_out(void){
 
-    /** Unique instance of SynthSettings **/
-    SynthSettings* s = SynthSettings::getInstance();
-
 	/** Pointer to oscillator frame  **/
 	q15_t pOsc[FRAME_SIZE];
 
@@ -266,15 +255,6 @@ void test_triangle_out(void){
 
 int main(void)
 {
-
-//	/** Init system and peripherals */
-//	ratatech_init(&synth_params);
-//
-//	/** Load initial default settings */
-//	init_settings(&synth_params,object_pool);
-
-    /** Unique instance of SynthSettings **/
-    SynthSettings* s = SynthSettings::getInstance();
 
     /** Init instance with default settings **/
     s->intDefaultSettings();

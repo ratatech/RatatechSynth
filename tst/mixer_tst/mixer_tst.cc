@@ -24,6 +24,7 @@ This file is part of Ratatech 3019
 #include "unity.h"
 #include "oscillator.h"
 #include "tst_utils.h"
+#include "lfo.h"
 
 /**
  * Size of reference and output buffers
@@ -47,20 +48,13 @@ q15_t buff_mix_ref[BUFF_SIZE] = { 6377, 12429, 17852, 22376, 25795, 27966, 28819
 		6377, 12429, 17852, 22376, 25795, 27966, 28819, 28373, 26718, 24014, 20480, 16383, 12001, 7632, 3551, -1, };
 
 
-/**
- * Structure holding the main synth parameters
- */
-synth_params_t synth_params;
-
-/**
- * Dummy object pool
- */
-object_pool_t object_pool;
+/** Unique instance of SynthSettings **/
+SynthSettings* s = SynthSettings::getInstance();
 
 /**
  * Oscillator class instance
  */
-Oscillator osc1,osc2;
+Oscillator osc1Mix,osc2Mix;
 
 /**
  * LFO class instance
@@ -79,18 +73,18 @@ q15_t pMixOut[BUFF_SIZE];
 void test_mix_out(void){
 
 	/** Init oscillator with default settings */
-	osc1.init(&synth_params.osc_params);
+	osc1Mix.init(&s->osc_params);
 	/** Set shape */
-	osc1.set_shape(SIN);
-	synth_params.osc_params.mixAB = 0;
+	osc1Mix.set_shape(SIN);
+	s->osc_params.mixAB = 0;
 
 	/** Init oscillator with default settings */
-	osc2.init(&synth_params.osc_params);
+	osc2Mix.init(&s->osc_params);
 
 	/** Set shape */
-	osc2.set_shape(SIN);
-	osc2.set_freq_frac(2000);
-	synth_params.osc_params.mixAB = MAX_AMP;
+	osc2Mix.set_shape(SIN);
+	osc2Mix.set_freq_frac(2000);
+	s->osc_params.mixAB = MAX_AMP;
 
 	/** Frame pointers  **/
 	q15_t pOsc1[FRAME_SIZE];
@@ -107,11 +101,11 @@ void test_mix_out(void){
 	for(int i=0; i< _NFRAMES; i++){
 
 		/** Get oscillator frames */
-		osc1.get_frame(&synth_params,pOsc1,FRAME_SIZE);
-		osc2.get_frame(&synth_params,pOsc2,FRAME_SIZE);
+		osc1Mix.get_frame(pOsc1,FRAME_SIZE);
+		osc2Mix.get_frame(pOsc2,FRAME_SIZE);
 
 		/** Mix frames */
-		mix_frames(&synth_params,pOsc1,pOsc2,pMix,mix_par);
+		mix_frames(pOsc1,pOsc2,pMix,mix_par);
 
 
 		/** Store frames in outuput buffer */
@@ -131,11 +125,11 @@ void test_mix_out(void){
 int main(void)
 {
 
-	/** Init system and peripherals */
-	ratatech_init(&synth_params);
+    /** Init instance with default settings **/
+    s->intDefaultSettings();
 
-	/** Load initial default settings */
-	init_settings(&synth_params,object_pool);
+	/** Init system and peripherals */
+	ratatech_init();
 
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
