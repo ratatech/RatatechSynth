@@ -45,20 +45,10 @@ int main(int argc, char *argv[])
     /** Init instance with default settings **/
     s->intDefaultSettings();
 
-	/** Init system and peripherals */
-	//ratatech_init(&synth_params);
-
-	/** Load initial default settings */
-	//init_settings(&synth_params,object_pool);
-
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-
-	/** Ready to start test  */
-
-    iprintf("\n\nTEST: QPC\n-----------------------\n");
 
     static QF_MPOOL_EL(QEvt) smlPoolSto[10]; // storage for small pool
     static QEvt const *soundGenHSMQSto[10]; // event queue storage for soundGenHSM

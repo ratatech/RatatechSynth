@@ -100,7 +100,7 @@ QP::QState SoundGenHSM::on(SoundGenHSM * const me, QP::QEvt const * const e) {
         //${AOs::SoundGenHSM::SM::on}
         case Q_ENTRY_SIG: {
             BSP::ledOn();
-            fillBuffer();
+            //fillBuffer();
             status_ = Q_HANDLED();
             break;
         }
