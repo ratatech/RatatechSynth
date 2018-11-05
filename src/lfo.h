@@ -11,6 +11,8 @@
 #include "utils.h"
 #include "arm_math.h"
 #include "tables.h"
+#include "types.h"
+
 
 #include <math.h>
 
@@ -100,22 +102,20 @@ class LFO {
 		 * Compute a new lfo sample
 		 * @return lfo_amp The computed lfo sample
 		 */
-		q15_t get_sample(synth_params_t* synth_params);
+		q15_t get_sample(void);
 
 		/**
 		 * Compute a new lfo frame
-		 * @param synth_params Synth global structure
 		 * @param pLfo Pointer to store the oscillator samples
 		 * @param block_size 	Number of samples in the vector
 		 */
-		void get_frame(synth_params_t *synth_params, q15_t* pLfo, uint32_t block_size);
+		void get_frame(q15_t* pLfo, uint32_t block_size);
 
 		/**
 		 * Interpolate lfo samples
-		 * @param synth_params 	Synth global structure
 		 * @param y		 		Interpolated value
 		 */
-		q15_t interp(synth_params_t *synth_params, q15_t y1,uint8_t ind);
+		q15_t interp(q15_t y1,uint8_t ind);
 
 };
 

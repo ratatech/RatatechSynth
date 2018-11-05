@@ -24,7 +24,7 @@ This file is part of Ratatech 3019
 
 #define BYPASS_VOICE_GEN
 
-void SoundGenerator::gen_voice(synth_params_t *synth_params, q15_t* pSndGen){
+void SoundGenerator::gen_voice(q15_t* pSndGen){
 
 //	volatile uint32_t cycles; // number of cycles //
 //	Oscillator* 	osc1 	= (Oscillator*)synth_params->object_pool.osc1;

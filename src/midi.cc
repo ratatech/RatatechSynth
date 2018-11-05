@@ -21,7 +21,6 @@ This file is part of Ratatech 3019
 */
 
 #include "midi.h"
-#include "ratatechSynth.h"
 
 /**
  * Parse incomming MIDI message

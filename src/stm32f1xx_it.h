@@ -29,11 +29,6 @@
 #ifndef __STM32F1XX_IT_H
 #define __STM32F1XX_IT_H
 
-
-
-#include "ratatechSynth.h"
-
-
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);

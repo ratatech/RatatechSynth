@@ -28,7 +28,7 @@ using namespace std;
  * Compute a new lfo sample
  * @return lfo_amp The computed lfo sample
  */
-q15_t LFO::get_sample(synth_params_t *synth_params)
+q15_t LFO::get_sample(void)
 {
 
 	q31_t y,_y0,_y1;
@@ -57,10 +57,9 @@ q15_t LFO::get_sample(synth_params_t *synth_params)
 
 /**
  * Interpolate lfo samples
- * @param synth_params 	Synth global structure
  * @param y		 		Interpolated value
  */
-q15_t LFO::interp(synth_params_t *synth_params, q15_t y1,uint8_t ind)
+q15_t LFO::interp(q15_t y1,uint8_t ind)
 {
 	q63_t y = interp_q15(interp_state,y1,FRAME_INTERP_K*ind,SHIFT_FRAME_INTERP);
 	return (q15_t)y;
@@ -68,23 +67,21 @@ q15_t LFO::interp(synth_params_t *synth_params, q15_t y1,uint8_t ind)
 
 /**
  * Compute a new lfo frame
- * @param synth_params Synth global structure
  * @param pLfo Pointer to store the oscillator samples
  * @param block_size 	Number of samples in the vector
  */
-void LFO::get_frame(synth_params_t *synth_params, q15_t* pLfo, uint32_t block_size)
+void LFO::get_frame(q15_t* pLfo, uint32_t block_size)
 {
-	 q15_t *pOut = pLfo;	/* output pointer */
+	q15_t *pOut = pLfo;	/* output pointer */
 
-	 // Generate samples and store it in the output buffer
-	 for(uint i=0;i<block_size;i++){
-		 *pOut++ = get_sample(synth_params);
-	 }
+	// Generate samples and store it in the output buffer
+	for(uint8_t i=0;i<block_size;i++){
+		*pOut++ = get_sample();
+	}
 
 }
 
 /** Init lfo.
- *
  * @param lfo_param Structure holding init parameters
  */
 void LFO::init(lfo_params_t* lfo_param){

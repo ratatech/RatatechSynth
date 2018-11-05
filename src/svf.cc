@@ -22,7 +22,7 @@ This file is part of Ratatech 3019
 
 #include "svf.h"
 
-void Svf::configure(synth_params_t* synth_params){
+void Svf::configure(void){
 
 	uint8_t sreg_byte = 0;
 	uint8_t SVF_order_msk,SVF_SC_EN_msk;
@@ -78,8 +78,12 @@ void Svf::configure(synth_params_t* synth_params){
  * Set filter resonance
  * @param q Filter resonance [0..PWM_PERIOD]
  */
-void Svf::set_q(synth_params_t* synth_params){
-	uint32_t q = (uint32_t)(synth_params->mux_adc_0_out.mux_y[0]*PWM_SVF)>>12;
+void Svf::set_q(void){
+
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
+
+	uint32_t q = (uint32_t)(s->mux_adc_0_out.mux_y[0]*PWM_SVF)>>12;
 	TIM3->CCR2 = q;
 }
 
@@ -87,16 +91,20 @@ void Svf::set_q(synth_params_t* synth_params){
  * Set filter cutoff frequency
  * @param fc Cutoff frequency  [0..PWM_PERIOD]
  */
-void Svf::set_fc(synth_params_t* synth_params){
-	uint32_t fc_adc = (uint32_t)(synth_params->mux_adc_1_out.mux_x[1]*PWM_PERIOD)>>12;
+void Svf::set_fc(void){
 
-	uint32_t fc_env = (uint32_t)(synth_params->adsr_vol_amp*PWM_PERIOD)>>15;
+    /** Unique instance of SynthSettings **/
+    SynthSettings* s = SynthSettings::getInstance();
 
-	uint32_t fc_lfo = (uint32_t)((*(synth_params->lfo_amp))*(PWM_PERIOD))>>15;
+	uint32_t fc_adc = (uint32_t)(s->mux_adc_1_out.mux_x[1]*PWM_PERIOD)>>12;
+
+	uint32_t fc_env = (uint32_t)(s->adsr_vol_amp*PWM_PERIOD)>>15;
+
+	uint32_t fc_lfo = (uint32_t)((*(s->lfo_amp))*(PWM_PERIOD))>>15;
 
 	// Scale ADSR envelope with the adc knob fc selection.
 	//fc_adc = ((uint32_t)fc_adc * fc_env)>>15;
-	//fc_adc = (fc_adc * ((uint32_t)(synth_params->lfo_amp*PWM_PERIOD)>>15) )>>15;
+	//fc_adc = (fc_adc * ((uint32_t)(s->lfo_amp*PWM_PERIOD)>>15) )>>15;
 	TIM3->CCR4 = PWM_PERIOD - (fc_adc-fc_env);
 	//TIM3->CCR4 = PWM_PERIOD-fc_env;
 //		TIM3->CCR4 = PWM_PERIOD - fc_adc;

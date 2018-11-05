@@ -22,9 +22,9 @@ This file is part of XXXXXXX
 #ifndef INCLUDE_SVF_H_
 #define INCLUDE_SVF_H_
 
-#include "ratatechSynth.h"
 #include "utils.h"
 #include "spi.h"
+#include "synthSettings.h"
 
 /**
  * State variable filter class
@@ -43,23 +43,23 @@ class Svf {
 		fc = 0;
 	}
 
-	void init(synth_params_t* synth_params){
-		configure(synth_params);
+	void init(void){
+		configure();
 	}
 
-	void configure(synth_params_t* synth_params);
+	void configure(void);
 
 	/**
 	 * Set filter resonance
 	 * @param q Filter resonance [0..PWM_PERIOD]
 	 */
-	void set_q(synth_params_t* synth_params);
+	void set_q(void);
 
 	/**
 	 * Set filter cutoff frequency
 	 * @param fc Cutoff frequency  [0..PWM_PERIOD]
 	 */
-	void set_fc(synth_params_t* synth_params);
+	void set_fc(void);
 
 };
 

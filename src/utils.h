@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include "arm_math.h"
+#include "types.h"
 
 uint16_t int16_2_uint16(q15_t x);
 uint16_t int32_2_uint16(int32_t x);

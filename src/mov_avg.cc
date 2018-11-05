@@ -22,7 +22,6 @@ This file is part of Ratatech 3019
 
 #include "mov_avg.h"
 
-
 using namespace std;
 
 /**
@@ -47,10 +46,9 @@ q15_t MovAvg::update(q15_t x)
 
 /**
  * Process an input data frame through the moving average filter
- * @param synth_params Synth global structure
  * @param pMovAvg Pointer to store the filtered samples
  */
-void MovAvg::process_frame(synth_params_t *synth_params, q15_t* pIn, q15_t* pOut)
+void MovAvg::process_frame(q15_t* pIn, q15_t* pOut)
 {
 
 	q15_t *_pIn = pIn;		/* input pointer */

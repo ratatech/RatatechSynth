@@ -8,6 +8,9 @@
 #ifndef INCLUDE_TIMER_H_
 #define INCLUDE_TIMER_H_
 
+#include "synthSettings.h"
+#include "stm32f10x_conf.h"
+
 void TIM_Config(void);
 void TIM_Init(void);
 

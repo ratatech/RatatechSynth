@@ -22,9 +22,8 @@ This file is part of XXXXXXX
 #ifndef INCLUDE_MIDI_H_
 #define INCLUDE_MIDI_H_
 
-
-#include "ratatechSynth.h"
-
+#include "types.h"
+#include "synthSettings.h"
 
 enum midi_msg_type_e {STATUS,DATA_NOTE,DATA_VEL};
 
@@ -65,13 +64,16 @@ class MIDI {
 		/**
 		 * After the three bytes have been reveived, trigger events and update data.
 		 */
-		void update(synth_params_t *synth_params){
+		void update(void){
 
-			synth_params->note_ON = note_ON;
+		    /** Unique instance of SynthSettings **/
+		    SynthSettings* s = SynthSettings::getInstance();
+
+			s->note_ON = note_ON;
 
 			if(note_ON){
-				synth_params->pitch = midi_buffer[1];
-				synth_params->vel = midi_buffer[2];
+				s->pitch = midi_buffer[1];
+				s->vel = midi_buffer[2];
 			}
 
 		}
