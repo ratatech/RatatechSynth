@@ -30,16 +30,27 @@ static q15_t* pOut;
 /** Unique instance of SynthSettings **/
 SynthSettings* s = SynthSettings::getInstance();
 
+uint32_t cycles; // number of cycles //
+
+
+
+
+
 /**
  * @brief Start the sound generator
  */
 void soundGenStart(void){
+
+	s->pOut = &pOut[0];
 
 	/** Init oscillator with default settings */
 	osc.init(&s->osc_params);
 
 	/** Configure oscillator*/
 	osc.set_shape(SAW);
+
+	KIN1_InitCycleCounter(); 			// enable DWT hardware
+	KIN1_EnableCycleCounter(); 			// start counting
 }
 
 /**
@@ -48,11 +59,19 @@ void soundGenStart(void){
  */
 void fillBuffer(void)
 {
+
 	/** Sound generation */
 	osc.get_frame(pOut, FRAME_SIZE);
 
-	/** Fill the output buffer with fresh frames */
-	out_buffer.write_frame(pOut);
+//	/** Fill the output buffer with fresh frames */
+//	out_buffer.write_frame(pOut);
+
+    /** Wait DMA transfer to be complete*/
+	while(!out_buffer.dma_transfer_complete);
+
+	/** Fill the output buffer with fresh frames*/
+	out_buffer.write_frame_dma(pOut);
+
 
 }
 
@@ -84,4 +103,28 @@ void DMA1_Channel2_IRQHandler(void)
     out_buffer.dma_transfer_complete = true;
     DMA_ClearITPendingBit(DMA1_IT_GL2);
   }
+}
+
+/**
+  * @brief  This function handles Timer 2 Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void)
+{
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
+	{
+//		cycles = KIN1_GetCycleCounter(); 	// get cycle counter
+//		KIN1_DisableCycleCounter(); 		// disable counting if not used any more
+//		KIN1_InitCycleCounter(); 			// enable DWT hardware
+//		KIN1_ResetCycleCounter(); 			// reset cycle counter
+//		KIN1_EnableCycleCounter(); 			// start counting
+
+
+		if(out_buffer.frame_read != out_buffer.frame_write){
+			fillBuffer();
+		}
+
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	}
 }

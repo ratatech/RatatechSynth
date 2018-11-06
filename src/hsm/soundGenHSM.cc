@@ -36,8 +36,7 @@ public:
 
 protected:
     static QP::QState initial(SoundGenHSM * const me, QP::QEvt const * const e);
-    static QP::QState off(SoundGenHSM * const me, QP::QEvt const * const e);
-    static QP::QState on(SoundGenHSM * const me, QP::QEvt const * const e);
+    static QP::QState start(SoundGenHSM * const me, QP::QEvt const * const e);
 };
 //$enddecl${AOs::SoundGenHSM} ################################################
 
@@ -64,49 +63,27 @@ SoundGenHSM::SoundGenHSM()
 //${AOs::SoundGenHSM::SM} ....................................................
 QP::QState SoundGenHSM::initial(SoundGenHSM * const me, QP::QEvt const * const e) {
     //${AOs::SoundGenHSM::SM::initial}
-    me->m_timeEvt.armX(BSP::TICKS_PER_SEC/2, BSP::TICKS_PER_SEC/2);
 
-    QS_FUN_DICTIONARY(&off);
-    QS_FUN_DICTIONARY(&on);
+    QS_FUN_DICTIONARY(&start);
 
-    return Q_TRAN(&off);
+    return Q_TRAN(&start);
 }
-//${AOs::SoundGenHSM::SM::off} ...............................................
-QP::QState SoundGenHSM::off(SoundGenHSM * const me, QP::QEvt const * const e) {
+//${AOs::SoundGenHSM::SM::start} .............................................
+QP::QState SoundGenHSM::start(SoundGenHSM * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::SoundGenHSM::SM::off}
+        //${AOs::SoundGenHSM::SM::start}
         case Q_ENTRY_SIG: {
-            BSP::ledOff();
-            status_ = Q_HANDLED();
-            break;
-        }
-        //${AOs::SoundGenHSM::SM::off::TIMEOUT}
-        case TIMEOUT_SIG: {
-            status_ = Q_TRAN(&on);
-            break;
-        }
-        default: {
-            status_ = Q_SUPER(&top);
-            break;
-        }
-    }
-    return status_;
-}
-//${AOs::SoundGenHSM::SM::on} ................................................
-QP::QState SoundGenHSM::on(SoundGenHSM * const me, QP::QEvt const * const e) {
-    QP::QState status_;
-    switch (e->sig) {
-        //${AOs::SoundGenHSM::SM::on}
-        case Q_ENTRY_SIG: {
-            BSP::ledOn();
+            /** Start sound generator */
+            soundGenStart();
+
+            /** Fill first frame */
             fillBuffer();
+
+            /** Enable fill buffer ISR*/
+            TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+            TIM_Cmd(TIM2, ENABLE);
             status_ = Q_HANDLED();
-            break;
-        }
-        //${AOs::SoundGenHSM::SM::on::TIMEOUT}
-        case TIMEOUT_SIG: {
-            status_ = Q_TRAN(&off);
             break;
         }
         default: {

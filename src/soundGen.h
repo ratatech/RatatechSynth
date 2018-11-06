@@ -26,6 +26,7 @@ This file is part of Ratatech 3019.
 #include "circular_buffer.h"
 #include "audio_out.h"
 #include "oscillator.h"
+#include "utils.h"
 
 extern "C" {
 
@@ -41,7 +42,16 @@ void TIM1_UP_IRQHandler(void);
  */
 void DMA1_Channel2_IRQHandler(void);
 
+/**
+  * @brief  This function handles Timer 2 Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void);
+
 }
+
+
 
 /**
  * @brief Start the sound generator

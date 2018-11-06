@@ -16,35 +16,25 @@
    </operation>
    <statechart properties="QS_FUN_DICT">
     <initial target="../1">
-     <action>me-&gt;m_timeEvt.armX(BSP::TICKS_PER_SEC/2, BSP::TICKS_PER_SEC/2);</action>
-     <initial_glyph conn="11,6,4,1,3,21,5,-2">
+     <initial_glyph conn="11,6,4,1,3,55,4,-4">
       <action box="0,-3,54,6"/>
      </initial_glyph>
     </initial>
-    <state name="off">
-     <entry>BSP::ledOff();</entry>
-     <tran trig="TIMEOUT" target="../../2">
-      <tran_glyph conn="11,23,3,1,21,12,-2">
-       <action box="0,-2,10,2"/>
-      </tran_glyph>
-     </tran>
-     <state_glyph node="11,12,19,14">
-      <entry box="1,2,13,7"/>
+    <state name="start">
+     <entry>/** Start sound generator */
+soundGenStart();
+
+/** Fill first frame */
+fillBuffer();
+
+/** Enable fill buffer ISR*/
+TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+TIM_Cmd(TIM2, ENABLE);</entry>
+     <state_glyph node="10,11,52,25">
+      <entry box="1,2,39,21"/>
      </state_glyph>
     </state>
-    <state name="on">
-     <entry>BSP::ledOn();
-fillBuffer();</entry>
-     <tran trig="TIMEOUT" target="../../1">
-      <tran_glyph conn="11,42,3,1,24,-26,-5">
-       <action box="0,-2,10,2"/>
-      </tran_glyph>
-     </tran>
-     <state_glyph node="11,31,19,13">
-      <entry box="1,2,12,6"/>
-     </state_glyph>
-    </state>
-    <state_diagram size="80,50"/>
+    <state_diagram size="84,74"/>
    </statechart>
   </class>
   <class name="paramsHandlerHSM" superclass="qpcpp::QActive">
@@ -92,9 +82,9 @@ using namespace QP;
 
 enum SoundGenHSMignals {
     DUMMY_SIG = Q_USER_SIG,
-    MAX_PUB_SIG,  // the last published signal
-
     TIMEOUT_SIG,
+    STARTED_SIG,
+    FILL_FRAME_SIG,
     MAX_SIG       // the last signal
 };
 

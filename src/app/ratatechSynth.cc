@@ -48,8 +48,6 @@ int main(int argc, char *argv[])
 	/** Init system and peripherals */
 	ratatech_init();
 
-	soundGenStart();
-
     /** Turn off buffers, so IO occurs immediately  */
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);

@@ -31,9 +31,9 @@ using namespace QP;
 
 enum SoundGenHSMignals {
     DUMMY_SIG = Q_USER_SIG,
-    MAX_PUB_SIG,  // the last published signal
-
     TIMEOUT_SIG,
+    STARTED_SIG,
+    FILL_FRAME_SIG,
     MAX_SIG       // the last signal
 };
 
