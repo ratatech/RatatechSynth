@@ -64,8 +64,10 @@ void TIM_Config(void)
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM1, &timerInitStructure);
 
+#if 0
 	TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM1, ENABLE);
+#endif
 
 #endif
 

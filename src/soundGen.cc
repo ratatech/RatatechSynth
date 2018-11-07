@@ -25,23 +25,19 @@ This file is part of Ratatech 3019.
 static CircularBuffer out_buffer;
 static Oscillator osc;
 static q15_t out_sample;
-static q15_t* pOut;
+static q15_t pOut[FRAME_SIZE];
 
-/** Unique instance of SynthSettings **/
-SynthSettings* s = SynthSettings::getInstance();
+
 
 uint32_t cycles; // number of cycles //
-
-
-
-
 
 /**
  * @brief Start the sound generator
  */
 void soundGenStart(void){
 
-	s->pOut = &pOut[0];
+	/** Unique instance of SynthSettings **/
+	SynthSettings* s = SynthSettings::getInstance();
 
 	/** Init oscillator with default settings */
 	osc.init(&s->osc_params);
@@ -63,14 +59,14 @@ void fillBuffer(void)
 	/** Sound generation */
 	osc.get_frame(pOut, FRAME_SIZE);
 
-//	/** Fill the output buffer with fresh frames */
-//	out_buffer.write_frame(pOut);
+	/** Fill the output buffer with fresh frames */
+	out_buffer.write_frame(pOut);
 
-    /** Wait DMA transfer to be complete*/
-	while(!out_buffer.dma_transfer_complete);
-
-	/** Fill the output buffer with fresh frames*/
-	out_buffer.write_frame_dma(pOut);
+//    /** Wait DMA transfer to be complete*/
+//	while(!out_buffer.dma_transfer_complete);
+//
+//	/** Fill the output buffer with fresh frames*/
+//	out_buffer.write_frame_dma(pOut);
 
 
 }
@@ -114,12 +110,6 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-//		cycles = KIN1_GetCycleCounter(); 	// get cycle counter
-//		KIN1_DisableCycleCounter(); 		// disable counting if not used any more
-//		KIN1_InitCycleCounter(); 			// enable DWT hardware
-//		KIN1_ResetCycleCounter(); 			// reset cycle counter
-//		KIN1_EnableCycleCounter(); 			// start counting
-
 
 		if(out_buffer.frame_read != out_buffer.frame_write){
 			fillBuffer();

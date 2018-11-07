@@ -27,7 +27,6 @@ void Lut_interp::reset(void) {
 	ind_int0 = 0;
 }
 
-
 q15_t Lut_interp::get_sample(uint32_t ph_inc_frac, const q15_t *wavetable) {
 
 	q15_t _y0, _y1;
