@@ -110,13 +110,14 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-		GPIOA->ODR ^= GPIO_Pin_12;
+//		GPIOA->ODR ^= GPIO_Pin_12;
 		if(out_buffer.frame_read != out_buffer.frame_write){
 
-			//fillBuffer();
+			GPIOA->ODR ^= GPIO_Pin_12;
 		    FillFrameEvt *ffe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
 		    AO_SoundGenHSM->POST(ffe,&l_Fb_IRQHandler);
-//			GPIOA->ODR ^= GPIO_Pin_12;
+			GPIOA->ODR ^= GPIO_Pin_12;
+
 		}
 		//GPIOA->ODR ^= GPIO_Pin_12;
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
