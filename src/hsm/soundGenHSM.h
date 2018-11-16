@@ -37,6 +37,11 @@ enum SoundGenHSMignals {
     MAX_SIG       // the last signal
 };
 
+//$declare${Events::FillFrameEvt} ############################################
+//${Events::FillFrameEvt} ....................................................
+class FillFrameEvt : public QP::QEvt {};
+//$enddecl${Events::FillFrameEvt} ############################################
+
 extern QActive * const AO_SoundGenHSM; // opaque pointer
 
 #endif // soundGenHSM_h

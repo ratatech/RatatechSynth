@@ -57,6 +57,8 @@ public:
 	uint8_t banlim_ind;
 	Lut_interp *pLut_interp;
 
+	uint16_t ph_ind_debug;
+
 
 
 

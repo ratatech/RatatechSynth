@@ -164,7 +164,7 @@ void Oscillator::get_frame(q15_t* pOsc, uint32_t block_size)
  */
 void Oscillator::init(osc_params_t* osc_param){
 	set_shape(osc_param->shape_osc);
-	set_freq_frac(osc_param->freq_frac);
+	set_freq_midi(64);
 
 	/** Init lut interpolator object */
 	pLut_interp = new Lut_interp(LUT_BITS,LUT_FRAC_BITS);

@@ -21,14 +21,15 @@ This file is part of Ratatech 3019.
 */
 
 #include "soundGen.h"
+#include "hsm/soundGenHSM.h"
 
 static CircularBuffer out_buffer;
 static Oscillator osc;
 static q15_t out_sample;
-static q15_t pOut[FRAME_SIZE];
+q15_t pOut[FRAME_SIZE];
 
 
-
+static uint8_t const l_Fb_IRQHandler = 0U;
 uint32_t cycles; // number of cycles //
 
 /**
@@ -43,7 +44,7 @@ void soundGenStart(void){
 	osc.init(&s->osc_params);
 
 	/** Configure oscillator*/
-	osc.set_shape(SAW);
+	osc.set_shape(TRI);
 
 	KIN1_InitCycleCounter(); 			// enable DWT hardware
 	KIN1_EnableCycleCounter(); 			// start counting
@@ -89,17 +90,16 @@ void TIM1_UP_IRQHandler(void)
 
 }
 
-/**
- * @brief  This function handles DMA1 channel 2 Handler.
- */
-void DMA1_Channel2_IRQHandler(void)
-{
-  if(DMA_GetITStatus(DMA1_IT_TC2))
-  {
-    out_buffer.dma_transfer_complete = true;
-    DMA_ClearITPendingBit(DMA1_IT_GL2);
-  }
-}
+///**
+// * @brief  This function handles DMA1 channel 2 Handler.
+// */
+//void DMA1_Channel2_IRQHandler(void)
+//{
+//	if (DMA_GetITStatus(DMA1_IT_TC2)) {
+//		out_buffer.dma_transfer_complete = true;
+//		DMA_ClearITPendingBit(DMA1_IT_GL2);
+//	}
+//}
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -110,11 +110,16 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-
+		GPIOA->ODR ^= GPIO_Pin_12;
 		if(out_buffer.frame_read != out_buffer.frame_write){
-			fillBuffer();
-		}
 
+			//fillBuffer();
+		    FillFrameEvt *ffe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+		    AO_SoundGenHSM->POST(ffe,&l_Fb_IRQHandler);
+//			GPIOA->ODR ^= GPIO_Pin_12;
+		}
+		//GPIOA->ODR ^= GPIO_Pin_12;
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 }
+

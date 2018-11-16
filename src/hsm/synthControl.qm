@@ -15,13 +15,19 @@
     m_timeEvt(this, TIMEOUT_SIG, 0U)</code>
    </operation>
    <statechart properties="QS_FUN_DICT">
-    <initial target="../1">
-     <initial_glyph conn="11,6,4,1,3,55,4,-4">
-      <action box="0,-3,54,6"/>
+    <initial target="../1/1">
+     <initial_glyph conn="8,0,4,1,1,58,12,-4">
+      <action box="-1,-7,54,6"/>
      </initial_glyph>
     </initial>
-    <state name="start">
-     <entry>/** Start sound generator */
+    <state name="active">
+     <tran trig="FILL_FRAME" target="../2">
+      <tran_glyph conn="8,8,3,1,62,39,-32">
+       <action box="0,-2,19,2"/>
+      </tran_glyph>
+     </tran>
+     <state name="start">
+      <entry>/** Start sound generator */
 soundGenStart();
 
 /** Fill first frame */
@@ -34,9 +40,17 @@ TIM_Cmd(TIM1, ENABLE);
 /** Enable fill buffer ISR*/
 TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 TIM_Cmd(TIM2, ENABLE);</entry>
-     <state_glyph node="10,11,52,43">
-      <entry box="1,2,43,29"/>
-     </state_glyph>
+      <state_glyph node="10,11,52,29">
+       <entry box="1,2,43,29"/>
+      </state_glyph>
+     </state>
+     <state name="fillFrame">
+      <entry>fillBuffer();</entry>
+      <state_glyph node="10,43,28,12">
+       <entry box="1,2,27,7"/>
+      </state_glyph>
+     </state>
+     <state_glyph node="8,3,68,65"/>
     </state>
     <state_diagram size="84,74"/>
    </statechart>
@@ -44,6 +58,9 @@ TIM_Cmd(TIM2, ENABLE);</entry>
   <class name="paramsHandlerHSM" superclass="qpcpp::QActive">
    <attribute name="attr1" type="" visibility="0x00" properties="0x00"/>
   </class>
+ </package>
+ <package name="Events" stereotype="0x01">
+  <class name="FillFrameEvt" superclass="qpcpp::QEvt"/>
  </package>
  <directory name=".">
   <file name="soundGenHSM.cc">
@@ -91,6 +108,8 @@ enum SoundGenHSMignals {
     FILL_FRAME_SIG,
     MAX_SIG       // the last signal
 };
+
+$declare${Events::FillFrameEvt}
 
 extern QActive * const AO_SoundGenHSM; // opaque pointer
 

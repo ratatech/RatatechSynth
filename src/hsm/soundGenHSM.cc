@@ -36,7 +36,9 @@ public:
 
 protected:
     static QP::QState initial(SoundGenHSM * const me, QP::QEvt const * const e);
+    static QP::QState active(SoundGenHSM * const me, QP::QEvt const * const e);
     static QP::QState start(SoundGenHSM * const me, QP::QEvt const * const e);
+    static QP::QState fillFrame(SoundGenHSM * const me, QP::QEvt const * const e);
 };
 //$enddecl${AOs::SoundGenHSM} ################################################
 
@@ -64,15 +66,33 @@ SoundGenHSM::SoundGenHSM()
 QP::QState SoundGenHSM::initial(SoundGenHSM * const me, QP::QEvt const * const e) {
     //${AOs::SoundGenHSM::SM::initial}
 
+    QS_FUN_DICTIONARY(&active);
     QS_FUN_DICTIONARY(&start);
+    QS_FUN_DICTIONARY(&fillFrame);
 
     return Q_TRAN(&start);
 }
-//${AOs::SoundGenHSM::SM::start} .............................................
+//${AOs::SoundGenHSM::SM::active} ............................................
+QP::QState SoundGenHSM::active(SoundGenHSM * const me, QP::QEvt const * const e) {
+    QP::QState status_;
+    switch (e->sig) {
+        //${AOs::SoundGenHSM::SM::active::FILL_FRAME}
+        case FILL_FRAME_SIG: {
+            status_ = Q_TRAN(&fillFrame);
+            break;
+        }
+        default: {
+            status_ = Q_SUPER(&top);
+            break;
+        }
+    }
+    return status_;
+}
+//${AOs::SoundGenHSM::SM::active::start} .....................................
 QP::QState SoundGenHSM::start(SoundGenHSM * const me, QP::QEvt const * const e) {
     QP::QState status_;
     switch (e->sig) {
-        //${AOs::SoundGenHSM::SM::start}
+        //${AOs::SoundGenHSM::SM::active::start}
         case Q_ENTRY_SIG: {
             /** Start sound generator */
             soundGenStart();
@@ -91,7 +111,24 @@ QP::QState SoundGenHSM::start(SoundGenHSM * const me, QP::QEvt const * const e) 
             break;
         }
         default: {
-            status_ = Q_SUPER(&top);
+            status_ = Q_SUPER(&active);
+            break;
+        }
+    }
+    return status_;
+}
+//${AOs::SoundGenHSM::SM::active::fillFrame} .................................
+QP::QState SoundGenHSM::fillFrame(SoundGenHSM * const me, QP::QEvt const * const e) {
+    QP::QState status_;
+    switch (e->sig) {
+        //${AOs::SoundGenHSM::SM::active::fillFrame}
+        case Q_ENTRY_SIG: {
+            fillBuffer();
+            status_ = Q_HANDLED();
+            break;
+        }
+        default: {
+            status_ = Q_SUPER(&active);
             break;
         }
     }
