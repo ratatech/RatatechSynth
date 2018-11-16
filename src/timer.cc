@@ -88,8 +88,8 @@ void TIM_Config(void)
 	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 1000;
-	timerInitStructure.TIM_Prescaler = 47;
+	timerInitStructure.TIM_Period = 750;
+	timerInitStructure.TIM_Prescaler = 96;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
