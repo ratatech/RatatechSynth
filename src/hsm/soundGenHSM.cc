@@ -99,14 +99,15 @@ QP::QState SoundGenHSM::start(SoundGenHSM * const me, QP::QEvt const * const e) 
 
             /** Fill first frame */
             fillBuffer();
+            fillBuffer();
 
             /** Enable audio output ISR*/
             TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
             TIM_Cmd(TIM1, ENABLE);
 
             /** Enable fill buffer ISR*/
-            TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-            TIM_Cmd(TIM2, ENABLE);
+            //TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+            //TIM_Cmd(TIM2, ENABLE);
             status_ = Q_HANDLED();
             break;
         }

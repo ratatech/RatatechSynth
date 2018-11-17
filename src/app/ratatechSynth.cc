@@ -66,7 +66,6 @@ int main(int argc, char *argv[])
     // dictionaries...
     QS_OBJ_DICTIONARY(smlPoolSto);
     QS_OBJ_DICTIONARY(soundGenHSMQSto);
-
     QS_SIG_DICTIONARY(TIMEOUT_SIG, (void *)0);
 
 

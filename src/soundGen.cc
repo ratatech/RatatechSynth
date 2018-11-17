@@ -22,6 +22,7 @@ This file is part of Ratatech 3019.
 
 #include "soundGen.h"
 #include "hsm/soundGenHSM.h"
+#include "qep.h"
 
 static CircularBuffer out_buffer;
 static Oscillator osc;
@@ -44,7 +45,7 @@ void soundGenStart(void){
 	osc.init(&s->osc_params);
 
 	/** Configure oscillator*/
-	osc.set_shape(TRI);
+	osc.set_shape(SQU);
 
 	KIN1_InitCycleCounter(); 			// enable DWT hardware
 	KIN1_EnableCycleCounter(); 			// start counting
@@ -57,18 +58,15 @@ void soundGenStart(void){
 void fillBuffer(void)
 {
 
-	/** Sound generation */
-	osc.get_frame(pOut, FRAME_SIZE);
+	if(out_buffer.frame_read != out_buffer.frame_write){
 
-	/** Fill the output buffer with fresh frames */
-	out_buffer.write_frame(pOut);
+		/** Sound generation */
+		osc.get_frame(pOut, FRAME_SIZE);
 
-//    /** Wait DMA transfer to be complete*/
-//	while(!out_buffer.dma_transfer_complete);
-//
-//	/** Fill the output buffer with fresh frames*/
-//	out_buffer.write_frame_dma(pOut);
+		/** Fill the output buffer with fresh frames */
+		out_buffer.write_frame(pOut);
 
+	}
 
 }
 
@@ -79,27 +77,27 @@ void fillBuffer(void)
   */
 void TIM1_UP_IRQHandler(void)
 {
-
-	//trace_printf("READ\n");
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
+		QK_ISR_ENTRY();
+		if(!(out_buffer.start % FRAME_SIZE)){
+			GPIOA->ODR ^= GPIO_Pin_12;
+
+			FillFrameEvt *pFfeEvt = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+			AO_SoundGenHSM->POST(pFfeEvt,&l_Fb_IRQHandler);
+
+		}
+		QK_ISR_EXIT();
+
+		GPIOA->ODR ^= GPIO_Pin_9;
 		out_buffer.read(&out_sample);
 		audio_out_write(int16_2_uint16(out_sample));
+
+
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
 
 }
-
-///**
-// * @brief  This function handles DMA1 channel 2 Handler.
-// */
-//void DMA1_Channel2_IRQHandler(void)
-//{
-//	if (DMA_GetITStatus(DMA1_IT_TC2)) {
-//		out_buffer.dma_transfer_complete = true;
-//		DMA_ClearITPendingBit(DMA1_IT_GL2);
-//	}
-//}
 
 /**
   * @brief  This function handles Timer 2 Handler.
@@ -110,16 +108,11 @@ void TIM2_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-//		GPIOA->ODR ^= GPIO_Pin_12;
-		if(out_buffer.frame_read != out_buffer.frame_write){
-
-			GPIOA->ODR ^= GPIO_Pin_12;
-		    FillFrameEvt *ffe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
-		    AO_SoundGenHSM->POST(ffe,&l_Fb_IRQHandler);
-			GPIOA->ODR ^= GPIO_Pin_12;
-
-		}
-		//GPIOA->ODR ^= GPIO_Pin_12;
+		GPIOA->ODR ^= GPIO_Pin_12;
+		QK_ISR_ENTRY();
+		FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+		AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
+		QK_ISR_EXIT();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 }
