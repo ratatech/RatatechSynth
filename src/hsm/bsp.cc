@@ -244,7 +244,7 @@ void QF::onStartup(void) {
 void QF::onCleanup(void) {
 }
 //............................................................................
-void QV::onIdle(void) { // called with interrupts disabled, see NOTE01
+void QK::onIdle(void) { // called with interrupts disabled, see NOTE01
     // toggle the User LED on and then off (not enough LEDs, see NOTE02)
 	//GPIOB->BSRR |= GPIO_Pin_11;  // turn LED on
 	//GPIOB->BRR |= GPIO_Pin_11;  // turn LED off

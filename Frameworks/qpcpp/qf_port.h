@@ -1,5 +1,5 @@
 /// @file
-/// @brief QF/C++ port to ARM Cortex-M, cooperative QV kernel, GNU-ARM toolset
+/// @brief QF/C++ port to ARM Cortex-M, preemptive QK kernel, GNU-ARM toolset
 /// @cond
 ///***************************************************************************
 /// Last Updated for Version: 6.1.1
@@ -99,7 +99,7 @@
     extern "C" uint_fast8_t QF_qlog2(uint32_t x);
 #endif // Cortex-M0/M0+/M1(v6-M, v6S-M)
 
-#include "qv_port.h"  // QV port
+#include "qk_port.h"  // QK preemptive kernel port
 #include "qf.h"       // QF platform-independent public interface
 
 //****************************************************************************

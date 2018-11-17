@@ -1,5 +1,5 @@
 /// @file
-/// @brief QV/C++ port to ARM Cortex-M, GNU-ARM toolset
+/// @brief QK/C++ port to ARM Cortex-M, preemptive QK kernel, GNU-ARM toolset
 /// @cond
 ///***************************************************************************
 /// Last updated for version 6.0.3
@@ -30,38 +30,40 @@
 /// along with this program. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// Contact information:
-/// https://state-machine.com
+/// http:// www.state-machine.com
 /// mailto:info@state-machine.com
 ///***************************************************************************
 /// @endcond
 
-#ifndef qv_port_h
-#define qv_port_h
+#ifndef qk_port_h
+#define qk_port_h
 
-#if (__ARM_ARCH == 6) // Cortex-M0/M0+/M1 ?, see NOTE02
+// determination if the code executes in the ISR context
+#define QK_ISR_CONTEXT_() (QK_get_IPSR() != static_cast<uint32_t>(0))
 
-    // macro to put the CPU to sleep inside QV_onIdle()
-    #define QV_CPU_SLEEP() do { \
-        __asm volatile ("wfi"); \
-        QF_INT_ENABLE(); \
-    } while (0)
+__attribute__((always_inline))
+static inline uint32_t QK_get_IPSR(void) {
+    uint32_t regIPSR;
+    __asm volatile ("mrs %0,ipsr" : "=r" (regIPSR));
+    return regIPSR;
+}
 
-#else // Cortex-M3/M4/M4F
+// QK interrupt entry and exit
+#define QK_ISR_ENTRY() ((void)0)
 
-    // macro to put the CPU to sleep inside QV_onIdle()
-    #define QV_CPU_SLEEP() do { \
-        QF_PRIMASK_DISABLE(); \
-        QF_INT_ENABLE(); \
-        __asm volatile ("wfi"); \
-        QF_PRIMASK_ENABLE(); \
-    } while (0)
+#define QK_ISR_EXIT()  do { \
+    QF_INT_DISABLE(); \
+    if (QK_sched_() != static_cast<uint_fast8_t>(0)) { \
+        ((*Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = \
+            static_cast<uint32_t>(1U << 28))); \
+    } \
+    QF_INT_ENABLE(); \
+} while (0)
 
-    // initialization of the QV kernel for Cortex-M3/M4/M4F
-    #define QV_INIT() QV_init()
-    extern "C" void QV_init(void);
+// initialization of the QK kernel
+#define QK_INIT() QK_init()
+extern "C" void QK_init(void);
 
-#endif
+#include "qk.h" // QK platform-independent public interface
 
-#include "qv.h" // QV platform-independent public interface
-
-#endif // qv_port_h
+#endif // qk_port_h

@@ -1,5 +1,5 @@
 /// @file
-/// @brief QEP/C++ port to ARM Cortex-M, generic C++ compiler
+/// @brief QEP/C++ port to ARM, generic C++ compiler
 /// @cond
 ///***************************************************************************
 /// Last updated for version 5.4.0
