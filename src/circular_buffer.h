@@ -13,7 +13,7 @@
 #include "stm32f10x_conf.h"
 #include "stm32f10x.h"
 
-#define BUFFER_SIZE 64
+
 #define NFRAMES  BUFFER_SIZE/FRAME_SIZE
 class CircularBuffer
 {

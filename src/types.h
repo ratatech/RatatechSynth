@@ -33,6 +33,7 @@ This file is part of XXXXXXX
 #define SHIFT_15_BIT 0x7FFF
 #define PWM_PERIOD   0x400
 #define FRAME_SIZE 32
+#define BUFFER_SIZE FRAME_SIZE*2
 #define ADSR_BLOCK_SIZE 1
 #define LFO_BLOCK_SIZE 1
 #define MAX_AMP 0x7FFF

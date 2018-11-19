@@ -106,8 +106,8 @@ QP::QState SoundGenHSM::start(SoundGenHSM * const me, QP::QEvt const * const e) 
             TIM_Cmd(TIM1, ENABLE);
 
             /** Enable fill buffer ISR*/
-            //TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-            //TIM_Cmd(TIM2, ENABLE);
+            TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+            TIM_Cmd(TIM2, ENABLE);
             status_ = Q_HANDLED();
             break;
         }

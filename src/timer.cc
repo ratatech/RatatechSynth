@@ -35,6 +35,13 @@ void TIM_Config(void)
 
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);    //4 bits for preemp priority 0 bit for sub priority
 
+    NVIC_SetPriority(TIM1_UP_IRQn,0);
+    NVIC_SetPriority(TIM2_IRQn,1);
+
+    // enable IRQs...
+    NVIC_EnableIRQ(TIM1_UP_IRQn);
+
+
 	//*************************************************************************************
 	/* PWM Timer1 configuration*/
 	//*************************************************************************************
@@ -79,17 +86,17 @@ void TIM_Config(void)
 
 	/* TIM2 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+    NVIC_EnableIRQ(TIM2_IRQn);
 
 	/* TIM2 configuration
 	 * Timer 2 configured to work with slow speed tasks like envelope update,lfo etc...*/
 	timerInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	timerInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	timerInitStructure.TIM_Period = 1011;
-	timerInitStructure.TIM_Prescaler = 47;
+	timerInitStructure.TIM_Period = 1000;
+	timerInitStructure.TIM_Prescaler = 43;
 	timerInitStructure.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2, &timerInitStructure);
 
@@ -132,8 +139,7 @@ void TIM_Config(void)
 
 	/* TIM3 NVIC configuration */
 	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 

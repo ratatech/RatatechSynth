@@ -39,8 +39,8 @@ TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
 TIM_Cmd(TIM1, ENABLE);
 
 /** Enable fill buffer ISR*/
-//TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-//TIM_Cmd(TIM2, ENABLE);</entry>
+TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+TIM_Cmd(TIM2, ENABLE);</entry>
       <state_glyph node="10,11,52,29">
        <entry box="1,2,43,29"/>
       </state_glyph>
