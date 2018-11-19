@@ -58,15 +58,15 @@ void soundGenStart(void){
 void fillBuffer(void)
 {
 
-	if(out_buffer.frame_read != out_buffer.frame_write){
-
+//	if(out_buffer.frame_read != out_buffer.frame_write){
+//
 		/** Sound generation */
 		osc.get_frame(pOut, FRAME_SIZE);
 
 		/** Fill the output buffer with fresh frames */
 		out_buffer.write_frame(pOut);
-
-	}
+//
+//	}
 
 }
 
@@ -109,10 +109,28 @@ void TIM2_IRQHandler(void)
 	QK_ISR_ENTRY();
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
+
+		static FillFrameEvt *pFfe = NULL;
+
+		if(pFfe == NULL)
+		{
+			pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+		}
+
+		if(pFfe != NULL)
+		{
+		    /* Add sample to event data. */
+			if(out_buffer.frame_read != out_buffer.frame_write){
+				AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
+				pFfe = NULL;
+			}
+
+		}
+
 		GPIOA->ODR ^= GPIO_Pin_12;
 
-		FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
-		AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
+//		FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+//		AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
 
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
