@@ -22,6 +22,12 @@ This file is part of Ratatech 3019
 
 #include "circular_buffer.h"
 
+
+CircularBuffer* CircularBuffer::pInstance_ = 0;
+CircularBuffer::CircularBuffer()
+{}
+
+
 /**
  * Check buffer status
  * @return Return status
@@ -32,6 +38,15 @@ bool CircularBuffer::check_status(void)
 				 return false;
 	return true;
 
+}
+
+/**
+ * Check if there is a free slot in the buffer for writing a frame
+ * @return True if free, False otherwise
+ */
+bool CircularBuffer::isFrameFree(void)
+{
+	return frame_read != frame_write;
 }
 
 /**

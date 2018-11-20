@@ -24,7 +24,6 @@ This file is part of Ratatech 3019.
 #include "hsm/soundGenHSM.h"
 #include "qep.h"
 
-static CircularBuffer out_buffer;
 static Oscillator osc;
 static q15_t out_sample;
 q15_t pOut[FRAME_SIZE];
@@ -32,6 +31,10 @@ q15_t pOut[FRAME_SIZE];
 
 static uint8_t const l_Fb_IRQHandler = 0U;
 uint32_t cycles; // number of cycles //
+
+/** Instance of CircularBuffer **/
+CircularBuffer* out_buff = CircularBuffer::getInstance();
+
 
 /**
  * @brief Start the sound generator
@@ -62,7 +65,7 @@ void fillBuffer(void)
 	osc.get_frame(pOut, FRAME_SIZE);
 
 	/** Fill the output buffer with fresh frames */
-	out_buffer.write_frame(pOut);
+	out_buff->write_frame(pOut);
 }
 
 /**
@@ -77,7 +80,7 @@ void TIM1_UP_IRQHandler(void)
 	{
 
 		//GPIOA->ODR ^= GPIO_Pin_9;
-		out_buffer.read(&out_sample);
+		out_buff->read(&out_sample);
 		audio_out_write(int16_2_uint16(out_sample));
 
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
@@ -97,7 +100,7 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
 		GPIOA->ODR ^= GPIO_Pin_12;
-		if (out_buffer.frame_read != out_buffer.frame_write) {
+		if(out_buff->isFrameFree()) {
 			FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
 			AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
 		}

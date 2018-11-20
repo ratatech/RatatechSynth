@@ -19,17 +19,16 @@ class CircularBuffer
 {
 
 public:
-	/** Constructor
-	*/
-	CircularBuffer()
-	{
-		start = 0;
-		end = 0;
-		frame_read = 0;
-		frame_write = 0;
-		dma_transfer_complete = true;
-	}
-
+//	/** Constructor
+//	*/
+//	CircularBuffer()
+//	{
+//		start = 0;
+//		end = 0;
+//		frame_read = 0;
+//		frame_write = 0;
+//		dma_transfer_complete = true;
+//	}
 
 	uint16_t start;
 	uint16_t end;
@@ -43,6 +42,12 @@ public:
 	 * @return Return status
 	 */
 	bool check_status(void);
+
+	/**
+	 * Check if there is a free slot in the buffer for writing a frame
+	 * @return True if free, False otherwise
+	 */
+	bool isFrameFree(void);
 
 	/**
 	 * Write a sample to the circular buffer
@@ -84,7 +89,18 @@ public:
 	 */
 	void set_dma_transfer_status(void);
 
+	static CircularBuffer* getInstance(void){ // Unique point of access
+			if (!pInstance_)
+				pInstance_ = new CircularBuffer;
+			return pInstance_;
+	}
+private:
+	CircularBuffer(); // Prevent clients from creating a new CircularBuffer
+	CircularBuffer(const CircularBuffer&); // Prevent clients from creating
+	// a copy of the CircularBuffer
+	static CircularBuffer* pInstance_; // The one and only instance
 };
+
 
 
 
