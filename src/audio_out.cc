@@ -34,7 +34,7 @@ using namespace std;
 void audio_out_write(uint16_t data)
 {
 	// Drive CS low, enabling the shift register.
-	//GPIOA->BRR = GPIO_Pin_9;
+	GPIOA->BRR = GPIO_Pin_9;
 
     // Send 24 bit word as specified in MAX5216 datasheet.
     // Transmit the 24 bits of data through SPI (MSB first and LSB last).
@@ -44,7 +44,7 @@ void audio_out_write(uint16_t data)
 	SPI_send(SPI1,(uint16_t)(data<<14));
 
 	// Drive CS High
-	//GPIOA->BSRR = GPIO_Pin_9;
+	GPIOA->BSRR = GPIO_Pin_9;
 
 	// Let CS High for at least 20ns as specified in the MAX5216.
 	// 1clk cycle ~= 13.889ns @72MHz

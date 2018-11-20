@@ -45,7 +45,7 @@ void soundGenStart(void){
 	osc.init(&s->osc_params);
 
 	/** Configure oscillator*/
-	osc.set_shape(SQU);
+	osc.set_shape(SIN);
 
 	KIN1_InitCycleCounter(); 			// enable DWT hardware
 	KIN1_EnableCycleCounter(); 			// start counting
@@ -58,16 +58,11 @@ void soundGenStart(void){
 void fillBuffer(void)
 {
 
-//	if(out_buffer.frame_read != out_buffer.frame_write){
-//
-		/** Sound generation */
-		osc.get_frame(pOut, FRAME_SIZE);
+	/** Sound generation */
+	osc.get_frame(pOut, FRAME_SIZE);
 
-		/** Fill the output buffer with fresh frames */
-		out_buffer.write_frame(pOut);
-//
-//	}
-
+	/** Fill the output buffer with fresh frames */
+	out_buffer.write_frame(pOut);
 }
 
 /**
@@ -81,15 +76,7 @@ void TIM1_UP_IRQHandler(void)
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
 
-//		if(!(out_buffer.start % 31)){
-//			GPIOA->ODR ^= GPIO_Pin_12;
-//
-//			FillFrameEvt *pFfeEvt = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
-//			AO_SoundGenHSM->POST(pFfeEvt,&l_Fb_IRQHandler);
-//
-//		}
-
-		GPIOA->ODR ^= GPIO_Pin_9;
+		//GPIOA->ODR ^= GPIO_Pin_9;
 		out_buffer.read(&out_sample);
 		audio_out_write(int16_2_uint16(out_sample));
 
@@ -109,29 +96,11 @@ void TIM2_IRQHandler(void)
 	QK_ISR_ENTRY();
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
 	{
-
-		static FillFrameEvt *pFfe = NULL;
-
-		if(pFfe == NULL)
-		{
-			pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
-		}
-
-		if(pFfe != NULL)
-		{
-		    /* Add sample to event data. */
-			if(out_buffer.frame_read != out_buffer.frame_write){
-				AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
-				pFfe = NULL;
-			}
-
-		}
-
 		GPIOA->ODR ^= GPIO_Pin_12;
-
-//		FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
-//		AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
-
+		if (out_buffer.frame_read != out_buffer.frame_write) {
+			FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+			AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
+		}
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 	QK_ISR_EXIT();
