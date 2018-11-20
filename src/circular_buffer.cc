@@ -27,6 +27,16 @@ CircularBuffer* CircularBuffer::pInstance_ = 0;
 CircularBuffer::CircularBuffer()
 {}
 
+/**
+ * Init buffer
+ */
+void CircularBuffer::init(void){
+	this->start = 0;
+	this->end = 0;
+	this->frame_read = 0;
+	this->frame_write = 0;
+	this->dma_transfer_complete = true;
+}
 
 /**
  * Check buffer status
@@ -44,7 +54,7 @@ bool CircularBuffer::check_status(void)
  * Check if there is a free slot in the buffer for writing a frame
  * @return True if free, False otherwise
  */
-bool CircularBuffer::isFrameFree(void)
+bool CircularBuffer::hasFrameFree(void)
 {
 	return frame_read != frame_write;
 }

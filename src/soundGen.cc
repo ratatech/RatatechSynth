@@ -27,14 +27,10 @@ This file is part of Ratatech 3019.
 static Oscillator osc;
 static q15_t out_sample;
 q15_t pOut[FRAME_SIZE];
-
-
-static uint8_t const l_Fb_IRQHandler = 0U;
 uint32_t cycles; // number of cycles //
 
 /** Instance of CircularBuffer **/
 CircularBuffer* out_buff = CircularBuffer::getInstance();
-
 
 /**
  * @brief Start the sound generator
@@ -43,6 +39,9 @@ void soundGenStart(void){
 
 	/** Unique instance of SynthSettings **/
 	SynthSettings* s = SynthSettings::getInstance();
+
+	/** Init output buffer */
+	out_buff->init();
 
 	/** Init oscillator with default settings */
 	osc.init(&s->osc_params);
@@ -60,12 +59,15 @@ void soundGenStart(void){
  */
 void fillBuffer(void)
 {
+	if(out_buff->hasFrameFree()){
 
-	/** Sound generation */
-	osc.get_frame(pOut, FRAME_SIZE);
+		GPIOA->ODR ^= GPIO_Pin_12;
+		/** Sound generation */
+		osc.get_frame(pOut, FRAME_SIZE);
 
-	/** Fill the output buffer with fresh frames */
-	out_buff->write_frame(pOut);
+		/** Fill the output buffer with fresh frames */
+		out_buff->write_frame(pOut);
+	}
 }
 
 /**
@@ -78,34 +80,12 @@ void TIM1_UP_IRQHandler(void)
 	QK_ISR_ENTRY();
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update))
 	{
-
-		//GPIOA->ODR ^= GPIO_Pin_9;
 		out_buff->read(&out_sample);
 		audio_out_write(int16_2_uint16(out_sample));
-
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	}
 	QK_ISR_EXIT();
 
 }
 
-/**
-  * @brief  This function handles Timer 2 Handler.
-  * @param  None
-  * @retval None
-  */
-void TIM2_IRQHandler(void)
-{
-	QK_ISR_ENTRY();
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update))
-	{
-		GPIOA->ODR ^= GPIO_Pin_12;
-		if(out_buff->isFrameFree()) {
-			FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
-			AO_SoundGenHSM->POST(pFfe,&l_Fb_IRQHandler);
-		}
-		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-	}
-	QK_ISR_EXIT();
-}
 

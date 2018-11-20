@@ -21,6 +21,7 @@
 
 using namespace QP;
 using namespace MAINBSP;
+static uint8_t const l_Fb_IRQHandler = 0U;
 
 Q_DEFINE_THIS_FILE
 
@@ -37,8 +38,8 @@ public:
 protected:
     static QP::QState initial(SoundGenHSM * const me, QP::QEvt const * const e);
     static QP::QState active(SoundGenHSM * const me, QP::QEvt const * const e);
+    static QP::QState filling(SoundGenHSM * const me, QP::QEvt const * const e);
     static QP::QState start(SoundGenHSM * const me, QP::QEvt const * const e);
-    static QP::QState fillFrame(SoundGenHSM * const me, QP::QEvt const * const e);
 };
 //$enddecl${AOs::SoundGenHSM} ################################################
 
@@ -67,8 +68,8 @@ QP::QState SoundGenHSM::initial(SoundGenHSM * const me, QP::QEvt const * const e
     //${AOs::SoundGenHSM::SM::initial}
 
     QS_FUN_DICTIONARY(&active);
+    QS_FUN_DICTIONARY(&filling);
     QS_FUN_DICTIONARY(&start);
-    QS_FUN_DICTIONARY(&fillFrame);
 
     return Q_TRAN(&start);
 }
@@ -78,11 +79,30 @@ QP::QState SoundGenHSM::active(SoundGenHSM * const me, QP::QEvt const * const e)
     switch (e->sig) {
         //${AOs::SoundGenHSM::SM::active::FILL_FRAME}
         case FILL_FRAME_SIG: {
-            status_ = Q_TRAN(&fillFrame);
+            status_ = Q_TRAN(&filling);
             break;
         }
         default: {
             status_ = Q_SUPER(&top);
+            break;
+        }
+    }
+    return status_;
+}
+//${AOs::SoundGenHSM::SM::active::filling} ...................................
+QP::QState SoundGenHSM::filling(SoundGenHSM * const me, QP::QEvt const * const e) {
+    QP::QState status_;
+    switch (e->sig) {
+        //${AOs::SoundGenHSM::SM::active::filling}
+        case Q_ENTRY_SIG: {
+            while(1){
+                fillBuffer();
+            }
+            status_ = Q_HANDLED();
+            break;
+        }
+        default: {
+            status_ = Q_SUPER(&active);
             break;
         }
     }
@@ -105,26 +125,9 @@ QP::QState SoundGenHSM::start(SoundGenHSM * const me, QP::QEvt const * const e) 
             TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
             TIM_Cmd(TIM1, ENABLE);
 
-            /** Enable fill buffer ISR*/
-            TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-            TIM_Cmd(TIM2, ENABLE);
-            status_ = Q_HANDLED();
-            break;
-        }
-        default: {
-            status_ = Q_SUPER(&active);
-            break;
-        }
-    }
-    return status_;
-}
-//${AOs::SoundGenHSM::SM::active::fillFrame} .................................
-QP::QState SoundGenHSM::fillFrame(SoundGenHSM * const me, QP::QEvt const * const e) {
-    QP::QState status_;
-    switch (e->sig) {
-        //${AOs::SoundGenHSM::SM::active::fillFrame}
-        case Q_ENTRY_SIG: {
-            fillBuffer();
+            // Switch to filling state and stay ther forever
+            FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
+            me->POST(pFfe,&l_Fb_IRQHandler);
             status_ = Q_HANDLED();
             break;
         }

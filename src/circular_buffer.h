@@ -38,6 +38,11 @@ public:
 	volatile bool dma_transfer_complete;
 
 	/**
+	 * Init buffer
+	 */
+	void init(void);
+
+	/**
 	 * Check buffer status
 	 * @return Return status
 	 */
@@ -47,7 +52,7 @@ public:
 	 * Check if there is a free slot in the buffer for writing a frame
 	 * @return True if free, False otherwise
 	 */
-	bool isFrameFree(void);
+	bool hasFrameFree(void);
 
 	/**
 	 * Write a sample to the circular buffer
