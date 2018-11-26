@@ -60,7 +60,8 @@ void soundGenStart(void);
 
 /**
  * @brief Fill the main buffer containing the output audio samples
+ * @retval True if no error happened, False otherwise
  */
-void fillBuffer(void);
+bool fillBuffer(void);
 
 #endif /* SOUNDGEN_H_ */

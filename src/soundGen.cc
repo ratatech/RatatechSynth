@@ -28,6 +28,7 @@ static Oscillator osc;
 static q15_t out_sample;
 q15_t pOut[FRAME_SIZE];
 uint32_t cycles; // number of cycles //
+bool status;
 
 /** Instance of CircularBuffer **/
 CircularBuffer* out_buff = CircularBuffer::getInstance();
@@ -47,7 +48,7 @@ void soundGenStart(void){
 	osc.init(&s->osc_params);
 
 	/** Configure oscillator*/
-	osc.set_shape(SIN);
+	osc.set_shape(SAW);
 
 	KIN1_InitCycleCounter(); 			// enable DWT hardware
 	KIN1_EnableCycleCounter(); 			// start counting
@@ -55,10 +56,12 @@ void soundGenStart(void){
 
 /**
  * @brief Fill the main buffer containing the output audio samples
- * @param synth_params	Synth global structure
+ * @retval True if no error happened, False otherwise
  */
-void fillBuffer(void)
+bool fillBuffer(void)
 {
+	status = true;
+
 	if(out_buff->hasFrameFree()){
 
 		GPIOA->ODR ^= GPIO_Pin_12;
@@ -66,7 +69,7 @@ void fillBuffer(void)
 		osc.get_frame(pOut, FRAME_SIZE);
 
 		/** Fill the output buffer with fresh frames */
-		out_buff->write_frame(pOut);
+		status = out_buff->write_frame(pOut);
 	}
 }
 

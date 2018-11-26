@@ -27,11 +27,12 @@
       </tran_glyph>
      </tran>
      <state name="filling">
-      <entry>while(1){
-    fillBuffer();
+      <entry>bool status = true;
+while(status){
+    status = fillBuffer();
 }</entry>
-      <state_glyph node="4,49,38,11">
-       <entry box="1,2,27,7"/>
+      <state_glyph node="4,49,38,17">
+       <entry box="1,2,22,11"/>
       </state_glyph>
      </state>
      <state name="start">
