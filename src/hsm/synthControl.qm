@@ -16,13 +16,13 @@
    </operation>
    <statechart properties="QS_FUN_DICT">
     <initial target="../1/2">
-     <initial_glyph conn="8,0,4,1,1,44,12,-4">
+     <initial_glyph conn="8,0,4,1,1,44,12,-3">
       <action box="-1,-7,54,6"/>
      </initial_glyph>
     </initial>
     <state name="active">
      <tran trig="FILL_FRAME" target="../1">
-      <tran_glyph conn="2,47,3,1,43,4,-3">
+      <tran_glyph conn="3,47,3,1,43,4,-3">
        <action box="1,-3,19,2"/>
       </tran_glyph>
      </tran>
@@ -31,7 +31,7 @@
 while(status){
     status = fillBuffer();
 }</entry>
-      <state_glyph node="4,49,38,17">
+      <state_glyph node="5,49,38,17">
        <entry box="1,2,22,11"/>
       </state_glyph>
      </state>
@@ -50,17 +50,25 @@ TIM_Cmd(TIM1, ENABLE);
 // Switch to filling state and stay ther forever
 FillFrameEvt *pFfe = Q_NEW(FillFrameEvt, FILL_FRAME_SIG);
 me-&gt;POST(pFfe,&amp;l_Fb_IRQHandler);</entry>
-      <state_glyph node="4,11,44,31">
+      <state_glyph node="5,11,44,31">
        <entry box="1,2,43,27"/>
       </state_glyph>
      </state>
-     <state_glyph node="2,4,53,68"/>
+     <state_glyph node="3,4,53,68"/>
     </state>
     <state_diagram size="84,74"/>
    </statechart>
   </class>
   <class name="paramsHandlerHSM" superclass="qpcpp::QActive">
    <attribute name="attr1" type="" visibility="0x00" properties="0x00"/>
+  </class>
+  <class name="MidiHSM" superclass="qpcpp::QActive">
+   <statechart properties="QS_FUN_DICT">
+    <state name="state1">
+     <state_glyph node="25,8,21,15"/>
+    </state>
+    <state_diagram size="80,50"/>
+   </statechart>
   </class>
  </package>
  <package name="Events" stereotype="0x01">

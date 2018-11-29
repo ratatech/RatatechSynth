@@ -33,6 +33,7 @@
 #include "hsm/bsp.h"
 #include "hsm/soundGenHSM.h"
 #include "synthSettings.h"
+#include "midi.h"
 
 // Add debugging tools
 #include "tst_utils.h"
@@ -46,8 +47,6 @@ uint32_t ButtonRead(GPIO_TypeDef*, uint16_t);
 extern "C" {
 
 void SysTick_Handler(void);
-void TIM2_IRQHandler(void);
-void TIM2_IRQHandler(void);
 void TIM3_IRQHandler(void);
 void EXTI0_IRQHandler(void);
 void EXTI1_IRQHandler(void);
@@ -57,7 +56,6 @@ void EXTI4_IRQHandler(void);
 void EXTI5_IRQHandler(void);
 void EXTI9_5_IRQHandler(void);
 void EXTI6_IRQHandler(void);
-void USART1_IRQHandler(void);
 void USART2_IRQHandler(void);
 void DMA1_Channel1_IRQHandler(void);
 }

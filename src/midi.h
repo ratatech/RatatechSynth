@@ -24,61 +24,15 @@ This file is part of XXXXXXX
 
 #include "types.h"
 #include "synthSettings.h"
+#include "stm32f10x.h"
 
-enum midi_msg_type_e {STATUS,DATA_NOTE,DATA_VEL};
+#define MAX_MIDI_BYTES 3
+enum midiMsgType_e {STATUS,DATA_NOTE,DATA_VEL};
 
-//MIDI status type definitions
-// www.midi.org/techspecs/midimessa
-enum status_type_e{
-	note_on    = 0x90,
-	note_off   = 0x80,
-	pitch_bend = 0xE0,
-};
 
-/**
- * MIDI class
- */
-class MIDI {
-
-	public:
-
-		uint16_t midi_buffer[4];
-		midi_msg_type_e midi_msg_type;
-		bool attack_trigger,new_event;
-		bool note_ON;
-
-		/** Constructor.
-		@param pin The pin number used for the SPI chip select.
-		*/
-		MIDI(void){
-			memset(midi_buffer, 0, sizeof(midi_buffer));
-			midi_buffer[0] = note_off;
-		}
-
-		/**
-		 * Parse the information arriving from the USART interface
-		 * @param byte
-		 */
-		void parseMsg(uint16_t byte);
-
-		/**
-		 * After the three bytes have been reveived, trigger events and update data.
-		 */
-		void update(void){
-
-		    /** Unique instance of SynthSettings **/
-		    SynthSettings* s = SynthSettings::getInstance();
-
-			s->note_ON = note_ON;
-
-			if(note_ON){
-				s->pitch = midi_buffer[1];
-				s->vel = midi_buffer[2];
-			}
-
-		}
-
-};
+extern "C" {
+void USART1_IRQHandler(void);
+}
 
 
 #endif /* INCLUDE_MIDI_H_ */

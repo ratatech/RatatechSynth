@@ -21,68 +21,55 @@ This file is part of Ratatech 3019
 */
 
 #include "midi.h"
+#include "stdio.h"
+#include "soundGen.h"
 
-/**
- * Parse incomming MIDI message
- * @param byte Incomming MIDI byte
- */
-void MIDI::parseMsg(uint16_t byte){
+uint8_t midiBuffer[MAX_MIDI_BYTES];
+uint8_t midiMsgType;
+
+void parseMsg(uint8_t byte){
 
 	/** Check if message is status or data type */
 	if(byte > 0x7F){
-		switch(byte){
-
-			case note_on:
-				if(midi_buffer[0] == note_off){
-					attack_trigger = true;
-				}
-				midi_buffer[0] = note_on;
-				midi_msg_type = STATUS;
-				note_ON = true;
-
-			break;
-			case note_off:
-				midi_buffer[0] = note_off;
-				midi_msg_type = STATUS;
-				note_ON = false;
-			break;
-		}
-
+		//iprintf("MIDI IN - status = %i\n\n",byte);
+		midiBuffer[0] = byte;
+		midiMsgType = STATUS;
 	}else{
 
 		/** If not Status, classify between note or velocity data */
-		switch(midi_msg_type){
+		switch(midiMsgType){
 					/** If last message type was the status(MIDI first byte), now it
 					should be the note byte */
 					case STATUS:
-
-						midi_buffer[1] = byte;
-						midi_msg_type = DATA_NOTE;
+						midiBuffer[1] = byte;
+						midiMsgType = DATA_NOTE;
 
 					break;
 					/** Expecting note byte to parse the last byte with velocity or
 					 * additional data */
 					case DATA_NOTE:
-
-						midi_buffer[2] = byte;
-						midi_msg_type = DATA_VEL;
-
+						//iprintf("MIDI IN - vel = %i\n\n",byte);
+						midiBuffer[2] = byte;
+						midiMsgType = DATA_VEL;
+						//iprintf("MIDI IN/ status:%i note:%i vel:%i\n",midiBuffer[0],midiBuffer[1],midiBuffer[2]);
+						updateOscFreq(midiBuffer[1]);
 					break;
 		}
 
 	}
+}
 
-	/** Trigger a new event just after reading the three bytes */
-	if(midi_msg_type == DATA_VEL){
+/**
+* USART1 interrupt handler
+*/
+void USART1_IRQHandler(void)
+{
 
-		if(midi_buffer[2]>0){
-			new_event = true;
-			//iprintf("MIDI:NOTE_ON\r");
-		}else{
-			//iprintf("MIDI:NOTE_OFF\r");
-		}
-	}
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {
 
-
+    	uint8_t midi_in = USART_ReceiveData(USART1);
+    	parseMsg(midi_in);
+    }
 
 }

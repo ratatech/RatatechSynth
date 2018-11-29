@@ -64,4 +64,10 @@ void soundGenStart(void);
  */
 bool fillBuffer(void);
 
+/**
+ * Set osc pitch
+ * @param midiPitch Osc pitch
+ */
+void updateOscFreq(uint8_t midiPitch);
+
 #endif /* SOUNDGEN_H_ */

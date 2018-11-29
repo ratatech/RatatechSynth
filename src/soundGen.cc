@@ -33,6 +33,8 @@ bool status;
 /** Instance of CircularBuffer **/
 CircularBuffer* out_buff = CircularBuffer::getInstance();
 
+/***/
+
 /**
  * @brief Start the sound generator
  */
@@ -71,6 +73,14 @@ bool fillBuffer(void)
 		/** Fill the output buffer with fresh frames */
 		status = out_buff->write_frame(pOut);
 	}
+}
+
+/**
+ * Set osc pitch
+ * @param midiPitch Osc pitch
+ */
+void updateOscFreq(uint8_t midiPitch){
+	osc.set_freq_midi(midiPitch);
 }
 
 /**
